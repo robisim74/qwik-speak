@@ -5,6 +5,7 @@ import { qwikVite } from '@builder.io/qwik/optimizer';
 export default defineConfig(() => {
   return {
     /* VITE_CONFIG */
+    publicDir: '', // Exclude public folder from lib
     build: {
       lib: {
         entry: './src/index.ts',
