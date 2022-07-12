@@ -1,17 +1,15 @@
-import { Counter } from './components/counter/counter';
-import { Logo } from './components/logo/logo';
+import { App } from "./app/app";
 
 export const Root = () => {
-  return (
-    <html>
-      <head>
-        <meta charSet="utf-8" />
-        <title>Qwik Blank App</title>
-      </head>
-      <body>
-        <Logo />
-        <Counter />
-      </body>
-    </html>
-  );
+    return (
+        <html>
+            <head>
+                <meta charSet="utf-8" />
+                <title>Qwik Translate App</title>
+            </head>
+            <body>
+                <App />
+            </body>
+        </html>
+    );
 };

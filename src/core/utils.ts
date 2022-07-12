@@ -1,0 +1,43 @@
+import type { Translation, TranslationConfig } from './types';
+
+export const isObject = (item: any): boolean => {
+    return typeof item === 'object' && !Array.isArray(item);
+}
+
+export const mergeDeep = (target: Translation, source: Translation): Translation | void => {
+    const output = Object.assign({}, target);
+
+    if (isObject(target) && isObject(source)) {
+        Object.keys(source).forEach((key) => {
+            if (isObject(source[key])) {
+                if (!(key in target)) {
+                    Object.assign(output, { [key]: source[key] });
+                } else {
+                    output[key] = mergeDeep(target[key], source[key]);
+                }
+            } else {
+                Object.assign(output, { [key]: source[key] });
+            }
+        });
+    }
+
+    return output;
+}
+
+export const addData = (translation: Translation, data: Translation, language: string): void => {
+    translation[language] = translation[language] !== undefined
+        ? mergeDeep(translation[language], data)
+        : data;
+}
+
+export const loadTranslation = async (language: string, config: TranslationConfig, translation: Translation): Promise<void> => {
+    let tasks = [];
+    tasks = config.assets?.map(asset => config.token?.loadTranslation?.invoke(language, asset)) ??
+        [config.token?.loadTranslation?.invoke(language)];
+    const data = await Promise.all(tasks);
+    data.forEach(value => {
+        if (value) {
+            addData(translation, value, language)
+        }
+    });
+}
