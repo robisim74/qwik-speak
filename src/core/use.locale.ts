@@ -1,5 +1,5 @@
 import type { Locale, TranslationState } from './types';
-import { loadTranslation } from './utils';
+import { getTranslation } from './utils';
 
 /**
  * Change locale at runtime
@@ -11,7 +11,7 @@ export const useLocale = async (changedLocale: Locale, translationContext: Trans
     const language = changedLocale.language;
 
     // Load translation data
-    await loadTranslation(language, config, translation);
+    await getTranslation(language, config, translation);
 
     // Release locale & rerendering components
     locale.language = changedLocale.language;

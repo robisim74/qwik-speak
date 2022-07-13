@@ -24,7 +24,7 @@ export type LanguageFormat = 'language' | 'language-script' | 'language-region' 
  * 
  * Function passing across serializable boundaries must be done through QRLs
  */
-export type LoadTranslationFn = QRL<(language: string, assets?: string) => ValueOrPromise<Translation>>;
+export type LoadTranslationFn = QRL<(language: string, asset: string | Translation) => ValueOrPromise<Translation>>;
 
 export interface TranslationFn {
     /**
@@ -43,7 +43,7 @@ export interface TranslationConfig {
     /**
      * Separator of nested keys
      */
-    keySeparator: string;
+    keySeparator?: string;
     /**
      * The default locale to be used as fallback
      * E.g.
@@ -55,13 +55,13 @@ export interface TranslationConfig {
      */
     supportedLocales: Locale[];
     /**
-     * Assets to be loaded
+     * Assets to be loaded or translation data
      */
-    assets?: string[],
+    assets: string[] | Translation,
     /**
      * Functions to be used
      */
-    token?: TranslationFn,
+    translationFn?: TranslationFn,
 }
 
 /**

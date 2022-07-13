@@ -30,11 +30,15 @@ export const addData = (translation: Translation, data: Translation, language: s
         : data;
 }
 
-export const loadTranslation = async (language: string, config: TranslationConfig, translation: Translation): Promise<void> => {
+export const getTranslation = async (language: string, config: TranslationConfig, translation: Translation): Promise<void> => {
     let tasks = [];
-    tasks = config.assets?.map(asset => config.token?.loadTranslation?.invoke(language, asset)) ??
-        [config.token?.loadTranslation?.invoke(language)];
+    if (Array.isArray(config.assets)) {
+        tasks = config.assets.map(asset => config.translationFn?.loadTranslation?.invoke(language, asset))
+    } else {
+        tasks = [config.translationFn?.loadTranslation?.invoke(language, config.assets)];
+    }
     const data = await Promise.all(tasks);
+
     data.forEach(value => {
         if (value) {
             addData(translation, value, language)
