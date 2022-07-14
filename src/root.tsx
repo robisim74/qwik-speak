@@ -1,6 +1,6 @@
 import { App } from "./app/app";
 
-export const Root = () => {
+export default () => {
     return (
         <html>
             <head>

@@ -1,4 +1,4 @@
-import type { Translation, TranslationConfig } from './types';
+import type { Translation, TranslateState } from './types';
 
 export const isObject = (item: any): boolean => {
     return typeof item === 'object' && !Array.isArray(item);
@@ -30,12 +30,14 @@ export const addData = (translation: Translation, data: Translation, language: s
         : data;
 }
 
-export const getTranslation = async (language: string, config: TranslationConfig, translation: Translation): Promise<void> => {
+export const getTranslation = async (language: string, translateContext: TranslateState): Promise<void> => {
+    const { translation, config, translateFn } = translateContext;
+
     let tasks = [];
     if (Array.isArray(config.assets)) {
-        tasks = config.assets.map(asset => config.translationFn?.loadTranslation?.invoke(language, asset))
+        tasks = config.assets.map(asset => translateFn.loadTranslation$?.(language, asset))
     } else {
-        tasks = [config.translationFn?.loadTranslation?.invoke(language, config.assets)];
+        tasks = [translateFn.loadTranslation$?.(language, config.assets)];
     }
     const data = await Promise.all(tasks);
 

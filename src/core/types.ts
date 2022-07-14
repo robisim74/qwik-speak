@@ -26,14 +26,41 @@ export type LanguageFormat = 'language' | 'language-script' | 'language-region' 
  */
 export type LoadTranslationFn = QRL<(language: string, asset: string | Translation) => ValueOrPromise<Translation>>;
 
-export interface TranslationFn {
+/**
+ * Must contain the logic to get the user language
+ */
+export type GetUserLanguageFn = QRL<() => ValueOrPromise<string | null>>;
+
+/**
+ * Must contain the logic to store the locale
+ */
+export type WriteLocaleFn = QRL<(locale: Locale) => ValueOrPromise<void>>;
+
+/**
+* Must contain the logic to read the locale from the storage
+*/
+export type ReadLocaleFn = QRL<() => ValueOrPromise<Locale | null>>;
+
+export interface TranslateFn {
     /**
      * Function to load translation data
      */
-    loadTranslation?: LoadTranslationFn;
+    loadTranslation$?: LoadTranslationFn;
+    /**
+     * Function to get user language
+     */
+    getUserLanguage$?: GetUserLanguageFn;
+    /**
+     * Function to store the locale
+     */
+    writeLocale$?: WriteLocaleFn;
+    /**
+     * Function to read the locale from the storage
+     */
+    readLocale$?: ReadLocaleFn;
 }
 
-export interface TranslationConfig {
+export interface TranslateConfig {
     /**
      * Format of the translation language. Pattern: 'language[-script][-region]'
      * E.g.
@@ -58,20 +85,16 @@ export interface TranslationConfig {
      * Assets to be loaded or translation data
      */
     assets: string[] | Translation,
-    /**
-     * Functions to be used
-     */
-    translationFn?: TranslationFn,
 }
 
 /**
  * Translation state context
  */
-export interface TranslationState {
+export interface TranslateState {
     /**
      * Current locale
      */
-    locale: Locale,
+    locale: Partial<Locale>,
     /**
      * Translation data
      */
@@ -79,5 +102,9 @@ export interface TranslationState {
     /***
      * Translation configuration
      */
-    config: TranslationConfig
+    config: TranslateConfig
+    /**
+     * Functions to be used
+     */
+    translateFn: TranslateFn,
 }
