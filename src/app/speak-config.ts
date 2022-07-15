@@ -1,17 +1,20 @@
-import { Translation, TranslateConfig } from '../core/types';
+import { Translation, SpeakConfig } from '../core/types';
 
 export const translationData: Translation = {
     'en-US': {
+        title: 'Qwik Speak',
+        subtitle: 'Make your Qwik app speak any language',
         changeLocale: 'Change locale',
-        title: 'Qwik Translate'
     },
     'it-IT': {
+        title: 'Qwik Speak',
+        subtitle: 'Fai parlare alla tua app Qwik qualsiasi lingua',
         changeLocale: 'Cambia località',
-        title: 'Qwik Traduci'
+
     }
 };
 
-export const config: TranslateConfig = {
+export const config: SpeakConfig = {
     languageFormat: 'language-region',
     defaultLocale: { language: 'en-US' },
     supportedLocales: [

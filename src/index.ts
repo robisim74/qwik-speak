@@ -4,18 +4,18 @@ export type {
     Translation,
     LanguageFormat,
     TranslateFn,
-    TranslateConfig,
-    TranslateState
+    SpeakConfig,
+    SpeakState,
 } from './core/types';
 export type {
     LoadTranslationFn,
     GetUserLanguageFn,
     WriteLocaleFn,
-    ReadLocaleFn
+    ReadLocaleFn,
 } from './core/types';
 // Context
-export { TranslateContext } from './core/constants';
+export { SpeakContext } from './core/constants';
 // Hooks
-export { useTranslate } from './core/use-translate';
+export { useSpeak } from './core/use-speak';
 export { changeLocale } from './core/change-locale';
 export { translate } from './core/translate';

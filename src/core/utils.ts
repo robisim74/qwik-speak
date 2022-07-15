@@ -1,4 +1,4 @@
-import type { Translation, TranslateState } from './types';
+import type { Translation, SpeakState } from './types';
 
 export const isObject = (item: any): boolean => {
     return typeof item === 'object' && !Array.isArray(item);
@@ -30,8 +30,8 @@ export const addData = (translation: Translation, data: Translation, language: s
         : data;
 }
 
-export const getTranslation = async (language: string, translateContext: TranslateState): Promise<void> => {
-    const { translation, config, translateFn } = translateContext;
+export const getTranslation = async (language: string, speakContext: SpeakState): Promise<void> => {
+    const { translation, config, translateFn } = speakContext;
 
     let tasks = [];
     if (Array.isArray(config.assets)) {

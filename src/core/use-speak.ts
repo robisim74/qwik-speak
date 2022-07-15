@@ -1,10 +1,10 @@
 import { useStore, useContextProvider, immutable, useMount$ } from '@builder.io/qwik';
 
-import { TranslateConfig, TranslateFn, TranslateState } from './types';
-import { getUserLanguage$, loadTranslation$, readLocale$, TranslateContext, writeLocale$ } from './constants';
+import { SpeakConfig, TranslateFn, SpeakState } from './types';
+import { getUserLanguage$, loadTranslation$, readLocale$, SpeakContext, writeLocale$ } from './constants';
 import { getTranslation } from './utils';
 
-export const useTranslate = (config: TranslateConfig, translateFn: TranslateFn = {}): TranslateState => {
+export const useSpeak = (config: SpeakConfig, translateFn: TranslateFn = {}): SpeakState => {
     // Assign functions
     translateFn.loadTranslation$ = translateFn.loadTranslation$ ?? loadTranslation$;
     translateFn.getUserLanguage$ = translateFn.getUserLanguage$ ?? getUserLanguage$;
@@ -12,15 +12,15 @@ export const useTranslate = (config: TranslateConfig, translateFn: TranslateFn =
     translateFn.readLocale$ = translateFn.readLocale$ ?? readLocale$;
 
     // Set initial state
-    const translateState = useStore<TranslateState>({
+    const speakState = useStore<SpeakState>({
         locale: {},
         translation: {},
         config: config,
         translateFn: translateFn
     }, { recursive: true });
-    const { locale, translation } = translateState;
+    const { locale, translation } = speakState;
 
-    useContextProvider(TranslateContext, translateState);
+    useContextProvider(SpeakContext, speakState);
 
     // Will block the rendering of the app until callback resolves
     useMount$(async () => {
@@ -42,15 +42,15 @@ export const useTranslate = (config: TranslateConfig, translateFn: TranslateFn =
         Object.assign(locale, userLocale);
 
         // Load translation data
-        await getTranslation(locale.language!, translateState);
+        await getTranslation(locale.language!, speakState);
 
         // Prevent Qwik from creating subscriptions
         immutable(translation);
         immutable(config);
         immutable(translateFn)
 
-        console.debug("Qwik-translate: translation loaded");
+        console.debug("Qwik-speak: translation loaded");
     });
 
-    return translateState;
+    return speakState;
 };

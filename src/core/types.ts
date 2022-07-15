@@ -60,7 +60,7 @@ export interface TranslateFn {
     readLocale$?: ReadLocaleFn;
 }
 
-export interface TranslateConfig {
+export interface SpeakConfig {
     /**
      * Format of the translation language. Pattern: 'language[-script][-region]'
      * E.g.
@@ -88,9 +88,9 @@ export interface TranslateConfig {
 }
 
 /**
- * Translation state context
+ * Speak state
  */
-export interface TranslateState {
+export interface SpeakState {
     /**
      * Current locale
      */
@@ -100,9 +100,9 @@ export interface TranslateState {
      */
     translation: Translation,
     /***
-     * Translation configuration
+     * Speak configuration
      */
-    config: TranslateConfig
+    config: SpeakConfig
     /**
      * Functions to be used
      */

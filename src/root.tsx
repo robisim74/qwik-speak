@@ -5,7 +5,7 @@ export default () => {
         <html>
             <head>
                 <meta charSet="utf-8" />
-                <title>Qwik Translate App</title>
+                <title>Qwik Speak App</title>
             </head>
             <body>
                 <App />

@@ -1,7 +1,7 @@
 {
-  "name": "qwik-translate",
+  "name": "qwik-speak",
   "version": "0.0.1",
-  "description": "Create a component library Vite.js tooling.",
+  "description": "Intenationalization (i18n) library to translate texts, dates and numbers in Qwik apps",
   "scripts": {
     "build": "npm run build.lib && npm run build.types",
     "build.client": "vite build",
@@ -42,8 +42,8 @@
   "files": [
     "lib"
   ],
-  "homepage": "https://qwik.builder.io/",
-  "license": "",
+  "homepage": "https://github.com/robisim74/qwik-speak",
+  "license": "MIT",
   "main": "./lib/index.cjs.qwik.js",
   "module": "./lib/index.es.qwik.js",
   "private": false,

@@ -1,11 +1,11 @@
 import { useContext } from '@builder.io/qwik';
 
-import { TranslateContext } from './constants';
-import { TranslateState } from './types';
+import { SpeakContext } from './constants';
+import { SpeakState } from './types';
 
-export const translate = (key: string, translateContext?: TranslateState, language?: string): string => {
-    translateContext = translateContext ?? useContext(TranslateContext);
-    const { locale, translation, config } = translateContext;
+export const translate = (key: string, speakContext?: SpeakState, language?: string): string => {
+    speakContext = speakContext ?? useContext(SpeakContext);
+    const { locale, translation, config } = speakContext;
     language = language ?? locale.language!;
 
     if (translation[language] && translation[language][key]) {
