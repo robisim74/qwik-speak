@@ -11,7 +11,7 @@ export const changeLocale = async (changedLocale: Locale, speakContext: SpeakSta
     const language = changedLocale.language;
 
     // Load translation data
-    await getTranslation(language, speakContext);
+    await getTranslation(changedLocale, speakContext);
 
     // Release locale & rerendering components
     Object.assign(locale, changedLocale);

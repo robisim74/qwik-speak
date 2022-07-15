@@ -9,10 +9,10 @@ export const Header = component$(
 
         return (
             <div>
-                <h1>{t('title')}</h1>
-                <h3>{t('subtitle')}</h3>
+                <h1>{t('app.title')}</h1>
+                <h3>{t('app.subtitle')}</h3>
 
-                <p>{t('changeLocale')}</p>
+                <p>{t('app.changeLocale')}</p>
                 <button onClick$={async () => await changeLocale({ language: 'it-IT' }, speakContext)} style="cursor: pointer">
                     it
                 </button>

@@ -2,15 +2,18 @@ import { Translation, SpeakConfig } from '../core/types';
 
 export const translationData: Translation = {
     'en-US': {
-        title: 'Qwik Speak',
-        subtitle: 'Make your Qwik app speak any language',
-        changeLocale: 'Change locale',
+        'app': {
+            title: 'Qwik Speak',
+            subtitle: 'Make your Qwik app speak any language',
+            changeLocale: 'Change locale',
+        },
     },
     'it-IT': {
-        title: 'Qwik Speak',
-        subtitle: 'Fai parlare alla tua app Qwik qualsiasi lingua',
-        changeLocale: 'Cambia località',
-
+        'app': {
+            title: 'Qwik Speak',
+            subtitle: 'Fai parlare alla tua app Qwik qualsiasi lingua',
+            changeLocale: 'Cambia località',
+        },
     }
 };
 

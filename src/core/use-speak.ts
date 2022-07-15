@@ -1,7 +1,7 @@
 import { useStore, useContextProvider, immutable, useMount$ } from '@builder.io/qwik';
 
-import { SpeakConfig, TranslateFn, SpeakState } from './types';
-import { getUserLanguage$, loadTranslation$, readLocale$, SpeakContext, writeLocale$ } from './constants';
+import type { SpeakConfig, TranslateFn, SpeakState } from './types';
+import { getUserLanguage$, handleMissingTranslation$, loadTranslation$, readLocale$, SpeakContext, writeLocale$ } from './constants';
 import { getTranslation } from './utils';
 
 export const useSpeak = (config: SpeakConfig, translateFn: TranslateFn = {}): SpeakState => {
@@ -10,6 +10,7 @@ export const useSpeak = (config: SpeakConfig, translateFn: TranslateFn = {}): Sp
     translateFn.getUserLanguage$ = translateFn.getUserLanguage$ ?? getUserLanguage$;
     translateFn.writeLocale$ = translateFn.writeLocale$ ?? writeLocale$;
     translateFn.readLocale$ = translateFn.readLocale$ ?? readLocale$;
+    translateFn.handleMissingTranslation$ = translateFn.handleMissingTranslation$ ?? handleMissingTranslation$;
 
     // Set initial state
     const speakState = useStore<SpeakState>({
@@ -38,11 +39,11 @@ export const useSpeak = (config: SpeakConfig, translateFn: TranslateFn = {}): Sp
             userLocale = config.defaultLocale;
         }
 
+        // Load translation data
+        await getTranslation(userLocale, speakState);
+
         // Set locale
         Object.assign(locale, userLocale);
-
-        // Load translation data
-        await getTranslation(locale.language!, speakState);
 
         // Prevent Qwik from creating subscriptions
         immutable(translation);

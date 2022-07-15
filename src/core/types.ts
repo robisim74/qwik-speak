@@ -41,6 +41,11 @@ export type WriteLocaleFn = QRL<(locale: Locale) => ValueOrPromise<void>>;
 */
 export type ReadLocaleFn = QRL<() => ValueOrPromise<Locale | null>>;
 
+/**
+* Must contain the logic to handle missing values
+*/
+export type HandleMissingTranslationFn = QRL<(key: string, value?: string, params?: any) => ValueOrPromise<string | any>>;
+
 export interface TranslateFn {
     /**
      * Function to load translation data
@@ -58,6 +63,10 @@ export interface TranslateFn {
      * Function to read the locale from the storage
      */
     readLocale$?: ReadLocaleFn;
+    /**
+     * Function to create an handler for missing values
+     */
+    handleMissingTranslation$?: HandleMissingTranslationFn;
 }
 
 export interface SpeakConfig {
