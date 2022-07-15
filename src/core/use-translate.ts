@@ -4,7 +4,7 @@ import { TranslateConfig, TranslateFn, TranslateState } from './types';
 import { getUserLanguage$, loadTranslation$, readLocale$, TranslateContext, writeLocale$ } from './constants';
 import { getTranslation } from './utils';
 
-export const useTranslate = (config: TranslateConfig, translateFn: TranslateFn = {}): void => {
+export const useTranslate = (config: TranslateConfig, translateFn: TranslateFn = {}): TranslateState => {
     // Assign functions
     translateFn.loadTranslation$ = translateFn.loadTranslation$ ?? loadTranslation$;
     translateFn.getUserLanguage$ = translateFn.getUserLanguage$ ?? getUserLanguage$;
@@ -28,13 +28,13 @@ export const useTranslate = (config: TranslateConfig, translateFn: TranslateFn =
         let userLocale = await translateFn.readLocale$?.();
 
         // Try to get locale by user language
-        if (!userLocale){
+        if (!userLocale) {
             const userLanguage = await translateFn.getUserLanguage$?.();
             userLocale = config.supportedLocales.find(x => x.language == userLanguage);
         }
 
         // Use default locale
-        if (!userLocale){
+        if (!userLocale) {
             userLocale = config.defaultLocale;
         }
 
@@ -51,6 +51,6 @@ export const useTranslate = (config: TranslateConfig, translateFn: TranslateFn =
 
         console.debug("Qwik-translate: translation loaded");
     });
+
+    return translateState;
 };
-
-

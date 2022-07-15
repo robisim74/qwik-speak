@@ -1,7 +1,7 @@
 import { component$ } from '@builder.io/qwik';
 
 /**
- * Components that use translate hooks will be rerendered when locale changes
+ * Components that use translate functions will be rerendered when locale changes
  */
 export const Hooks = component$(
     () => {
