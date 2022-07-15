@@ -50,7 +50,7 @@ export const useSpeak = (config: SpeakConfig, translateFn: TranslateFn = {}): Sp
         immutable(config);
         immutable(translateFn)
 
-        console.debug("Qwik-speak: translation loaded");
+        console.debug('Qwik-speak: translation loaded');
     });
 
     return speakState;

@@ -8,8 +8,8 @@ import { getValue, handleParams, parseLanguage } from './utils';
  * Translate a key or an array of keys
  * @param keys The key or an array of keys to be translated
  * @param params Optional parameters contained in the value
- * @param speakContext Optional speak context if not available
- * @param language Optional language to be used
+ * @param speakContext 
+ * @param language 
  * @returns The translated value or an object: {key: value}
  */
 export const translate = (keys: string | string[], params?: any, speakContext?: SpeakState, language?: string): string | any => {

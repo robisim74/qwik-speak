@@ -12,10 +12,16 @@ export type {
     GetUserLanguageFn,
     WriteLocaleFn,
     ReadLocaleFn,
+    HandleMissingTranslationFn,
+    ConvertFn
 } from './core/types';
-// Context
+// Constants
 export { SpeakContext } from './core/constants';
+// Utils
+export { parseLanguage } from './core/utils';
 // Hooks
 export { useSpeak } from './core/use-speak';
 export { changeLocale } from './core/change-locale';
 export { translate } from './core/translate';
+export { formatNumber, convertNumber } from './core/format-number';
+export { formatDate } from './core/format-date';

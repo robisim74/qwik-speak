@@ -8,7 +8,6 @@ import { getTranslation } from './utils';
  */
 export const changeLocale = async (changedLocale: Locale, speakContext: SpeakState): Promise<void> => {
     const { locale } = speakContext;
-    const language = changedLocale.language;
 
     // Load translation data
     await getTranslation(changedLocale, speakContext);

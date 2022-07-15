@@ -1,7 +1,7 @@
 {
   "name": "qwik-speak",
   "version": "0.0.1",
-  "description": "Intenationalization (i18n) library to translate texts, dates and numbers in Qwik apps",
+  "description": "Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps",
   "scripts": {
     "build": "npm run build.lib && npm run build.types",
     "build.client": "vite build",

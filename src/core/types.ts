@@ -10,6 +10,18 @@ export interface Locale {
      * - extension: 'u' (Unicode) extensions
      */
     language: string;
+    /**
+     * ISO 4217 three-letter code
+     */
+    currency?: string;
+    /**
+     * Time zone name from the IANA time zone database
+     */
+    timeZone?: string;
+    /**
+     * Key value pairs of unit identifiers
+     */
+    units?: { [key: string]: string }
 }
 
 /**
@@ -46,6 +58,8 @@ export type ReadLocaleFn = QRL<() => ValueOrPromise<Locale | null>>;
 */
 export type HandleMissingTranslationFn = QRL<(key: string, value?: string, params?: any) => ValueOrPromise<string | any>>;
 
+export type ConvertFn = (value: number, params: any) => ValueOrPromise<number>;
+
 export interface TranslateFn {
     /**
      * Function to load translation data
@@ -72,7 +86,7 @@ export interface TranslateFn {
 export interface SpeakConfig {
     /**
      * Format of the translation language. Pattern: 'language[-script][-region]'
-     * E.g.
+     * e.g.
      * languageFormat: 'language-region';
      */
     languageFormat: LanguageFormat;
@@ -82,7 +96,7 @@ export interface SpeakConfig {
     keySeparator?: string;
     /**
      * The default locale to be used as fallback
-     * E.g.
+     * e.g.
      * defaultLocale: { language: 'en-US' };
      */
     defaultLocale: Locale;

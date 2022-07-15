@@ -1,6 +1,6 @@
 # Qwik Speak ⚡️
 
-> Intenationalization (i18n) library to translate texts, dates and numbers in Qwik apps.
+> Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps.
 
 ## Development Builds
 ### Server-side Rendering (SSR) and Client
@@ -14,7 +14,7 @@ npm run build
 ```
 
 ## What's new
->Under development
+> Under development
 
 ## License
 MIT
