@@ -1,5 +1,5 @@
 import type { Locale, SpeakState } from './types';
-import { getTranslation } from './utils';
+import { clearTranslation, getTranslation } from './utils';
 
 /**
  * Change locale at runtime
@@ -9,6 +9,8 @@ import { getTranslation } from './utils';
 export const changeLocale = async (changedLocale: Locale, speakContext: SpeakState): Promise<void> => {
     const { locale } = speakContext;
 
+    // Clear translation data
+    clearTranslation(speakContext);
     // Load translation data
     await getTranslation(changedLocale, speakContext);
 

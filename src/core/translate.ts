@@ -16,7 +16,9 @@ export const translate = (keys: string | string[], params?: any, speakContext?: 
     speakContext = speakContext ?? useContext(SpeakContext);
     const { locale, translation, config, translateFn } = speakContext;
 
-    language = language ?? locale.language!;
+    language = language ?? locale.language;
+    if (!language) return keys;
+
     language = parseLanguage(language, config.languageFormat);
 
     if (Array.isArray(keys)) {

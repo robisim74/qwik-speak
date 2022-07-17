@@ -30,7 +30,7 @@ export const isoStringToDate = (match: RegExpMatchArray): Date => {
     return date;
 }
 
-export const mergeDeep = (target: Translation, source: Translation): Translation | void => {
+export const mergeDeep = (target: Translation, source: Translation): Translation => {
     const output = Object.assign({}, target);
 
     if (isObject(target) && isObject(source)) {
@@ -51,9 +51,10 @@ export const mergeDeep = (target: Translation, source: Translation): Translation
 }
 
 export const addData = (translation: Translation, data: Translation, language: string): void => {
-    translation[language] = translation[language] !== undefined
-        ? mergeDeep(translation[language], data)
-        : data;
+    if (!translation[language]) {
+        translation[language] = {};
+    }
+    translation[language] = mergeDeep(translation[language], data);
 }
 
 export const getTranslation = async (locale: Locale, speakContext: SpeakState): Promise<void> => {
@@ -67,13 +68,22 @@ export const getTranslation = async (locale: Locale, speakContext: SpeakState): 
     } else {
         tasks = [translateFn.loadTranslation$?.(language, config.assets)];
     }
-    const data = await Promise.all(tasks);
+    const results = await Promise.all(tasks);
 
-    data.forEach(value => {
-        if (value) {
-            addData(translation, value, language)
+    results.forEach(data => {
+        if (data) {
+            addData(translation, data, language)
         }
     });
+}
+
+export const clearTranslation = (speakContext: SpeakState): void => {
+    const { locale, translation, config } = speakContext;
+
+    if (!locale.language) return;
+
+    const language = parseLanguage(locale.language!, config.languageFormat);
+    translation[language] = {};
 }
 
 export const speakError = (type: Function, value: string): Error => {
