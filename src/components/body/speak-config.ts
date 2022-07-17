@@ -1,7 +1,7 @@
 import { $ } from '@builder.io/qwik';
 import { isServer } from '@builder.io/qwik/build';
 
-import { Translation, SpeakConfig, LoadTranslationFn, TranslateFn } from '../core/types';
+import { Translation, SpeakConfig, LoadTranslationFn, TranslateFn, ConvertFn } from '../../core/types';
 
 export const translationData: Translation = {
     "en-US": {
@@ -48,5 +48,25 @@ export const config: SpeakConfig = {
     ],
     assets: translationData
     /* assets: ['/public/i18n/app'] */
+};
+
+export const convertCurrency: ConvertFn = (value: number, params: any) => {
+    const { currency, rate } = params;
+    switch (currency) {
+        case 'USD':
+            return value * rate;
+        default:
+            return value;
+    }
+};
+
+export const convertLength: ConvertFn = (value: number, params: any) => {
+    const { unit } = params;
+    switch (unit) {
+        case 'mile':
+            return value * 0.621371;
+        default:
+            return value;
+    }
 };
 

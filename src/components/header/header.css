@@ -1,0 +1,47 @@
+header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  padding: 10px;
+  background-color: #0093ee;
+}
+
+header a {
+  color: white;
+  text-decoration: none;
+  padding: 4px 8px;
+  margin-right: 5px;
+  border-radius: 4px;
+}
+
+header a:hover {
+  background-color: #ffffff50;
+}
+
+header .active {
+  background-color: #ffffff30;
+}
+
+change-locale {
+  padding: 8px;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+change-locale .button {
+  color: white;
+  text-decoration: none;
+  padding: 4px 8px;
+  margin-right: 5px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+change-locale .button:hover {
+  background-color: #ffffff50;
+}
+
+change-locale .active {
+  background-color: #ffffff30;
+}

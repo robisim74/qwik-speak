@@ -1,15 +1,14 @@
-import { App } from "./app/app";
+import { Html } from '@builder.io/qwik-city';
+import { Head } from './components/head/head';
+import { Body } from './components/body/body';
+
+import './global.css';
 
 export default () => {
     return (
-        <html>
-            <head>
-                <meta charSet="utf-8" />
-                <title>Qwik Speak App</title>
-            </head>
-            <body>
-                <App />
-            </body>
-        </html>
+        <Html>
+            <Head />
+            <Body />
+        </Html>
     );
 };
