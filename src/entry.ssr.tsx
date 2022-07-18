@@ -8,7 +8,7 @@ import Root from './root';
 export function render(opts?: RenderOptions) {
   // Render the Root component to a string
   // Pass in the manifest that was generated from the client build
-  return renderToString(<Root opts={opts} />, {
+  return renderToString(<Root />, {
     manifest,
     ...opts,
   });

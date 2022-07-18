@@ -1,16 +1,7 @@
-import { createContext, useContext, $ } from "@builder.io/qwik";
+import { $ } from "@builder.io/qwik";
 import { RouteLocation } from "@builder.io/qwik-city";
 import { isServer } from "@builder.io/qwik/build";
 import { GetLocaleFn, GetTranslationFn, GetUserLanguageFn, Locale, SetLocaleFn, SpeakConfig, TranslateFn, Translation } from "../library/types";
-
-export interface HeadersState {
-    cookie: string;
-    acceptLanguage: string;
-}
-
-export const HeadersContext = createContext<HeadersState>('qwik.headers.state');
-
-export const useHeaders = (): HeadersState => useContext(HeadersContext);
 
 // Default Speak config
 export const getConfig = (): SpeakConfig => {
@@ -26,7 +17,7 @@ export const getConfig = (): SpeakConfig => {
 }
 
 // Custom translate functions
-export const getTranslateFn = (location: RouteLocation, headers: HeadersState): TranslateFn => {
+export const getTranslateFn = (location: RouteLocation, headers: any): TranslateFn => {
     // Fetch translation data
     const getTranslation$: GetTranslationFn = $(async (language: string, asset: string | Translation) => {
         let url = '';
@@ -41,7 +32,7 @@ export const getTranslateFn = (location: RouteLocation, headers: HeadersState): 
 
     // Get user language by accept-language header (on server)
     const getUserLanguage$: GetUserLanguageFn = $(() => {
-        if (!headers.acceptLanguage) return null;
+        if (!headers?.acceptLanguage) return null;
         return headers.acceptLanguage.split(';')[0].split(',')[0];
     });
 
@@ -52,7 +43,7 @@ export const getTranslateFn = (location: RouteLocation, headers: HeadersState): 
 
     // Get locale from cookie (on server)
     const getLocale$: GetLocaleFn = $(() => {
-        if (!headers.cookie) return null;
+        if (!headers?.cookie) return null;
         const result = new RegExp('(?:^|; )' + encodeURIComponent('locale') + '=([^;]*)').exec(headers.cookie);
         return result ? JSON.parse(result[1]) : null;
     });
@@ -65,7 +56,7 @@ export const getTranslateFn = (location: RouteLocation, headers: HeadersState): 
     };
 }
 
-// Get the headers (that will return in opts RenderOptions)
+// Get the headers (that will return in endpointResponse)
 export const getHeaders = (request: any) => {
     const cookie = request.headers?.get('cookie') ?? undefined;
     const acceptLanguage = request.headers?.get('accept-language') ?? undefined;

@@ -1,15 +1,15 @@
-import { Html } from '@builder.io/qwik-city';
-import { RenderOptions } from '@builder.io/qwik/server';
-import { Body } from './app/components/body/body';
+import { Content, Html } from '@builder.io/qwik-city';
 import { Head } from './app/components/head/head';
 
 import './global.css';
 
-export default (props: { opts?: RenderOptions }) => {
+export default () => {
     return (
         <Html>
             <Head />
-            <Body opts={props.opts} />
+            <body>
+                <Content />
+            </body>
         </Html>
     );
 };
