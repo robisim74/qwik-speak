@@ -20,6 +20,9 @@ export const Header = component$(
                     <a href="/" class={{ active: pathname === '/' }}>
                         Home
                     </a>
+                    <a href="/lazy" class={{ active: pathname === '/lazy' }}>
+                        Lazy
+                    </a>
                 </nav>
                 <ChangeLocale />
             </Host>

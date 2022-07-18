@@ -1,8 +1,11 @@
 import { component$, Host } from '@builder.io/qwik';
+import { EndpointHandler } from '@builder.io/qwik-city';
 import { translate as t } from '../../library/translate';
 import { formatDate as fd } from '../../library/format-date';
 import { formatNumber as fn } from '../../library/format-number';
 import { useLocale, useTranslate } from '../../library/use-functions';
+
+import { getHeaders } from '../speak-config';
 
 export default component$(() => {
     const locale = useLocale();
@@ -14,9 +17,9 @@ export default component$(() => {
             <h3>{t('app.subtitle')}</h3>
 
             {/* Params */}
-            <p>{t('app.greeting', { name: 'Qwik Speak' })}</p>
+            <p>{t('home.greeting', { name: 'Qwik Speak' })}</p>
             {/* Html tags */}
-            <p innerHTML={t('app.description')}></p>
+            <p innerHTML={t('home.description')}></p>
             {/* Dates */}
             <p>{fd(Date.now(), { dateStyle: 'full', timeStyle: 'short' })}</p>
             {/* Numbers */}
@@ -26,3 +29,7 @@ export default component$(() => {
         </Host>
     );
 });
+
+export const onGet: EndpointHandler = ({ request }) => {
+    return getHeaders(request);
+};

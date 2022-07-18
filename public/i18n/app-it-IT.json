@@ -2,8 +2,6 @@
     "app": {
         "title": "Qwik Speak",
         "subtitle": "Fai parlare alla tua app Qwik qualsiasi lingua",
-        "changeLocale": "Cambia località",
-        "greeting": "Ciao! Sono {{name}}",
-        "description": "<em>Libreria di internazionalizzazione (i18n) per tradurre testi, date e numeri nelle app Qwik</em>"
+        "changeLocale": "Cambia località"
     }
 }
