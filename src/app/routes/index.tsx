@@ -1,11 +1,12 @@
-import { component$, Host, useContext } from '@builder.io/qwik';
-import { SpeakContext } from '../core/constants';
-import { translate as t } from '../core/translate';
-import { formatDate as fd } from '../core/format-date';
-import { formatNumber as fn } from '../core/format-number';
+import { component$, Host } from '@builder.io/qwik';
+import { translate as t } from '../../library/translate';
+import { formatDate as fd } from '../../library/format-date';
+import { formatNumber as fn } from '../../library/format-number';
+import { useLocale, useTranslate } from '../../library/use-functions';
 
 export default component$(() => {
-    const { locale: { currency, units } } = useContext(SpeakContext);
+    const locale = useLocale();
+    /* const { translate: t, ctx } = useTranslate(); */
 
     return (
         <Host>
@@ -21,7 +22,7 @@ export default component$(() => {
             {/* Numbers */}
             <p>{fn(1000000)}</p>
             <p>{fn(1000000, { style: 'currency' })}</p>
-            <p>{fn(1, { style: 'unit', unit: units!['length'] })}</p>
+            <p>{fn(1, { style: 'unit', unit: locale.units!['length'] })}</p>
         </Host>
     );
 });

@@ -1,6 +1,5 @@
-import { Html } from '@builder.io/qwik-city';
-import { Head } from './components/head/head';
-import { Body } from './components/body/body';
+import { Content, Html } from '@builder.io/qwik-city';
+import { Head } from './app/components/head/head';
 
 import './global.css';
 
@@ -8,7 +7,9 @@ export default () => {
     return (
         <Html>
             <Head />
-            <Body />
+            <body>
+                <Content />
+            </body>
         </Html>
     );
 };

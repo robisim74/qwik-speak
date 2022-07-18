@@ -1,32 +1,32 @@
-import { useStore, useContextProvider, immutable, useMount$ } from '@builder.io/qwik';
+import { useStore, useContextProvider, immutable, useMount$, useClientEffect$ } from '@builder.io/qwik';
 
 import type { SpeakConfig, TranslateFn, SpeakState } from './types';
-import { getUserLanguage$, handleMissingTranslation$, loadTranslation$, readLocale$, SpeakContext, writeLocale$ } from './constants';
-import { getTranslation } from './utils';
+import { getUserLanguage$, handleMissingTranslation$, getTranslation$, getLocale$, SpeakContext, setLocale$ } from './constants';
+import { loadTranslation } from './utils';
 
 export const useSpeak = (config: SpeakConfig, translateFn: TranslateFn = {}): SpeakState => {
     // Assign functions
-    translateFn.loadTranslation$ = translateFn.loadTranslation$ ?? loadTranslation$;
+    translateFn.getTranslation$ = translateFn.getTranslation$ ?? getTranslation$;
     translateFn.getUserLanguage$ = translateFn.getUserLanguage$ ?? getUserLanguage$;
-    translateFn.writeLocale$ = translateFn.writeLocale$ ?? writeLocale$;
-    translateFn.readLocale$ = translateFn.readLocale$ ?? readLocale$;
+    translateFn.setLocale$ = translateFn.setLocale$ ?? setLocale$;
+    translateFn.getLocale$ = translateFn.getLocale$ ?? getLocale$;
     translateFn.handleMissingTranslation$ = translateFn.handleMissingTranslation$ ?? handleMissingTranslation$;
 
     // Set initial state
-    const speakState = useStore<SpeakState>({
+    const state = useStore<SpeakState>({
         locale: {},
         translation: {},
         config: config,
         translateFn: translateFn
     }, { recursive: true });
-    const { locale, translation } = speakState;
+    const { locale, translation } = state;
 
-    useContextProvider(SpeakContext, speakState);
+    useContextProvider(SpeakContext, state);
 
     // Will block the rendering of the app until callback resolves
     useMount$(async () => {
         // Try to get locale from the storage
-        let userLocale = await translateFn.readLocale$?.();
+        let userLocale = await translateFn.getLocale$?.();
 
         // Try to get locale by user language
         if (!userLocale) {
@@ -40,7 +40,7 @@ export const useSpeak = (config: SpeakConfig, translateFn: TranslateFn = {}): Sp
         }
 
         // Load translation data
-        await getTranslation(userLocale, speakState);
+        await loadTranslation(userLocale, state);
 
         // Set locale
         Object.assign(locale, userLocale);
@@ -53,5 +53,10 @@ export const useSpeak = (config: SpeakConfig, translateFn: TranslateFn = {}): Sp
         console.debug('Qwik-speak: translation loaded');
     });
 
-    return speakState;
+    useClientEffect$(async () => {
+        // Store the locale
+        await translateFn.setLocale$?.(locale);
+    });
+
+    return state;
 };

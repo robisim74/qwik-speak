@@ -8,14 +8,14 @@ import { toDate } from './utils';
  * Format a date
  * @param value A date, a number (milliseconds since UTC epoch) or an ISO 8601 string
  * @param options Intl DateTimeFormatOptions object
- * @param speakContext 
+ * @param ctx 
  * @param language 
  * @param timeZone 
  * @returns 
  */
-export const formatDate = (value: any, options?: Intl.DateTimeFormatOptions, speakContext?: SpeakState, language?: string, timeZone?: string): string => {
-    speakContext = speakContext ?? useContext(SpeakContext);
-    const { locale } = speakContext;
+export const formatDate = (value: any, options?: Intl.DateTimeFormatOptions, ctx?: SpeakState, language?: string, timeZone?: string): string => {
+    ctx = ctx ?? useContext(SpeakContext);
+    const { locale } = ctx;
 
     language = language ?? locale.language;
     timeZone = timeZone ?? locale.timeZone;

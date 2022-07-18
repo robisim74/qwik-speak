@@ -1,11 +1,11 @@
 import { createContext, $ } from '@builder.io/qwik';
 
-import type { GetUserLanguageFn, LoadTranslationFn, Translation, SpeakState, WriteLocaleFn, ReadLocaleFn, Locale, HandleMissingTranslationFn } from './types';
+import type { GetUserLanguageFn, GetTranslationFn, Translation, SpeakState, SetLocaleFn, GetLocaleFn, Locale, HandleMissingTranslationFn } from './types';
 import { isObject } from './utils';
 
 export const SpeakContext = createContext<SpeakState>('qwik.speak.state');
 
-export const loadTranslation$: LoadTranslationFn = $((language: string, asset: string | Translation) => {
+export const getTranslation$: GetTranslationFn = $((language: string, asset: string | Translation) => {
     return isObject(asset) ? (<Translation>asset)[language] : null;
 });
 
@@ -13,9 +13,9 @@ export const getUserLanguage$: GetUserLanguageFn = $(() => {
     return new Intl.DateTimeFormat().resolvedOptions().locale;
 });
 
-export const writeLocale$: WriteLocaleFn = $((locale: Locale) => { });
+export const setLocale$: SetLocaleFn = $((locale: Partial<Locale>) => { });
 
-export const readLocale$: ReadLocaleFn = $(() => {
+export const getLocale$: GetLocaleFn = $(() => {
     return null;
 });
 

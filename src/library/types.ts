@@ -36,7 +36,7 @@ export type LanguageFormat = 'language' | 'language-script' | 'language-region' 
  * 
  * Function passing across serializable boundaries must be done through QRLs
  */
-export type LoadTranslationFn = QRL<(language: string, asset: string | Translation) => ValueOrPromise<Translation>>;
+export type GetTranslationFn = QRL<(language: string, asset: string | Translation) => ValueOrPromise<Translation>>;
 
 /**
  * Must contain the logic to get the user language
@@ -46,25 +46,24 @@ export type GetUserLanguageFn = QRL<() => ValueOrPromise<string | null>>;
 /**
  * Must contain the logic to store the locale
  */
-export type WriteLocaleFn = QRL<(locale: Locale) => ValueOrPromise<void>>;
+export type SetLocaleFn = QRL<(locale: Partial<Locale>) => ValueOrPromise<void>>;
 
 /**
-* Must contain the logic to read the locale from the storage
+* Must contain the logic to get the locale from the storage
 */
-export type ReadLocaleFn = QRL<() => ValueOrPromise<Locale | null>>;
+export type GetLocaleFn = QRL<() => ValueOrPromise<Locale | null>>;
 
 /**
 * Must contain the logic to handle missing values
 */
 export type HandleMissingTranslationFn = QRL<(key: string, value?: string, params?: any) => ValueOrPromise<string | any>>;
 
-export type ConvertFn = (value: number, params: any) => ValueOrPromise<number>;
 
 export interface TranslateFn {
     /**
-     * Function to load translation data
+     * Function to get translation data
      */
-    loadTranslation$?: LoadTranslationFn;
+    getTranslation$?: GetTranslationFn;
     /**
      * Function to get user language
      */
@@ -72,11 +71,11 @@ export interface TranslateFn {
     /**
      * Function to store the locale
      */
-    writeLocale$?: WriteLocaleFn;
+    setLocale$?: SetLocaleFn;
     /**
-     * Function to read the locale from the storage
+     * Function to get the locale from the storage
      */
-    readLocale$?: ReadLocaleFn;
+    getLocale$?: GetLocaleFn;
     /**
      * Function to create an handler for missing values
      */
@@ -107,7 +106,7 @@ export interface SpeakConfig {
     /**
      * Assets to be loaded or translation data
      */
-    assets: string[] | Translation,
+    assets: string[] | Translation[],
 }
 
 /**

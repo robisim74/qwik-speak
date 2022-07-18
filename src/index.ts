@@ -6,22 +6,29 @@ export type {
     TranslateFn,
     SpeakConfig,
     SpeakState,
-} from './core/types';
+} from './library/types';
 export type {
-    LoadTranslationFn,
+    GetTranslationFn,
     GetUserLanguageFn,
-    WriteLocaleFn,
-    ReadLocaleFn,
-    HandleMissingTranslationFn,
-    ConvertFn
-} from './core/types';
-// Constants
-export { SpeakContext } from './core/constants';
+    SetLocaleFn,
+    GetLocaleFn,
+    HandleMissingTranslationFn
+} from './library/types';
 // Utils
-export { parseLanguage } from './core/utils';
+export { parseLanguage } from './library/utils';
 // Hooks
-export { useSpeak } from './core/use-speak';
-export { changeLocale } from './core/change-locale';
-export { translate } from './core/translate';
-export { formatNumber, convertNumber } from './core/format-number';
-export { formatDate } from './core/format-date';
+export { useSpeak } from './library/use-speak';
+export {
+    useLocale,
+    useTranslation,
+    useSpeakConfig,
+    useChangeLocale,
+    useTranslate,
+    useFormatNumber,
+    useFormatDate
+} from './library/use-functions';
+// Functions
+export { changeLocale } from './library/change-locale';
+export { translate } from './library/translate';
+export { formatNumber } from './library/format-number';
+export { formatDate } from './library/format-date';

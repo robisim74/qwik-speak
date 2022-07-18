@@ -15,7 +15,9 @@ export default defineConfig(() => {
       },
     },
     plugins: [
-      qwikCity(),
+      qwikCity({
+        routesDir: './src/app/routes',
+      }),
       qwikVite(/* VITE_QWIK */),
       /* VITE_PLUGINS */
     ],
