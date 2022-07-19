@@ -1,4 +1,5 @@
 import { useStore, useContextProvider, immutable, useMount$, useClientEffect$ } from '@builder.io/qwik';
+import { isServer } from '@builder.io/qwik/build';
 
 import type { SpeakConfig, TranslateFn, SpeakState } from './types';
 import { getUserLanguage$, handleMissingTranslation$, getTranslation$, getLocale$, SpeakContext, setLocale$ } from './constants';
@@ -46,9 +47,11 @@ export const useSpeak = (config: SpeakConfig, translateFn: TranslateFn = {}): Sp
         Object.assign(locale, userLocale);
 
         // Prevent Qwik from creating subscriptions
-        immutable(translation);
-        immutable(config);
-        immutable(translateFn)
+        if (isServer) {
+            immutable(translation);
+            immutable(config);
+            immutable(translateFn)
+        }
 
         console.debug('Qwik-speak: translation loaded');
     });

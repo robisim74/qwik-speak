@@ -56,7 +56,7 @@ export type GetLocaleFn = QRL<() => ValueOrPromise<Locale | null>>;
 /**
 * Must contain the logic to handle missing values
 */
-export type HandleMissingTranslationFn = QRL<(key: string, value?: string, params?: any) => ValueOrPromise<string | any>>;
+export type HandleMissingTranslationFn = QRL<(key: string, value?: string, params?: any) => string | any>;
 
 
 export interface TranslateFn {
