@@ -19,6 +19,6 @@ export const onGet: EndpointHandler = ({ request }) => {
 
 export const head: DocumentHead = () => {
     return {
-        title: 'Lazy',
+        title: 'Lazy'
     };
 };

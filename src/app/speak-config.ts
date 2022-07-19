@@ -12,18 +12,20 @@ export const getConfig = (): SpeakConfig => {
             { language: 'it-IT', currency: 'EUR', timeZone: 'Europe/Rome', units: { 'length': 'kilometer' } },
             { language: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles', units: { 'length': 'mile' } }
         ],
-        assets: []
+        assets: [
+            '/public/i18n/app' // Shared
+        ]
     };
 }
 
 // Custom translate functions
-export const getTranslateFn = (location: RouteLocation, headers: any): TranslateFn => {
+export const getTranslateFn = (loc: RouteLocation, headers: any): TranslateFn => {
     // Fetch translation data
     const getTranslation$: GetTranslationFn = $(async (language: string, asset: string | Translation) => {
         let url = '';
         // Absolute urls on server
         if (isServer) {
-            url = new URL(location.href).origin;
+            url = new URL(loc.href).origin;
         }
         url += `${asset}-${language}.json`;
         const data = await fetch(url);
@@ -69,3 +71,6 @@ export const getHeaders = (request: any) => {
         }
     };
 }
+
+export const getSsrEndpointResponse = (doc: any) =>
+    doc?._qwikUserCtx?.qcResponse || null;

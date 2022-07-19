@@ -3,21 +3,20 @@ import { useLocation } from '@builder.io/qwik-city';
 import { useSpeak } from '../../library/use-speak';
 
 import { Header } from '../components/header/header';
-import { getConfig, getTranslateFn } from '../speak-config';
+import { getConfig, getSsrEndpointResponse, getTranslateFn } from '../speak-config';
 
 
 export default component$(() => {
-    const location = useLocation();
-    const doc = useDocument() as any;
-    const endpointResponse = doc?._qwikUserCtx?.qcResponse;
+    const loc = useLocation();
+    const doc = useDocument();
+    const endpointResponse = getSsrEndpointResponse(doc);
 
     // Get configuration & add assets for the home page
     const config = getConfig();
-    config.assets = [
-        '/public/i18n/app', // Common
-        '/public/i18n/home' // Home
-    ]
-    const translateFn = getTranslateFn(location, endpointResponse?.headers);
+    config.assets = config.assets.concat([
+        '/public/i18n/home'
+    ]);
+    const translateFn = getTranslateFn(loc, endpointResponse?.headers);
 
     useSpeak(config, translateFn);
 
