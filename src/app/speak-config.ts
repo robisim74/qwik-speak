@@ -1,6 +1,7 @@
 import { $ } from "@builder.io/qwik";
-import { RouteLocation } from "@builder.io/qwik-city";
 import { isServer } from "@builder.io/qwik/build";
+import { RouteLocation } from "@builder.io/qwik-city";
+import axios from 'axios'; // Fetch can be used from nodejs 18
 import { GetLocaleFn, GetTranslationFn, GetUserLanguageFn, Locale, SetLocaleFn, SpeakConfig, TranslateFn, Translation } from "../library/types";
 
 // Default Speak config
@@ -28,14 +29,14 @@ export const getTranslateFn = (loc: RouteLocation, headers: any): TranslateFn =>
             url = new URL(loc.href).origin;
         }
         url += `${asset}-${language}.json`;
-        const data = await fetch(url);
-        return data.json();
+        const response = await axios.get(url);
+        return response.data;
     });
 
     // Get user language by accept-language header (on server)
     const getUserLanguage$: GetUserLanguageFn = $(() => {
-        if (!headers?.acceptLanguage) return null;
-        return headers.acceptLanguage.split(';')[0].split(',')[0];
+        if (!headers?.['acceptlanguage']) return null;
+        return headers['acceptlanguage'].split(';')[0].split(',')[0];
     });
 
     // Store locale in cookie (on client)
@@ -45,8 +46,8 @@ export const getTranslateFn = (loc: RouteLocation, headers: any): TranslateFn =>
 
     // Get locale from cookie (on server)
     const getLocale$: GetLocaleFn = $(() => {
-        if (!headers?.cookie) return null;
-        const result = new RegExp('(?:^|; )' + encodeURIComponent('locale') + '=([^;]*)').exec(headers.cookie);
+        if (!headers?.['cookie']) return null;
+        const result = new RegExp('(?:^|; )' + encodeURIComponent('locale') + '=([^;]*)').exec(headers['cookie']);
         return result ? JSON.parse(result[1]) : null;
     });
 
