@@ -30,7 +30,6 @@
     "@types/node": "latest",
     "@typescript-eslint/eslint-plugin": "5.30.6",
     "@typescript-eslint/parser": "5.30.6",
-    "axios": "^0.27.2",
     "eslint": "8.19.0",
     "eslint-plugin-qwik": "0.0.36",
     "jest": "^28.1.3",

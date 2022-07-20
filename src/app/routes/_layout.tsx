@@ -4,7 +4,7 @@ import { useSpeak } from '../../library/use-speak';
 
 import { Header } from '../components/header/header';
 import { getConfig, getSsrEndpointResponse, getTranslateFn } from '../speak-config';
-
+import { homeTranslation } from '../i18n';
 
 export default component$(() => {
     const loc = useLocation();
@@ -13,9 +13,8 @@ export default component$(() => {
 
     // Get configuration & add assets for the home page
     const config = getConfig();
-    config.assets = config.assets.concat([
-        '/public/i18n/home'
-    ]);
+    /* config.assets.push('/public/i18n/home'); */
+    config.assets.push(homeTranslation);
     const translateFn = getTranslateFn(loc, endpointResponse?.headers);
 
     useSpeak(config, translateFn);

@@ -106,7 +106,7 @@ export interface SpeakConfig {
     /**
      * Assets to be loaded or translation data
      */
-    assets: string[] | Translation[],
+    assets: Array<string | Translation>,
 }
 
 /**

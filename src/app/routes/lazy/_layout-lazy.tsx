@@ -4,6 +4,7 @@ import { useSpeak } from '../../../library/use-speak';
 
 import { Header } from '../../components/header/header';
 import { getConfig, getSsrEndpointResponse, getTranslateFn } from '../../speak-config';
+import { lazyTranslation } from '../../i18n';
 
 export default component$(() => {
     const loc = useLocation();
@@ -12,9 +13,8 @@ export default component$(() => {
 
     // Get configuration & add assets for the lazy page
     const config = getConfig();
-    config.assets = config.assets.concat([
-        '/public/i18n/lazy'
-    ]);
+    /* config.assets.push('/public/i18n/lazy'); */
+    config.assets.push(lazyTranslation);
     const translateFn = getTranslateFn(loc, endpointResponse?.headers);
 
     useSpeak(config, translateFn);

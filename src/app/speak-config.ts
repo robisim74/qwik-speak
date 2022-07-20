@@ -1,10 +1,10 @@
 import { $ } from "@builder.io/qwik";
 import { isServer } from "@builder.io/qwik/build";
 import { RouteLocation } from "@builder.io/qwik-city";
-import axios from 'axios'; // Fetch can be used from nodejs 18
 import { GetLocaleFn, GetTranslationFn, GetUserLanguageFn, Locale, SetLocaleFn, SpeakConfig, TranslateFn, Translation } from "../library/types";
+import { appTranslation } from "./i18n";
 
-// Default Speak config
+// Speak config
 export const getConfig = (): SpeakConfig => {
     return {
         languageFormat: 'language-region',
@@ -13,8 +13,11 @@ export const getConfig = (): SpeakConfig => {
             { language: 'it-IT', currency: 'EUR', timeZone: 'Europe/Rome', units: { 'length': 'kilometer' } },
             { language: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles', units: { 'length': 'mile' } }
         ],
-        assets: [
+        /* assets: [
             '/public/i18n/app' // Shared
+        ] */
+        assets: [
+            appTranslation // Shared
         ]
     };
 }
@@ -29,8 +32,8 @@ export const getTranslateFn = (loc: RouteLocation, headers: any): TranslateFn =>
             url = new URL(loc.href).origin;
         }
         url += `${asset}-${language}.json`;
-        const response = await axios.get(url);
-        return response.data;
+        const data = await fetch(url);
+        return data.json();
     });
 
     // Get user language by accept-language header (on server)
@@ -52,7 +55,7 @@ export const getTranslateFn = (loc: RouteLocation, headers: any): TranslateFn =>
     });
 
     return {
-        getTranslation$: getTranslation$,
+        /* getTranslation$: getTranslation$, */
         getUserLanguage$: getUserLanguage$,
         setLocale$: setLocale$,
         getLocale$: getLocale$
