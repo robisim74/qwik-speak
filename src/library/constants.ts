@@ -10,7 +10,7 @@ export const getTranslation$: GetTranslationFn = $((language: string, asset: str
 });
 
 export const getUserLanguage$: GetUserLanguageFn = $(() => {
-    return new Intl.DateTimeFormat().resolvedOptions().locale;
+    return null;
 });
 
 export const setLocale$: SetLocaleFn = $((locale: Partial<Locale>) => { });

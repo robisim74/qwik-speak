@@ -3,7 +3,7 @@ import { isServer } from '@builder.io/qwik/build';
 
 import type { SpeakConfig, TranslateFn, SpeakState } from './types';
 import { getUserLanguage$, handleMissingTranslation$, getTranslation$, getLocale$, SpeakContext, setLocale$ } from './constants';
-import { loadTranslation } from './utils';
+import { loadTranslation, parseLanguage, qDev } from './utils';
 
 export const useSpeak = (config: SpeakConfig, translateFn: TranslateFn = {}): SpeakState => {
     // Assign functions
@@ -24,7 +24,7 @@ export const useSpeak = (config: SpeakConfig, translateFn: TranslateFn = {}): Sp
 
     useContextProvider(SpeakContext, state);
 
-    // Will block the rendering of the app until callback resolves
+    // Will block the rendering until callback resolves
     useMount$(async () => {
         // Try to get locale from the storage
         let userLocale = await translateFn.getLocale$?.();
@@ -32,7 +32,7 @@ export const useSpeak = (config: SpeakConfig, translateFn: TranslateFn = {}): Sp
         // Try to get locale by user language
         if (!userLocale) {
             const userLanguage = await translateFn.getUserLanguage$?.();
-            userLocale = config.supportedLocales.find(x => x.language == userLanguage);
+            userLocale = config.supportedLocales.find(x => parseLanguage(x.language, config.languageFormat) == userLanguage);
         }
 
         // Use default locale
@@ -53,12 +53,18 @@ export const useSpeak = (config: SpeakConfig, translateFn: TranslateFn = {}): Sp
             immutable(translateFn)
         }
 
-        console.debug('Qwik-speak: translation loaded');
+        if (qDev) {
+            console.debug('Qwik Speak', '', 'Translation loaded');
+        }
     });
 
     useClientEffect$(async () => {
         // Store the locale
         await translateFn.setLocale$?.(locale);
+
+        if (qDev) {
+            console.debug('%cQwik Speak', 'background-color: #0093ee; color: #fff; padding: 2px 3px; border-radius: 2px; font-size: 0.8em;', state);
+        }
     });
 
     return state;

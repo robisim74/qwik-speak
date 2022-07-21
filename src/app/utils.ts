@@ -1,29 +1,9 @@
 import { $ } from "@builder.io/qwik";
 import { isServer } from "@builder.io/qwik/build";
 import { RouteLocation } from "@builder.io/qwik-city";
-import { GetLocaleFn, GetTranslationFn, GetUserLanguageFn, Locale, SetLocaleFn, SpeakConfig, TranslateFn, Translation } from "../library/types";
-import { appTranslation } from "./i18n";
+import { GetLocaleFn, GetTranslationFn, GetUserLanguageFn, Locale, SetLocaleFn, TranslateFn, Translation } from "../library/types";
 
-// Speak config
-export const getConfig = (): SpeakConfig => {
-    return {
-        languageFormat: 'language-region',
-        defaultLocale: { language: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles', units: { 'length': 'mile' } },
-        supportedLocales: [
-            { language: 'it-IT', currency: 'EUR', timeZone: 'Europe/Rome', units: { 'length': 'kilometer' } },
-            { language: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles', units: { 'length': 'mile' } }
-        ],
-        /* assets: [
-            '/public/i18n/app' // Shared
-        ] */
-        assets: [
-            appTranslation // Shared
-        ]
-    };
-}
-
-// Custom translate functions
-export const getTranslateFn = (loc: RouteLocation, headers: any): TranslateFn => {
+export const getTranslateFn = (loc: RouteLocation, doc: any): TranslateFn => {
     // Fetch translation data
     const getTranslation$: GetTranslationFn = $(async (language: string, asset: string | Translation) => {
         let url = '';
@@ -32,12 +12,14 @@ export const getTranslateFn = (loc: RouteLocation, headers: any): TranslateFn =>
             url = new URL(loc.href).origin;
         }
         url += `${asset}-${language}.json`;
-        const data = await fetch(url);
+        const data = await fetch(url); // fetch requires at least nodejs 18
         return data.json();
     });
 
     // Get user language by accept-language header (on server)
     const getUserLanguage$: GetUserLanguageFn = $(() => {
+        const headers = getSsrHeadersResponse(doc);
+
         if (!headers?.['acceptlanguage']) return null;
         return headers['acceptlanguage'].split(';')[0].split(',')[0];
     });
@@ -49,6 +31,8 @@ export const getTranslateFn = (loc: RouteLocation, headers: any): TranslateFn =>
 
     // Get locale from cookie (on server)
     const getLocale$: GetLocaleFn = $(() => {
+        const headers = getSsrHeadersResponse(doc);
+
         if (!headers?.['cookie']) return null;
         const result = new RegExp('(?:^|; )' + encodeURIComponent('locale') + '=([^;]*)').exec(headers['cookie']);
         return result ? JSON.parse(result[1]) : null;
@@ -76,5 +60,6 @@ export const getHeaders = (request: any) => {
     };
 }
 
-export const getSsrEndpointResponse = (doc: any) =>
-    doc?._qwikUserCtx?.qcResponse || null;
+export const getSsrHeadersResponse = (doc: any) =>
+    doc?._qwikUserCtx?.qcResponse?.headers || null;
+

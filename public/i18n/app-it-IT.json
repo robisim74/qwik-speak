@@ -2,6 +2,8 @@
     "app": {
         "title": "Qwik Speak",
         "subtitle": "Fai parlare alla tua app Qwik qualsiasi lingua",
-        "changeLocale": "Cambia località"
+        "changeLocale": "Cambia località",
+        "home": "Home",
+        "page": "Pagina"
     }
 }

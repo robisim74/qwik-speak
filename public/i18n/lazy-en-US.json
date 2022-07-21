@@ -1,5 +1,5 @@
 {
-    "lazy": {
-        "subtitle": "I'm a lazy component"
+    "page": {
+        "subtitle": "I'm another page"
     }
 }

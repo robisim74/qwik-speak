@@ -1,10 +1,10 @@
-import { component$, Host, Slot, $, useDocument } from '@builder.io/qwik';
+import { component$, Host, Slot, useDocument } from '@builder.io/qwik';
 import { useLocation } from '@builder.io/qwik-city';
 import { SpeakConfig } from '../../library/types';
 import { useSpeak } from '../../library/use-speak';
 
 import { Header } from '../components/header/header';
-import { appTranslation, homeTranslation } from '../i18n';
+import { appTranslation, lazyTranslation } from '../i18n';
 import { getTranslateFn } from '../utils';
 
 export default component$(() => {
@@ -24,11 +24,11 @@ export default component$(() => {
         ],
         /* assets: [
             '/public/i18n/app', // Shared
-            '/public/i18n/home'
+            '/public/i18n/lazy'
         ] */
         assets: [
             appTranslation, // Shared
-            homeTranslation
+            lazyTranslation
         ]
     };
 

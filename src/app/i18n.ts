@@ -5,14 +5,18 @@ export const appTranslation: Translation = {
         "app": {
             "title": "Qwik Speak",
             "subtitle": "Make your Qwik app speak any language",
-            "changeLocale": "Change locale"
+            "changeLocale": "Change locale",
+            "home": "Home",
+            "page": "Page"
         }
     },
     "it-IT": {
         "app": {
             "title": "Qwik Speak",
             "subtitle": "Fai parlare alla tua app Qwik qualsiasi lingua",
-            "changeLocale": "Cambia località"
+            "changeLocale": "Cambia località",
+            "home": "Home",
+            "page": "Pagina"
         }
     }
 };
@@ -34,13 +38,13 @@ export const homeTranslation: Translation = {
 
 export const lazyTranslation: Translation = {
     "en-US": {
-        "lazy": {
-            "subtitle": "I'm a lazy component"
+        "page": {
+            "subtitle": "I'm another page"
         }
     },
     "it-IT": {
-        "lazy": {
-            "subtitle": "Sono un componente pigro"
+        "page": {
+            "subtitle": "Io sono un'altra pagina"
         }
     }
 };

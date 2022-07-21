@@ -1,6 +1,6 @@
 {
   "name": "qwik-speak",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "description": "Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps",
   "scripts": {
     "build": "npm run build.lib && npm run build.types",
@@ -23,8 +23,8 @@
     "@builder.io/qwik": ">=0.0.37"
   },
   "devDependencies": {
-    "@builder.io/qwik": "0.0.37",
-    "@builder.io/qwik-city": "0.0.22",
+    "@builder.io/qwik": "0.0.38",
+    "@builder.io/qwik-city": "0.0.24",
     "@types/eslint": "8.4.5",
     "@types/jest": "^28.1.6",
     "@types/node": "latest",
@@ -62,6 +62,7 @@
   "keywords": [
     "qwik",
     "i18n",
+    "intl",
     "translate"
   ],
   "license": "MIT",

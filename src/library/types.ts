@@ -33,8 +33,6 @@ export type LanguageFormat = 'language' | 'language-script' | 'language-region' 
 
 /**
  * Must contain the logic to get translation data
- * 
- * Function passing across serializable boundaries must be done through QRLs
  */
 export type GetTranslationFn = QRL<(language: string, asset: string | Translation) => ValueOrPromise<Translation>>;
 

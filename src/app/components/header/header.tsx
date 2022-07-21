@@ -2,6 +2,7 @@ import { component$, Host, useStyles$ } from '@builder.io/qwik';
 import { useLocation } from '@builder.io/qwik-city';
 
 import { ChangeLocale } from './change-locale';
+import { translate as t } from '../../../library/translate';
 
 import styles from './header.css?inline';
 
@@ -18,10 +19,10 @@ export const Header = component$(
                 </section>
                 <nav>
                     <a href="/" class={{ active: pathname === '/' }}>
-                        Home
+                        {t('app.home')}
                     </a>
-                    <a href="/lazy" class={{ active: pathname === '/lazy' }}>
-                        Lazy
+                    <a href="/page" class={{ active: pathname === '/page' }}>
+                        {t('app.page')}
                     </a>
                 </nav>
                 <ChangeLocale />

@@ -150,3 +150,5 @@ export const toDate = (value: any): Date => {
     }
     return date;
 }
+
+export const qDev = (globalThis as any).qDev !== false;

@@ -5,7 +5,7 @@ import { formatDate as fd } from '../../library/format-date';
 import { formatNumber as fn } from '../../library/format-number';
 import { useLocale, useTranslate } from '../../library/use-functions';
 
-import { getHeaders } from '../speak-config';
+import { getHeaders } from '../utils';
 
 export default component$(() => {
     const locale = useLocale();
