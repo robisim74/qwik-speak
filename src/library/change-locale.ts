@@ -7,12 +7,13 @@ import { loadTranslation, qDev } from './utils';
  * @param ctx 
  */
 export const changeLocale = async (changedLocale: Locale, ctx: SpeakState): Promise<void> => {
-    const { locale, translateFn } = ctx;
+    const { locale, translation, translateFn } = ctx;
 
     // Load translation data
-    await loadTranslation(changedLocale, ctx);
+    const newTranslation = await loadTranslation(changedLocale, ctx);
 
-    // Release locale & rerendering components
+    // Update state
+    Object.assign(translation, newTranslation);
     Object.assign(locale, changedLocale);
 
     // Store the locale

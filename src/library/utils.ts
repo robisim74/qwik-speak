@@ -51,26 +51,25 @@ export const mergeDeep = (target: Translation, source: Translation): Translation
 }
 
 export const addData = (translation: Translation, data: Translation, language: string): void => {
-    if (!translation[language]) {
-        translation[language] = {};
-    }
-    translation[language] = mergeDeep(translation[language], data);
+    translation[language] = translation[language] !== undefined
+        ? mergeDeep(translation[language], data)
+        : data;
 }
 
-export const loadTranslation = async (locale: Locale, ctx: SpeakState): Promise<void> => {
-    const { translation, config, translateFn } = ctx;
-
+export const loadTranslation = async (locale: Locale, ctx: SpeakState): Promise<Translation> => {
+    const { config, translateFn } = ctx;
     const language = parseLanguage(locale.language, config.languageFormat);
 
     const tasks = config.assets.map(asset => translateFn.getTranslation$?.(language, asset));
-
     const results = await Promise.all(tasks);
 
+    const newTranslation: Translation = {};
     results.forEach(data => {
         if (data) {
-            addData(translation, data, language)
+            addData(newTranslation, data, language)
         }
     });
+    return newTranslation;
 }
 
 export const speakError = (type: Function, value: string): Error => {

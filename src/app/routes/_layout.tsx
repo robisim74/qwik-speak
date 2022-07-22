@@ -1,36 +1,18 @@
 import { component$, Host, Slot, $, useDocument } from '@builder.io/qwik';
 import { useLocation } from '@builder.io/qwik-city';
-import { SpeakConfig } from '../../library/types';
 import { useSpeak } from '../../library/use-speak';
 
 import { Header } from '../components/header/header';
-import { appTranslation, homeTranslation } from '../i18n';
-import { getTranslateFn } from '../utils';
+import { homeTranslation } from '../i18n';
+import { getConfig, getTranslateFn } from '../speak-config';
 
 export default component$(() => {
     const loc = useLocation();
     const doc = useDocument();
 
-    /**
-     * Create a new instance of config with its own assets,
-     * don't modify a reference, otherwise Qwik keeps it across states
-     */
-    const config: SpeakConfig = {
-        languageFormat: 'language-region',
-        defaultLocale: { language: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles', units: { 'length': 'mile' } },
-        supportedLocales: [
-            { language: 'it-IT', currency: 'EUR', timeZone: 'Europe/Rome', units: { 'length': 'kilometer' } },
-            { language: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles', units: { 'length': 'mile' } }
-        ],
-        /* assets: [
-            '/public/i18n/app', // Shared
-            '/public/i18n/home'
-        ] */
-        assets: [
-            appTranslation, // Shared
-            homeTranslation
-        ]
-    };
+    const config = getConfig();
+    /* config.assets.push(homeTranslation); */
+    config.assets.push('/public/i18n/home');
 
     const translateFn = getTranslateFn(loc, doc);
 

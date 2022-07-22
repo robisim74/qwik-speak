@@ -41,9 +41,10 @@ export const useSpeak = (config: SpeakConfig, translateFn: TranslateFn = {}): Sp
         }
 
         // Load translation data
-        await loadTranslation(userLocale, state);
+        const newTranslation = await loadTranslation(userLocale, state);
 
-        // Set locale
+        // Update state
+        Object.assign(translation, newTranslation);
         Object.assign(locale, userLocale);
 
         // Prevent Qwik from creating subscriptions

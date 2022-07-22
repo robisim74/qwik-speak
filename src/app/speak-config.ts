@@ -1,7 +1,26 @@
-import { $ } from "@builder.io/qwik";
-import { isServer } from "@builder.io/qwik/build";
-import { RouteLocation } from "@builder.io/qwik-city";
-import { GetLocaleFn, GetTranslationFn, GetUserLanguageFn, Locale, SetLocaleFn, TranslateFn, Translation } from "../library/types";
+import { $ } from '@builder.io/qwik';
+import { isServer } from '@builder.io/qwik/build';
+import { RouteLocation } from '@builder.io/qwik-city';
+import { GetLocaleFn, GetTranslationFn, GetUserLanguageFn, Locale, SetLocaleFn, SpeakConfig, TranslateFn, Translation } from '../library/types';
+
+import { appTranslation } from './i18n';
+
+export const getConfig = (): SpeakConfig => {
+    return {
+        languageFormat: 'language-region',
+        defaultLocale: { language: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles', units: { 'length': 'mile' } },
+        supportedLocales: [
+            { language: 'it-IT', currency: 'EUR', timeZone: 'Europe/Rome', units: { 'length': 'kilometer' } },
+            { language: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles', units: { 'length': 'mile' } }
+        ],
+        assets: [
+            '/public/i18n/app', // Shared
+        ]
+        /* assets: [
+            appTranslation, // Shared
+        ] */
+    };
+};
 
 export const getTranslateFn = (loc: RouteLocation, doc: any): TranslateFn => {
     // Fetch translation data
@@ -10,9 +29,13 @@ export const getTranslateFn = (loc: RouteLocation, doc: any): TranslateFn => {
         // Absolute urls on server
         if (isServer) {
             url = new URL(loc.href).origin;
+            url += `${asset}-${language}.json`;
+            const { default: nodeFetch } = await import('node-fetch');
+            const data = await nodeFetch(url); // fetch requires at least nodejs 18
+            return data.json();
         }
         url += `${asset}-${language}.json`;
-        const data = await fetch(url); // fetch requires at least nodejs 18
+        const data = await fetch(url);
         return data.json();
     });
 
@@ -39,7 +62,7 @@ export const getTranslateFn = (loc: RouteLocation, doc: any): TranslateFn => {
     });
 
     return {
-        /* getTranslation$: getTranslation$, */
+        getTranslation$: getTranslation$,
         getUserLanguage$: getUserLanguage$,
         setLocale$: setLocale$,
         getLocale$: getLocale$
