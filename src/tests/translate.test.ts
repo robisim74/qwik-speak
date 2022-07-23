@@ -16,7 +16,7 @@ describe('translate function', () => {
         expect(value).toEqual({ "test": "Test", "testParams": "Test params" });
     });
     test('translate with language extensions', async () => {
-        await changeLocale({ language: 'en-US-u-ca-gregory-nu-latn' }, ctx);
+        ctx.locale.language = 'en-US-u-ca-gregory-nu-latn';
         let value = t('test', {}, ctx);
         expect(value).toBe('Test');
     });

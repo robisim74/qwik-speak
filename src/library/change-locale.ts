@@ -1,5 +1,5 @@
 import type { Locale, SpeakState } from './types';
-import { loadTranslation, qDev } from './utils';
+import { loadTranslation, parseLanguage, qDev } from './utils';
 
 /**
  * Change locale at runtime
@@ -10,13 +10,15 @@ export const changeLocale = async (newLocale: Locale, ctx: SpeakState): Promise<
     const { locale, translation, config, translateFn } = ctx;
     if (!locale.language) return;
 
+    const language = parseLanguage(locale.language, config.languageFormat);
+
     // Load translation data
     const newTranslation = await loadTranslation(newLocale, ctx);
 
     // Update state
-    delete translation[locale.language]; // Delete old translation
+    delete translation[language]; // Delete old translation
     Object.assign(translation, newTranslation);
-    Object.assign(locale, newLocale); // Subscribe
+    Object.assign(locale, newLocale);
 
     // Store the locale
     await translateFn.setLocale$?.(newLocale);
