@@ -36,7 +36,7 @@ export const homeTranslation: Translation = {
     }
 };
 
-export const lazyTranslation: Translation = {
+export const pageTranslation: Translation = {
     "en-US": {
         "page": {
             "subtitle": "I'm another page"

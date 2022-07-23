@@ -18,6 +18,7 @@ export type {
 export { parseLanguage } from './library/utils';
 // Hooks
 export { useSpeak } from './library/use-speak';
+export { useAddSpeak } from './library/use-add-speak';
 export {
     useLocale,
     useTranslation,

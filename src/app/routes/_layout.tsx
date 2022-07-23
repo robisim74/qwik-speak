@@ -3,7 +3,6 @@ import { useLocation } from '@builder.io/qwik-city';
 import { useSpeak } from '../../library/use-speak';
 
 import { Header } from '../components/header/header';
-import { homeTranslation } from '../i18n';
 import { getConfig, getTranslateFn } from '../speak-config';
 
 export default component$(() => {
@@ -11,12 +10,9 @@ export default component$(() => {
     const doc = useDocument();
 
     const config = getConfig();
-    /* config.assets.push(homeTranslation); */
-    config.assets.push('/public/i18n/home');
-
     const translateFn = getTranslateFn(loc, doc);
 
-    useSpeak(config, translateFn);
+    useSpeak(config, translateFn); // Speak context will be available in nested components
 
     return (
         <Host>

@@ -5,6 +5,12 @@ import type { SpeakConfig, TranslateFn, SpeakState } from './types';
 import { getUserLanguage$, handleMissingTranslation$, getTranslation$, getLocale$, SpeakContext, setLocale$ } from './constants';
 import { loadTranslation, parseLanguage, qDev } from './utils';
 
+/**
+ * Creates a new Speak context, gets the locale & loads translation data
+ * @param config Speak configuration
+ * @param translateFn Translation functions to be used
+ * @returns The context
+ */
 export const useSpeak = (config: SpeakConfig, translateFn: TranslateFn = {}): SpeakState => {
     // Assign functions
     translateFn.getTranslation$ = translateFn.getTranslation$ ?? getTranslation$;

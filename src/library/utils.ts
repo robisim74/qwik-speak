@@ -1,12 +1,11 @@
 import type { Translation, SpeakState, LanguageFormat, Locale } from './types';
 
-export const isObject = (item: any): boolean => {
-    return typeof item === 'object' && !Array.isArray(item);
-}
+export const isObject = (item: any): boolean =>
+    typeof item === 'object' && !Array.isArray(item);
 
-export const isDate = (value: any): value is Date => {
-    return value instanceof Date && !isNaN(value.valueOf());
-}
+
+export const isDate = (value: any): value is Date =>
+    value instanceof Date && !isNaN(value.valueOf());
 
 /**
  * Converts a date in ISO 8601 to a Date.
@@ -56,11 +55,15 @@ export const addData = (translation: Translation, data: Translation, language: s
         : data;
 }
 
-export const loadTranslation = async (locale: Locale, ctx: SpeakState): Promise<Translation> => {
+export const loadTranslation = async (locale: Partial<Locale>, ctx: SpeakState, assets?: Array<string | Translation>): Promise<Translation> => {
     const { config, translateFn } = ctx;
+    if (!locale.language) return {};
+
     const language = parseLanguage(locale.language, config.languageFormat);
 
-    const tasks = config.assets.map(asset => translateFn.getTranslation$?.(language, asset));
+    assets = assets ?? config.assets;
+    // Get translation
+    const tasks = assets.map(asset => translateFn.getTranslation$?.(language, asset));
     const results = await Promise.all(tasks);
 
     const newTranslation: Translation = {};
