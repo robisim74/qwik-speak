@@ -6,15 +6,16 @@ test.beforeEach(async ({ page }) => {
 
 test.describe('Page', () => {
     test('translate', async ({ page }) => {
-        await expect(page.locator('body')).toContainText('Qwik Speak');
-        await expect(page.locator('body')).toContainText("I'm another page");
+        await expect(page.locator('main')).toContainText('Qwik Speak');
+        await expect(page.locator('main')).toContainText("I'm another page");
     });
 
     test('change language', async ({ page }) => {
         const change = page.locator('text=it-IT');
         await change.click();
+        await page.waitForLoadState('networkidle');
 
-        await expect(page.locator('body')).toContainText('Qwik Speak');
-        await expect(page.locator('body')).toContainText("Io sono un'altra pagina");
+        await expect(page.locator('main')).toContainText('Qwik Speak');
+        await expect(page.locator('main')).toContainText("Io sono un'altra pagina");
     });
 });

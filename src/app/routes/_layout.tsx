@@ -12,7 +12,7 @@ export default component$(() => {
     const config = getConfig();
     const translateFn = getTranslateFn(loc, doc);
 
-    useSpeak(config, translateFn); // Speak context will be available in nested components
+    useSpeak(config, translateFn); // Speak context will be available in child components
 
     return (
         <Host>

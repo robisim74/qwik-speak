@@ -31,7 +31,7 @@ export const Home = component$(() => {
 
 export default component$(() => {
     /* useAddSpeak([homeTranslation]); */
-    useAddSpeak(['/public/i18n/home']); // Translation will be available in nested components
+    useAddSpeak(['/public/i18n/home']); // Translation will be available in child components
 
     return (
         <Host>

@@ -43,8 +43,8 @@ export const getTranslateFn = (loc: RouteLocation, doc: any): TranslateFn => {
     const getUserLanguage$: GetUserLanguageFn = $(() => {
         const headers = getSsrHeadersResponse(doc);
 
-        if (!headers?.['acceptlanguage']) return null;
-        return headers['acceptlanguage'].split(';')[0].split(',')[0];
+        if (!headers?.acceptLanguage) return null;
+        return headers.acceptLanguage.split(';')[0].split(',')[0];
     });
 
     // Store locale in cookie (on client)
@@ -56,7 +56,7 @@ export const getTranslateFn = (loc: RouteLocation, doc: any): TranslateFn => {
     const getLocale$: GetLocaleFn = $(() => {
         const headers = getSsrHeadersResponse(doc);
 
-        if (!headers?.['cookie']) return null;
+        if (!headers?.cookie) return null;
         const result = new RegExp('(?:^|; )' + encodeURIComponent('locale') + '=([^;]*)').exec(headers['cookie']);
         return result ? JSON.parse(result[1]) : null;
     });
@@ -84,5 +84,5 @@ export const getHeaders = (request: any) => {
 }
 
 export const getSsrHeadersResponse = (doc: any) =>
-    doc?._qwikUserCtx?.qcResponse?.headers || null;
+    doc?._qwikUserCtx?.qcResponse?.body?.headers || null;
 
