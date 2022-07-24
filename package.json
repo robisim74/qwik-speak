@@ -17,6 +17,7 @@
     "start": "npm run dev",
     "test": "jest",
     "test.watch": "jest --watch",
+    "test.e2e": "playwright test",
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
@@ -25,6 +26,7 @@
   "devDependencies": {
     "@builder.io/qwik": "0.0.38",
     "@builder.io/qwik-city": "0.0.24",
+    "@playwright/test": "^1.24.0",
     "@types/eslint": "8.4.5",
     "@types/jest": "^28.1.6",
     "@types/node": "latest",
