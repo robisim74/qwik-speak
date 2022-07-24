@@ -15,8 +15,8 @@
     "lint": "eslint \"src/**/*.ts*\"",
     "release": "np",
     "start": "npm run dev",
-    "test": "jest",
-    "test.watch": "jest --watch",
+    "test": "jest ./src/tests",
+    "test.watch": "jest ./src/tests --watch",
     "test.e2e": "playwright test",
     "typecheck": "tsc --noEmit"
   },
