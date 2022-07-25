@@ -30,6 +30,7 @@ stateDiagram-v2
 ```
 
 ## Usage
+<!---
 ```mermaid
 C4Container
     Container_Boundary(a, "App") {
@@ -47,6 +48,9 @@ C4Container
             }
     }
 ```
+-->
+![Usage](images\usage.svg)
+
 ### Getting the translation
 ```jsx
 import { translate as t } from 'qwik-speak';
