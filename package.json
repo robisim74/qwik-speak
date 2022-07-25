@@ -46,8 +46,8 @@
   },
   "exports": {
     ".": {
-      "import": "./lib/index.es.qwik.js",
-      "require": "./lib/index.cjs.qwik.js"
+      "import": "./lib/index.qwik.mjs",
+      "require": "./lib/index.qwik.cjs"
     }
   },
   "files": [
@@ -68,10 +68,11 @@
     "translate"
   ],
   "license": "MIT",
-  "main": "./lib/index.cjs.qwik.js",
-  "module": "./lib/index.es.qwik.js",
+  "main": "./lib/index.qwik.cjs",
+  "module": "./lib/index.qwik.mjs",
   "private": false,
-  "qwik": "./lib/index.es.qwik.js",
+  "qwik": "./lib/index.qwik.mjs",
+  "type": "module",
   "types": "./lib/types/index.d.ts",
   "jest": {
     "preset": "ts-jest/presets/default-esm",

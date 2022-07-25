@@ -8,6 +8,7 @@
     "src/root.tsx",
     "src/entry.*.tsx",
     "src/app/**",
-    "src/tests/**"
+    "src/tests/**",
+    "src/e2e/**"
   ]
 }
