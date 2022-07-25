@@ -13,11 +13,12 @@
     "dev.debug": "node --inspect-brk node_modules/vite/bin/vite.js --mode ssr",
     "dev.ssr": "node --inspect node_modules/vite/bin/vite.js --mode ssr",
     "lint": "eslint \"src/**/*.ts*\"",
-    "release": "np",
+    "release": "np --test-script=test.all",
     "start": "npm run dev",
     "test": "jest ./src/tests",
     "test.watch": "jest ./src/tests --watch",
     "test.e2e": "playwright test",
+    "test.all": "npm test && npm run test.e2e",
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
