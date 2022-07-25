@@ -1,12 +1,12 @@
 import { createContext, $ } from '@builder.io/qwik';
 
 import type { GetUserLanguageFn, GetTranslationFn, Translation, SpeakState, SetLocaleFn, GetLocaleFn, Locale, HandleMissingTranslationFn } from './types';
-import { isObject } from './utils';
+import { clone, isObject } from './utils';
 
 export const SpeakContext = createContext<SpeakState>('qwik.speak.state');
 
 export const getTranslation$: GetTranslationFn = $((language: string, asset: string | Translation) => {
-    return isObject(asset) ? (<Translation>asset)[language] : null;
+    return isObject(asset) ? clone((<Translation>asset)[language]) : null;
 });
 
 export const getUserLanguage$: GetUserLanguageFn = $(() => {

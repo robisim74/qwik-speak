@@ -7,6 +7,9 @@ export const isObject = (item: any): boolean =>
 export const isDate = (value: any): value is Date =>
     value instanceof Date && !isNaN(value.valueOf());
 
+export const clone = <T>(obj: any) =>
+    JSON.parse(JSON.stringify(obj));
+
 /**
  * Converts a date in ISO 8601 to a Date.
  */
