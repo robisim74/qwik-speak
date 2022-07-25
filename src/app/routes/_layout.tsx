@@ -1,4 +1,4 @@
-import { component$, Host, Slot, $, useDocument } from '@builder.io/qwik';
+import { component$, Host, Slot, useDocument } from '@builder.io/qwik';
 import { useLocation } from '@builder.io/qwik-city';
 import { useSpeak } from '../../library/use-speak';
 

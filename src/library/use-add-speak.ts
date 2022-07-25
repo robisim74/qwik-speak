@@ -26,7 +26,7 @@ export const useAddSpeak = (assets: Array<string | Translation>, ctx?: SpeakStat
 
         // Merge data
         const data = mergeDeep(translation[language], newTranslation[language]);
-        // Merge assets
+        // Concat assets
         const loadedAssets = config.assets.concat(assets);
 
         // Update state
