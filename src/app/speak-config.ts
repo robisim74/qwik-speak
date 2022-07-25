@@ -14,10 +14,10 @@ export const getConfig = (): SpeakConfig => {
             { language: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles', units: { 'length': 'mile' } }
         ],
         assets: [
-            '/public/i18n/app', // Shared
+            appTranslation, // Shared
         ]
         /* assets: [
-            appTranslation, // Shared
+            '/public/i18n/app', // Shared
         ] */
     };
 };
@@ -29,10 +29,6 @@ export const getTranslateFn = (loc: RouteLocation, doc: any): TranslateFn => {
         // Absolute urls on server
         if (isServer) {
             url = new URL(loc.href).origin;
-            url += `${asset}-${language}.json`;
-            const { default: nodeFetch } = await import('node-fetch');
-            const data = await nodeFetch(url); // fetch requires at least nodejs 18
-            return data.json();
         }
         url += `${asset}-${language}.json`;
         const data = await fetch(url);
@@ -62,7 +58,7 @@ export const getTranslateFn = (loc: RouteLocation, doc: any): TranslateFn => {
     });
 
     return {
-        getTranslation$: getTranslation$,
+        /* getTranslation$: getTranslation$, */
         getUserLanguage$: getUserLanguage$,
         setLocale$: setLocale$,
         getLocale$: getLocale$

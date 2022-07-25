@@ -27,7 +27,7 @@ export const isoStringToDate = (match: RegExpMatchArray): Date => {
     const ms = Math.round(parseFloat('0.' + (match[7] || 0)) * 1000);
     timeSetter.call(date, h, m, s, ms);
     return date;
-}
+};
 
 export const mergeDeep = (target: Translation, source: Translation): Translation => {
     const output = Object.assign({}, target);
@@ -47,13 +47,13 @@ export const mergeDeep = (target: Translation, source: Translation): Translation
     }
 
     return output;
-}
+};
 
 export const addData = (translation: Translation, data: Translation, language: string): void => {
     translation[language] = translation[language] !== undefined
         ? mergeDeep(translation[language], data)
         : data;
-}
+};
 
 export const loadTranslation = async (locale: Partial<Locale>, ctx: SpeakState, assets?: Array<string | Translation>): Promise<Translation> => {
     const { config, translateFn } = ctx;
@@ -73,16 +73,16 @@ export const loadTranslation = async (locale: Partial<Locale>, ctx: SpeakState, 
         }
     });
     return newTranslation;
-}
+};
 
 export const speakError = (type: Function, value: string): Error => {
     return new Error(`Qwik Speak (${type.name}): ${value}`);
-}
+};
 
 export const validateLanguage = (language: string): boolean => {
     const regExp = new RegExp(/^([a-z]{2,3})(-[A-Z][a-z]{3})?(-[A-Z]{2})?(-u.+)?$/);
     return regExp.test(language);
-}
+};
 
 export const parseLanguage = (language: string, format: LanguageFormat): string => {
     if (!validateLanguage(language)) throw speakError(parseLanguage, 'Invalid language');
@@ -98,7 +98,7 @@ export const parseLanguage = (language: string, format: LanguageFormat): string 
         case 'language-script-region':
             return LANGUAGE + SCRIPT + REGION;
     }
-}
+};
 
 export const getValue = (key: string, data: Translation, keySeparator = '.'): string | any => {
     if (data) {
@@ -108,7 +108,7 @@ export const getValue = (key: string, data: Translation, keySeparator = '.'): st
         return data[key] != null ? data[key] : null;
     }
     return null;
-}
+};
 
 export const handleParams = (value: string, params: any): string => {
     const replacedValue = value.replace(/{{\s?([^{}\s]*)\s?}}/g, (substring: string, parsedKey: string) => {
@@ -116,12 +116,12 @@ export const handleParams = (value: string, params: any): string => {
         return replacer !== undefined ? replacer : substring;
     });
     return replacedValue;
-}
+};
 
 export const toNumber = (value: any): number => {
     const parsedValue = typeof value === 'string' && !isNaN(+value - parseFloat(value)) ? +value : value;
     return parsedValue;
-}
+};
 
 export const toDate = (value: any): Date => {
     if (isDate(value)) {
@@ -151,6 +151,6 @@ export const toDate = (value: any): Date => {
         throw speakError(toDate, 'Invalid date');
     }
     return date;
-}
+};
 
 export const qDev = (globalThis as any).qDev !== false;

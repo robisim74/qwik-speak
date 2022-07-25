@@ -15,8 +15,8 @@ export const SamplePage = component$(() => {
 });
 
 export default component$(() => {
-    /* useAddSpeak([pageTranslation]); */
-    useAddSpeak(['/public/i18n/page']); // Translation will be available in child components
+    useAddSpeak([pageTranslation]); // Translation will be available in child components
+    /* useAddSpeak(['/public/i18n/page']); */
 
     return (
         <Host>

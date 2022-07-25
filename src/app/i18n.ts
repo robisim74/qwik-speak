@@ -4,7 +4,7 @@ export const appTranslation: Translation = {
     "en-US": {
         "app": {
             "title": "Qwik Speak",
-            "subtitle": "Make your Qwik app speak any language",
+            "subtitle": "Translate your Qwik apps into any language",
             "changeLocale": "Change locale",
             "home": "Home",
             "page": "Page"
@@ -13,7 +13,7 @@ export const appTranslation: Translation = {
     "it-IT": {
         "app": {
             "title": "Qwik Speak",
-            "subtitle": "Fai parlare alla tua app Qwik qualsiasi lingua",
+            "subtitle": "Traduci le tue app Qwik in qualsiasi lingua",
             "changeLocale": "Cambia località",
             "home": "Home",
             "page": "Pagina"
