@@ -6,10 +6,10 @@ import { useAddSpeak } from '../../library/use-add-speak';
 import { getHeaders } from '../speak-config';
 import { pageTranslation } from '../i18n';
 
-export const SamplePage = component$(() => {
+export const Page = component$(() => {
     return (
         <>
-            <h3>{t('page.subtitle')}</h3>
+            <h3>{t('page.title')}</h3>
         </>
     );
 });
@@ -21,8 +21,9 @@ export default component$(() => {
     return (
         <Host>
             <h1>{t('app.title')}</h1>
+            <h3>{t('app.subtitle')}</h3>
 
-            <SamplePage />
+            <Page />
         </Host>
     );
 });

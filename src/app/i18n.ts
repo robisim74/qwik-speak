@@ -39,12 +39,12 @@ export const homeTranslation: Translation = {
 export const pageTranslation: Translation = {
     "en-US": {
         "page": {
-            "subtitle": "I'm another page"
+            "title": "I'm another page"
         }
     },
     "it-IT": {
         "page": {
-            "subtitle": "Io sono un'altra pagina"
+            "title": "Io sono un'altra pagina"
         }
     }
 };

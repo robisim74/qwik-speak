@@ -21,7 +21,7 @@
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
-    "@builder.io/qwik": ">=0.0.37"
+    "@builder.io/qwik": ">=0.0.38"
   },
   "devDependencies": {
     "@builder.io/qwik": "0.0.38",
