@@ -49,7 +49,7 @@ C4Container
     }
 ```
 -->
-![Usage](images\usage.svg)
+![Usage](images/usage.svg)
 
 ### Getting the translation
 ```jsx
