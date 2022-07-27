@@ -3,7 +3,7 @@ import { DocumentHead, EndpointHandler } from '@builder.io/qwik-city';
 import { translate as t } from '../../library/translate';
 import { useAddSpeak } from '../../library/use-add-speak';
 
-import { getHeaders } from '../speak-config';
+import { getHeaders } from '../utils';
 import { pageTranslation } from '../i18n';
 
 export const Page = component$(() => {
@@ -15,8 +15,8 @@ export const Page = component$(() => {
 });
 
 export default component$(() => {
-    useAddSpeak([pageTranslation]); // Translation will be available in child components
-    /* useAddSpeak(['/public/i18n/page']); */
+    /* useAddSpeak([pageTranslation]); // Translation will be available in child components */
+    useAddSpeak(['/public/i18n/page']);
 
     return (
         <Host>

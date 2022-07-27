@@ -1,4 +1,4 @@
-import { useStore, useContextProvider, immutable, useMount$, useClientEffect$ } from '@builder.io/qwik';
+import { useStore, useContextProvider, useMount$, useClientEffect$ } from '@builder.io/qwik';
 import { isServer } from '@builder.io/qwik/build';
 
 import type { SpeakConfig, TranslateFn, SpeakState } from './types';
@@ -55,9 +55,9 @@ export const useSpeak = (config: SpeakConfig, translateFn: TranslateFn = {}): Sp
 
         // Prevent Qwik from creating subscriptions
         if (isServer) {
-            immutable(translation);
-            immutable(config);
-            immutable(translateFn)
+            Object.freeze(translation);
+            Object.freeze(config);
+            Object.freeze(translateFn)
         }
 
         if (qDev) {

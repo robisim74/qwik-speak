@@ -6,7 +6,7 @@ import { formatNumber as fn } from '../../library/format-number';
 import { useLocale } from '../../library/use-functions';
 import { useAddSpeak } from '../../library/use-add-speak';
 
-import { getHeaders } from '../speak-config';
+import { getHeaders } from '../utils';
 import { homeTranslation } from '../i18n';
 
 export const Home = component$(() => {
@@ -30,8 +30,8 @@ export const Home = component$(() => {
 });
 
 export default component$(() => {
-    useAddSpeak([homeTranslation]); // Translation will be available in child components
-    /* useAddSpeak(['/public/i18n/home']); */
+    /* useAddSpeak([homeTranslation]); // Translation will be available in child components */
+    useAddSpeak(['/public/i18n/home']);
 
     return (
         <Host>
