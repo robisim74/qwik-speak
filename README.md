@@ -215,7 +215,7 @@ Optionally:
 
 ## APIs
 - `useSpeak(config: SpeakConfig, translateFn?: TranslateFn)`
-Creates a new Speak context, gets the locale & loads translation data
+Creates a new Speak context, resolves the locale & loads translation data
 
 - `useAddSpeak(assets: Array<string | Translation>, ctx?: SpeakState)`
 Adds translation data to a Speak context
@@ -243,6 +243,9 @@ Changes the locale at runtime: loads translation data and rerenders components t
 
 - `useChangeLocale()`
 Returns the _changeLocale_ function and the Speak context
+
+- `useLanguage()`
+Returns the current language in config format
 
 - `useLocale()`
 Returns the current locale in Speak context

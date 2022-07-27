@@ -3,10 +3,11 @@ import { isServer } from '@builder.io/qwik/build';
 
 import type { SpeakConfig, TranslateFn, SpeakState } from './types';
 import { getUserLanguage$, handleMissingTranslation$, getTranslation$, getLocale$, SpeakContext, setLocale$ } from './constants';
-import { loadTranslation, parseLanguage, qDev } from './utils';
+import { loadTranslation, resolveLocale } from './core';
+import { qDev } from './utils';
 
 /**
- * Creates a new Speak context, gets the locale & loads translation data
+ * Creates a new Speak context, resolves the locale & loads translation data
  * @param config Speak configuration
  * @param translateFn Translation functions to be used
  * @returns The context
@@ -32,22 +33,11 @@ export const useSpeak = (config: SpeakConfig, translateFn: TranslateFn = {}): Sp
 
     // Will block the rendering until callback resolves
     useMount$(async () => {
-        // Try to get locale from the storage
-        let userLocale = await translateFn.getLocale$?.();
-
-        // Try to get locale by user language
-        if (!userLocale) {
-            const userLanguage = await translateFn.getUserLanguage$?.();
-            userLocale = config.supportedLocales.find(x => parseLanguage(x.language, config.languageFormat) == userLanguage);
-        }
-
-        // Use default locale
-        if (!userLocale) {
-            userLocale = config.defaultLocale;
-        }
+        // Resolve the locale
+        const userLocale = await resolveLocale(translateFn, config);
 
         // Load translation data
-        const newTranslation = await loadTranslation(userLocale, state);
+        const newTranslation = await loadTranslation(userLocale.language, state);
 
         // Update state
         Object.assign(translation, newTranslation);

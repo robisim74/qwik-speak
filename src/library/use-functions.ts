@@ -6,6 +6,14 @@ import { changeLocale } from './change-locale';
 import { translate } from './translate';
 import { formatNumber } from './format-number';
 import { formatDate } from './format-date';
+import { formatLanguage } from './core';
+
+export const useLanguage = (): string | undefined => {
+    const { locale, config } = useContext(SpeakContext);
+    if (!locale.language) return;
+
+    return formatLanguage(locale.language, config.languageFormat);
+};
 
 export const useLocale = (): Partial<Locale> => useContext(SpeakContext).locale;
 

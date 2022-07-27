@@ -2,7 +2,7 @@ import { useContext } from '@builder.io/qwik';
 
 import type { SpeakState } from './types';
 import { SpeakContext } from './constants';
-import { getValue, handleParams, parseLanguage } from './utils';
+import { getValue, handleParams, formatLanguage } from './core';
 
 /**
  * Translate a key or an array of keys
@@ -19,7 +19,7 @@ export const translate = (keys: string | string[], params?: any, ctx?: SpeakStat
     language = language ?? locale.language;
     if (!language) return keys;
 
-    language = parseLanguage(language, config.languageFormat);
+    language = formatLanguage(language, config.languageFormat);
 
     if (Array.isArray(keys)) {
         const data: { [key: string]: any } = {};

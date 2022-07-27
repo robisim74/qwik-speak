@@ -2,7 +2,8 @@ import { useMount$, useContext } from '@builder.io/qwik';
 
 import type { SpeakState, Translation } from './types';
 import { SpeakContext } from './constants';
-import { loadTranslation, mergeDeep, parseLanguage, qDev } from './utils';
+import { loadTranslation, mergeDeep, formatLanguage } from './core';
+import { qDev } from './utils';
 
 /**
  * Add translation data to a Speak context
@@ -19,10 +20,10 @@ export const useAddSpeak = (assets: Array<string | Translation>, ctx?: SpeakStat
     useMount$(async () => {
         if (!ctx || !locale.language) return;
 
-        const language = parseLanguage(locale.language, config.languageFormat);
-
         // Load translation data
-        const newTranslation = await loadTranslation(locale, ctx, assets);
+        const newTranslation = await loadTranslation(locale.language, ctx, assets);
+
+        const language = formatLanguage(locale.language, config.languageFormat);
 
         // Merge data
         const data = mergeDeep(translation[language], newTranslation[language]);

@@ -14,12 +14,11 @@ export type {
     GetLocaleFn,
     HandleMissingTranslationFn
 } from './library/types';
-// Utils
-export { parseLanguage } from './library/utils';
 // Hooks
 export { useSpeak } from './library/use-speak';
 export { useAddSpeak } from './library/use-add-speak';
 export {
+    useLanguage,
     useLocale,
     useTranslation,
     useSpeakConfig,
