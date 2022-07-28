@@ -28,8 +28,8 @@ export const Home = component$(() => {
 });
 
 export default component$(() => {
-  /* useAddSpeak([homeTranslation]); // Translation will be available in child components */
-  useAddSpeak(['/public/i18n/home']);
+  useAddSpeak([homeTranslation]); // Translation will be available in child components
+  /* useAddSpeak(['/public/i18n/home']); */
 
   return (
     <Host>

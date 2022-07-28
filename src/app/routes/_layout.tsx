@@ -17,12 +17,12 @@ export default component$(() => {
       { lang: 'it-IT', currency: 'EUR', timeZone: 'Europe/Rome', units: { 'length': 'kilometer' } },
       { lang: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles', units: { 'length': 'mile' } }
     ],
-    /* assets: [
-        appTranslation, // Shared
-    ] */
     assets: [
-      '/public/i18n/app', // Shared
+        appTranslation, // Shared
     ]
+    /* assets: [
+      '/public/i18n/app', // Shared
+    ] */
   };
 
   // E.g. Fetch translation data
@@ -68,7 +68,7 @@ export default component$(() => {
   });
 
   const translateFn: TranslateFn = {
-    getTranslation$: getTranslation$,
+    /* getTranslation$: getTranslation$, */
     resolveLocale$: resolveLocale$,
     setLocale$: setLocale$,
   };
