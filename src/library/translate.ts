@@ -1,35 +1,30 @@
-import { useContext } from '@builder.io/qwik';
-
 import type { SpeakState } from './types';
-import { SpeakContext } from './constants';
-import { getValue, handleParams, formatLanguage } from './core';
+import { useSpeakContext } from './use-functions';
+import { getValue, handleParams } from './core';
 
 /**
  * Translate a key or an array of keys
  * @param keys The key or an array of keys to be translated
  * @param params Optional parameters contained in the value
- * @param ctx 
- * @param language 
+ * @param ctx Speak context
+ * @param lang 
  * @returns The translated value or an object: {key: value}
  */
-export const translate = (keys: string | string[], params?: any, ctx?: SpeakState, language?: string): string | any => {
-    ctx = ctx ?? useContext(SpeakContext);
-    const { locale, translation, config, translateFn } = ctx;
+export const translate = (keys: string | string[], params?: any, ctx?: SpeakState, lang?: string): string | any => {
+  ctx = ctx ?? useSpeakContext();
+  const { locale, translation, config, translateFn } = ctx;
 
-    language = language ?? locale.language;
-    if (!language) return keys;
+  lang = lang ?? locale.lang;
 
-    language = formatLanguage(language, config.languageFormat);
-
-    if (Array.isArray(keys)) {
-        const data: { [key: string]: any } = {};
-        for (const key of keys) {
-            data[key] = translate(key, params, ctx, language);
-        }
-        return data;
+  if (Array.isArray(keys)) {
+    const data: { [key: string]: any } = {};
+    for (const key of keys) {
+      data[key] = translate(key, params, ctx, lang);
     }
+    return data;
+  }
 
-    const value = getValue(keys, translation[language], config.keySeparator);
+  const value = getValue(keys, translation[lang], config.keySeparator);
 
-    return value ? handleParams(value, params) : translateFn.handleMissingTranslation$?.(keys, value, params);
+  return value ? handleParams(value, params) : translateFn.handleMissingTranslation$?.(keys, value, params);
 }

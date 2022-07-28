@@ -1,31 +1,29 @@
 // Types
 export type {
-    Locale,
-    Translation,
-    LanguageFormat,
-    TranslateFn,
-    SpeakConfig,
-    SpeakState,
+  SpeakLocale,
+  Translation,
+  TranslateFn,
+  SpeakConfig,
+  SpeakState,
 } from './library/types';
 export type {
-    GetTranslationFn,
-    GetUserLanguageFn,
-    SetLocaleFn,
-    GetLocaleFn,
-    HandleMissingTranslationFn
+  GetTranslationFn,
+  ResolveLocaleFn,
+  SetLocaleFn,
+  HandleMissingTranslationFn,
 } from './library/types';
 // Hooks
 export { useSpeak } from './library/use-speak';
 export { useAddSpeak } from './library/use-add-speak';
 export {
-    useLanguage,
-    useLocale,
-    useTranslation,
-    useSpeakConfig,
-    useChangeLocale,
-    useTranslate,
-    useFormatNumber,
-    useFormatDate
+  useSpeakContext,
+  useSpeakLocale,
+  useTranslation,
+  useSpeakConfig,
+  useChangeLocale,
+  useTranslate,
+  useFormatNumber,
+  useFormatDate
 } from './library/use-functions';
 // Functions
 export { changeLocale } from './library/change-locale';

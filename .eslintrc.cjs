@@ -32,10 +32,12 @@ module.exports = {
     '@typescript-eslint/no-this-alias': 'off',
     '@typescript-eslint/ban-types': 'off',
     '@typescript-eslint/ban-ts-comment': 'off',
+    '@typescript-eslint/no-unused-vars': 'off',
     'prefer-spread': 'off',
     'no-case-declarations': 'off',
     'no-console': 'off',
-    '@typescript-eslint/no-unused-vars': ['warn'],
+    'max-len': ["error", { "code": 120, "tabWidth": 2, "ignoreRegExpLiterals": true }],
+    'quotes': ["error", "single", { "avoidEscape": true }],
     'qwik/valid-lexical-scope': 'off'
   },
 };

@@ -1,29 +1,32 @@
-import { useContext } from '@builder.io/qwik';
-
-import type { SpeakState } from './types';
-import { SpeakContext } from './constants';
+import type { SpeakLocale } from './types';
+import { useSpeakLocale } from './use-functions';
 import { toNumber } from './utils';
 
 /**
  * Format a number
  * @param value A number or a string
  * @param options Intl NumberFormatOptions object
- * @param ctx 
- * @param language 
+ * @param locale Speak locale 
+ * @param lang 
  * @param currency 
  * @returns 
  */
-export const formatNumber = (value: any, options?: Intl.NumberFormatOptions, ctx?: SpeakState, language?: string, currency?: string): string => {
-    ctx = ctx ?? useContext(SpeakContext);
-    const { locale } = ctx;
+export const formatNumber = (
+  value: any,
+  options?: Intl.NumberFormatOptions,
+  locale?: SpeakLocale,
+  lang?: string,
+  currency?: string
+): string => {
+  locale = locale ?? useSpeakLocale();
 
-    language = language ?? locale.language;
-    currency = currency ?? locale.currency;
+  lang = lang ?? locale.extension ?? locale.lang;
+  currency = currency ?? locale.currency;
 
-    value = toNumber(value);
+  value = toNumber(value);
 
-    options = { ...options };
-    if (currency) options.currency = currency;
+  options = { ...options };
+  if (currency) options.currency = currency;
 
-    return new Intl.NumberFormat(language, options).format(value);
+  return new Intl.NumberFormat(lang, options).format(value);
 }

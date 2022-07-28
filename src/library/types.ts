@@ -1,27 +1,31 @@
 import { QRL, ValueOrPromise } from '@builder.io/qwik';
 
-export interface Locale {
-    /**
-     * language[-script][-region][-extension]
-     * Where:
-     * - language: ISO 639 two-letter or three-letter code
-     * - script: ISO 15924 four-letter script code
-     * - region: ISO 3166 two-letter, uppercase code
-     * - extension: 'u' (Unicode) extensions
-     */
-    language: string;
-    /**
-     * ISO 4217 three-letter code
-     */
-    currency?: string;
-    /**
-     * Time zone name from the IANA time zone database
-     */
-    timeZone?: string;
-    /**
-     * Key value pairs of unit identifiers
-     */
-    units?: { [key: string]: string }
+export interface SpeakLocale {
+  /**
+   * language[-script][-region]
+   * Where:
+   * - language: ISO 639 two-letter or three-letter code
+   * - script: ISO 15924 four-letter script code
+   * - region: ISO 3166 two-letter, uppercase code
+   */
+  lang: string;
+  /**
+   * Language with Intl extensions
+   * language[-script][-region][-extensions]
+   */
+  extension?: string;
+  /**
+   * ISO 4217 three-letter code
+   */
+  currency?: string;
+  /**
+   * Time zone name from the IANA time zone database
+   */
+  timeZone?: string;
+  /**
+   * Key value pairs of unit identifiers
+   */
+  units?: { [key: string]: string };
 }
 
 /**
@@ -29,102 +33,87 @@ export interface Locale {
  */
 export type Translation = { [key: string]: any };
 
-export type LanguageFormat = 'language' | 'language-script' | 'language-region' | 'language-script-region';
-
 /**
  * Must contain the logic to get translation data
  */
-export type GetTranslationFn = QRL<(language: string, asset: string | Translation) => ValueOrPromise<Translation>>;
+export type GetTranslationFn = QRL<(lang: string, asset: string | Translation) => ValueOrPromise<Translation>>;
 
 /**
- * Must contain the logic to get the user language
+ * Must contain the logic to resolve which locale to use during SSR
  */
-export type GetUserLanguageFn = QRL<() => ValueOrPromise<string | null>>;
+export type ResolveLocaleFn = QRL<() => ValueOrPromise<SpeakLocale | null | undefined>>;
 
 /**
- * Must contain the logic to store the locale
+ * Must contain the logic to set the locale on Client when changes
  */
-export type SetLocaleFn = QRL<(locale: Partial<Locale>) => ValueOrPromise<void>>;
+export type SetLocaleFn = QRL<(locale: SpeakLocale) => ValueOrPromise<void>>;
 
 /**
-* Must contain the logic to get the locale from the storage
-*/
-export type GetLocaleFn = QRL<() => ValueOrPromise<Locale | null>>;
-
-/**
-* Must contain the logic to handle missing values
-*/
+ * Must contain the logic to handle missing values
+ */
 export type HandleMissingTranslationFn = QRL<(key: string, value?: string, params?: any) => string | any>;
 
 
 export interface TranslateFn {
-    /**
-     * Function to get translation data
-     */
-    getTranslation$?: GetTranslationFn;
-    /**
-     * Function to get user language
-     */
-    getUserLanguage$?: GetUserLanguageFn;
-    /**
-     * Function to store the locale
-     */
-    setLocale$?: SetLocaleFn;
-    /**
-     * Function to get the locale from the storage
-     */
-    getLocale$?: GetLocaleFn;
-    /**
-     * Function to create an handler for missing values
-     */
-    handleMissingTranslation$?: HandleMissingTranslationFn;
+  /**
+   * Function to get translation data
+   */
+  getTranslation$?: GetTranslationFn;
+  /**
+   * Function to resolve which locale to use during SSR
+   */
+  resolveLocale$?: ResolveLocaleFn;
+  /**
+   * Function to set the locale on Client
+   */
+  setLocale$?: SetLocaleFn;
+  /**
+   * Function to handle missing values
+   */
+  handleMissingTranslation$?: HandleMissingTranslationFn;
 }
 
 export interface SpeakConfig {
-    /**
-     * Format of the translation language. Pattern: 'language[-script][-region]'
-     * e.g.
-     * languageFormat: 'language-region';
-     */
-    languageFormat: LanguageFormat;
-    /**
-     * Separator of nested keys
-     */
-    keySeparator?: string;
-    /**
-     * The default locale to be used as fallback
-     * e.g.
-     * defaultLocale: { language: 'en-US' };
-     */
-    defaultLocale: Locale;
-    /**
-     * Supported locales
-     */
-    supportedLocales: Locale[];
-    /**
-     * Assets to be loaded or translation data
-     */
-    assets: Array<string | Translation>,
+  /**
+   * The default locale to be used
+   */
+  defaultLocale: SpeakLocale;
+  /**
+   * Supported locales
+   */
+  supportedLocales: SpeakLocale[];
+  /**
+   * Assets to be loaded or translation data
+   */
+  assets: Array<string | Translation>;
+  /**
+   * Separator of nested keys
+   */
+  keySeparator?: string;
+}
+
+export interface InitialSpeakState {
+  /**
+   * Current locale
+   */
+  locale: Partial<SpeakLocale>,
+  /**
+   * Translation data
+   */
+  translation: Translation,
+  /***
+   * Speak configuration
+   */
+  config: SpeakConfig
+  /**
+   * Functions to be used
+   */
+  translateFn: TranslateFn,
 }
 
 /**
  * Speak state
  */
-export interface SpeakState {
-    /**
-     * Current locale
-     */
-    locale: Partial<Locale>,
-    /**
-     * Translation data
-     */
-    translation: Translation,
-    /***
-     * Speak configuration
-     */
-    config: SpeakConfig
-    /**
-     * Functions to be used
-     */
-    translateFn: TranslateFn,
+export interface SpeakState extends InitialSpeakState {
+  locale: SpeakLocale
 }

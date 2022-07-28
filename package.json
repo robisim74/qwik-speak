@@ -3,7 +3,7 @@
   "version": "0.0.2",
   "description": "Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps",
   "scripts": {
-    "build": "npm run build.lib && npm run build.types",
+    "build": "npm run lint && npm run build.lib && npm run build.types",
     "build.client": "vite build",
     "build.lib": "vite build --mode lib",
     "build.ssr": "vite build --ssr src/entry.ssr.tsx",
@@ -13,7 +13,7 @@
     "dev.debug": "node --inspect-brk node_modules/vite/bin/vite.js --mode ssr",
     "dev.ssr": "node --inspect node_modules/vite/bin/vite.js --mode ssr",
     "lint": "eslint \"src/**/*.ts*\"",
-    "release": "np",
+    "release": "npm run build && np",
     "start": "npm run dev",
     "test": "jest ./src/tests",
     "test.watch": "jest ./src/tests --watch",

@@ -9,7 +9,7 @@ Live example on [StackBlitz](https://stackblitz.com/edit/qwik-speak)
 ```mermaid
 stateDiagram-v2
     State1: SpeakState
-    State2: Locale
+    State2: SpeakLocale
     State3: Translation
     State4: SpeakConfig
     State5: TranslateFn
@@ -85,7 +85,6 @@ export const appTranslation: Translation = {
 };
 
 export const config: SpeakConfig = {
-    languageFormat: 'language-region',
     defaultLocale: { language: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles' },
     supportedLocales: [
         { language: 'it-IT', currency: 'EUR', timeZone: 'Europe/Rome' },
@@ -146,20 +145,16 @@ export default component$(() => {
 ```typescript
 import { $ } from '@builder.io/qwik';
 
-export const getTranslation$: GetTranslationFn = $((language: string, asset: string | Translation) => {
+export const getTranslation$: GetTranslationFn = $((lang: string, asset: string | Translation) => {
     /* Must contain the logic to get translation data: by default it uses only an asset of Translation object */
 });
 
-export const getUserLanguage$: GetUserLanguageFn = $(() => {
-    /* Must contain the logic to get the user language */
+export const resolveLocale$: ResolveLocaleFn = $(() => {
+    /* Must contain the logic to resolve which locale to use during SSR */
 });
 
-export const setLocale$: SetLocaleFn = $((locale: Partial<Locale>) => {
-    /* Must contain the logic to store the locale */
-});
-
-export const getLocale$: GetLocaleFn = $(() => {
-    /* Must contain the logic to get the locale from the storage */
+export const setLocale$: SetLocaleFn = $((locale: SpeakLocale) => {
+    /* Must contain the logic to set the locale on Client when changes */
 });
 
 export const handleMissingTranslation$: HandleMissingTranslationFn = $((key: string, value?: string, params?: any) => {
@@ -187,14 +182,8 @@ export default component$(() => {
 ```
 
 ## Speak config
-- `languageFormat`
-The format of the _language_ to be used for translations. The supported formats are: `'language' | 'language-script' | 'language-region' | 'language-script-region'`. So, for example, you can have a _language_ like `en-US-u-ca-gregory-nu-latn` to format dates and numbers, but only use the `en-US` for translations
-
-- `keySeparator`
-Separator of nested keys. Default is `.`
-
 - `defaultLocale`
-The default locale to be used as fallback
+The default locale to be used
 
 - `supportedLocales`
 Supported locales
@@ -202,16 +191,19 @@ Supported locales
 - `assets`
 An array of string paths, or an array of _Translation_ objects: each asset is passed to the _getTranslation$_ function to obtain data according to the language
 
-The `Locale` object contains a _language_, in the format `language[-script][-region][-extension]`, where:
-- language: ISO 639 two-letter or three-letter code
-- script: ISO 15924 four-letter script code
-- region: ISO 3166 two-letter, uppercase code
-- extension: 'u' (Unicode) extensions
+- `keySeparator`
+Separator of nested keys. Default is `.`
 
-Optionally:
-- _currency_: ISO 4217 three-letter code
-- _timezone_: from the IANA time zone database
-- _units_: key value pairs of unit identifiers
+The `SpeakLocale` object contains the `lang`, in the format `language[-script][-region]`, where:
+- _language_: ISO 639 two-letter or three-letter code
+- _script_: ISO 15924 four-letter script code
+- _region_: ISO 3166 two-letter, uppercase code
+
+and optionally contains:
+- `extension` Language with Intl extensions, in the format `language[-script][-region][-extensions]` like `en-US-u-ca-gregory-nu-latn` to format dates and numbers
+- `currency` ISO 4217 three-letter code
+- `timezone` From the IANA time zone database
+- `units` Key value pairs of unit identifiers
 
 ## APIs
 - `useSpeak(config: SpeakConfig, translateFn?: TranslateFn)`
@@ -220,35 +212,35 @@ Creates a new Speak context, resolves the locale & loads translation data
 - `useAddSpeak(assets: Array<string | Translation>, ctx?: SpeakState)`
 Adds translation data to a Speak context
 
-- `translate(keys: string | string[], params?: any, ctx?: SpeakState, language?: string)`
+- `translate(keys: string | string[], params?: any, ctx?: SpeakState, lang?: string)`
 Translates a key or an array of keys
 
 - `useTranslate()`
 Returns the _translate_ function and the Speak context
 
-- `formatDate(value: any, options?: Intl.DateTimeFormatOptions, ctx?: SpeakState, language?: string, timeZone?: string)`
+- `formatDate(value: any, options?: Intl.DateTimeFormatOptions, locale?: SpeakLocale, lang?: string, timeZone?: string)`
 Formats a date
 
 - `useFormatDate()`
-Returns the _formatDate_ function and the Speak context
+Returns the _formatDate_ function and the Speak locale
 
-- `formatNumber(value: any, options?: Intl.NumberFormatOptions, ctx?: SpeakState, language?: string, currency?: string)`
+- `formatNumber(value: any, options?: Intl.NumberFormatOptions, locale?: SpeakLocale, lang?: string, currency?: string)`
 Formats a number
 
 - `useFormatNumber()`
-Returns the _formatNumber_ function and the Speak context
+Returns the _formatNumber_ function and the Speak locale
 
 - `changeLocale()`
-Changes the locale at runtime: loads translation data and rerenders components that uses translations
+Changes locale at runtime: loads translation data and rerenders components that uses translations
 
 - `useChangeLocale()`
 Returns the _changeLocale_ function and the Speak context
 
-- `useLanguage()`
-Returns the current language in config format
+- `useSpeakContext()`
+Returns the Speak context
 
-- `useLocale()`
-Returns the current locale in Speak context
+- `useSpeakLocale()`
+Returns the locale in Speak context
 
 - `useTranslation()`
 Returns the translation data in Speak context
@@ -273,7 +265,9 @@ npm run build
 ```
 
 ## What's new
-> Released v0.0.2
+> Released v0.0.3
+
+> App with localized routes
 
 ## License
 MIT
