@@ -7,9 +7,9 @@ import { toNumber } from './utils';
  * @param value A number or a string
  * @param options Intl NumberFormatOptions object
  * @param locale Speak locale 
- * @param lang 
- * @param currency 
- * @returns 
+ * @param lang Optional language
+ * @param currency Optional currency
+ * @returns The formatted number
  */
 export const formatNumber = (
   value: any,

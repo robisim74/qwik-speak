@@ -75,7 +75,7 @@ export interface TranslateFn {
 
 export interface SpeakConfig {
   /**
-   * The default locale to be used
+   * The default locale
    */
   defaultLocale: SpeakLocale;
   /**
@@ -83,7 +83,7 @@ export interface SpeakConfig {
    */
   supportedLocales: SpeakLocale[];
   /**
-   * Assets to be loaded or translation data
+   * Assets to load or translation data
    */
   assets: Array<string | Translation>;
   /**
@@ -106,7 +106,7 @@ export interface InitialSpeakState {
    */
   config: SpeakConfig
   /**
-   * Functions to be used
+   * Functions to use
    */
   translateFn: TranslateFn,
 }

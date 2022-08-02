@@ -8,9 +8,9 @@ import { toDate } from './utils';
  * @param value A date, a number (milliseconds since UTC epoch) or an ISO 8601 string
  * @param options Intl DateTimeFormatOptions object
  * @param locale Speak locale
- * @param lang 
- * @param timeZone 
- * @returns 
+ * @param lang Optional language
+ * @param timeZone Optional time zone
+ * @returns The formatted date
  */
 export const formatDate = (
   value: any,

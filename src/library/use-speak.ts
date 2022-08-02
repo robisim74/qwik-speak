@@ -10,7 +10,7 @@ import { qDev } from './utils';
 /**
  * Creates a new Speak context, resolves the locale & loads translation data
  * @param config Speak configuration
- * @param translateFn Translation functions to be used
+ * @param translateFn Translation functions to use
  */
 export const useSpeak = (config: SpeakConfig, translateFn: TranslateFn = {}): void => {
   // Assign functions

@@ -4,10 +4,10 @@ import { getValue, handleParams } from './core';
 
 /**
  * Translate a key or an array of keys
- * @param keys The key or an array of keys to be translated
+ * @param keys The key or an array of keys to translate
  * @param params Optional parameters contained in the value
- * @param ctx Speak context
- * @param lang 
+ * @param ctx Optional Speak context
+ * @param lang Optional language
  * @returns The translated value or an object: {key: value}
  */
 export const translate = (keys: string | string[], params?: any, ctx?: SpeakState, lang?: string): string | any => {

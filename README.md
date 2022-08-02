@@ -183,7 +183,7 @@ export default component$(() => {
 
 ## Speak config
 - `defaultLocale`
-The default locale to be used
+The default locale
 
 - `supportedLocales`
 Supported locales
@@ -206,6 +206,7 @@ and optionally contains:
 - `units` Key value pairs of unit identifiers
 
 ## APIs
+### Hooks
 - `useSpeak(config: SpeakConfig, translateFn?: TranslateFn)`
 Creates a new Speak context, resolves the locale & loads translation data
 
@@ -215,30 +216,20 @@ Adds translation data to a Speak context
 - `useSpeakHead(title?: string, description?: string, params?: any)`
 Sets html lang, and translates head title and description
 
+### Translation
 - `translate(keys: string | string[], params?: any, ctx?: SpeakState, lang?: string)`
 Translates a key or an array of keys
-
-- `useTranslate()`
-Returns the _translate_ function and the Speak context
 
 - `formatDate(value: any, options?: Intl.DateTimeFormatOptions, locale?: SpeakLocale, lang?: string, timeZone?: string)`
 Formats a date
 
-- `useFormatDate()`
-Returns the _formatDate_ function and the Speak locale
-
 - `formatNumber(value: any, options?: Intl.NumberFormatOptions, locale?: SpeakLocale, lang?: string, currency?: string)`
 Formats a number
 
-- `useFormatNumber()`
-Returns the _formatNumber_ function and the Speak locale
-
-- `changeLocale()`
+- `changeLocale(newLocale: SpeakLocale, ctx: SpeakState)`
 Changes locale at runtime: loads translation data and rerenders components that uses translations
 
-- `useChangeLocale()`
-Returns the _changeLocale_ function and the Speak context
-
+### Speak context
 - `useSpeakContext()`
 Returns the Speak context
 

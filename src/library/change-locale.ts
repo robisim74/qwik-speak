@@ -4,8 +4,8 @@ import { qDev } from './utils';
 
 /**
  * Change locale at runtime: loads translation data and rerenders components that uses translations
- * @param newLocale 
- * @param ctx 
+ * @param newLocale The new locale to set
+ * @param ctx Speak context
  */
 export const changeLocale = async (newLocale: SpeakLocale, ctx: SpeakState): Promise<void> => {
   const { locale, translation, translateFn } = ctx;
