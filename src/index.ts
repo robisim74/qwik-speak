@@ -23,8 +23,9 @@ export {
   useChangeLocale,
   useTranslate,
   useFormatNumber,
-  useFormatDate
+  useFormatDate,
 } from './library/use-functions';
+export { useSpeakHead } from './library/use-speak-head';
 // Functions
 export { changeLocale } from './library/change-locale';
 export { translate } from './library/translate';

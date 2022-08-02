@@ -38,7 +38,7 @@ export const useFormatNumber = () => {
 
 export const useFormatDate = () => {
   return {
-    formatDate$: formatDate,
+    formatDate: formatDate,
     locale: useSpeakLocale()
   }
 };

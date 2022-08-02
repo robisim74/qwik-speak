@@ -19,8 +19,10 @@ test.describe('Home', () => {
     await expect(page.locator('main')).toContainText('Traduci le tue app Qwik in qualsiasi lingua');
     await expect(page.locator('main')).toContainText('Ciao! Sono Qwik Speak');
 
-    await page.locator('text=Pagina').click();
-    await page.waitForLoadState('networkidle');
+    await Promise.all([
+      page.waitForNavigation(),
+      page.locator('text=Pagina').click()
+    ]);
 
     await expect(page.locator('main')).toContainText('Qwik Speak');
     await expect(page.locator('main')).toContainText("Io sono un'altra pagina");

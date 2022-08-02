@@ -1,6 +1,8 @@
 {
-    "home": {
-        "greeting": "Hi! I am {{name}}",
-        "description": "<em>Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps</em>"
-    }
+  "home": {
+    "title": "{{name}}",
+    "description": "Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps",
+    "greeting": "Hi! I am {{name}}",
+    "text": "<em>Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps</em>"
+  }
 }

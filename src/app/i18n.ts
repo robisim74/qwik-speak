@@ -25,14 +25,18 @@ export const appTranslation: Translation = {
 export const homeTranslation: Translation = {
   "en-US": {
     "home": {
+      "title": "{{name}}",
+      "description": "Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps",
       "greeting": "Hi! I am {{name}}",
-      "description": "<em>Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps</em>"
+      "text": "<em>Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps</em>"
     }
   },
   "it-IT": {
     "home": {
+      "title": "{{name}}",
+      "description": "Libreria di internazionalizzazione (i18n) per tradurre testi, date e numeri nelle app Qwik",
       "greeting": "Ciao! Sono {{name}}",
-      "description": "<em>Libreria di internazionalizzazione (i18n) per tradurre testi, date e numeri nelle app Qwik</em>"
+      "text": "<em>Libreria di internazionalizzazione (i18n) per tradurre testi, date e numeri nelle app Qwik</em>"
     }
   }
 };
@@ -40,12 +44,14 @@ export const homeTranslation: Translation = {
 export const pageTranslation: Translation = {
   "en-US": {
     "page": {
-      "title": "I'm another page"
+      "title": "Page - {{name}}",
+      "description": "I'm another page"
     }
   },
   "it-IT": {
     "page": {
-      "title": "Io sono un'altra pagina"
+      "title": "Pagina - {{name}}",
+      "description": "Io sono un'altra pagina"
     }
   }
 };

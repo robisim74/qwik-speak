@@ -4,10 +4,13 @@ import { formatDate as fd } from '../../../library/format-date';
 import { formatNumber as fn } from '../../../library/format-number';
 import { useSpeakLocale } from '../../../library/use-functions';
 import { useAddSpeak } from '../../../library/use-add-speak';
+import { useSpeakHead } from '../../../library/use-speak-head';
 
 import { homeTranslation } from '../../i18n';
 
 export const Home = component$(() => {
+  useSpeakHead('home.title', 'home.description', { name: 'Qwik Speak' });
+
   const locale = useSpeakLocale();
   const unit = locale.units!['length'];
 
@@ -16,7 +19,7 @@ export const Home = component$(() => {
       {/* Params */}
       <p>{t('home.greeting', { name: 'Qwik Speak' })}</p>
       {/* Html tags */}
-      <p innerHTML={t('home.description')}></p>
+      <p innerHTML={t('home.text')}></p>
       {/* Dates */}
       <p>{fd(Date.now(), { dateStyle: 'full', timeStyle: 'short' })}</p>
       {/* Numbers */}

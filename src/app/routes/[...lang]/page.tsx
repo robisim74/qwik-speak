@@ -1,14 +1,16 @@
 import { component$, Host } from '@builder.io/qwik';
-import { DocumentHead } from '@builder.io/qwik-city';
 import { translate as t } from '../../../library/translate';
 import { useAddSpeak } from '../../../library/use-add-speak';
+import { useSpeakHead } from '../../../library/use-speak-head';
 
 import { pageTranslation } from '../../i18n';
 
 export const Page = component$(() => {
+  useSpeakHead('page.title', 'page.description', { name: 'Qwik Speak' });
+
   return (
     <>
-      <h3>{t('page.title')}</h3>
+      <p>{t('page.description')}</p>
     </>
   );
 });
@@ -26,9 +28,3 @@ export default component$(() => {
     </Host>
   );
 });
-
-export const head: DocumentHead = () => {
-  return {
-    title: 'Page'
-  };
-};

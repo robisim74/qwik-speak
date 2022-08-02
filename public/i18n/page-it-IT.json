@@ -1,5 +1,6 @@
 {
-    "page": {
-        "title": "Io sono un'altra pagina"
-    }
+  "page": {
+    "title": "Pagina - {{name}}",
+    "description": "Io sono un'altra pagina"
+  }
 }

@@ -1,9 +1,9 @@
 {
-    "app": {
-        "title": "Qwik Speak",
-        "subtitle": "Translate your Qwik apps into any language",
-        "changeLocale": "Change locale",
-        "home": "Home",
-        "page": "Page"
-    }
+  "app": {
+    "title": "Qwik Speak",
+    "subtitle": "Translate your Qwik apps into any language",
+    "changeLocale": "Change locale",
+    "home": "Home",
+    "page": "Page"
+  }
 }
