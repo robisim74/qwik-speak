@@ -1,6 +1,6 @@
 import { $ } from '@builder.io/qwik';
 
-import type { Translation, SpeakLocale } from './types';
+import type { Translation } from './types';
 import type { GetTranslationFn, SetLocaleFn, HandleMissingTranslationFn, ResolveLocaleFn } from './types';
 import { clone, isObject } from './utils';
 
@@ -12,8 +12,8 @@ export const resolveLocale$: ResolveLocaleFn = $(() => {
   return null;
 });
 
-export const setLocale$: SetLocaleFn = $((locale: SpeakLocale) => { });
+export const setLocale$: SetLocaleFn = $(() => { });
 
-export const handleMissingTranslation$: HandleMissingTranslationFn = $((key: string, value?: string, params?: any) => {
+export const handleMissingTranslation$: HandleMissingTranslationFn = $((key: string) => {
   return key;
 });

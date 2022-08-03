@@ -12,8 +12,7 @@ test.describe('Home', () => {
   });
 
   test('change language', async ({ page }) => {
-    const change = page.locator('text=it-IT');
-    await change.click();
+    await page.locator('text=it-IT').click();
 
     await expect(page.locator('main')).toContainText('Qwik Speak');
     await expect(page.locator('main')).toContainText('Traduci le tue app Qwik in qualsiasi lingua');

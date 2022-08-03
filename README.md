@@ -210,7 +210,7 @@ and optionally contains:
 - `useSpeak(config: SpeakConfig, translateFn?: TranslateFn)`
 Creates a new Speak context, resolves the locale & loads translation data
 
-- `useAddSpeak(assets: Array<string | Translation>, ctx?: SpeakState)`
+- `useAddSpeak(assets: Array<string | Translation>)`
 Adds translation data to a Speak context
 
 - `useSpeakHead(title?: string, description?: string, params?: any)`
