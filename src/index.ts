@@ -15,17 +15,13 @@ export type {
 // Hooks
 export { useSpeak } from './library/use-speak';
 export { useAddSpeak } from './library/use-add-speak';
+export { useSpeakHead } from './library/use-speak-head';
 export {
   useSpeakContext,
   useSpeakLocale,
   useTranslation,
-  useSpeakConfig,
-  useChangeLocale,
-  useTranslate,
-  useFormatNumber,
-  useFormatDate,
+  useSpeakConfig
 } from './library/use-functions';
-export { useSpeakHead } from './library/use-speak-head';
 // Functions
 export { changeLocale } from './library/change-locale';
 export { translate } from './library/translate';
