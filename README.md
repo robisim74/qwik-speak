@@ -101,7 +101,7 @@ export const config: SpeakConfig = {
 import { useSpeak } from 'qwik-speak';
 
 export default component$(() => {
-    useSpeak(config); // Speak context will be available in child components
+    useSpeak(config);
 
     return (
         <Host>
@@ -132,11 +132,11 @@ export default component$(() => {
 import { useAddSpeak } from 'qwik-speak';
 
 export default component$(() => {
-    useAddSpeak([homeTranslation]); // Translation will be available in child components
+    useAddSpeak([homeTranslation]);
 
     return (
         <Host>
-            <Home />
+            ...
         </Host>
     );
 });

@@ -92,7 +92,7 @@ export interface SpeakConfig {
   keySeparator?: string;
 }
 
-export interface InitialSpeakState {
+export interface InternalSpeakState {
   /**
    * Current locale
    */
@@ -109,11 +109,15 @@ export interface InitialSpeakState {
    * Functions to use
    */
   translateFn: TranslateFn,
+  /**
+   * Change of state
+   */
+  $flags$: number,
 }
 
 /**
  * Speak state
  */
-export interface SpeakState extends InitialSpeakState {
+export interface SpeakState extends Omit<InternalSpeakState, '$flags$'> {
   locale: SpeakLocale
 }

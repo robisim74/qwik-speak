@@ -32,5 +32,6 @@ export const ctx: SpeakState = new Proxy({
   locale: locale,
   translation: translationData,
   config: config,
-  translateFn: {}
+  translateFn: {},
+  $flags$: 0
 }, {});

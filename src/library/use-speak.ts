@@ -1,7 +1,7 @@
 import { useStore, useContextProvider, useMount$ } from '@builder.io/qwik';
 import { isServer } from '@builder.io/qwik/build';
 
-import type { SpeakConfig, TranslateFn, SpeakState, InitialSpeakState } from './types';
+import type { SpeakConfig, TranslateFn, SpeakState, InternalSpeakState } from './types';
 import { handleMissingTranslation$, getTranslation$, setLocale$, resolveLocale$ } from './constants';
 import { SpeakContext } from './context';
 import { loadTranslation } from './core';
@@ -20,11 +20,12 @@ export const useSpeak = (config: SpeakConfig, translateFn: TranslateFn = {}): vo
   translateFn.handleMissingTranslation$ = translateFn.handleMissingTranslation$ ?? handleMissingTranslation$;
 
   // Set initial state
-  const state = useStore<InitialSpeakState>({
+  const state = useStore<InternalSpeakState>({
     locale: {},
     translation: {},
     config: config,
-    translateFn: translateFn
+    translateFn: translateFn,
+    $flags$: 0
   }, { recursive: true });
   const ctx = state as SpeakState;
   const { locale, translation } = ctx;
