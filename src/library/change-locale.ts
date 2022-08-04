@@ -14,7 +14,6 @@ export const changeLocale = async (newLocale: SpeakLocale, ctx: SpeakState): Pro
   const newTranslation = await loadTranslation(newLocale.lang, ctx);
 
   // Update state
-  delete translation[locale.lang]; // Delete old translation
   Object.assign(translation, newTranslation);
   Object.assign(locale, newLocale);
 

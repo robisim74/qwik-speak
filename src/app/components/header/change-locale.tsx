@@ -11,7 +11,7 @@ export const ChangeLocale = component$(
     return (
       <Host>
         <span>{t('app.changeLocale')}</span>
-        {ctx.config.supportedLocales.map((locale) => (
+        {ctx.config.supportedLocales.map(locale => (
           <div class={{ active: locale.lang == ctx.locale.lang, button: true }}
             onClick$={async () => await changeLocale(locale, ctx)}>
             {locale.lang}

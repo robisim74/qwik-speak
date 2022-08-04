@@ -6,9 +6,9 @@ import { getValue, handleParams } from './core';
  * Translate a key or an array of keys
  * @param keys The key or an array of keys to translate
  * @param params Optional parameters contained in the value
- * @param ctx Optional Speak context
- * @param lang Optional language
- * @returns The translated value or an object: {key: value}
+ * @param ctx Optional Speak context to be provided outside the component$
+ * @param lang Optional language if different from the current one
+ * @returns The translated values
  */
 export const translate = (keys: string | string[], params?: any, ctx?: SpeakState, lang?: string): string | any => {
   ctx = ctx ?? useSpeakContext();

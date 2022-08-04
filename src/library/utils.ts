@@ -1,4 +1,4 @@
-export const isObject = (item: any): boolean =>
+export const isObject = <T>(item: T): boolean =>
   typeof item === 'object' && !Array.isArray(item);
 
 export const isDate = (value: any): value is Date =>

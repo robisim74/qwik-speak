@@ -103,20 +103,12 @@ import { useSpeak } from 'qwik-speak';
 export default component$(() => {
     useSpeak(config);
 
-    return (
-        <Host>
-            <Header />
-            <main>
-                <Slot />
-            </main>
-        </Host >
-    );
+    return ();
 });
 ```
 ### Getting dates & numbers
 ```jsx
-import { formatDate as fd } from 'qwik-speak';
-import { formatNumber as fn } from 'qwik-speak';
+import { formatDate as fd, formatNumber as fn } from 'qwik-speak';
 
 export default component$(() => {
     return (
@@ -134,11 +126,7 @@ import { useAddSpeak } from 'qwik-speak';
 export default component$(() => {
     useAddSpeak([homeTranslation]);
 
-    return (
-        <Host>
-            ...
-        </Host>
-    );
+    return ();
 });
 ```
 ### Hacking the library
@@ -157,7 +145,7 @@ export const setLocale$: SetLocaleFn = $((locale: SpeakLocale) => {
     /* Must contain the logic to set the locale on Client when changes */
 });
 
-export const handleMissingTranslation$: HandleMissingTranslationFn = $((key: string, value?: string, params?: any) => {
+export const handleMissingTranslation$: HandleMissingTranslationFn = $((key: string, value?: string, params?: any, ctx?: SpeakState) => {
     /* Must contain the logic to handle missing values: by default returns the key */
 });
 
@@ -170,14 +158,7 @@ export const translateFn: TranslateFn = {
 export default component$(() => {
     useSpeak(config, translateFn); // Use Speak with config & translation functions
 
-    return (
-        <Host>
-            <Header />
-            <main>
-                <Slot />
-            </main>
-        </Host >
-    );
+    return ();
 });
 ```
 
@@ -207,10 +188,10 @@ and optionally contains:
 
 ## APIs
 ### Hooks
-- `useSpeak(config: SpeakConfig, translateFn?: TranslateFn)`
+- `useSpeak(config: SpeakConfig, translateFn?: TranslateFn, langs?: string[])`
 Creates a new Speak context, resolves the locale & loads translation data
 
-- `useAddSpeak(assets: Array<string | Translation>)`
+- `useAddSpeak(assets: Array<string | Translation>, langs?: string[])`
 Adds translation data to a Speak context
 
 - `useSpeakHead(title?: string, description?: string, params?: any)`

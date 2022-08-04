@@ -7,9 +7,9 @@ import { toDate } from './utils';
  * Format a date
  * @param value A date, a number (milliseconds since UTC epoch) or an ISO 8601 string
  * @param options Intl DateTimeFormatOptions object
- * @param locale Speak locale
- * @param lang Optional language
- * @param timeZone Optional time zone
+ * @param locale Optional Speak locale to be provided outside the component$
+ * @param lang Optional language if different from the current one
+ * @param timeZone Optional time zone if different from the current one
  * @returns The formatted date
  */
 export const formatDate = (

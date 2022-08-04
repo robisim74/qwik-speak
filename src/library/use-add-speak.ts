@@ -8,23 +8,30 @@ import { qDev } from './utils';
 /**
  * Add translation data to a Speak context
  * @param assets Assets to be loaded or translation data
+ * @param langs Optional additional languages to preload data for
  */
-export const useAddSpeak = (assets: Array<string | Translation>): void => {
+export const useAddSpeak = (assets: Array<string | Translation>, langs: string[] = []): void => {
   const ctx = useSpeakContext();
   const { locale, translation, config } = ctx;
 
   // Will block the rendering until callback resolves
   useMount$(async () => {
-    // Load translation data
-    const newTranslation = await loadTranslation(locale.lang, ctx, assets);
-    // Add data
-    addData(newTranslation, translation[locale.lang], locale.lang);
-    // Concat assets
-    const loadedAssets = config.assets.concat(assets);
+    const resolvedLangs = new Set(langs);
+    resolvedLangs.add(locale.lang);
 
-    // Update state
-    Object.assign(config.assets, loadedAssets);
-    Object.assign(translation[locale.lang], newTranslation[locale.lang]);
+    // Load translation data
+    for (const lang of resolvedLangs) {
+      const newTranslation = await loadTranslation(lang, ctx, assets);
+      addData(newTranslation, translation[lang], lang);
+      Object.assign(translation[lang], newTranslation[lang]);
+    }
+
+    const resolvedAssets = new Set(config.assets);
+    for (const asset of assets) {
+      resolvedAssets.add(asset);
+    }
+    Object.assign(config.assets, Array.from(resolvedAssets));
+
     // Change of state
     (<InternalSpeakState>ctx).$flags$ += 1;
 
