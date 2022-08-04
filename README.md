@@ -67,6 +67,19 @@ export default component$(() => {
     );
 });
 ```
+### Getting dates & numbers
+```jsx
+import { formatDate as fd, formatNumber as fn } from 'qwik-speak';
+
+export default component$(() => {
+    return (
+        <Host>
+            <p>{fd(Date.now(), { dateStyle: 'full', timeStyle: 'short' })}</p> {/* Wednesday, July 20, 2022 at 7:09 AM */}
+            <p>{fn(1000000, { style: 'currency' })}</p> {/* $1,000,000.00 */}
+        </Host>
+    );
+});
+```
 ### Configuration
 ```typescript
 import { SpeakConfig, Translation } from 'qwik-speak';
@@ -95,7 +108,7 @@ export const config: SpeakConfig = {
     ]
 };
 ```
-
+> Assets can be translation data, as in the example, or string paths to load json files or others types by implementing `getTranslation$` below
 ```jsx
 // File: src/routes/_layout.tsx
 import { useSpeak } from 'qwik-speak';
@@ -103,32 +116,30 @@ import { useSpeak } from 'qwik-speak';
 export default component$(() => {
     useSpeak(config);
 
-    return ();
+    return (<></>);
 });
 ```
-### Getting dates & numbers
-```jsx
-import { formatDate as fd, formatNumber as fn } from 'qwik-speak';
-
-export default component$(() => {
-    return (
-        <Host>
-            <p>{fd(Date.now(), { dateStyle: 'full', timeStyle: 'short' })}</p> {/* Wednesday, July 20, 2022 at 7:09 AM */}
-            <p>{fn(1000000, { style: 'currency' })}</p> {/* $1,000,000.00 */}
-        </Host>
-    );
-});
-```
-### Add translation data to a context
+### Adding translation data to a context
 ```jsx
 import { useAddSpeak } from 'qwik-speak';
 
 export default component$(() => {
     useAddSpeak([homeTranslation]);
 
-    return ();
+    return (<></>);
 });
 ```
+### Additional languages
+```jsx
+import { useAddSpeak } from 'qwik-speak';
+
+export default component$(() => {
+    useAddSpeak([homeTranslation], ['en-US']);
+
+    return (<></>);
+});
+```
+> The translation data of the additional languages are preloaded along with the current language. They can be used as a fallback for missing values by implementing `handleMissingTranslation$` below, or for multilingual pages
 ### Hacking the library
 ```typescript
 import { $ } from '@builder.io/qwik';
@@ -158,7 +169,7 @@ export const translateFn: TranslateFn = {
 export default component$(() => {
     useSpeak(config, translateFn); // Use Speak with config & translation functions
 
-    return ();
+    return (<></>);
 });
 ```
 
@@ -170,7 +181,7 @@ The default locale
 Supported locales
 
 - `assets`
-An array of string paths, or an array of _Translation_ objects: each asset is passed to the _getTranslation$_ function to obtain data according to the language
+An array of string paths, or an array of _Translation_ objects: each asset is passed to the `getTranslation$` function to obtain data according to the language
 
 - `keySeparator`
 Separator of nested keys. Default is `.`
@@ -197,7 +208,7 @@ Adds translation data to a Speak context
 - `useSpeakHead(title?: string, description?: string, params?: any)`
 Sets html lang, and translates head title and description
 
-### Translation
+### Functions
 - `translate(keys: string | string[], params?: any, ctx?: SpeakState, lang?: string)`
 Translates a key or an array of keys
 
@@ -224,11 +235,11 @@ Returns the translation data in Speak context
 Returns the configuration in Speak context
 
 ## Development Builds
-### Server-side Rendering (SSR) and Client
+### Run the app
 ```Shell
 npm start
 ```
-### Test
+### Test the library
 ```Shell
 npm test
 npm run test.e2e

@@ -8,8 +8,10 @@ import { pageTranslation } from '../../i18n';
 export default component$(() => {
   /**
    * Add Page translation
+   * In this example, there is an additional language that is used as a fallback for missing values 
+   * by the handleMissingTranslation$ implemented during configuration
    */
-  useAddSpeak([pageTranslation]);
+  useAddSpeak([pageTranslation], ['en-US']);
   /* useAddSpeak(['/public/i18n/page']); */
   /**
    * Translate head
@@ -22,6 +24,7 @@ export default component$(() => {
       <h3>{t('app.subtitle')}</h3>
 
       <p>{t('page.description')}</p>
+      <p>{t('page.text')}</p>
     </Host>
   );
 });

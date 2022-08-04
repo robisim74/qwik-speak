@@ -1,8 +1,9 @@
 import { $, useUserContext } from '@builder.io/qwik';
 import { isServer } from '@builder.io/qwik/build';
 import { useLocation } from '@builder.io/qwik-city';
-import { SpeakConfig, SpeakLocale, TranslateFn, Translation } from '../library/types';
-import { GetTranslationFn, ResolveLocaleFn, SetLocaleFn } from '../library/types';
+import { SpeakConfig, SpeakLocale, SpeakState, TranslateFn, Translation } from '../library/types';
+import { GetTranslationFn, ResolveLocaleFn, SetLocaleFn, HandleMissingTranslationFn } from '../library/types';
+import { getValue } from '../library/core';
 
 import { appTranslation } from './i18n';
 
@@ -90,9 +91,22 @@ export const getTranslateFn = (): TranslateFn => {
         /* document.cookie = `locale=${JSON.stringify(locale)};path=/`; */
     });
 
+    // E.g. Use a fallback language for missing values
+    // The language must be added when invoking useSpeak or useAddSpeak
+    const handleMissingTranslation$: HandleMissingTranslationFn = $((
+        key: string,
+        value?: string,
+        params?: any,
+        ctx?: SpeakState
+    ) => {
+        value = getValue(key, ctx?.translation['en-US'], params);
+        return value || key;
+    });
+
     return {
         /* getTranslation$: getTranslation$, */
         resolveLocale$: resolveLocale$,
         setLocale$: setLocale$,
+        handleMissingTranslation$: handleMissingTranslation$
     };
 };

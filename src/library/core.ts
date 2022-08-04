@@ -55,19 +55,19 @@ export const mergeDeep = (target: Translation, source: Translation): Translation
 };
 
 /**
- * Get value of a key
+ * Get the value of a key
  */
-export const getValue = (key: string, data: Translation, keySeparator = '.'): string | undefined => {
+export const getValue = (key: string, data: Translation, params?: any, keySeparator = '.'): string | undefined => {
   if (data) {
     const value = key.split(keySeparator).reduce((acc, cur) => (acc && acc[cur] != null) ? acc[cur] : null, data);
-    if (typeof value === 'string') return value;
+    if (typeof value === 'string') return handleParams(value, params);
   }
   return undefined;
 };
 
 /**
- * Replace params in value
- */
+* Replace params in the value
+*/
 export const handleParams = (value: string, params: any): string => {
   const replacedValue = value.replace(/{{\s?([^{}\s]*)\s?}}/g, (substring: string, parsedKey: string) => {
     const replacer = params[parsedKey];

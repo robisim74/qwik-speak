@@ -45,7 +45,8 @@ export const pageTranslation: Translation = {
   "en-US": {
     "page": {
       "title": "Page - {{name}}",
-      "description": "I'm another page"
+      "description": "I'm another page",
+      "text": "I'm a fallback text"
     }
   },
   "it-IT": {

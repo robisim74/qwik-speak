@@ -1,6 +1,6 @@
 import type { InternalSpeakState, SpeakState } from './types';
 import { useSpeakContext } from './use-functions';
-import { getValue, handleParams } from './core';
+import { getValue } from './core';
 
 /**
  * Translate a key or an array of keys
@@ -29,7 +29,7 @@ export const translate = (
     return values;
   }
 
-  const value = getValue(keys, translation[lang], config.keySeparator);
+  const value = getValue(keys, translation[lang], params, config.keySeparator);
 
-  return value ? handleParams(value, params) : translateFn.handleMissingTranslation$(keys, value, params);
+  return value || translateFn.handleMissingTranslation$(keys, value, params, ctx);
 };
