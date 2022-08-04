@@ -3,7 +3,10 @@ import { SpeakLocale, SpeakConfig, SpeakState, Translation } from '../library/ty
 const translationData: Translation = {
   'en-US': {
     test: 'Test',
-    testParams: 'Test {{param}}'
+    testParams: 'Test {{param}}',
+    nested: {
+      test: 'Test'
+    }
   },
   'it-IT': {
     test: 'Prova'
@@ -32,6 +35,10 @@ export const ctx: SpeakState = new Proxy({
   locale: locale,
   translation: translationData,
   config: config,
-  translateFn: {},
-  $flags$: 0
+  translateFn: {
+    getTranslation$: (lang: string, asset: string | Translation) => (<Translation>asset)[lang],
+    resolveLocale$: () => null,
+    setLocale$: () => { },
+    handleMissingTranslation$: (key: string) => 'not found'
+  }
 }, {});

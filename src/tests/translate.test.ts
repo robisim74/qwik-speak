@@ -13,7 +13,15 @@ describe('translate function', () => {
   });
   test('translate with array of keys', () => {
     const value = t(['test', 'testParams'], { param: 'params' }, ctx);
-    expect(value).toEqual({ 'test': 'Test', 'testParams': 'Test params' });
+    expect(value).toEqual(['Test', 'Test params']);
+  });
+  test('missing value', () => {
+    const value = t('test1', {}, ctx);
+    expect(value).toBe('not found');
+  });
+  test('key separator', () => {
+    const value = t('nested.test', {}, ctx);
+    expect(value).toBe('Test');
   });
   test('translate when locale changes', async () => {
     await changeLocale({

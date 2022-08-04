@@ -18,7 +18,7 @@ export const changeLocale = async (newLocale: SpeakLocale, ctx: SpeakState): Pro
   Object.assign(locale, newLocale);
 
   // Set the locale
-  await translateFn.setLocale$?.(newLocale);
+  await translateFn.setLocale$(newLocale);
 
   if (qDev) {
     console.debug('%cQwik Speak',

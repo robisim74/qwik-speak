@@ -30,4 +30,4 @@ export const formatDate = (
   if (timeZone) options.timeZone = timeZone;
 
   return new Intl.DateTimeFormat(lang, options).format(value);
-}
+};

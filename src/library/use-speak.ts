@@ -36,7 +36,7 @@ export const useSpeak = (config: SpeakConfig, translateFn: TranslateFn = {}, lan
   // Will block the rendering until callback resolves
   useMount$(async () => {
     // Resolve the locale
-    let resolvedLocale = await translateFn.resolveLocale$?.();
+    let resolvedLocale = await ctx.translateFn.resolveLocale$();
 
     if (!resolvedLocale) {
       resolvedLocale = config.defaultLocale;

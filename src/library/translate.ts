@@ -10,7 +10,12 @@ import { getValue, handleParams } from './core';
  * @param lang Optional language if different from the current one
  * @returns The translated values
  */
-export const translate = (keys: string | string[], params?: any, ctx?: SpeakState, lang?: string): string | any => {
+export const translate = (
+  keys: string | string[],
+  params?: any,
+  ctx?: SpeakState,
+  lang?: string
+): string | string[] | any => {
   ctx = ctx ?? useSpeakContext();
   const { locale, translation, config, translateFn } = ctx;
 
@@ -20,14 +25,11 @@ export const translate = (keys: string | string[], params?: any, ctx?: SpeakStat
   lang = lang ?? locale.lang;
 
   if (Array.isArray(keys)) {
-    const data: { [key: string]: any } = {};
-    for (const key of keys) {
-      data[key] = translate(key, params, ctx, lang);
-    }
-    return data;
+    const values = keys.map(key => translate(key, params, ctx, lang));
+    return values;
   }
 
   const value = getValue(keys, translation[lang], config.keySeparator);
 
-  return value ? handleParams(value, params) : translateFn.handleMissingTranslation$?.(keys, value, params);
-}
+  return value ? handleParams(value, params) : translateFn.handleMissingTranslation$(keys, value, params);
+};

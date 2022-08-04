@@ -13,7 +13,7 @@ export const loadTranslation = async (
 
   assets = assets ?? config.assets;
   // Get translation
-  const tasks = assets.map(asset => translateFn.getTranslation$?.(lang, asset));
+  const tasks = assets.map(asset => translateFn.getTranslation$(lang, asset));
   const results = await Promise.all(tasks);
 
   const translation: Translation = {};
@@ -55,20 +55,18 @@ export const mergeDeep = (target: Translation, source: Translation): Translation
 };
 
 /**
- * Get value of the key
+ * Get value of a key
  */
-export const getValue = (key: string, data: Translation, keySeparator = '.'): string | any => {
+export const getValue = (key: string, data: Translation, keySeparator = '.'): string | undefined => {
   if (data) {
-    if (keySeparator) {
-      return key.split(keySeparator).reduce((acc, cur) => (acc && acc[cur]) != null ? acc[cur] : null, data);
-    }
-    return data[key] != null ? data[key] : null;
+    const value = key.split(keySeparator).reduce((acc, cur) => (acc && acc[cur] != null) ? acc[cur] : null, data);
+    if (typeof value === 'string') return value;
   }
-  return null;
+  return undefined;
 };
 
 /**
- * Replace params in the value
+ * Replace params in value
  */
 export const handleParams = (value: string, params: any): string => {
   const replacedValue = value.replace(/{{\s?([^{}\s]*)\s?}}/g, (substring: string, parsedKey: string) => {

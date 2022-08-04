@@ -62,9 +62,9 @@ describe('core', () => {
     value = getValue('SUBKEY1.AA', { KEY1: 'key1', SUBKEY1: { AA: 'aa' } }, '.');
     expect(value).toBe('aa');
     value = getValue('SUBKEY1', { KEY1: 'key1', SUBKEY1: { AA: 'aa' } }, '.');
-    expect(value).toEqual({ AA: 'aa' });
+    expect(value).toBeUndefined();
     value = getValue('SUBKEY1.BB', { KEY1: 'key1', SUBKEY1: { AA: 'aa' } }, '.');
-    expect(value).toBeNull();
+    expect(value).toBeUndefined();
   });
   test('handleParams', () => {
     let value = handleParams('Test {{param}}', { param: 'params' });

@@ -29,4 +29,4 @@ export const formatNumber = (
   if (currency) options.currency = currency;
 
   return new Intl.NumberFormat(lang, options).format(value);
-}
+};
