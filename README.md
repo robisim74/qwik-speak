@@ -251,9 +251,11 @@ npm run build
 ```
 
 ## What's new
-> Released v0.0.3
+> Released v0.0.4
 
-> App with localized routes
+> Translate head
+> Preloading data
+> Fallback for missing values
 
 ## License
 MIT
