@@ -1,4 +1,5 @@
-import { SpeakLocale, SpeakConfig, SpeakState, Translation } from '../library/types';
+import { $ } from '@builder.io/qwik';
+import { SpeakLocale, SpeakConfig, Translation, SpeakState } from '../library/types';
 
 const translationData: Translation = {
   'en-US': {
@@ -36,9 +37,9 @@ export const ctx: SpeakState = new Proxy({
   translation: translationData,
   config: config,
   translateFn: {
-    getTranslation$: (lang: string, asset: string | Translation) => (<Translation>asset)[lang],
-    resolveLocale$: () => null,
-    setLocale$: () => { },
-    handleMissingTranslation$: (key: string) => 'not found'
+    getTranslation$: $((lang: string, asset: string | Translation) => (<Translation>asset)[lang]),
+    resolveLocale$: $(() => null),
+    storeLocale$: $(() => { }),
+    handleMissingTranslation$: $((key: string) => 'not found')
   }
 }, {});

@@ -9,7 +9,7 @@ export type {
 export type {
   GetTranslationFn,
   ResolveLocaleFn,
-  SetLocaleFn,
+  StoreLocaleFn,
   HandleMissingTranslationFn,
 } from './library/types';
 // Hooks
@@ -20,7 +20,7 @@ export {
   useSpeakContext,
   useSpeakLocale,
   useTranslation,
-  useSpeakConfig
+  useSpeakConfig,
 } from './library/use-functions';
 // Functions
 export { changeLocale } from './library/change-locale';

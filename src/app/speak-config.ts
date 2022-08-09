@@ -2,7 +2,7 @@ import { $, useUserContext } from '@builder.io/qwik';
 import { isServer } from '@builder.io/qwik/build';
 import { useLocation } from '@builder.io/qwik-city';
 import { SpeakConfig, SpeakLocale, SpeakState, TranslateFn, Translation } from '../library/types';
-import { GetTranslationFn, ResolveLocaleFn, SetLocaleFn, HandleMissingTranslationFn } from '../library/types';
+import { GetTranslationFn, ResolveLocaleFn, StoreLocaleFn, HandleMissingTranslationFn } from '../library/types';
 import { getValue } from '../library/core';
 
 import { appTranslation } from './i18n';
@@ -65,8 +65,8 @@ export const getTranslateFn = (): TranslateFn => {
         return result ? JSON.parse(result[1]) : null; */
     });
 
-    // E.g. Set locale on Client replacing url
-    const setLocale$: SetLocaleFn = $((locale: SpeakLocale) => {
+    // E.g. Store locale on Client replacing url
+    const storeLocale$: StoreLocaleFn = $((locale: SpeakLocale) => {
         const url = new URL(window.location.href);
         const lang = config.supportedLocales.find(x => url.pathname.startsWith(`/${x.lang}`))?.lang;
 
@@ -87,7 +87,7 @@ export const getTranslateFn = (): TranslateFn => {
 
         window.history.pushState({}, '', url);
 
-        // E.g. Set locale in cookie 
+        // E.g. Store locale in cookie 
         /* document.cookie = `locale=${JSON.stringify(locale)};path=/`; */
     });
 
@@ -106,7 +106,7 @@ export const getTranslateFn = (): TranslateFn => {
     return {
         /* getTranslation$: getTranslation$, */
         resolveLocale$: resolveLocale$,
-        setLocale$: setLocale$,
+        storeLocale$: storeLocale$,
         handleMissingTranslation$: handleMissingTranslation$
     };
 };

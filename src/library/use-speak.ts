@@ -17,7 +17,7 @@ export const useSpeak = (config: SpeakConfig, translateFn: TranslateFn = {}, lan
   // Assign functions
   translateFn.getTranslation$ = translateFn.getTranslation$ ?? getTranslation$;
   translateFn.resolveLocale$ = translateFn.resolveLocale$ ?? resolveLocale$;
-  translateFn.setLocale$ = translateFn.setLocale$ ?? setLocale$;
+  translateFn.storeLocale$ = translateFn.storeLocale$ ?? setLocale$;
   translateFn.handleMissingTranslation$ = translateFn.handleMissingTranslation$ ?? handleMissingTranslation$;
 
   // Set initial state

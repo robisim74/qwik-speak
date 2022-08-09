@@ -38,6 +38,5 @@ module.exports = {
     'no-console': 'off',
     'max-len': ["error", { "code": 120, "tabWidth": 2, "ignoreRegExpLiterals": true }],
     'quotes': ["error", "single", { "avoidEscape": true }],
-    'qwik/valid-lexical-scope': 'off'
   },
 };

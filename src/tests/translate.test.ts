@@ -15,8 +15,8 @@ describe('translate function', () => {
     const value = t(['test', 'testParams'], { param: 'params' }, ctx);
     expect(value).toEqual(['Test', 'Test params']);
   });
-  test('missing value', () => {
-    const value = t('test1', {}, ctx);
+  test('missing value', async () => {
+    const value = await t('test1', {}, ctx);
     expect(value).toBe('not found');
   });
   test('key separator', () => {

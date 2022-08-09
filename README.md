@@ -152,8 +152,8 @@ export const resolveLocale$: ResolveLocaleFn = $(() => {
     /* Must contain the logic to resolve which locale to use during SSR */
 });
 
-export const setLocale$: SetLocaleFn = $((locale: SpeakLocale) => {
-    /* Must contain the logic to set the locale on Client when changes */
+export const storeLocale$: StoreLocaleFn = $((locale: SpeakLocale) => {
+    /* Must contain the logic to store the locale on Client when changes */
 });
 
 export const handleMissingTranslation$: HandleMissingTranslationFn = $((key: string, value?: string, params?: any, ctx?: SpeakState) => {
@@ -251,11 +251,7 @@ npm run build
 ```
 
 ## What's new
-> Released v0.0.4
-
-> Translate head
-> Preloading data
-> Fallback for missing values
+> Released v0.0.5
 
 ## License
 MIT
