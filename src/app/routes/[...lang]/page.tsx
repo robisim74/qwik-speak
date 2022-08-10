@@ -8,6 +8,9 @@ export const Page = component$(
   () => {
     return (
       <>
+        <h1>{t('app.title')}</h1>
+        <h3>{t('app.subtitle')}</h3>
+
         <p>{t('page.description')}</p>
         <p>{t('page.text')}</p>
       </>
@@ -24,9 +27,6 @@ export default component$(() => {
      * by the handleMissingTranslation$ implemented during configuration
      */
     <Speak assets={['/public/i18n/page']} langs={['en-US']}>
-      <h1>{t('app.title')}</h1>
-      <h3>{t('app.subtitle')}</h3>
-
       <Page />
     </Speak>
   );

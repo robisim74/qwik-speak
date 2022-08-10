@@ -13,6 +13,9 @@ export const Home = component$(
 
     return (
       <>
+        <h1>{t('app.title')}</h1>
+        <h3>{t('app.subtitle')}</h3>
+
         {/* Params */}
         <p>{t('home.greeting', { name: 'Qwik Speak' })}</p>
         {/* Html tags */}
@@ -35,9 +38,6 @@ export default component$(() => {
      * Add Home translation (only available in child components)
      */
     <Speak assets={['/public/i18n/home']}>
-      <h1>{t('app.title')}</h1>
-      <h3>{t('app.subtitle')}</h3>
-
       <Home />
     </Speak>
   );

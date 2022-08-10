@@ -46,5 +46,5 @@ export const Speak = component$((props: SpeakProps) => {
     }
   });
 
-  return <Slot />
+  return <Slot />;
 }, { tagName: 'speak' });
