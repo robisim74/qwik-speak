@@ -37,10 +37,10 @@ C4Container
             Container_Boundary(b, "Layout A") {
                 Component(b0, "useSpeak", "", "Uses its own Speak context")
                 Container_Boundary(b1, "Home") {
-                    Component(b10, "useAddSpeak", "", "Adds its own translation data")        
+                    Component(b10, "Speak", "", "Adds its own translation data to the context")        
                 }  
                 Container_Boundary(b2, "Page") {
-                    Component(b20, "useAddSpeak", "", "Adds its own translation data")        
+                    Component(b20, "Speak", "", "Adds its own translation data to the context")        
                 }       
             }
             Container_Boundary(c, "Layout B") {
@@ -114,6 +114,9 @@ export const config: SpeakConfig = {
 import { useSpeak } from 'qwik-speak';
 
 export default component$(() => {
+    /**
+     * Init Speak (only available in child components)
+     */
     useSpeak(config);
 
     return (<></>);
@@ -121,22 +124,29 @@ export default component$(() => {
 ```
 ### Adding translation data to a context
 ```jsx
-import { useAddSpeak } from 'qwik-speak';
+import { Speak } from 'qwik-speak';
 
 export default component$(() => {
-    useAddSpeak([homeTranslation]);
-
-    return (<></>);
+  return (
+    /**
+     * Add Home translation (only available in child components)
+     */
+    <Speak assets={[homeTranslation]}>
+      <Home />
+    </Speak>
+  );
 });
 ```
 ### Additional languages
 ```jsx
-import { useAddSpeak } from 'qwik-speak';
+import { Speak } from 'qwik-speak';
 
 export default component$(() => {
-    useAddSpeak([homeTranslation], ['en-US']);
-
-    return (<></>);
+  return (
+    <Speak assets={[homeTranslation]} langs={['en-US']}>
+      <Home />
+    </Speak>
+  );
 });
 ```
 > The translation data of the additional languages are preloaded along with the current language. They can be used as a fallback for missing values by implementing `handleMissingTranslation$` below, or for multilingual pages
@@ -172,6 +182,7 @@ export default component$(() => {
     return (<></>);
 });
 ```
+> An example of these implementations can be found in the [app](https://github.com/robisim74/qwik-speak/tree/main/src/app)
 
 ## Speak config
 - `defaultLocale`
@@ -201,9 +212,6 @@ and optionally contains:
 ### Hooks
 - `useSpeak(config: SpeakConfig, translateFn?: TranslateFn, langs?: string[])`
 Creates a new Speak context, resolves the locale & loads translation data
-
-- `useAddSpeak(assets: Array<string | Translation>, langs?: string[])`
-Adds translation data to a Speak context
 
 ### Functions
 - `translate(keys: string | string[], params?: any, ctx?: SpeakState, lang?: string)`
@@ -248,7 +256,7 @@ npm run build
 ```
 
 ## What's new
-> Released v0.0.5
+> Released v0.0.6
 
 ## License
 MIT
