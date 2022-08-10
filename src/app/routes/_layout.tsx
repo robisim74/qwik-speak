@@ -7,7 +7,7 @@ import { getConfig, getTranslateFn } from '../speak-config';
 
 export default component$(() => {
   /**
-   * Init Speak
+   * Init Speak (only available in child components)
    */
   useSpeak(getConfig(), getTranslateFn());
 

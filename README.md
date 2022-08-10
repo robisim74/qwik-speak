@@ -205,9 +205,6 @@ Creates a new Speak context, resolves the locale & loads translation data
 - `useAddSpeak(assets: Array<string | Translation>, langs?: string[])`
 Adds translation data to a Speak context
 
-- `useSpeakHead(title?: string, description?: string, params?: any)`
-Sets html lang, and translates head title and description
-
 ### Functions
 - `translate(keys: string | string[], params?: any, ctx?: SpeakState, lang?: string)`
 Translates a key or an array of keys

@@ -1,4 +1,4 @@
-import type { InternalSpeakState, SpeakState } from './types';
+import type { SpeakState } from './types';
 import { useSpeakContext } from './use-functions';
 import { getValue } from './core';
 
@@ -18,9 +18,6 @@ export const translate = (
 ): string | string[] | any => {
   ctx = ctx ?? useSpeakContext();
   const { locale, translation, config, translateFn } = ctx;
-
-  // Rerender if the state has changed
-  const { $flags$ } = <InternalSpeakState>ctx;
 
   lang = lang ?? locale.lang;
 

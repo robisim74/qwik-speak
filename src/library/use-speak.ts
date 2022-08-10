@@ -25,8 +25,7 @@ export const useSpeak = (config: SpeakConfig, translateFn: TranslateFn = {}, lan
     locale: {},
     translation: Object.fromEntries(config.supportedLocales.map(value => [value.lang, {}])),
     config: config,
-    translateFn: translateFn,
-    $flags$: 0
+    translateFn: translateFn
   }, { recursive: true });
   const ctx = state as SpeakState;
   const { locale, translation } = ctx;
@@ -51,9 +50,7 @@ export const useSpeak = (config: SpeakConfig, translateFn: TranslateFn = {}, lan
       Object.assign(translation, newTranslation);
     }
 
-    // Change of state
     Object.assign(locale, resolvedLocale);
-    state.$flags$ += 1;
 
     // Prevent Qwik from creating subscriptions
     if (isServer) {

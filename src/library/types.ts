@@ -95,29 +95,25 @@ export interface InternalSpeakState {
   /**
    * Current locale
    */
-  locale: Partial<SpeakLocale>,
+  locale: Partial<SpeakLocale>;
   /**
    * Translation data
    */
-  translation: Translation,
+  translation: Translation;
   /***
    * Speak configuration
    */
-  config: SpeakConfig
+  config: SpeakConfig;
   /**
    * Functions to use
    */
-  translateFn: TranslateFn,
-  /**
-   * Change of state
-   */
-  $flags$: number,
+  translateFn: TranslateFn;
 }
 
 /**
  * Speak state
  */
 export interface SpeakState extends Omit<InternalSpeakState, '$flags$'> {
-  locale: SpeakLocale
-  translateFn: Required<TranslateFn>
+  locale: SpeakLocale;
+  translateFn: Required<TranslateFn>;
 }

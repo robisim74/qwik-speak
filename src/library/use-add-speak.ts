@@ -1,6 +1,6 @@
 import { useMount$ } from '@builder.io/qwik';
 
-import type { InternalSpeakState, Translation } from './types';
+import type { Translation } from './types';
 import { useSpeakContext } from './use-functions';
 import { addData, loadTranslation } from './core';
 import { qDev } from './utils';
@@ -31,9 +31,6 @@ export const useAddSpeak = (assets: Array<string | Translation>, langs: string[]
       resolvedAssets.add(asset);
     }
     Object.assign(config.assets, Array.from(resolvedAssets));
-
-    // Change of state
-    (<InternalSpeakState>ctx).$flags$ += 1;
 
     if (qDev) {
       console.debug('Qwik Add Speak', '', 'Translation loaded');

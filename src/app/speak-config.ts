@@ -1,4 +1,4 @@
-import { $, useUserContext } from '@builder.io/qwik';
+import { $, useEnvData } from '@builder.io/qwik';
 import { isServer } from '@builder.io/qwik/build';
 import { useLocation } from '@builder.io/qwik-city';
 import { SpeakConfig, SpeakLocale, SpeakState, TranslateFn, Translation } from '../library/types';
@@ -17,12 +17,12 @@ export const getConfig = (): SpeakConfig => {
             { lang: 'it-IT', currency: 'EUR', timeZone: 'Europe/Rome', units: { 'length': 'kilometer' } },
             { lang: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles', units: { 'length': 'mile' } }
         ],
-        assets: [
-            appTranslation, // Shared
-        ]
         /* assets: [
-          '/public/i18n/app', // Shared
+            appTranslation, // Shared
         ] */
+        assets: [
+            '/public/i18n/app', // Shared
+        ]
     };
 };
 
@@ -31,7 +31,10 @@ export const getConfig = (): SpeakConfig => {
  */
 export const getTranslateFn = (): TranslateFn => {
     const loc = useLocation();
-    /* const ctx = useUserContext<any>('qwikcity'); */
+    /* const ctx = useEnvData<unknown>('qwikcity'); */
+
+    const href = loc.href;
+    const pathLang = loc.params?.lang;
 
     const config = getConfig();
 
@@ -40,7 +43,7 @@ export const getTranslateFn = (): TranslateFn => {
         let url = '';
         // Absolute urls on server
         if (isServer) {
-            url = new URL(loc.href).origin;
+            url = new URL(href).origin;
         }
         url += `${asset}-${lang}.json`;
         const data = await fetch(url);
@@ -49,17 +52,18 @@ export const getTranslateFn = (): TranslateFn => {
 
     // E.g. Resolve locale by url during SSR
     const resolveLocale$: ResolveLocaleFn = $(() => {
-        const lang = loc.params?.lang || config.defaultLocale.lang;
+        const lang = pathLang || config.defaultLocale.lang;
         const locale = config.supportedLocales.find(x => x.lang == lang);
         return locale;
 
         // E.g. Resolve locale by by accept-language header
-        /* const headers = ctx?.response?.body?.headers;
+        /* const headers = (ctx as any)?.response?.body?.headers;
+        console.log(headers);
         if (!headers?.acceptLanguage) return null;
         return headers.acceptLanguage.split(';')[0].split(',')[0]; */
 
         // E.g. Resolve locale by cookie
-        /* const headers = ctx?.response?.body?.headers;
+        /* const headers = (ctx as any)?.response?.body?.headers;
         if (!headers?.cookie) return null;
         const result = new RegExp('(?:^|; )' + encodeURIComponent('locale') + '=([^;]*)').exec(headers['cookie']);
         return result ? JSON.parse(result[1]) : null; */
@@ -104,7 +108,7 @@ export const getTranslateFn = (): TranslateFn => {
     });
 
     return {
-        /* getTranslation$: getTranslation$, */
+        getTranslation$: getTranslation$,
         resolveLocale$: resolveLocale$,
         storeLocale$: storeLocale$,
         handleMissingTranslation$: handleMissingTranslation$

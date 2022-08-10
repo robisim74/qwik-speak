@@ -15,7 +15,6 @@ export type {
 // Hooks
 export { useSpeak } from './library/use-speak';
 export { useAddSpeak } from './library/use-add-speak';
-export { useSpeakHead } from './library/use-speak-head';
 export {
   useSpeakContext,
   useSpeakLocale,

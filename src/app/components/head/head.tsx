@@ -10,6 +10,8 @@ export const Head = component$(
       <>
         <meta charSet="utf-8" />
 
+        <title>{head.title ? `${head.title} - Qwik Speak` : `Qwik Speak`}</title>
+
         <link rel="canonical" href={loc.href} />
 
         {head.meta.map((m) => (

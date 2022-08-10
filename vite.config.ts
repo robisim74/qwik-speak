@@ -6,6 +6,7 @@ export default defineConfig(() => {
   return {
     publicDir: '', // Exclude public folder from lib
     build: {
+      target: 'es2020',
       lib: {
         entry: './src/index.ts',
         formats: ['es', 'cjs'],

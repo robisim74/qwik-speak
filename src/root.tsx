@@ -1,4 +1,4 @@
-import { Content, Html } from '@builder.io/qwik-city';
+import { Html, RouterOutlet } from '@builder.io/qwik-city';
 import { Head } from './app/components/head/head';
 
 import './global.css';
@@ -8,7 +8,7 @@ export default () => {
     <Html>
       <Head />
       <body>
-        <Content />
+        <RouterOutlet />
       </body>
     </Html>
   );
