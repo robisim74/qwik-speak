@@ -1,9 +1,9 @@
-import { component$, Host } from '@builder.io/qwik';
+import { component$ } from '@builder.io/qwik';
 import { translate as t } from '../../../library/translate';
 import { formatDate as fd } from '../../../library/format-date';
 import { formatNumber as fn } from '../../../library/format-number';
 import { useSpeakLocale } from '../../../library/use-functions';
-import { useAddSpeak } from '../../../library/use-add-speak';
+import { Speak } from '../../../library/speak';
 
 import { homeTranslation } from '../../i18n';
 
@@ -30,22 +30,15 @@ export const Home = component$(
 );
 
 export default component$(() => {
-  /**
-   * Add Home translation (only available in child components)
-   */
-  /* useAddSpeak([homeTranslation]); */
-  useAddSpeak(['/public/i18n/home']);
-  /**
-   * Translate head
-   */
-  //useSpeakHead('home.title', 'home.description', { name: 'Qwik Speak' });
-
   return (
-    <Host>
+    /**
+     * Add Home translation (only available in child components)
+     */
+    <Speak assets={['/public/i18n/home']}>
       <h1>{t('app.title')}</h1>
       <h3>{t('app.subtitle')}</h3>
 
       <Home />
-    </Host>
+    </Speak>
   );
 });

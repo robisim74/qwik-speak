@@ -14,13 +14,14 @@ export type {
 } from './library/types';
 // Hooks
 export { useSpeak } from './library/use-speak';
-export { useAddSpeak } from './library/use-add-speak';
 export {
   useSpeakContext,
   useSpeakLocale,
   useTranslation,
   useSpeakConfig,
 } from './library/use-functions';
+// Components
+export { Speak } from './library/speak';
 // Functions
 export { changeLocale } from './library/change-locale';
 export { translate } from './library/translate';
