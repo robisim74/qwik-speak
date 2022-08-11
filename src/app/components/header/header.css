@@ -21,7 +21,7 @@ header .active {
   background-color: #ffffff30;
 }
 
-change-locale {
+.change-locale {
   padding: 8px;
   color: white;
   display: flex;
@@ -29,7 +29,7 @@ change-locale {
   gap: 10px;
 }
 
-change-locale .button {
+.change-locale .button {
   color: white;
   text-decoration: none;
   padding: 4px 8px;
@@ -38,10 +38,10 @@ change-locale .button {
   cursor: pointer;
 }
 
-change-locale .button:hover {
+.change-locale .button:hover {
   background-color: #ffffff50;
 }
 
-change-locale .active {
+.change-locale .active {
   background-color: #ffffff30;
 }

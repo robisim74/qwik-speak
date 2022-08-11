@@ -42,9 +42,9 @@ export const Speak = component$((props: SpeakProps) => {
     Object.assign(config.assets, Array.from(resolvedAssets));
 
     if (qDev) {
-      console.debug('Qwik Add Speak', '', 'Translation loaded');
+      console.debug('Qwik Speak', '', 'Additional translation loaded');
     }
   });
 
   return <Slot />;
-}, { tagName: 'speak' });
+});

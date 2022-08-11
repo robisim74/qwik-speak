@@ -1,5 +1,5 @@
-import { component$, Host, Slot } from '@builder.io/qwik';
-import { EndpointHandler } from '@builder.io/qwik-city';
+import { component$, Slot } from '@builder.io/qwik';
+import { RequestHandler } from '@builder.io/qwik-city';
 import { useSpeak } from '../../library/use-speak';
 
 import { Header } from '../components/header/header';
@@ -12,17 +12,17 @@ export default component$(() => {
   useSpeak(getConfig(), getTranslateFn());
 
   return (
-    <Host>
+    <>
       <Header />
       <main>
         <Slot />
       </main>
-    </Host >
+    </>
   );
 });
 
 // E.g. add cookie & accept language to endpoint response
-/* export const onGet: EndpointHandler = ({ request }) => {
+/* export const onGet: RequestHandler = ({ request }) => {
   const cookie = request.headers?.get('cookie');
   const acceptLanguage = request.headers?.get('accept-language');
 

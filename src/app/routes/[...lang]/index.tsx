@@ -7,30 +7,27 @@ import { Speak } from '../../../library/speak';
 
 import { homeTranslation } from '../../i18n';
 
-export const Home = component$(
-  () => {
-    const units = useSpeakLocale().units!;
+export const Home = component$(() => {
+  const units = useSpeakLocale().units!;
 
-    return (
-      <>
-        <h1>{t('app.title')}</h1>
-        <h3>{t('app.subtitle')}</h3>
+  return (
+    <>
+      <h1>{t('app.title')}</h1>
+      <h3>{t('app.subtitle')}</h3>
 
-        {/* Params */}
-        <p>{t('home.greeting', { name: 'Qwik Speak' })}</p>
-        {/* Html tags */}
-        <p dangerouslySetInnerHTML={t('home.text')}></p>
-        {/* Dates */}
-        <p>{fd(Date.now(), { dateStyle: 'full', timeStyle: 'short' })}</p>
-        {/* Numbers */}
-        <p>{fn(1000000)}</p>
-        <p>{fn(1000000, { style: 'currency' })}</p>
-        <p>{fn(1, { style: 'unit', unit: units['length'] })}</p>
-      </>
-    );
-  },
-  { tagName: 'Home' }
-);
+      {/* Params */}
+      <p>{t('home.greeting', { name: 'Qwik Speak' })}</p>
+      {/* Html tags */}
+      <p dangerouslySetInnerHTML={t('home.text')}></p>
+      {/* Dates */}
+      <p>{fd(Date.now(), { dateStyle: 'full', timeStyle: 'short' })}</p>
+      {/* Numbers */}
+      <p>{fn(1000000)}</p>
+      <p>{fn(1000000, { style: 'currency' })}</p>
+      <p>{fn(1, { style: 'unit', unit: units['length'] })}</p>
+    </>
+  );
+});
 
 export default component$(() => {
   return (
