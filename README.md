@@ -34,18 +34,13 @@ stateDiagram-v2
 ```mermaid
 C4Container
     Container_Boundary(a, "App") {
-            Container_Boundary(b, "Layout A") {
-                Component(b0, "useSpeak", "", "Uses its own Speak context")
-                Container_Boundary(b1, "Home") {
-                    Component(b10, "Speak", "", "Adds its own translation data to the context")        
-                }  
-                Container_Boundary(b2, "Page") {
-                    Component(b20, "Speak", "", "Adds its own translation data to the context")        
-                }       
-            }
-            Container_Boundary(c, "Layout B") {
-                Component(c0, "useSpeak", "", "Uses its own Speak context")           
-            }
+        Component(a0, "QwikSpeak", "", "Uses Speak context")
+        Container_Boundary(b1, "Home") {
+            Component(a10, "Speak", "", "Adds its own translation data to the context")        
+        }  
+        Container_Boundary(b2, "Page") {
+            Component(a20, "Speak", "", "Adds its own translation data to the context")        
+        }       
     }
 ```
 -->
@@ -60,11 +55,11 @@ npm install qwik-speak --save-dev
 import { translate as t } from 'qwik-speak';
 
 export default component$(() => {
-    return (
-        <Host>
-            <h1>{t('app.title', { name: 'Qwik Speak' })}</h1> {/* I'm Qwik Speak */}
-        </Host>
-    );
+  return (
+    <>
+      <h1>{t('app.title', { name: 'Qwik Speak' })}</h1> {/* I'm Qwik Speak */}
+    </>
+  );
 });
 ```
 ### Getting dates & numbers
@@ -72,12 +67,12 @@ export default component$(() => {
 import { formatDate as fd, formatNumber as fn } from 'qwik-speak';
 
 export default component$(() => {
-    return (
-        <Host>
-            <p>{fd(Date.now(), { dateStyle: 'full', timeStyle: 'short' })}</p> {/* Wednesday, July 20, 2022 at 7:09 AM */}
-            <p>{fn(1000000, { style: 'currency' })}</p> {/* $1,000,000.00 */}
-        </Host>
-    );
+  return (
+    <>
+      <p>{fd(Date.now(), { dateStyle: 'full', timeStyle: 'short' })}</p> {/* Wednesday, July 20, 2022 at 7:09 AM */}
+      <p>{fn(1000000, { style: 'currency' })}</p> {/* $1,000,000.00 */}
+    </>
+  );
 });
 ```
 ### Configuration
@@ -85,41 +80,46 @@ export default component$(() => {
 import { SpeakConfig, Translation } from 'qwik-speak';
 
 export const appTranslation: Translation = {
-    "en-US": {
-        "app": {
-            "title": "I'm {{name}}"
-        }
-    },
-    "it-IT": {
-        "app": {
-            "title": "Io sono {{name}}"
-        }
+  "en-US": {
+    "app": {
+      "title": "I'm {{name}}"
     }
+  },
+  "it-IT": {
+    "app": {
+      "title": "Io sono {{name}}"
+    }
+  }
 };
 
 export const config: SpeakConfig = {
-    defaultLocale: { language: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles' },
-    supportedLocales: [
-        { language: 'it-IT', currency: 'EUR', timeZone: 'Europe/Rome' },
-        { language: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles' }
-    ],
-    assets: [
-        appTranslation
-    ]
+  defaultLocale: { language: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles' },
+  supportedLocales: [
+    { language: 'it-IT', currency: 'EUR', timeZone: 'Europe/Rome' },
+    { language: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles' }
+  ],
+  assets: [
+    appTranslation
+  ]
 };
 ```
 > Assets can be translation data, as in the example, or string paths to load json files or others types by implementing `getTranslation$` below
 ```jsx
-// File: src/routes/_layout.tsx
-import { useSpeak } from 'qwik-speak';
+// File: root.tsx
+import { QwikSpeak } from 'qwik-speak';
 
 export default component$(() => {
-    /**
-     * Init Speak (only available in child components)
-     */
-    useSpeak(config);
-
-    return (<></>);
+  return (
+    <QwikCity>
+      {/* Init Qwik Speak (only available in child components) */}
+      <QwikSpeak config={config}>
+        <Head />
+        <body>
+          <RouterOutlet />
+        </body>
+      </QwikSpeak>
+    </QwikCity>
+  );
 });
 ```
 ### Adding translation data to a context
@@ -154,35 +154,43 @@ export default component$(() => {
 ```typescript
 import { $ } from '@builder.io/qwik';
 
-export const getTranslation$: GetTranslationFn = $((lang: string, asset: string | Translation) => {
-    /* Must contain the logic to get translation data: by default it uses only an asset of Translation object */
+export const getTranslation$: GetTranslationFn = $((lang: string, asset: string | Translation, location?: RouteLocation) => {
+  /* Must contain the logic to get translation data: by default it uses only an asset of Translation object */
 });
 
-export const resolveLocale$: ResolveLocaleFn = $(() => {
-    /* Must contain the logic to resolve which locale to use during SSR */
+export const resolveLocale$: ResolveLocaleFn = $((location?: RouteLocation, endpointData?: any) => {
+  /* Must contain the logic to resolve which locale to use during SSR */
 });
 
 export const storeLocale$: StoreLocaleFn = $((locale: SpeakLocale) => {
-    /* Must contain the logic to store the locale on Client when changes */
+  /* Must contain the logic to store the locale on Client when changes */
 });
 
 export const handleMissingTranslation$: HandleMissingTranslationFn = $((key: string, value?: string, params?: any, ctx?: SpeakState) => {
-    /* Must contain the logic to handle missing values: by default returns the key */
+  /* Must contain the logic to handle missing values: by default returns the key */
 });
 
 export const translateFn: TranslateFn = {
-    getTranslation$: getTranslation$,
-    /* other functions */
+  getTranslation$: getTranslation$,
+  /* other functions */
 };
 ```
 ```jsx
 export default component$(() => {
-    useSpeak(config, translateFn); // Use Speak with config & translation functions
-
-    return (<></>);
+  return (
+    <QwikCity>
+      {/* Init Qwik Speak with translation functions */}
+      <QwikSpeak config={config} translateFn={translateFn}>
+        <Head />
+        <body>
+          <RouterOutlet />
+        </body>
+      </QwikSpeak>
+    </QwikCity>
+  );
 });
 ```
-> An example of these implementations can be found in the [app](https://github.com/robisim74/qwik-speak/tree/main/src/app)
+> Examples of these implementations can be found in the [app](https://github.com/robisim74/qwik-speak/tree/main/src/app)
 
 ## Speak config
 - `defaultLocale`
@@ -209,10 +217,6 @@ and optionally contains:
 - `units` Key value pairs of unit identifiers
 
 ## APIs
-### Hooks
-- `useSpeak(config: SpeakConfig, translateFn?: TranslateFn, langs?: string[])`
-Creates a new Speak context, resolves the locale & loads translation data
-
 ### Functions
 - `translate(keys: string | string[], params?: any, ctx?: SpeakState, lang?: string)`
 Translates a key or an array of keys
@@ -256,7 +260,7 @@ npm run build
 ```
 
 ## What's new
-> Released v0.0.6
+> Released v0.0.7
 
 ## License
 MIT

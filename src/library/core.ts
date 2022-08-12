@@ -1,3 +1,5 @@
+import { RouteLocation } from '@builder.io/qwik-city';
+
 import type { Translation, SpeakState } from './types';
 import { isObject } from './utils';
 
@@ -7,13 +9,14 @@ import { isObject } from './utils';
 export const loadTranslation = async (
   lang: string,
   ctx: SpeakState,
+  location?: RouteLocation,
   assets?: Array<string | Translation>
 ): Promise<Translation> => {
   const { config, translateFn } = ctx;
 
   assets = assets ?? config.assets;
   // Get translation
-  const tasks = assets.map(asset => translateFn.getTranslation$(lang, asset));
+  const tasks = assets.map(asset => translateFn.getTranslation$(lang, asset, location));
   const results = await Promise.all(tasks);
 
   const translation: Translation = {};

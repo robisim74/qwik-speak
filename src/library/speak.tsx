@@ -1,4 +1,5 @@
 import { component$, Slot, useMount$ } from '@builder.io/qwik';
+import { useLocation } from '@builder.io/qwik-city';
 
 import type { Translation } from './types';
 import { useSpeakContext } from './use-functions';
@@ -23,6 +24,9 @@ export const Speak = component$((props: SpeakProps) => {
   const ctx = useSpeakContext();
   const { locale, translation, config } = ctx;
 
+  // Get location data
+  const location = useLocation();
+
   // Will block the rendering until callback resolves
   useMount$(async () => {
     const resolvedLangs = new Set(props.langs || []);
@@ -30,9 +34,9 @@ export const Speak = component$((props: SpeakProps) => {
 
     // Load translation data
     for (const lang of resolvedLangs) {
-      const newTranslation = await loadTranslation(lang, ctx, props.assets);
-      addData(newTranslation, translation[lang], lang);
-      Object.assign(translation[lang], newTranslation[lang]);
+      const loadedTranslation = await loadTranslation(lang, ctx, location, props.assets);
+      addData(loadedTranslation, translation[lang], lang);
+      Object.assign(translation[lang], loadedTranslation[lang]);
     }
 
     const resolvedAssets = new Set(config.assets);
@@ -42,7 +46,7 @@ export const Speak = component$((props: SpeakProps) => {
     Object.assign(config.assets, Array.from(resolvedAssets));
 
     if (qDev) {
-      console.debug('Qwik Speak', '', 'Additional translation loaded');
+      console.debug('Speak', '', 'Additional translation loaded');
     }
   });
 

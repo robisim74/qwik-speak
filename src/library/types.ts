@@ -1,4 +1,5 @@
 import { QRL, ValueOrPromise } from '@builder.io/qwik';
+import { RouteLocation } from '@builder.io/qwik-city';
 
 export interface SpeakLocale {
   /**
@@ -36,12 +37,14 @@ export type Translation = { [key: string]: any };
 /**
  * Must contain the logic to get translation data
  */
-export type GetTranslationFn = QRL<(lang: string, asset: string | Translation) => ValueOrPromise<Translation>>;
+export type GetTranslationFn = QRL<(lang: string, asset: string | Translation, location?: RouteLocation)
+  => ValueOrPromise<Translation>>;
 
 /**
  * Must contain the logic to resolve which locale to use during SSR
  */
-export type ResolveLocaleFn = QRL<() => ValueOrPromise<SpeakLocale | null | undefined>>;
+export type ResolveLocaleFn = QRL<(location?: RouteLocation, endpointData?: any)
+  => ValueOrPromise<SpeakLocale | null | undefined>>;
 
 /**
  * Must contain the logic to store the locale on Client when changes

@@ -1,20 +1,22 @@
-import { useStore, useContextProvider, useMount$ } from '@builder.io/qwik';
+import { component$, Slot, useContextProvider, useMount$, useStore } from '@builder.io/qwik';
+import { useEndpoint, useLocation } from '@builder.io/qwik-city';
 import { isServer } from '@builder.io/qwik/build';
-
-import type { SpeakConfig, TranslateFn, SpeakState, InternalSpeakState } from './types';
-import { handleMissingTranslation$, getTranslation$, setLocale$, resolveLocale$ } from './constants';
+import { getTranslation$, resolveLocale$, setLocale$, handleMissingTranslation$ } from './constants';
 import { SpeakContext } from './context';
 import { loadTranslation } from './core';
+
+import type { InternalSpeakState, SpeakConfig, SpeakState, TranslateFn } from './types';
 import { qDev } from './utils';
 
-/**
- * Creates a new Speak context, resolves the locale & loads translation data
- * @param config Speak configuration
- * @param translateFn Translation functions to use
- * @param langs Optional additional languages to preload data for
- */
-export const useSpeak = (config: SpeakConfig, translateFn: TranslateFn = {}, langs: string[] = []): void => {
+export interface QwikSpeakProps {
+  config: SpeakConfig;
+  translateFn?: TranslateFn;
+  langs?: string[];
+}
+
+export const QwikSpeak = component$((props: QwikSpeakProps) => {
   // Assign functions
+  const translateFn = props.translateFn ?? {};
   translateFn.getTranslation$ = translateFn.getTranslation$ ?? getTranslation$;
   translateFn.resolveLocale$ = translateFn.resolveLocale$ ?? resolveLocale$;
   translateFn.storeLocale$ = translateFn.storeLocale$ ?? setLocale$;
@@ -23,8 +25,8 @@ export const useSpeak = (config: SpeakConfig, translateFn: TranslateFn = {}, lan
   // Set initial state
   const state = useStore<InternalSpeakState>({
     locale: {},
-    translation: Object.fromEntries(config.supportedLocales.map(value => [value.lang, {}])),
-    config: config,
+    translation: Object.fromEntries(props.config.supportedLocales.map(value => [value.lang, {}])),
+    config: props.config,
     translateFn: translateFn
   }, { recursive: true });
   const ctx = state as SpeakState;
@@ -32,22 +34,29 @@ export const useSpeak = (config: SpeakConfig, translateFn: TranslateFn = {}, lan
 
   useContextProvider(SpeakContext, ctx);
 
+  // Get location data
+  const location = useLocation();
+  // Get endopoint data
+  const resource = useEndpoint<any>();
+
   // Will block the rendering until callback resolves
   useMount$(async () => {
+    const endpointData = await resource.promise;
+
     // Resolve the locale
-    let resolvedLocale = await ctx.translateFn.resolveLocale$();
+    let resolvedLocale = await ctx.translateFn.resolveLocale$(location, endpointData);
 
     if (!resolvedLocale) {
-      resolvedLocale = config.defaultLocale;
+      resolvedLocale = props.config.defaultLocale;
     }
 
-    const resolvedLangs = new Set(langs);
+    const resolvedLangs = new Set(props.langs || []);
     resolvedLangs.add(resolvedLocale.lang);
 
     // Load translation data
     for (const lang of resolvedLangs) {
-      const newTranslation = await loadTranslation(lang, ctx);
-      Object.assign(translation, newTranslation);
+      const loadedTranslation = await loadTranslation(lang, ctx, location);
+      Object.assign(translation, loadedTranslation);
     }
 
     Object.assign(locale, resolvedLocale);
@@ -56,7 +65,7 @@ export const useSpeak = (config: SpeakConfig, translateFn: TranslateFn = {}, lan
     if (isServer) {
       // Shallow freeze: only applies to the immediate properties of object itself
       Object.freeze(translation);
-      Object.freeze(config);
+      Object.freeze(props.config);
       Object.freeze(translateFn)
     }
 
@@ -64,4 +73,6 @@ export const useSpeak = (config: SpeakConfig, translateFn: TranslateFn = {}, lan
       console.debug('Qwik Speak', '', 'Translation loaded');
     }
   });
-};
+
+  return <Slot />;
+});

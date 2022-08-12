@@ -1,4 +1,5 @@
 import { component$ } from '@builder.io/qwik';
+import { DocumentHead } from '@builder.io/qwik-city';
 import { translate as t } from '../../../library/translate';
 import { formatDate as fd } from '../../../library/format-date';
 import { formatNumber as fn } from '../../../library/format-number';
@@ -39,3 +40,8 @@ export default component$(() => {
     </Speak>
   );
 });
+
+export const head: DocumentHead = {
+  title: 'home.title',
+  meta: [{ name: 'description', content: 'home.description' }]
+};

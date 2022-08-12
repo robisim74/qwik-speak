@@ -1,5 +1,6 @@
 import { component$ } from '@builder.io/qwik';
 import { useDocumentHead, useLocation } from '@builder.io/qwik-city';
+import { translate as t } from '../../../library/translate';
 
 export const Head = component$(() => {
   const head = useDocumentHead();
@@ -9,12 +10,14 @@ export const Head = component$(() => {
     <head>
       <meta charSet="utf-8" />
 
-      <title>{head.title ? `${head.title} - Qwik Speak` : `Qwik Speak`}</title>
+      {/* Translate title */}
+      <title>{t(head.title, { name: 'Qwik Speak' })}</title>
 
       <link rel="canonical" href={loc.href} />
 
+      {/* Translate description */}
       {head.meta.map((m) => (
-        <meta {...m} />
+        m.name === 'description' ? <meta name="description" content={t(m.content!)} /> : <meta {...m} />
       ))}
 
       {head.links.map((l) => (

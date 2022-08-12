@@ -13,7 +13,6 @@ export type {
   HandleMissingTranslationFn,
 } from './library/types';
 // Hooks
-export { useSpeak } from './library/use-speak';
 export {
   useSpeakContext,
   useSpeakLocale,
@@ -21,6 +20,7 @@ export {
   useSpeakConfig,
 } from './library/use-functions';
 // Components
+export { QwikSpeak } from './library/qwik-speak';
 export { Speak } from './library/speak';
 // Functions
 export { changeLocale } from './library/change-locale';
