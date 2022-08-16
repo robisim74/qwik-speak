@@ -5,7 +5,7 @@
   "scripts": {
     "build": "npm run lint && npm run build.lib && npm run build.types",
     "build.client": "vite build",
-    "build.lib": "vite build --mode lib",
+    "build.lib": "vite build --mode lib --config vite.config.lib.ts",
     "build.ssr": "vite build --ssr src/entry.ssr.tsx",
     "build.types": "tsc --project tsconfig.lib.json",
     "dev": "npm run dev.ssr",

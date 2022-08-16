@@ -3,15 +3,12 @@ import { DocumentHead } from '@builder.io/qwik-city';
 import { translate as t } from '../../../../library/translate';
 import { Speak } from '../../../../library/speak';
 
-import { pageTranslation } from '../../../i18n';
-
 export const Page = component$(() => {
   return (
     <>
       <h1>{t('app.title')}</h1>
       <h3>{t('app.subtitle')}</h3>
 
-      <p>{t('page.description')}</p>
       <p>{t('page.text')}</p>
     </>
   );
@@ -24,7 +21,7 @@ export default component$(() => {
      * In this example, there is an additional language that is used as a fallback for missing values 
      * by the handleMissingTranslation$ implemented during configuration
      */
-    <Speak assets={['/public/i18n/page']} langs={['en-US']}>
+    <Speak assets={['/i18n/page']} langs={['en-US']}>
       <Page />
     </Speak>
   );

@@ -6,8 +6,6 @@ import { formatNumber as fn } from '../../../library/format-number';
 import { useSpeakLocale } from '../../../library/use-functions';
 import { Speak } from '../../../library/speak';
 
-import { homeTranslation } from '../../i18n';
-
 export const Home = component$(() => {
   const units = useSpeakLocale().units!;
 
@@ -35,7 +33,7 @@ export default component$(() => {
     /**
      * Add Home translation (only available in child components)
      */
-    <Speak assets={['/public/i18n/home']}>
+    <Speak assets={['/i18n/home']}>
       <Home />
     </Speak>
   );

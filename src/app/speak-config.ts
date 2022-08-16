@@ -5,8 +5,6 @@ import { SpeakConfig, SpeakLocale, SpeakState, TranslateFn, Translation } from '
 import { GetTranslationFn, ResolveLocaleFn, StoreLocaleFn, HandleMissingTranslationFn } from '../library/types';
 import { getValue } from '../library/core';
 
-import { appTranslation } from './i18n';
-
 /**
  * Speak config
  */
@@ -16,11 +14,8 @@ export const config: SpeakConfig = {
         { lang: 'it-IT', currency: 'EUR', timeZone: 'Europe/Rome', units: { 'length': 'kilometer' } },
         { lang: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles', units: { 'length': 'mile' } }
     ],
-    /* assets: [
-        appTranslation, // Shared
-    ] */
     assets: [
-        '/public/i18n/app', // Shared
+        '/i18n/app', // Shared
     ]
 };
 
