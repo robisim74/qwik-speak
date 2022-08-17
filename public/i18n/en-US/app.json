@@ -1,0 +1,19 @@
+{
+  "app": {
+    "title": "Qwik Speak",
+    "subtitle": "Translate your Qwik apps into any language",
+    "changeLocale": "Change locale",
+    "nav": {
+      "home": "Home",
+      "page": "Page"
+    },
+    "home": {
+      "title": "{{name}}",
+      "description": "Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps"
+    },
+    "page": {
+      "title": "Page - {{name}}",
+      "description": "I'm another page"
+    }
+  }
+}

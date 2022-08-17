@@ -19,7 +19,7 @@ export const config: SpeakConfig = {
   ]
 };
 
-// E.g. Fetch translation data from endpoint
+// E.g. Fetch translation data from json files in public dir or i18n/[lang]/[asset].json endpoint 
 export const getTranslation$: GetTranslationFn = $(async (
   lang: string,
   asset: string,

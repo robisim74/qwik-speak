@@ -1,0 +1,6 @@
+{
+  "home": {
+    "greeting": "Hi! I am {{name}}",
+    "text": "<em>Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps</em>"
+  }
+}

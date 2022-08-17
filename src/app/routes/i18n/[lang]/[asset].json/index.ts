@@ -1,6 +1,7 @@
 import type { RequestHandler } from '@builder.io/qwik-city';
 import { Translation } from '~/library/types';
 
+// E.g. Endpoint to get translation data
 export const onGet: RequestHandler = ({ params }) => {
   return { [params.asset]: i18n[params.lang][params.asset] };
 };
