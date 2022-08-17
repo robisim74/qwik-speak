@@ -77,20 +77,7 @@ export default component$(() => {
 ```
 ### Configuration
 ```typescript
-import { SpeakConfig, Translation } from 'qwik-speak';
-
-export const appTranslation: Translation = {
-  "en-US": {
-    "app": {
-      "title": "I'm {{name}}"
-    }
-  },
-  "it-IT": {
-    "app": {
-      "title": "Io sono {{name}}"
-    }
-  }
-};
+import { SpeakConfig } from 'qwik-speak';
 
 export const config: SpeakConfig = {
   defaultLocale: { language: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles' },
@@ -99,11 +86,11 @@ export const config: SpeakConfig = {
     { language: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles' }
   ],
   assets: [
-    appTranslation
+    'app',
   ]
 };
 ```
-> Assets can be translation data, as in the example, or string paths to load json files or others types by implementing `getTranslation$` below
+> Assets will be loaded through the implementation of `getTranslation$` function below. You can call an endpoint, or load json files
 ```jsx
 // File: root.tsx
 import { QwikSpeak } from 'qwik-speak';
@@ -131,7 +118,7 @@ export default component$(() => {
     /**
      * Add Home translation (only available in child components)
      */
-    <Speak assets={[homeTranslation]}>
+    <Speak assets={['home']}>
       <Home />
     </Speak>
   );
@@ -143,7 +130,7 @@ import { Speak } from 'qwik-speak';
 
 export default component$(() => {
   return (
-    <Speak assets={[homeTranslation]} langs={['en-US']}>
+    <Speak assets={['home']} langs={['en-US']}>
       <Home />
     </Speak>
   );
@@ -154,8 +141,8 @@ export default component$(() => {
 ```typescript
 import { $ } from '@builder.io/qwik';
 
-export const getTranslation$: GetTranslationFn = $((lang: string, asset: string | Translation, location?: RouteLocation) => {
-  /* Must contain the logic to get translation data: by default it uses only an asset of Translation object */
+export const getTranslation$: GetTranslationFn = $((lang: string, asset: string, location?: RouteLocation) => {
+  /* Must contain the logic to get translation data */
 });
 
 export const resolveLocale$: ResolveLocaleFn = $((location?: RouteLocation, endpointData?: any) => {
@@ -200,7 +187,7 @@ The default locale
 Supported locales
 
 - `assets`
-An array of string paths, or an array of _Translation_ objects: each asset is passed to the `getTranslation$` function to obtain data according to the language
+An array of strings: each asset is passed to the `getTranslation$` function to obtain data according to the language
 
 - `keySeparator`
 Separator of nested keys. Default is `.`
@@ -227,7 +214,7 @@ Formats a date
 - `formatNumber(value: any, options?: Intl.NumberFormatOptions, locale?: SpeakLocale, lang?: string, currency?: string)`
 Formats a number
 
-- `changeLocale(newLocale: SpeakLocale, ctx: SpeakState)`
+- `changeLocale(newLocale: SpeakLocale, ctx: SpeakState, location?: RouteLocation)`
 Changes locale at runtime: loads translation data and rerenders components that uses translations
 
 ### Speak context

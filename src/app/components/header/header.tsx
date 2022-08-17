@@ -26,11 +26,11 @@ export const Header = component$(() => {
       <nav>
         <a href={getHref('/')}
           class={{ active: pathname.endsWith('/') || config.supportedLocales.some(x => pathname.endsWith(x.lang)) }}>
-          {t('app.home')}
+          {t('app.nav.home')}
         </a>
         {/* <a href={getHref('/page')}
           class={{ active: pathname.endsWith('/page') }}>
-          {t('app.page')}
+          {t('app.nav.page')}
         </a> */}
       </nav>
       <ChangeLocale />

@@ -10,7 +10,7 @@ export const loadTranslation = async (
   lang: string,
   ctx: SpeakState,
   location?: RouteLocation,
-  assets?: Array<string | Translation>
+  assets?: string[]
 ): Promise<Translation> => {
   const { config, translateFn } = ctx;
 

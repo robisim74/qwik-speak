@@ -4,9 +4,6 @@ export const isObject = <T>(item: T): boolean =>
 export const isDate = (value: any): value is Date =>
   value instanceof Date && !isNaN(value.valueOf());
 
-export const clone = <T>(obj: T): T =>
-  JSON.parse(JSON.stringify(obj));
-
 export const isoStringToDate = (match: RegExpMatchArray): Date => {
   const date = new Date(0);
   let tzHour = 0;

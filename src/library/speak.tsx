@@ -1,16 +1,15 @@
 import { component$, Slot, useMount$ } from '@builder.io/qwik';
 import { useLocation } from '@builder.io/qwik-city';
 
-import type { Translation } from './types';
 import { useSpeakContext } from './use-functions';
 import { loadTranslation, addData } from './core';
 import { qDev } from './utils';
 
 export interface SpeakProps {
   /**
-   * Assets to be loaded or translation data
+   * Assets to load
    */
-  assets: Array<string | Translation>;
+  assets: string[];
   /**
    * Optional additional languages to preload data for
    */

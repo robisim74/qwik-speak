@@ -37,8 +37,8 @@ export type Translation = { [key: string]: any };
 /**
  * Must contain the logic to get translation data
  */
-export type GetTranslationFn = QRL<(lang: string, asset: string | Translation, location?: RouteLocation)
-  => ValueOrPromise<Translation>>;
+export type GetTranslationFn = QRL<(lang: string, asset: string, location?: RouteLocation)
+  => ValueOrPromise<Translation | null>>;
 
 /**
  * Must contain the logic to resolve which locale to use during SSR
@@ -85,9 +85,9 @@ export interface SpeakConfig {
    */
   supportedLocales: SpeakLocale[];
   /**
-   * Assets to load or translation data
+   * Assets to load
    */
-  assets: Array<string | Translation>;
+  assets: string[];
   /**
    * Separator of nested keys
    */

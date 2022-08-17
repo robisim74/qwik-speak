@@ -1,6 +1,0 @@
-{
-  "home": {
-    "greeting": "Ciao! Sono {{name}}",
-    "text": "<em>Libreria di internazionalizzazione (i18n) per tradurre testi, date e numeri nelle app Qwik</em>"
-  }
-}

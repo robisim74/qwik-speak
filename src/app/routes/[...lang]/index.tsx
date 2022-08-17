@@ -33,13 +33,13 @@ export default component$(() => {
     /**
      * Add Home translation (only available in child components)
      */
-    <Speak assets={['/i18n/home']}>
+    <Speak assets={['home']}>
       <Home />
     </Speak>
   );
 });
 
 export const head: DocumentHead = {
-  title: 'home.title',
-  meta: [{ name: 'description', content: 'home.description' }]
+  title: 'app.home.title',
+  meta: [{ name: 'description', content: 'app.home.description' }]
 };

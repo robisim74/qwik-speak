@@ -21,13 +21,13 @@ export default component$(() => {
      * In this example, there is an additional language that is used as a fallback for missing values 
      * by the handleMissingTranslation$ implemented during configuration
      */
-    <Speak assets={['/i18n/page']} langs={['en-US']}>
+    <Speak assets={['page']} langs={['en-US']}>
       <Page />
     </Speak>
   );
 });
 
 export const head: DocumentHead = {
-  title: 'page.title',
-  meta: [{ name: 'description', content: 'page.description' }]
+  title: 'app.page.title',
+  meta: [{ name: 'description', content: 'app.page.description' }]
 };

@@ -20,9 +20,7 @@ const config: SpeakConfig = {
     { lang: 'it-IT', currency: 'EUR', timeZone: 'Europe/Rome', units: { 'length': 'kilometer' } },
     { lang: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles', units: { 'length': 'mile' } }
   ],
-  assets: [
-    translationData
-  ]
+  assets: []
 };
 
 const locale: SpeakLocale = {
@@ -37,9 +35,9 @@ export const ctx: SpeakState = new Proxy({
   translation: translationData,
   config: config,
   translateFn: {
-    getTranslation$: $((lang: string, asset: string | Translation) => (<Translation>asset)[lang]),
+    getTranslation$: $(() => null),
     resolveLocale$: $(() => null),
     storeLocale$: $(() => { }),
-    handleMissingTranslation$: $((key: string) => 'not found')
+    handleMissingTranslation$: $(() => 'not found')
   }
 }, {});
