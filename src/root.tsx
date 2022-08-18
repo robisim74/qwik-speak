@@ -3,9 +3,9 @@ import { QwikCity, RouterOutlet } from '@builder.io/qwik-city';
 import { QwikSpeak } from './library/qwik-speak';
 
 import { Head } from './app/components/head/head';
+import { config, translateFn } from './app/speak-config';
 
 import './global.css';
-import { config, translateFn } from './app/speak-config';
 
 export default component$(() => {
   return (

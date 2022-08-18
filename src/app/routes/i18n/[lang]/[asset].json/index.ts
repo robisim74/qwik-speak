@@ -1,5 +1,5 @@
 import type { RequestHandler } from '@builder.io/qwik-city';
-import { Translation } from '~/library/types';
+import { Translation } from '../../../../../library/types';
 
 // E.g. Endpoint to get translation data
 export const onGet: RequestHandler = ({ params }) => {

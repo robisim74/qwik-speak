@@ -1,11 +1,11 @@
 import { component$, Slot, useContextProvider, useMount$, useStore } from '@builder.io/qwik';
 import { useEndpoint, useLocation } from '@builder.io/qwik-city';
 import { isServer } from '@builder.io/qwik/build';
+
+import type { InternalSpeakState, SpeakConfig, SpeakState, TranslateFn } from './types';
 import { getTranslation$, resolveLocale$, setLocale$, handleMissingTranslation$ } from './constants';
 import { SpeakContext } from './context';
 import { loadTranslation } from './core';
-
-import type { InternalSpeakState, SpeakConfig, SpeakState, TranslateFn } from './types';
 import { qDev } from './utils';
 
 export interface QwikSpeakProps {
@@ -16,11 +16,11 @@ export interface QwikSpeakProps {
 
 export const QwikSpeak = component$((props: QwikSpeakProps) => {
   // Assign functions
-  const translateFn = props.translateFn ?? {};
-  translateFn.getTranslation$ = translateFn.getTranslation$ ?? getTranslation$;
-  translateFn.resolveLocale$ = translateFn.resolveLocale$ ?? resolveLocale$;
-  translateFn.storeLocale$ = translateFn.storeLocale$ ?? setLocale$;
-  translateFn.handleMissingTranslation$ = translateFn.handleMissingTranslation$ ?? handleMissingTranslation$;
+  const translateFn: TranslateFn = {};
+  translateFn.getTranslation$ = props.translateFn?.getTranslation$ ?? getTranslation$;
+  translateFn.resolveLocale$ = props.translateFn?.resolveLocale$ ?? resolveLocale$;
+  translateFn.storeLocale$ = props.translateFn?.storeLocale$ ?? setLocale$;
+  translateFn.handleMissingTranslation$ = props.translateFn?.handleMissingTranslation$ ?? handleMissingTranslation$;
 
   // Set initial state
   const state = useStore<InternalSpeakState>({
