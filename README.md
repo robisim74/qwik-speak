@@ -247,7 +247,7 @@ npm run build
 ```
 
 ## What's new
-> Released v0.0.8
+> Released v0.0.9
 
 ## License
 MIT

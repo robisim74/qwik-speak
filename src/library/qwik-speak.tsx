@@ -6,11 +6,20 @@ import type { InternalSpeakState, SpeakConfig, SpeakState, TranslateFn } from '.
 import { getTranslation$, resolveLocale$, setLocale$, handleMissingTranslation$ } from './constants';
 import { SpeakContext } from './context';
 import { loadTranslation } from './core';
-import { qDev } from './utils';
+import { speakDev } from './utils';
 
 export interface QwikSpeakProps {
+  /**
+   * Speak config
+   */
   config: SpeakConfig;
+  /**
+   * Optional functions to use
+   */
   translateFn?: TranslateFn;
+  /**
+   * Optional additional languages to preload data for
+   */
   langs?: string[];
 }
 
@@ -69,7 +78,7 @@ export const QwikSpeak = component$((props: QwikSpeakProps) => {
       Object.freeze(translateFn)
     }
 
-    if (qDev) {
+    if (speakDev) {
       console.debug('Qwik Speak', '', 'Translation loaded');
     }
   });

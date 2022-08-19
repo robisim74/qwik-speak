@@ -62,4 +62,7 @@ export const speakError = (type: Function, value: string): Error => {
   return new Error(`Qwik Speak (${type.name}): ${value}`);
 };
 
-export const qDev = (globalThis as any).qDev !== false;
+/**
+ * Disabled in production
+ */
+export const speakDev = (globalThis as any).speakDev !== false;
