@@ -15,7 +15,7 @@ export const Header = component$(() => {
   const config = useSpeakConfig();
 
   const getHref = (name: string) => {
-    return lang === config.defaultLocale.lang ? name : `/${lang}${name}`
+    return /* lang === config.defaultLocale.lang ? name : */ `/${lang}${name}`
   };
 
   return (
@@ -28,10 +28,10 @@ export const Header = component$(() => {
           class={{ active: pathname.endsWith('/') || config.supportedLocales.some(x => pathname.endsWith(x.lang)) }}>
           {t('app.nav.home')}
         </a>
-        {/* <a href={getHref('/page')}
+        <a href={getHref('/page')}
           class={{ active: pathname.endsWith('/page') }}>
           {t('app.nav.page')}
-        </a> */}
+        </a>
       </nav>
       <ChangeLocale />
     </header>

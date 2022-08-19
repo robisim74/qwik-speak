@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/en-US');
 });
 
 test.describe('Home', () => {
@@ -32,12 +32,12 @@ test.describe('Home', () => {
         'Libreria di internazionalizzazione (i18n) per tradurre testi, date e numeri nelle app Qwik'
       );
 
-    /* await Promise.all([
+    await Promise.all([
       page.waitForNavigation(),
       page.locator('text=Pagina').click()
     ]);
 
     await expect(page.locator('main')).toContainText('Qwik Speak');
-    await expect(page.locator('main')).toContainText("Io sono un'altra pagina"); */
+    await expect(page.locator('main')).toContainText('Traduci le tue app Qwik in qualsiasi lingua');
   });
 });
