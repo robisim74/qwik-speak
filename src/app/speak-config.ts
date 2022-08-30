@@ -64,13 +64,13 @@ export const storeLocale$: StoreLocaleFn = $((locale: SpeakLocale) => {
 
   if (lang && segment) {
     let newSegment = '';
-    /* if (locale.lang !== config.defaultLocale.lang) { */
+    if (locale.lang !== config.defaultLocale.lang) {
       newSegment = segment.replace(lang, locale.lang);
-    /* } else {
+    } else {
       newSegment = '/';
-    } */
+    }
     url.pathname = url.pathname.replace(segment, newSegment);
-  } else /* if (locale.lang !== config.defaultLocale.lang)  */{
+  } else if (locale.lang !== config.defaultLocale.lang) {
     url.pathname = `/${locale.lang}${url.pathname}`;
   }
 
