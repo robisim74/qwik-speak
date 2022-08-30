@@ -25,21 +25,27 @@ export interface QwikSpeakProps {
 
 export const QwikSpeak = component$((props: QwikSpeakProps) => {
   // Assign functions
-  const translateFn: TranslateFn = {};
-  translateFn.getTranslation$ = props.translateFn?.getTranslation$ ?? getTranslation$;
-  translateFn.resolveLocale$ = props.translateFn?.resolveLocale$ ?? resolveLocale$;
-  translateFn.storeLocale$ = props.translateFn?.storeLocale$ ?? setLocale$;
-  translateFn.handleMissingTranslation$ = props.translateFn?.handleMissingTranslation$ ?? handleMissingTranslation$;
+  const resolvedTranslateFn: TranslateFn = {};
+  resolvedTranslateFn.getTranslation$ = props.translateFn?.getTranslation$ ?? getTranslation$;
+  resolvedTranslateFn.resolveLocale$ = props.translateFn?.resolveLocale$ ?? resolveLocale$;
+  resolvedTranslateFn.storeLocale$ = props.translateFn?.storeLocale$ ?? setLocale$;
+  resolvedTranslateFn.handleMissingTranslation$ = props.translateFn?.handleMissingTranslation$ ??
+    handleMissingTranslation$;
 
   // Set initial state
   const state = useStore<InternalSpeakState>({
     locale: {},
     translation: Object.fromEntries(props.config.supportedLocales.map(value => [value.lang, {}])),
-    config: props.config,
-    translateFn: translateFn
+    config: {
+      defaultLocale: props.config.defaultLocale,
+      supportedLocales: props.config.supportedLocales,
+      assets: [...props.config.assets], // Shallow copy
+      keySeparator: props.config.keySeparator
+    },
+    translateFn: resolvedTranslateFn
   }, { recursive: true });
   const ctx = state as SpeakState;
-  const { locale, translation } = ctx;
+  const { locale, translation, config, translateFn } = ctx;
 
   useContextProvider(SpeakContext, ctx);
 
@@ -53,10 +59,10 @@ export const QwikSpeak = component$((props: QwikSpeakProps) => {
     const endpointData = await resource.promise;
 
     // Resolve the locale
-    let resolvedLocale = await ctx.translateFn.resolveLocale$(location, endpointData);
+    let resolvedLocale = await translateFn.resolveLocale$(location, endpointData);
 
     if (!resolvedLocale) {
-      resolvedLocale = props.config.defaultLocale;
+      resolvedLocale = config.defaultLocale;
     }
 
     const resolvedLangs = new Set(props.langs || []);
@@ -66,6 +72,10 @@ export const QwikSpeak = component$((props: QwikSpeakProps) => {
     for (const lang of resolvedLangs) {
       const loadedTranslation = await loadTranslation(lang, ctx, location);
       Object.assign(translation, loadedTranslation);
+
+      if (speakDev) {
+        console.debug('Qwik Speak', '', `Translation loaded - ${JSON.stringify(config.assets)} - ${lang}`);
+      }
     }
 
     Object.assign(locale, resolvedLocale);
@@ -74,12 +84,8 @@ export const QwikSpeak = component$((props: QwikSpeakProps) => {
     if (isServer) {
       // Shallow freeze: only applies to the immediate properties of object itself
       Object.freeze(translation);
-      Object.freeze(props.config);
+      Object.freeze(config);
       Object.freeze(translateFn)
-    }
-
-    if (speakDev) {
-      console.debug('Qwik Speak', '', 'Translation loaded');
     }
   });
 

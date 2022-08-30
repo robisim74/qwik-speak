@@ -36,17 +36,14 @@ export const Speak = component$((props: SpeakProps) => {
       const loadedTranslation = await loadTranslation(lang, ctx, location, props.assets);
       addData(loadedTranslation, translation[lang], lang);
       Object.assign(translation[lang], loadedTranslation[lang]);
+
+      if (speakDev) {
+        console.debug('Qwik Speak', '', `Translation loaded - ${JSON.stringify(props.assets)} - ${lang}`);
+      }
     }
 
-    const resolvedAssets = new Set(config.assets);
-    for (const asset of props.assets) {
-      resolvedAssets.add(asset);
-    }
+    const resolvedAssets = new Set([...config.assets, ...props.assets]);
     Object.assign(config.assets, Array.from(resolvedAssets));
-
-    if (speakDev) {
-      console.debug('Speak', '', 'Additional translation loaded');
-    }
   });
 
   return <Slot />;
