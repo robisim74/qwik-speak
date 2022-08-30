@@ -8,13 +8,5 @@ describe('formatDate function', () => {
     expect(fd(value, {}, locale)).toBe('7/19/2022');
     expect(fd(value, { dateStyle: 'full' }, locale)).toBe('Tuesday, July 19, 2022');
     expect(fd(value, { dateStyle: 'full', timeStyle: 'short' }, locale)).toBe('Tuesday, July 19, 2022 at 9:30 AM');
-    expect(fd(value, {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric'
-    }, locale)).toBe('Tuesday, July 19, 2022, 9:30 AM');
   });
 });
