@@ -86,13 +86,20 @@ export const config: SpeakConfig = {
     { language: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles' }
   ],
   assets: [
-    'app',
+    'app', // Shared
   ]
 };
 ```
-> Assets will be loaded through the implementation of `getTranslation$` function below. You can call an endpoint, or load json files
+Assets will be loaded through the implementation of `getTranslation$` function below. You can call an _endpoint_, or load _json_ files to return a `Translation` object for each language:
+```json
+{
+  "app": {
+    "title": "I'm {{name}}"
+  }
+}
+```
+Then add the `QwikSpeak` component in `root.tsx`:
 ```jsx
-// File: root.tsx
 import { QwikSpeak } from 'qwik-speak';
 
 export default component$(() => {
@@ -109,7 +116,8 @@ export default component$(() => {
   );
 });
 ```
-### Adding translation data to a context
+### Lazy loading of translation data
+Use the `Speak` component to add translation data to the context:
 ```jsx
 import { Speak } from 'qwik-speak';
 
@@ -136,7 +144,7 @@ export default component$(() => {
   );
 });
 ```
-> The translation data of the additional languages are preloaded along with the current language. They can be used as a fallback for missing values by implementing `handleMissingTranslation$` below, or for multilingual pages
+The translation data of the additional languages are preloaded along with the current language. They can be used as a fallback for missing values by implementing `handleMissingTranslation$` below, or for multilingual pages
 ### Hacking the library
 ```typescript
 import { $ } from '@builder.io/qwik';
@@ -177,7 +185,7 @@ export default component$(() => {
   );
 });
 ```
-> Examples of these implementations can be found in the [app](https://github.com/robisim74/qwik-speak/tree/main/src/app)
+Examples of these implementations can be found in the [app](https://github.com/robisim74/qwik-speak/tree/main/src/app)
 
 ## Speak config
 - `defaultLocale`
@@ -247,7 +255,7 @@ npm run build
 ```
 
 ## What's new
-> Released v0.0.9
+> Released v0.0.10
 
 ## License
 MIT
