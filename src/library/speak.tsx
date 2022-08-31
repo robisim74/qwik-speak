@@ -38,7 +38,7 @@ export const Speak = component$((props: SpeakProps) => {
       Object.assign(translation[lang], loadedTranslation[lang]);
 
       if (speakDev) {
-        console.debug('Qwik Speak', '', `Translation loaded - ${JSON.stringify(props.assets)} - ${lang}`);
+        console.debug('Qwik Speak', '', `Translation loaded - ${props.assets} - ${lang}`);
       }
     }
 

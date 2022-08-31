@@ -90,7 +90,7 @@ export const config: SpeakConfig = {
   ]
 };
 ```
-Assets will be loaded through the implementation of `getTranslation$` function below. You can call an _endpoint_, or load _json_ files to return a `Translation` object for each language:
+Assets will be loaded through the implementation of `getTranslation$` function below. You can load _json_ files or call an _endpoint_ to return a `Translation` object for each language:
 ```json
 {
   "app": {
@@ -98,7 +98,7 @@ Assets will be loaded through the implementation of `getTranslation$` function b
   }
 }
 ```
-Then add the `QwikSpeak` component in `root.tsx`:
+Add the `QwikSpeak` component in `root.tsx`:
 ```jsx
 import { QwikSpeak } from 'qwik-speak';
 
