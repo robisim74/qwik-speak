@@ -40,7 +40,7 @@ export const QwikSpeak = component$((props: QwikSpeakProps) => {
       defaultLocale: props.config.defaultLocale,
       supportedLocales: props.config.supportedLocales,
       assets: [...props.config.assets], // Shallow copy
-      keySeparator: props.config.keySeparator
+      keySeparator: props.config.keySeparator || '.'
     },
     translateFn: resolvedTranslateFn
   }, { recursive: true });

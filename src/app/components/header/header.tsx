@@ -20,20 +20,22 @@ export const Header = component$(() => {
 
   return (
     <header>
-      <section>
-        <a href="/">Qwik Speak ⚡️</a>
-      </section>
-      <nav>
-        <a href={getHref('/')}
-          class={{ active: pathname.endsWith('/') || config.supportedLocales.some(x => pathname.endsWith(x.lang)) }}>
-          {t('app.nav.home')}
-        </a>
-        <a href={getHref('/page')}
-          class={{ active: pathname.endsWith('/page') }}>
-          {t('app.nav.page')}
-        </a>
-      </nav>
-      <ChangeLocale />
+      <div class="header-inner">
+        <section class="logo">
+          <a href="/">Qwik Speak ⚡️</a>
+        </section>
+        <nav>
+          <a href={getHref('/')}
+            class={{ active: pathname.endsWith('/') || config.supportedLocales.some(x => pathname.endsWith(x.lang)) }}>
+            {t('app.nav.home')}
+          </a>
+          <a href={getHref('/page')}
+            class={{ active: pathname.endsWith('/page') }}>
+            {t('app.nav.page')}
+          </a>
+        </nav>
+        <ChangeLocale />
+      </div>
     </header>
   );
 });

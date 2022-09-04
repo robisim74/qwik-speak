@@ -1,6 +1,15 @@
 {
   "home": {
     "greeting": "Hi! I am {{name}}",
-    "text": "<em>Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps</em>"
+    "text": "<em>Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps</em>",
+    "params": "Parameters",
+    "tags": "Html tags",
+    "plural": "Plural",
+    "dates": "Dates",
+    "numbers": "Numbers & currencies",
+    "devs": {
+      "one": "One software developer",
+      "other": "{{value}} software developers"
+    }
   }
 }

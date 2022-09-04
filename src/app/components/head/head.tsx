@@ -12,7 +12,7 @@ export const Head = component$(() => {
 
       {/* Translate title */}
       <title>{t(head.title, { name: 'Qwik Speak' })}</title>
-
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="canonical" href={loc.href} />
 
       {/* Translate description */}

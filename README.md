@@ -52,12 +52,13 @@ npm install qwik-speak --save-dev
 ```
 ### Getting the translation
 ```jsx
-import { translate as t } from 'qwik-speak';
+import { translate as t, plural as p } from 'qwik-speak';
 
 export default component$(() => {
   return (
     <>
-      <h1>{t('app.title', { name: 'Qwik Speak' })}</h1> {/* I'm Qwik Speak */}
+      <p>{t('app.title', { name: 'Qwik Speak' })}</p> {/* I'm Qwik Speak */}
+      <p>{p(1, 'app.devs')}</p> {/* One software developer */}
     </>
   );
 });
@@ -94,7 +95,11 @@ Assets will be loaded through the implementation of `getTranslation$` function b
 ```json
 {
   "app": {
-    "title": "I'm {{name}}"
+    "title": "I'm {{name}}",
+    "devs": {
+      "one": "One software developer",
+      "other": "{{value}} software developers"
+    }
   }
 }
 ```
@@ -216,10 +221,13 @@ and optionally contains:
 - `translate(keys: string | string[], params?: any, ctx?: SpeakState, lang?: string)`
 Translates a key or an array of keys
 
-- `formatDate(value: any, options?: Intl.DateTimeFormatOptions, locale?: SpeakLocale, lang?: string, timeZone?: string)`
+- `plural(value: number | string, prefix?: string, options?: Intl.PluralRulesOptions, ctx?: SpeakState, lang?: string)`
+Gets the plural by a number
+
+- `formatDate(value: Date | number | string, options?: Intl.DateTimeFormatOptions, locale?: SpeakLocale, lang?: string, timeZone?: string)`
 Formats a date
 
-- `formatNumber(value: any, options?: Intl.NumberFormatOptions, locale?: SpeakLocale, lang?: string, currency?: string)`
+- `formatNumber(value: number | string, options?: Intl.NumberFormatOptions, locale?: SpeakLocale, lang?: string, currency?: string)`
 Formats a number
 
 - `changeLocale(newLocale: SpeakLocale, ctx: SpeakState, location?: RouteLocation)`
@@ -255,7 +263,9 @@ npm run build
 ```
 
 ## What's new
-> Released v0.0.10
+> Released v0.0.11
+
+> Add plural function
 
 ## License
 MIT

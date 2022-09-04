@@ -25,6 +25,7 @@ export { Speak } from './library/speak';
 // Functions
 export { changeLocale } from './library/change-locale';
 export { translate } from './library/translate';
+export { plural } from './library/plural';
 export { formatNumber } from './library/format-number';
 export { formatDate } from './library/format-date';
 // Core functions

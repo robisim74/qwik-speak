@@ -12,7 +12,7 @@ import { toNumber } from './utils';
  * @returns The formatted number
  */
 export const formatNumber = (
-  value: any,
+  value: number | string,
   options?: Intl.NumberFormatOptions,
   locale?: SpeakLocale,
   lang?: string,

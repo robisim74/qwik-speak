@@ -13,7 +13,7 @@ import { toDate } from './utils';
  * @returns The formatted date
  */
 export const formatDate = (
-  value: any,
+  value: Date | number | string,
   options?: Intl.DateTimeFormatOptions,
   locale?: SpeakLocale,
   lang?: string,

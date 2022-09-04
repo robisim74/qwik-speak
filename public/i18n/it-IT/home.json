@@ -1,6 +1,15 @@
 {
   "home": {
     "greeting": "Ciao! Sono {{name}}",
-    "text": "<em>Libreria di internazionalizzazione (i18n) per tradurre testi, date e numeri nelle app Qwik</em>"
+    "text": "<em>Libreria di internazionalizzazione (i18n) per tradurre testi, date e numeri nelle app Qwik</em>",
+    "params": "Parametri",
+    "tags": "Tag Html",
+    "plural": "Plurale",
+    "dates": "Date",
+    "numbers": "Numeri e valute",
+    "devs": {
+      "one": "Uno sviluppatore software",
+      "other": "{{ value }} sviluppatori software"
+    }
   }
 }
