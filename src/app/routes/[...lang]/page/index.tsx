@@ -1,7 +1,9 @@
 import { component$ } from '@builder.io/qwik';
-import { DocumentHead } from '@builder.io/qwik-city';
+import { DocumentHead, StaticGenerateHandler } from '@builder.io/qwik-city';
 import { translate as t } from '../../../../library/translate';
 import { Speak } from '../../../../library/speak';
+
+import { config } from '../../../speak-config';
 
 export const Page = component$(() => {
   return (
@@ -30,4 +32,12 @@ export default component$(() => {
 export const head: DocumentHead = {
   title: 'app.page.title',
   meta: [{ name: 'description', content: 'app.page.description' }]
+};
+
+export const onStaticGenerate: StaticGenerateHandler = () => {
+  return {
+    params: config.supportedLocales.map(locale => {
+      return { lang: locale.lang !== config.defaultLocale.lang ? locale.lang : '' };
+    }),
+  };
 };

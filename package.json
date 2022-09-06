@@ -7,8 +7,9 @@
     "build.client": "vite build",
     "build.lib": "vite build --mode lib --config vite.config.lib.ts",
     "build.ssr": "vite build --ssr src/entry.express.tsx",
+    "build.static": "vite build --ssr src/entry.static.tsx",
     "build.types": "tsc --project tsconfig.lib.json",
-    "build.app": "npm run typecheck && npm run build.client && npm run build.ssr",
+    "build.app": "npm run typecheck && npm run build.client && npm run build.ssr && npm run build.static",
     "dev": "npm run dev.ssr",
     "dev.client": "vite",
     "dev.debug": "node --inspect-brk node_modules/vite/bin/vite.js --force --mode ssr",
@@ -17,6 +18,8 @@
     "lint.fix": "eslint \"src/**/*.ts*\" --fix",
     "release": "npm run build && np",
     "serve": "node server/entry.express",
+    "serve.ssg": "cd dist && npx http-server",
+    "ssg": "node server/entry.static && npx http-server ./dist",
     "start": "npm run dev",
     "test": "jest ./src/tests",
     "test.watch": "jest ./src/tests --watch",
@@ -24,12 +27,12 @@
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
-    "@builder.io/qwik": ">=0.0.107",
-    "@builder.io/qwik-city": ">=0.0.106"
+    "@builder.io/qwik": ">=0.0.108",
+    "@builder.io/qwik-city": ">=0.0.108"
   },
   "devDependencies": {
-    "@builder.io/qwik": "0.0.107",
-    "@builder.io/qwik-city": "0.0.106",
+    "@builder.io/qwik": "0.0.108",
+    "@builder.io/qwik-city": "0.0.108",
     "@playwright/test": "^1.24.0",
     "@types/eslint": "8.4.6",
     "@types/jest": "^28.1.6",

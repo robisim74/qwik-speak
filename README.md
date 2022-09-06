@@ -190,7 +190,7 @@ export default component$(() => {
   );
 });
 ```
-Examples of these implementations can be found in the [app](https://github.com/robisim74/qwik-speak/tree/main/src/app)
+Examples of these implementations can be found in the [sample app](https://github.com/robisim74/qwik-speak/tree/main/src/app)
 
 ## Speak config
 - `defaultLocale`
@@ -206,9 +206,9 @@ An array of strings: each asset is passed to the `getTranslation$` function to o
 Separator of nested keys. Default is `.`
 
 The `SpeakLocale` object contains the `lang`, in the format `language[-script][-region]`, where:
-- _language_: ISO 639 two-letter or three-letter code
-- _script_: ISO 15924 four-letter script code
-- _region_: ISO 3166 two-letter, uppercase code
+- `language`: ISO 639 two-letter or three-letter code
+- `script`: ISO 15924 four-letter script code
+- `region` ISO 3166 two-letter, uppercase code
 
 and optionally contains:
 - `extension` Language with Intl extensions, in the format `language[-script][-region][-extensions]` like `en-US-u-ca-gregory-nu-latn` to format dates and numbers
@@ -247,25 +247,38 @@ Returns the translation data in Speak context
 Returns the configuration in Speak context
 
 ## Development Builds
-### Run the app
+### Build the library
 ```Shell
-npm start
+npm run build
 ```
 ### Test the library
 ```Shell
 npm test
 npm run test.e2e
 ```
-
-## Production Builds
+### Run the sample app
 ```Shell
-npm run build
+npm start
+```
+### Build the sample app
+```Shell
+npm run build.app
+```
+#### Express server
+```Shell
+npm run serve
+```
+#### Static Site Generation (SSG)
+With an Express server running to provide http requests, execute in another Terminal:
+```Shell
+npm run ssg
 ```
 
 ## What's new
 > Released v0.0.11
 
-> Add plural function
+- Add plural function
+- Add SSG sample
 
 ## License
 MIT

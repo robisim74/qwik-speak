@@ -1,11 +1,13 @@
 import { component$ } from '@builder.io/qwik';
-import { DocumentHead } from '@builder.io/qwik-city';
+import { DocumentHead, StaticGenerateHandler } from '@builder.io/qwik-city';
 import { translate as t } from '../../../library/translate';
 import { plural as p } from '../../../library/plural';
 import { formatDate as fd } from '../../../library/format-date';
 import { formatNumber as fn } from '../../../library/format-number';
 import { useSpeakLocale } from '../../../library/use-functions';
 import { Speak } from '../../../library/speak';
+
+import { config } from '../../speak-config';
 
 export const Home = component$(() => {
   const units = useSpeakLocale().units!;
@@ -50,4 +52,12 @@ export default component$(() => {
 export const head: DocumentHead = {
   title: 'app.home.title',
   meta: [{ name: 'description', content: 'app.home.description' }]
+};
+
+export const onStaticGenerate: StaticGenerateHandler = () => {
+  return {
+    params: config.supportedLocales.map(locale => {
+      return { lang: locale.lang !== config.defaultLocale.lang ? locale.lang : '' };
+    }),
+  };
 };
