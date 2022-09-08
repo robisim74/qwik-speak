@@ -273,6 +273,21 @@ With an Express server running to provide http requests, execute in another Term
 ```Shell
 npm run ssg
 ```
+Since the sample app implements a localized routing, the command will download the translations at compile-time and generate a single app with the localized paths and inlined translations:
+```
+dist
+│   index.html 
+│
+└───page
+│       index.html
+│   
+└───it-IT
+    │   index.html 
+    │
+    └───page
+            index.html
+```
+Translations are also serialized and made available at runtime.
 
 ## What's new
 > Released v0.0.11

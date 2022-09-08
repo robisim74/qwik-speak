@@ -116,7 +116,7 @@ export interface InternalSpeakState {
 /**
  * Speak state
  */
-export interface SpeakState extends Omit<InternalSpeakState, '$flags$'> {
+export interface SpeakState extends InternalSpeakState {
   locale: SpeakLocale;
   translateFn: Required<TranslateFn>;
 }
