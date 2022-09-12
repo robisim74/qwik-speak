@@ -42,10 +42,12 @@ export const resolveLocale$: ResolveLocaleFn = $((location?: RouteLocation, endp
   const locale = config.supportedLocales.find(x => x.lang == lang);
   return locale;
 
-  // E.g. Resolve locale by by accept-language header
+  // E.g. Resolve locale by accept-language header
   /* const headers = endpointData?.headers;
   if (!headers?.acceptLanguage) return null;
-  return headers.acceptLanguage.split(';')[0].split(',')[0]; */
+  const lang = headers.acceptLanguage.split(';')[0].split(',')[0];
+  const locale = config.supportedLocales.find(x => x.lang == lang);
+  return locale; */
 
   // E.g. Resolve locale by cookie
   /* const headers = endpointData?.headers;

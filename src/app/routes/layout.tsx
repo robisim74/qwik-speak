@@ -15,7 +15,7 @@ export default component$(() => {
 });
 
 // E.g. Add cookie & accept-language to endpoint response
-export const onGet: RequestHandler = ({ request }) => {
+/* export const onGet: RequestHandler = ({ request }) => {
   const cookie = request.headers?.get('cookie');
   const acceptLanguage = request.headers?.get('accept-language');
 
@@ -25,4 +25,4 @@ export const onGet: RequestHandler = ({ request }) => {
       acceptLanguage: acceptLanguage
     }
   };
-};
+}; */

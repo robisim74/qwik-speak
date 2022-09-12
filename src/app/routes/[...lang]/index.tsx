@@ -15,22 +15,22 @@ export const Home = component$(() => {
   return (
     <>
       <h1>{t('app.title')}</h1>
-      <h3>{t('app.subtitle')}</h3>
+      <h2>{t('app.subtitle')}</h2>
 
-      <h4>{t('home.params')}</h4>
+      <h3>{t('home.params')}</h3>
       <p>{t('home.greeting', { name: 'Qwik Speak' })}</p>
 
-      <h4>{t('home.tags')}</h4>
+      <h3>{t('home.tags')}</h3>
       <p dangerouslySetInnerHTML={t('home.text')}></p>
 
-      <h4>{t('home.plural')}</h4>
+      <h3>{t('home.plural')}</h3>
       <p>{p(1, 'home.devs')}</p>
       <p>{p(2, 'home.devs')}</p>
 
-      <h4>{t('home.dates')}</h4>
+      <h3>{t('home.dates')}</h3>
       <p>{fd(Date.now(), { dateStyle: 'full', timeStyle: 'short' })}</p>
 
-      <h4>{t('home.numbers')}</h4>
+      <h3>{t('home.numbers')}</h3>
       <p>{fn(1000000)}</p>
       <p>{fn(1000000, { style: 'currency' })}</p>
       <p>{fn(1, { style: 'unit', unit: units['length'] })}</p>

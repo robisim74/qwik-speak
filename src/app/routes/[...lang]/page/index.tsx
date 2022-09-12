@@ -9,7 +9,7 @@ export const Page = component$(() => {
   return (
     <>
       <h1>{t('app.title')}</h1>
-      <h3>{t('app.subtitle')}</h3>
+      <h2>{t('app.subtitle')}</h2>
 
       <p>{t('page.text')}</p>
     </>

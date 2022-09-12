@@ -1,5 +1,5 @@
 header {
-  background-color: #0093ee;
+  background-color: #006fb3;
 }
 
 header .header-inner {
@@ -23,11 +23,11 @@ header a {
 }
 
 header a:hover {
-  background-color: #ffffff50;
+  background-color: #ffffff30;
 }
 
 header .active {
-  background-color: #ffffff30;
+  background-color: #ffffff15;
 }
 
 .theme-toggle {
@@ -63,9 +63,9 @@ header .active {
 }
 
 .change-locale .button:hover {
-  background-color: #ffffff50;
+  background-color: #ffffff30;
 }
 
 .change-locale .active {
-  background-color: #ffffff30;
+  background-color: #ffffff15;
 }
