@@ -1,4 +1,4 @@
-import { component$, useStyles$ } from '@builder.io/qwik';
+import { component$, useClientEffect$, useStyles$ } from '@builder.io/qwik';
 import { useLocation } from '@builder.io/qwik-city';
 import { translate as t } from '../../../library/translate';
 import { useSpeakConfig, useSpeakLocale } from '../../../library/use-functions';
@@ -13,6 +13,11 @@ export const Header = component$(() => {
   const pathname = useLocation().pathname;
   const lang = useSpeakLocale().lang;
   const config = useSpeakConfig();
+
+  useClientEffect$(() => {
+    // Set html lang
+    document.documentElement.lang = lang;
+  });
 
   const getHref = (name: string) => {
     return lang === config.defaultLocale.lang ? name : `/${lang}${name}`

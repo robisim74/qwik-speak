@@ -1,7 +1,7 @@
 import { $ } from '@builder.io/qwik';
 import { isServer } from '@builder.io/qwik/build';
 import { RouteLocation } from '@builder.io/qwik-city';
-import { SpeakConfig, SpeakLocale, SpeakState, TranslateFn, Translation } from '../library/types';
+import { SpeakConfig, SpeakLocale, SpeakState, TranslateFn } from '../library/types';
 import { GetTranslationFn, ResolveLocaleFn, StoreLocaleFn, HandleMissingTranslationFn } from '../library/types';
 import { getValue } from '../library/core';
 
@@ -36,24 +36,11 @@ export const getTranslation$: GetTranslationFn = $(async (
 });
 
 // E.g. Resolve locale by url during SSR
-export const resolveLocale$: ResolveLocaleFn = $((location?: RouteLocation, endpointData?: any) => {
+export const resolveLocale$: ResolveLocaleFn = $((location?: RouteLocation) => {
   const pathLang = location?.params?.lang;
   const lang = pathLang || config.defaultLocale.lang;
   const locale = config.supportedLocales.find(x => x.lang == lang);
   return locale;
-
-  // E.g. Resolve locale by accept-language header
-  /* const headers = endpointData?.headers;
-  if (!headers?.acceptLanguage) return null;
-  const lang = headers.acceptLanguage.split(';')[0].split(',')[0];
-  const locale = config.supportedLocales.find(x => x.lang == lang);
-  return locale; */
-
-  // E.g. Resolve locale by cookie
-  /* const headers = endpointData?.headers;
-  if (!headers?.cookie) return null;
-  const result = new RegExp('(?:^|; )' + encodeURIComponent('locale') + '=([^;]*)').exec(headers['cookie']);
-  return result ? JSON.parse(result[1]) : null; */
 });
 
 // E.g. Store locale on Client replacing url
@@ -78,8 +65,8 @@ export const storeLocale$: StoreLocaleFn = $((locale: SpeakLocale) => {
 
   window.history.pushState({}, '', url);
 
-  // E.g. Store locale in cookie 
-  /* document.cookie = `locale=${JSON.stringify(locale)};path=/`; */
+  // Store locale in cookie 
+  document.cookie = `locale=${JSON.stringify(locale)};path=/`;
 });
 
 // E.g. Use a fallback language for missing values

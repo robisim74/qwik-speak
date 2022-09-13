@@ -103,7 +103,7 @@ Assets will be loaded through the implementation of `getTranslation$` function b
   }
 }
 ```
-Add the `QwikSpeak` component in `root.tsx`:
+Add the `QwikSpeak` component in `root.tsx` as a child component of `QwikCity`:
 ```jsx
 import { QwikSpeak } from 'qwik-speak';
 
@@ -191,6 +191,31 @@ export default component$(() => {
 });
 ```
 Examples of these implementations can be found in the [sample app](https://github.com/robisim74/qwik-speak/tree/main/src/app)
+
+## Production
+### Using a server
+At the state of the art, this library implements translations only at runtime: this means that the translations, even if lazy loaded for each page, are downloaded at runtime during the SSR or on the client, and the lookup also happens at runtime.
+
+See this [discussion](https://github.com/robisim74/qwik-speak/discussions/8)
+
+### Static Site Generation (SSG)
+Using SSG offered by Qwik City, translations can be inlined at build time.
+
+What you need:
+- A `lang` parameter in the root, like:
+  ```
+  routes
+  │   
+  └───[...lang]
+      │   index.html 
+      │
+      └───page
+              index.html
+  ```
+- Handle the localized routing in `resolveLocale$` and `storeLocale$`
+- Qwik City Static Site Generation config and dynamic routes
+
+See the [sample app](https://github.com/robisim74/qwik-speak/tree/main/src/app)
 
 ## Speak config
 - `defaultLocale`

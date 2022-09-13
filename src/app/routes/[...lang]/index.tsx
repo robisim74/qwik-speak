@@ -54,6 +54,7 @@ export const head: DocumentHead = {
   meta: [{ name: 'description', content: 'app.home.description' }]
 };
 
+// E.g. SSG
 export const onStaticGenerate: StaticGenerateHandler = () => {
   return {
     params: config.supportedLocales.map(locale => {
