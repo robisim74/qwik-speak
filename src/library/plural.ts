@@ -1,7 +1,6 @@
 import { translate } from './translate';
 import type { SpeakState } from './types';
 import { useSpeakContext } from './use-functions';
-import { toNumber } from './utils';
 
 /**
  * Get the plural by a number. 
@@ -25,7 +24,7 @@ export const plural = (
 
   lang = lang ?? locale.lang;
 
-  value = toNumber(value);
+  value = +value;
 
   const rule = new Intl.PluralRules(lang, options).select(value);
   const key = prefix ? `${prefix}${config.keySeparator}${rule}` : rule;

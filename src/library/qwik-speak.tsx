@@ -6,7 +6,6 @@ import type { InternalSpeakState, SpeakConfig, SpeakState, TranslateFn } from '.
 import { getTranslation$, resolveLocale$, setLocale$, handleMissingTranslation$ } from './constants';
 import { SpeakContext } from './context';
 import { loadTranslation } from './core';
-import { speakDev } from './utils';
 
 export interface QwikSpeakProps {
   /**
@@ -72,10 +71,6 @@ export const QwikSpeak = component$((props: QwikSpeakProps) => {
     for (const lang of resolvedLangs) {
       const loadedTranslation = await loadTranslation(lang, ctx, location);
       Object.assign(translation, loadedTranslation);
-
-      if (speakDev) {
-        console.debug('Qwik Speak', '', `Translation loaded - ${config.assets} - ${lang}`);
-      }
     }
 
     Object.assign(locale, resolvedLocale);

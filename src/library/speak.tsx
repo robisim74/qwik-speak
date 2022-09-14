@@ -3,7 +3,6 @@ import { useLocation } from '@builder.io/qwik-city';
 
 import { useSpeakContext } from './use-functions';
 import { loadTranslation, addData } from './core';
-import { speakDev } from './utils';
 
 export interface SpeakProps {
   /**
@@ -36,10 +35,6 @@ export const Speak = component$((props: SpeakProps) => {
       const loadedTranslation = await loadTranslation(lang, ctx, location, props.assets);
       addData(loadedTranslation, translation[lang], lang);
       Object.assign(translation[lang], loadedTranslation[lang]);
-
-      if (speakDev) {
-        console.debug('Qwik Speak', '', `Translation loaded - ${props.assets} - ${lang}`);
-      }
     }
 
     const resolvedAssets = new Set([...config.assets, ...props.assets]);

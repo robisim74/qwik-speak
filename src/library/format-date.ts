@@ -1,11 +1,10 @@
 
 import type { SpeakLocale } from './types';
 import { useSpeakLocale } from './use-functions';
-import { toDate } from './utils';
 
 /**
  * Format a date
- * @param value A date, a number (milliseconds since UTC epoch) or an ISO 8601 string
+ * @param value A date, a number (milliseconds since UTC epoch) or a string
  * @param options Intl DateTimeFormatOptions object
  * @param locale Optional Speak locale to be provided outside the component$
  * @param lang Optional language if different from the current one
@@ -24,7 +23,7 @@ export const formatDate = (
   lang = lang ?? locale.extension ?? locale.lang;
   timeZone = timeZone ?? locale.timeZone;
 
-  value = toDate(value);
+  value = new Date(value);
 
   options = { ...options };
   if (timeZone) options.timeZone = timeZone;

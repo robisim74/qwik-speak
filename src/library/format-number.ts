@@ -1,6 +1,5 @@
 import type { SpeakLocale } from './types';
 import { useSpeakLocale } from './use-functions';
-import { toNumber } from './utils';
 
 /**
  * Format a number
@@ -23,7 +22,7 @@ export const formatNumber = (
   lang = lang ?? locale.extension ?? locale.lang;
   currency = currency ?? locale.currency;
 
-  value = toNumber(value);
+  value = +value;
 
   options = { ...options };
   if (currency) options.currency = currency;
