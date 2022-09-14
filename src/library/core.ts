@@ -1,7 +1,6 @@
 import { RouteLocation } from '@builder.io/qwik-city';
 
 import type { Translation, SpeakState } from './types';
-import { isObject } from './utils';
 
 /**
  * Load translation data for the language
@@ -30,31 +29,8 @@ export const loadTranslation = async (
 
 export const addData = (translation: Translation, data: Translation, lang: string): void => {
   translation[lang] = translation[lang] !== undefined
-    ? mergeDeep(translation[lang], data)
+    ? { ...translation[lang], ...data }
     : data;
-};
-
-/**
- * Merge translation data
- */
-export const mergeDeep = (target: Translation, source: Translation): Translation => {
-  const output = Object.assign({}, target);
-
-  if (isObject(target) && isObject(source)) {
-    Object.keys(source).forEach((key) => {
-      if (isObject(source[key])) {
-        if (!(key in target)) {
-          Object.assign(output, { [key]: source[key] });
-        } else {
-          output[key] = mergeDeep(target[key], source[key]);
-        }
-      } else {
-        Object.assign(output, { [key]: source[key] });
-      }
-    });
-  }
-
-  return output;
 };
 
 /**
