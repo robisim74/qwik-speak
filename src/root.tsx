@@ -9,14 +9,16 @@ import './global.css';
 
 export default component$(() => {
   return (
-    <QwikCity>
-      {/* Init Qwik Speak (only available in child components) */}
-      <QwikSpeak config={config} translateFn={translateFn}>
+    /**
+     * Init Qwik Speak (only available in child components)
+     */
+    <QwikSpeak config={config} translateFn={translateFn}>
+      <QwikCity>
         <Head />
         <body>
           <RouterOutlet />
         </body>
-      </QwikSpeak>
-    </QwikCity>
+      </QwikCity>
+    </QwikSpeak>
   );
 });

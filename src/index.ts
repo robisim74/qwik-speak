@@ -18,6 +18,7 @@ export {
   useSpeakLocale,
   useTranslation,
   useSpeakConfig,
+  useUrl,
 } from './library/use-functions';
 // Components
 export { QwikSpeak } from './library/qwik-speak';

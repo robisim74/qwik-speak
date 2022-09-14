@@ -1,6 +1,5 @@
 import { $ } from '@builder.io/qwik';
 import { isServer } from '@builder.io/qwik/build';
-import { RouteLocation } from '@builder.io/qwik-city';
 import { SpeakConfig, SpeakLocale, SpeakState, TranslateFn } from '../library/types';
 import { GetTranslationFn, ResolveLocaleFn, StoreLocaleFn, HandleMissingTranslationFn } from '../library/types';
 import { getValue } from '../library/core';
@@ -20,47 +19,47 @@ export const config: SpeakConfig = {
 };
 
 // E.g. Fetch translation data from json files in public dir or i18n/[lang]/[asset].json endpoint 
-export const getTranslation$: GetTranslationFn = $(async (
-  lang: string,
-  asset: string,
-  location?: RouteLocation
-) => {
-  let url = '';
+export const getTranslation$: GetTranslationFn = $(async (lang: string, asset: string, url?: URL) => {
+  let endpoint = '';
   // Absolute urls on server
-  if (isServer && location?.href) {
-    url = new URL(location.href).origin;
+  if (isServer && url) {
+    endpoint = url.origin;
   }
-  url += `/i18n/${lang}/${asset}.json`;
-  const data = await fetch(url);
+  endpoint += `/i18n/${lang}/${asset}.json`;
+  const data = await fetch(endpoint);
   return data.json();
 });
 
 // E.g. Resolve locale by url during SSR
-export const resolveLocale$: ResolveLocaleFn = $((location?: RouteLocation) => {
-  const pathLang = location?.params?.lang;
-  const lang = pathLang || config.defaultLocale.lang;
-  const locale = config.supportedLocales.find(x => x.lang == lang);
-  return locale;
+export const resolveLocale$: ResolveLocaleFn = $((url?: URL) => {
+  if (url) {
+    const pathLang = config.supportedLocales.find(x => url.pathname.startsWith(`/${x.lang}`))?.lang;
+    const lang = pathLang || config.defaultLocale.lang;
+    const locale = config.supportedLocales.find(x => x.lang == lang);
+    return locale;
+  }
+  return null;
 });
 
 // E.g. Store locale on Client replacing url
-export const storeLocale$: StoreLocaleFn = $((locale: SpeakLocale) => {
-  const url = new URL(window.location.href);
-  const lang = config.supportedLocales.find(x => url.pathname.startsWith(`/${x.lang}`))?.lang;
+export const storeLocale$: StoreLocaleFn = $((locale: SpeakLocale, url?: URL) => {
+  if (url) {
+    const pathLang = config.supportedLocales.find(x => url.pathname.startsWith(`/${x.lang}`))?.lang;
 
-  const regex = new RegExp(`(/${lang}/)|(/${lang}$)`);
-  const segment = url.pathname.match(regex)?.[0];
+    const regex = new RegExp(`(/${pathLang}/)|(/${pathLang}$)`);
+    const segment = url.pathname.match(regex)?.[0];
 
-  if (lang && segment) {
-    let newSegment = '';
-    if (locale.lang !== config.defaultLocale.lang) {
-      newSegment = segment.replace(lang, locale.lang);
-    } else {
-      newSegment = '/';
+    if (pathLang && segment) {
+      let newSegment = '';
+      if (locale.lang !== config.defaultLocale.lang) {
+        newSegment = segment.replace(pathLang, locale.lang);
+      } else {
+        newSegment = '/';
+      }
+      url.pathname = url.pathname.replace(segment, newSegment);
+    } else if (locale.lang !== config.defaultLocale.lang) {
+      url.pathname = `/${locale.lang}${url.pathname}`;
     }
-    url.pathname = url.pathname.replace(segment, newSegment);
-  } else if (locale.lang !== config.defaultLocale.lang) {
-    url.pathname = `/${locale.lang}${url.pathname}`;
   }
 
   window.history.pushState({}, '', url);

@@ -1,11 +1,11 @@
 import { component$, Slot, useContextProvider, useMount$, useStore } from '@builder.io/qwik';
-import { useEndpoint, useLocation } from '@builder.io/qwik-city';
 import { isServer } from '@builder.io/qwik/build';
 
 import type { InternalSpeakState, SpeakConfig, SpeakState, TranslateFn } from './types';
 import { getTranslation$, resolveLocale$, setLocale$, handleMissingTranslation$ } from './constants';
 import { SpeakContext } from './context';
 import { loadTranslation } from './core';
+import { useUrl } from './use-functions';
 
 export interface QwikSpeakProps {
   /**
@@ -48,17 +48,13 @@ export const QwikSpeak = component$((props: QwikSpeakProps) => {
 
   useContextProvider(SpeakContext, ctx);
 
-  // Get location data
-  const location = useLocation();
-  // Get endopoint data
-  const resource = useEndpoint<any>();
+  // Get URL object
+  const url = useUrl();
 
   // Will block the rendering until callback resolves
   useMount$(async () => {
-    const endpointData = await resource.promise;
-
     // Resolve the locale
-    let resolvedLocale = await translateFn.resolveLocale$(location, endpointData);
+    let resolvedLocale = await translateFn.resolveLocale$(url);
 
     if (!resolvedLocale) {
       resolvedLocale = config.defaultLocale;
@@ -69,7 +65,7 @@ export const QwikSpeak = component$((props: QwikSpeakProps) => {
 
     // Load translation data
     for (const lang of resolvedLangs) {
-      const loadedTranslation = await loadTranslation(lang, ctx, location);
+      const loadedTranslation = await loadTranslation(lang, ctx, url);
       Object.assign(translation, loadedTranslation);
     }
 

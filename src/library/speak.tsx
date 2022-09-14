@@ -1,7 +1,6 @@
 import { component$, Slot, useMount$ } from '@builder.io/qwik';
-import { useLocation } from '@builder.io/qwik-city';
 
-import { useSpeakContext } from './use-functions';
+import { useUrl, useSpeakContext } from './use-functions';
 import { loadTranslation, addData } from './core';
 
 export interface SpeakProps {
@@ -22,8 +21,8 @@ export const Speak = component$((props: SpeakProps) => {
   const ctx = useSpeakContext();
   const { locale, translation, config } = ctx;
 
-  // Get location data
-  const location = useLocation();
+  // Get URL object
+  const url = useUrl();
 
   // Will block the rendering until callback resolves
   useMount$(async () => {
@@ -32,7 +31,7 @@ export const Speak = component$((props: SpeakProps) => {
 
     // Load translation data
     for (const lang of resolvedLangs) {
-      const loadedTranslation = await loadTranslation(lang, ctx, location, props.assets);
+      const loadedTranslation = await loadTranslation(lang, ctx, url, props.assets);
       addData(loadedTranslation, translation[lang], lang);
       Object.assign(translation[lang], loadedTranslation[lang]);
     }

@@ -103,21 +103,59 @@ Assets will be loaded through the implementation of `getTranslation$` function b
   }
 }
 ```
-Add the `QwikSpeak` component in `root.tsx` as a child component of `QwikCity`:
+### Custom APIs
+```typescript
+import { $ } from '@builder.io/qwik';
+
+export const getTranslation$: GetTranslationFn = $((lang: string, asset: string, url?: URL) => {
+  /* Must contain the logic to get translation data */
+  
+  // E.g. Fetch translation data from json files in public dir or i18n/[lang]/[asset].json endpoint 
+  let endpoint = '';
+  // Absolute urls on server
+  if (isServer && url) {
+    endpoint = url.origin;
+  }
+  endpoint += `/i18n/${lang}/${asset}.json`;
+  const data = await fetch(endpoint);
+  return data.json();
+});
+
+export const resolveLocale$: ResolveLocaleFn = $((url?: URL) => {
+  /* Must contain the logic to resolve which locale to use during SSR */
+});
+
+export const storeLocale$: StoreLocaleFn = $((locale: SpeakLocale, url?: URL) => {
+  /* Must contain the logic to store the locale on Client when changes */
+});
+
+export const handleMissingTranslation$: HandleMissingTranslationFn = $((key: string, value?: string, params?: any, ctx?: SpeakState) => {
+  /* Must contain the logic to handle missing values: by default returns the key */
+});
+
+export const translateFn: TranslateFn = {
+  getTranslation$: getTranslation$,
+  /* other functions */
+};
+```
+
+Add the `QwikSpeak` component in `root.tsx`:
 ```jsx
 import { QwikSpeak } from 'qwik-speak';
 
 export default component$(() => {
   return (
-    <QwikCity>
-      {/* Init Qwik Speak (only available in child components) */}
-      <QwikSpeak config={config}>
+    /**
+     * Init Qwik Speak (only available in child components)
+     */
+    <QwikSpeak config={config} translateFn={translateFn}>
+      <QwikCity>
         <Head />
         <body>
           <RouterOutlet />
         </body>
-      </QwikSpeak>
-    </QwikCity>
+      </QwikCity>
+    </QwikSpeak>
   );
 });
 ```
@@ -149,48 +187,7 @@ export default component$(() => {
   );
 });
 ```
-The translation data of the additional languages are preloaded along with the current language. They can be used as a fallback for missing values by implementing `handleMissingTranslation$` below, or for multilingual pages
-### Hacking the library
-```typescript
-import { $ } from '@builder.io/qwik';
-
-export const getTranslation$: GetTranslationFn = $((lang: string, asset: string, location?: RouteLocation) => {
-  /* Must contain the logic to get translation data */
-});
-
-export const resolveLocale$: ResolveLocaleFn = $((location?: RouteLocation, endpointData?: any) => {
-  /* Must contain the logic to resolve which locale to use during SSR */
-});
-
-export const storeLocale$: StoreLocaleFn = $((locale: SpeakLocale) => {
-  /* Must contain the logic to store the locale on Client when changes */
-});
-
-export const handleMissingTranslation$: HandleMissingTranslationFn = $((key: string, value?: string, params?: any, ctx?: SpeakState) => {
-  /* Must contain the logic to handle missing values: by default returns the key */
-});
-
-export const translateFn: TranslateFn = {
-  getTranslation$: getTranslation$,
-  /* other functions */
-};
-```
-```jsx
-export default component$(() => {
-  return (
-    <QwikCity>
-      {/* Init Qwik Speak with translation functions */}
-      <QwikSpeak config={config} translateFn={translateFn}>
-        <Head />
-        <body>
-          <RouterOutlet />
-        </body>
-      </QwikSpeak>
-    </QwikCity>
-  );
-});
-```
-Examples of these implementations can be found in the [sample app](https://github.com/robisim74/qwik-speak/tree/main/src/app)
+The translation data of the additional languages are preloaded along with the current language. They can be used as a fallback for missing values by implementing `handleMissingTranslation$` below, or for multilingual pages.
 
 ## Production
 ### Using a server
@@ -255,9 +252,8 @@ Formats a date
 - `formatNumber(value: number | string, options?: Intl.NumberFormatOptions, locale?: SpeakLocale, lang?: string, currency?: string)`
 Formats a number
 
-- `changeLocale(newLocale: SpeakLocale, ctx: SpeakState, location?: RouteLocation)`
+- `changeLocale(newLocale: SpeakLocale, ctx: SpeakState, url?: URL)`
 Changes locale at runtime: loads translation data and rerenders components that uses translations
-
 ### Speak context
 - `useSpeakContext()`
 Returns the Speak context
@@ -315,10 +311,9 @@ dist
 Translations are also serialized and made available at runtime.
 
 ## What's new
-> Released v0.0.11
+> Released v0.0.12
 
-- Add plural function
-- Add SSG sample
+- Removed QwikCity dependency from the library
 
 ## License
 MIT

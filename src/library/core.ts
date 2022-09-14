@@ -1,5 +1,3 @@
-import { RouteLocation } from '@builder.io/qwik-city';
-
 import type { Translation, SpeakState } from './types';
 
 /**
@@ -8,14 +6,14 @@ import type { Translation, SpeakState } from './types';
 export const loadTranslation = async (
   lang: string,
   ctx: SpeakState,
-  location?: RouteLocation,
+  url?: URL,
   assets?: string[]
 ): Promise<Translation> => {
   const { config, translateFn } = ctx;
 
   assets = assets ?? config.assets;
   // Get translation
-  const tasks = assets.map(asset => translateFn.getTranslation$(lang, asset, location));
+  const tasks = assets.map(asset => translateFn.getTranslation$(lang, asset, url));
   const results = await Promise.all(tasks);
 
   const translation: Translation = {};
@@ -29,7 +27,7 @@ export const loadTranslation = async (
 
 export const addData = (translation: Translation, data: Translation, lang: string): void => {
   translation[lang] = translation[lang] !== undefined
-    ? { ...translation[lang], ...data }
+    ? { ...translation[lang], ...data } // Shallow merge
     : data;
 };
 
