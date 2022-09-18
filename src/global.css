@@ -10,15 +10,3 @@ main {
   max-width: 800px;
   margin: 0 auto;
 }
-
-.full-screen main {
-  max-width: 100%;
-}
-
-a {
-  color: #006eb3;
-}
-
-a:hover {
-  text-decoration: none;
-}

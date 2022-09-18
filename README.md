@@ -310,6 +310,10 @@ dist
 ```
 Translations are also serialized and made available at runtime.
 
+```Shell
+npm run serve.ssg
+```
+
 ## What's new
 > Released v0.0.12
 

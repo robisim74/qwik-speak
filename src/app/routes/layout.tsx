@@ -6,12 +6,12 @@ import { config } from '../speak-config';
 
 export default component$(() => {
   return (
-    <div>
+    <>
       <Header />
       <main>
         <Slot />
       </main>
-    </div>
+    </>
   );
 });
 

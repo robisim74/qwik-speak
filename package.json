@@ -4,50 +4,48 @@
   "description": "Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps",
   "scripts": {
     "build": "npm run lint && npm run build.lib && npm run build.types",
-    "build.client": "vite build",
+    "build.app": "qwik build",
     "build.lib": "vite build --mode lib --config vite.config.lib.ts",
-    "build.ssr": "vite build --ssr src/entry.express.tsx",
+    "build.client": "vite build",
+    "build.server": "vite build --ssr src/entry.express.tsx",
     "build.static": "vite build --ssr src/entry.static.tsx",
     "build.types": "tsc --project tsconfig.lib.json",
-    "build.app": "npm run typecheck && npm run build.client && npm run build.ssr && npm run build.static",
-    "dev": "npm run dev.ssr",
-    "dev.client": "vite",
-    "dev.debug": "node --inspect-brk node_modules/vite/bin/vite.js --force --mode ssr",
-    "dev.ssr": "node --inspect node_modules/vite/bin/vite.js --mode ssr",
+    "dev": "vite --mode ssr",
+    "dev.debug": "node --inspect-brk ./node_modules/vite/bin/vite.js --mode ssr --force",
     "lint": "eslint \"src/**/*.ts*\"",
-    "lint.fix": "eslint \"src/**/*.ts*\" --fix",
     "release": "npm run build && np",
     "serve": "node server/entry.express",
-    "serve.ssg": "cd dist && npx http-server",
-    "ssg": "node server/entry.static && npx http-server ./dist",
-    "start": "npm run dev",
+    "serve.ssg": "npx http-server ./dist -a localhost -o",
+    "ssg": "node server/entry.static",
+    "start": "vite --open --mode ssr",
     "test": "jest ./src/tests",
-    "test.watch": "jest ./src/tests --watch",
     "test.e2e": "playwright test",
-    "typecheck": "tsc --noEmit"
+    "test.watch": "jest ./src/tests --watch",
+    "typecheck": "tsc --noEmit",
+    "qwik": "qwik"
   },
   "peerDependencies": {
-    "@builder.io/qwik": ">=0.0.108"
+    "@builder.io/qwik": ">=0.0.112"
   },
   "devDependencies": {
-    "@builder.io/qwik": "0.0.108",
-    "@builder.io/qwik-city": "0.0.108",
+    "@builder.io/qwik": "0.0.112",
+    "@builder.io/qwik-city": "0.0.111",
     "@playwright/test": "^1.24.0",
     "@types/eslint": "8.4.6",
+    "@types/express": "4.17.13",
     "@types/jest": "^28.1.6",
     "@types/node": "latest",
-    "@types/express": "4.17.13",
-    "@typescript-eslint/eslint-plugin": "5.33.0",
-    "@typescript-eslint/parser": "5.33.0",
-    "eslint": "8.22.0",
-    "eslint-plugin-qwik": "0.0.107",
+    "@typescript-eslint/eslint-plugin": "5.37.0",
+    "@typescript-eslint/parser": "5.37.0",
+    "eslint": "8.23.1",
+    "eslint-plugin-qwik": "0.0.112",
     "express": "4.17.3",
     "jest": "^28.1.3",
     "node-fetch": "3.2.10",
     "np": "7.6.2",
     "ts-jest": "^28.0.7",
-    "typescript": "4.7.4",
-    "vite": "3.0.9",
+    "typescript": "4.8.2",
+    "vite": "3.1.1",
     "vite-tsconfig-paths": "3.5.0"
   },
   "engines": {
@@ -82,13 +80,5 @@
   "private": false,
   "qwik": "./lib/index.qwik.mjs",
   "type": "module",
-  "types": "./lib/types/index.d.ts",
-  "jest": {
-    "preset": "ts-jest/presets/default-esm",
-    "globals": {
-      "ts-jest": {
-        "useESM": true
-      }
-    }
-  }
+  "types": "./lib/types/index.d.ts"
 }

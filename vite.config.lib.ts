@@ -14,9 +14,6 @@ export default defineConfig(() => {
     },
     plugins: [
       qwikVite(),
-    ],
-    define: {
-      'globalThis.speakDev': false,
-    }
+    ]
   };
 });

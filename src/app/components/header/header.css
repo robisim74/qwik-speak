@@ -10,10 +10,6 @@ header .header-inner {
   margin: 0 auto;
 }
 
-.full-screen header .header-inner {
-  max-width: 100%;
-}
-
 header a {
   color: white;
   text-decoration: none;
@@ -28,21 +24,6 @@ header a:hover {
 
 header .active {
   background-color: #ffffff15;
-}
-
-.theme-toggle {
-  background: transparent;
-  width: 30px;
-  border: none;
-  cursor: pointer;
-}
-
-.theme-light .theme-toggle::before {
-  content: '☽';
-}
-
-.theme-dark .theme-toggle::before {
-  content: '☀';
 }
 
 .change-locale {

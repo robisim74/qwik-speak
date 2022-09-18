@@ -1,5 +1,5 @@
 import { component$ } from '@builder.io/qwik';
-import { QwikCity, RouterOutlet } from '@builder.io/qwik-city';
+import { QwikCity, RouterOutlet, ServiceWorkerRegister } from '@builder.io/qwik-city';
 import { QwikSpeak } from './library/qwik-speak';
 
 import { Head } from './app/components/head/head';
@@ -17,6 +17,7 @@ export default component$(() => {
         <Head />
         <body>
           <RouterOutlet />
+          <ServiceWorkerRegister />
         </body>
       </QwikCity>
     </QwikSpeak>
