@@ -15,17 +15,15 @@ describe('translate function', () => {
     const value = t(['test', 'testParams'], { param: 'params' }, ctx);
     expect(value).toEqual(['Test', 'Test params']);
   });
-  // https://github.com/BuilderIO/qwik/issues/1302
-  /* test('missing value', async () => {
+  test('missing value', async () => {
     const value = await t('test1', {}, ctx);
     expect(value).toBe('not found');
-  }); */
+  });
   test('key separator', () => {
     const value = t('nested.test', {}, ctx);
     expect(value).toBe('Test');
   });
-  // https://github.com/BuilderIO/qwik/issues/1302
-  /* test('translate when locale changes', async () => {
+  test('translate when locale changes', async () => {
     await changeLocale({
       lang: 'it-IT',
       currency: 'EUR',
@@ -36,5 +34,5 @@ describe('translate function', () => {
     }, ctx);
     const value = t('test', {}, ctx);
     expect(value).toBe('Prova');
-  }); */
+  });
 });
