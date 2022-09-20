@@ -1,7 +1,6 @@
 import { component$, useClientEffect$, useStyles$ } from '@builder.io/qwik';
 import { useLocation } from '@builder.io/qwik-city';
-import { translate as t } from '../../../library/translate';
-import { useSpeakConfig, useSpeakLocale } from '../../../library/use-functions';
+import { translate as t, useSpeakConfig, useSpeakLocale } from 'qwik-speak';
 
 import { ChangeLocale } from './change-locale';
 

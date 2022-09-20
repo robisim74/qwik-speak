@@ -1,11 +1,13 @@
 import { component$ } from '@builder.io/qwik';
 import { DocumentHead, StaticGenerateHandler } from '@builder.io/qwik-city';
-import { translate as t } from '../../../library/translate';
-import { plural as p } from '../../../library/plural';
-import { formatDate as fd } from '../../../library/format-date';
-import { formatNumber as fn } from '../../../library/format-number';
-import { useSpeakLocale } from '../../../library/use-functions';
-import { Speak } from '../../../library/speak';
+import {
+  translate as t,
+  plural as p,
+  formatDate as fd,
+  formatNumber as fn,
+  Speak,
+  useSpeakLocale
+} from 'qwik-speak';
 
 import { config } from '../../speak-config';
 

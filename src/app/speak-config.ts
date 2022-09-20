@@ -1,8 +1,16 @@
 import { $ } from '@builder.io/qwik';
 import { isServer } from '@builder.io/qwik/build';
-import { SpeakConfig, SpeakLocale, SpeakState, TranslateFn } from '../library/types';
-import { GetTranslationFn, ResolveLocaleFn, StoreLocaleFn, HandleMissingTranslationFn } from '../library/types';
-import { getValue } from '../library/core';
+import {
+  GetTranslationFn,
+  getValue,
+  HandleMissingTranslationFn,
+  ResolveLocaleFn,
+  SpeakConfig,
+  SpeakLocale,
+  SpeakState,
+  StoreLocaleFn,
+  TranslateFn
+} from 'qwik-speak';
 
 /**
  * Speak config

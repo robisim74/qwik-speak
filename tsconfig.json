@@ -21,7 +21,7 @@
       "jest"
     ],
     "paths": {
-      "~/*": ["./src/*"]
+      "qwik-speak": ["./src/index.ts"]
     }
   },
   "include": ["src"]

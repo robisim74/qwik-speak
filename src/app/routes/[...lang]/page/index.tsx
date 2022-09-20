@@ -1,7 +1,6 @@
 import { component$ } from '@builder.io/qwik';
 import { DocumentHead, StaticGenerateHandler } from '@builder.io/qwik-city';
-import { translate as t } from '../../../../library/translate';
-import { Speak } from '../../../../library/speak';
+import { Speak, translate as t } from 'qwik-speak';
 
 import { config } from '../../../speak-config';
 
