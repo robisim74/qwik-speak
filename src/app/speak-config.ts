@@ -84,7 +84,7 @@ export const handleMissingTranslation$: HandleMissingTranslationFn = $((
   params?: any,
   ctx?: SpeakState
 ) => {
-  value = getValue(key, ctx?.translation['en-US'], params);
+  value = getValue(key, ctx?.translation['en-US'], params, ctx?.config.keySeparator);
   return value || key;
 });
 

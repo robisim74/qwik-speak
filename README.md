@@ -130,7 +130,7 @@ export const storeLocale$: StoreLocaleFn = $((locale: SpeakLocale, url?: URL) =>
 });
 
 export const handleMissingTranslation$: HandleMissingTranslationFn = $((key: string, value?: string, params?: any, ctx?: SpeakState) => {
-  /* Must contain the logic to handle missing values: by default returns the key */
+  /* Must contain the logic to handle missing values: by default returns the default value or the key */
 });
 
 export const translateFn: TranslateFn = {
@@ -225,6 +225,11 @@ An array of strings: each asset is passed to the `loadTranslation$` function to 
 - `keySeparator`
 Separator of nested keys. Default is `.`
 
+- `keyValueSeparator`
+Key-value separator. Default is `@@`
+
+  The default value of a key can be passed directly into the string: `t("app.title@@I'm {{name}}")`
+
 The `SpeakLocale` object contains the `lang`, in the format `language[-script][-region]`, where:
 - `language`: ISO 639 two-letter or three-letter code
 - `script`: ISO 15924 four-letter script code
@@ -239,7 +244,7 @@ and optionally contains:
 ## APIs
 ### Functions
 - `$translate(keys: string | string[], params?: any, ctx?: SpeakState, lang?: string)`
-Translates a key or an array of keys
+Translates a key or an array of keys. The syntax of the string is `key@@[default value]`
 
 - `plural(value: number | string, prefix?: string, options?: Intl.PluralRulesOptions, ctx?: SpeakState, lang?: string)`
 Gets the plural by a number
@@ -313,9 +318,9 @@ npm run serve.ssg
 ```
 
 ## What's new
-> Released v0.0.12
+> Released v0.0.13
 
-- Removed QwikCity dependency from the library
+- Added default value to strings: `key@@[default value]`
 
 ## License
 MIT

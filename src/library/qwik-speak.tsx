@@ -2,7 +2,7 @@ import { component$, Slot, useContextProvider, useMount$, useStore } from '@buil
 import { isServer } from '@builder.io/qwik/build';
 
 import type { InternalSpeakState, SpeakConfig, SpeakState, TranslateFn } from './types';
-import { loadTranslation$, resolveLocale$, setLocale$, handleMissingTranslation$ } from './constants';
+import { loadTranslation$, resolveLocale$, storeLocale$, handleMissingTranslation$ } from './constants';
 import { SpeakContext } from './context';
 import { loadTranslation } from './core';
 import { useUrl } from './use-functions';
@@ -27,7 +27,7 @@ export const QwikSpeak = component$((props: QwikSpeakProps) => {
   const resolvedTranslateFn: TranslateFn = {};
   resolvedTranslateFn.loadTranslation$ = props.translateFn?.loadTranslation$ ?? loadTranslation$;
   resolvedTranslateFn.resolveLocale$ = props.translateFn?.resolveLocale$ ?? resolveLocale$;
-  resolvedTranslateFn.storeLocale$ = props.translateFn?.storeLocale$ ?? setLocale$;
+  resolvedTranslateFn.storeLocale$ = props.translateFn?.storeLocale$ ?? storeLocale$;
   resolvedTranslateFn.handleMissingTranslation$ = props.translateFn?.handleMissingTranslation$ ??
     handleMissingTranslation$;
 
@@ -39,7 +39,8 @@ export const QwikSpeak = component$((props: QwikSpeakProps) => {
       defaultLocale: props.config.defaultLocale,
       supportedLocales: props.config.supportedLocales,
       assets: [...props.config.assets], // Shallow copy
-      keySeparator: props.config.keySeparator || '.'
+      keySeparator: props.config.keySeparator || '.',
+      keyValueSeparator: props.config.keyValueSeparator || '@@'
     },
     translateFn: resolvedTranslateFn
   }, { recursive: true });

@@ -86,9 +86,13 @@ export interface SpeakConfig {
    */
   assets: string[];
   /**
-   * Separator of nested keys
+   * Separator of nested keys. Default is '.'
    */
   keySeparator?: string;
+  /**
+   * Key-value separator. Default is '@@'
+   */
+  keyValueSeparator?: string;
 }
 
 export interface InternalSpeakState {

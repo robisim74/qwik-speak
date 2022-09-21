@@ -1,4 +1,4 @@
-import { $ } from '@builder.io/qwik';
+import { handleMissingTranslation$, loadTranslation$, resolveLocale$, storeLocale$ } from '../library/constants';
 import { SpeakLocale, SpeakConfig, Translation, SpeakState } from '../library/types';
 
 const translationData: Translation = {
@@ -22,7 +22,9 @@ const config: SpeakConfig = {
     { lang: 'it-IT', currency: 'EUR', timeZone: 'Europe/Rome', units: { 'length': 'kilometer' } },
     { lang: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles', units: { 'length': 'mile' } }
   ],
-  assets: []
+  assets: [],
+  keySeparator: '.',
+  keyValueSeparator: '@@'
 };
 
 const locale: SpeakLocale = {
@@ -37,9 +39,9 @@ export const ctx: SpeakState = new Proxy({
   translation: translationData,
   config: config,
   translateFn: {
-    loadTranslation$: $(() => null),
-    resolveLocale$: $(() => null),
-    storeLocale$: $(() => { }),
-    handleMissingTranslation$: $(() => 'not found')
+    loadTranslation$: loadTranslation$,
+    resolveLocale$: resolveLocale$,
+    storeLocale$: storeLocale$,
+    handleMissingTranslation$: handleMissingTranslation$
   }
 }, {});

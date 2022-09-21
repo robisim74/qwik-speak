@@ -17,11 +17,15 @@ describe('translate function', () => {
   });
   test('missing value', async () => {
     const value = await t('test1', {}, ctx);
-    expect(value).toBe('not found');
+    expect(value).toBe('test1');
   });
   test('key separator', () => {
     const value = t('nested.test', {}, ctx);
     expect(value).toBe('Test');
+  });
+  test('key-value separator', async () => {
+    const value = await t('test1@@Test 1', {}, ctx);
+    expect(value).toBe('Test 1');
   });
   test('translate when locale changes', async () => {
     await changeLocale({

@@ -3,7 +3,8 @@ import { useSpeakContext } from './use-functions';
 import { getValue } from './core';
 
 /**
- * Translate a key or an array of keys
+ * Translate a key or an array of keys.
+ * The syntax of the string is 'key@@[default value]'
  * @param keys The key or an array of keys to translate
  * @param params Optional parameters contained in the value
  * @param ctx Optional Speak context to be provided outside the component$
