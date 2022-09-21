@@ -7,7 +7,7 @@ export type {
   SpeakState,
 } from './library/types';
 export type {
-  GetTranslationFn,
+  LoadTranslationFn,
   ResolveLocaleFn,
   StoreLocaleFn,
   HandleMissingTranslationFn,

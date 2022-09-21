@@ -91,7 +91,7 @@ export const config: SpeakConfig = {
   ]
 };
 ```
-Assets will be loaded through the implementation of `getTranslation$` function below. You can load _json_ files or call an _endpoint_ to return a `Translation` object for each language:
+Assets will be loaded through the implementation of `loadTranslation$` function below. You can load _json_ files or call an _endpoint_ to return a `Translation` object for each language:
 ```json
 {
   "app": {
@@ -107,8 +107,8 @@ Assets will be loaded through the implementation of `getTranslation$` function b
 ```typescript
 import { $ } from '@builder.io/qwik';
 
-export const getTranslation$: GetTranslationFn = $((lang: string, asset: string, url?: URL) => {
-  /* Must contain the logic to get translation data */
+export const loadTranslation$: GetTranslationFn = $((lang: string, asset: string, url?: URL) => {
+  /* Must contain the logic to load translation data */
   
   // E.g. Fetch translation data from json files in public dir or i18n/[lang]/[asset].json endpoint 
   let endpoint = '';
@@ -134,7 +134,7 @@ export const handleMissingTranslation$: HandleMissingTranslationFn = $((key: str
 });
 
 export const translateFn: TranslateFn = {
-  getTranslation$: getTranslation$,
+  loadTranslation$: loadTranslation$,
   /* other functions */
 };
 ```
@@ -191,7 +191,7 @@ The translation data of the additional languages are preloaded along with the cu
 
 ## Production
 ### Using a server
-Translation happens at runtime: translations are downloaded during  SSR or on client, and the lookup also happens at runtime.
+Translation happens at runtime: translations are downloaded during SSR or on client, and the lookup also happens at runtime.
 
 ### Static Site Generation (SSG)
 Using SSG offered by Qwik City, translations can be inlined at build time.
@@ -220,7 +220,7 @@ The default locale
 Supported locales
 
 - `assets`
-An array of strings: each asset is passed to the `getTranslation$` function to obtain data according to the language
+An array of strings: each asset is passed to the `loadTranslation$` function to obtain data according to the language
 
 - `keySeparator`
 Separator of nested keys. Default is `.`

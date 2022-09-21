@@ -2,7 +2,7 @@ import { component$, Slot, useContextProvider, useMount$, useStore } from '@buil
 import { isServer } from '@builder.io/qwik/build';
 
 import type { InternalSpeakState, SpeakConfig, SpeakState, TranslateFn } from './types';
-import { getTranslation$, resolveLocale$, setLocale$, handleMissingTranslation$ } from './constants';
+import { loadTranslation$, resolveLocale$, setLocale$, handleMissingTranslation$ } from './constants';
 import { SpeakContext } from './context';
 import { loadTranslation } from './core';
 import { useUrl } from './use-functions';
@@ -25,7 +25,7 @@ export interface QwikSpeakProps {
 export const QwikSpeak = component$((props: QwikSpeakProps) => {
   // Assign functions
   const resolvedTranslateFn: TranslateFn = {};
-  resolvedTranslateFn.getTranslation$ = props.translateFn?.getTranslation$ ?? getTranslation$;
+  resolvedTranslateFn.loadTranslation$ = props.translateFn?.loadTranslation$ ?? loadTranslation$;
   resolvedTranslateFn.resolveLocale$ = props.translateFn?.resolveLocale$ ?? resolveLocale$;
   resolvedTranslateFn.storeLocale$ = props.translateFn?.storeLocale$ ?? setLocale$;
   resolvedTranslateFn.handleMissingTranslation$ = props.translateFn?.handleMissingTranslation$ ??

@@ -1,8 +1,8 @@
 import { $ } from '@builder.io/qwik';
 
-import type { GetTranslationFn, StoreLocaleFn, HandleMissingTranslationFn, ResolveLocaleFn } from './types';
+import type { LoadTranslationFn, StoreLocaleFn, HandleMissingTranslationFn, ResolveLocaleFn } from './types';
 
-export const getTranslation$: GetTranslationFn = $(() => {
+export const loadTranslation$: LoadTranslationFn = $(() => {
   return null;
 });
 

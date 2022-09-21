@@ -13,7 +13,7 @@ export const loadTranslation = async (
 
   assets = assets ?? config.assets;
   // Get translation
-  const tasks = assets.map(asset => translateFn.getTranslation$(lang, asset, url));
+  const tasks = assets.map(asset => translateFn.loadTranslation$(lang, asset, url));
   const results = await Promise.all(tasks);
 
   const translation: Translation = {};
@@ -37,14 +37,14 @@ export const addData = (translation: Translation, data: Translation, lang: strin
 export const getValue = (key: string, data: Translation, params?: any, keySeparator = '.'): string | undefined => {
   if (data) {
     const value = key.split(keySeparator).reduce((acc, cur) => (acc && acc[cur] != null) ? acc[cur] : null, data);
-    if (typeof value === 'string') return handleParams(value, params);
+    if (typeof value === 'string') return params ? handleParams(value, params) : value;
   }
   return undefined;
 };
 
 /**
-* Replace params in the value
-*/
+ * Replace params in the value
+ */
 export const handleParams = (value: string, params: any): string => {
   const replacedValue = value.replace(/{{\s?([^{}\s]*)\s?}}/g, (substring: string, parsedKey: string) => {
     const replacer = params[parsedKey];

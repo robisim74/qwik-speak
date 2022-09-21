@@ -37,7 +37,7 @@ export const ctx: SpeakState = new Proxy({
   translation: translationData,
   config: config,
   translateFn: {
-    getTranslation$: $(() => null),
+    loadTranslation$: $(() => null),
     resolveLocale$: $(() => null),
     storeLocale$: $(() => { }),
     handleMissingTranslation$: $(() => 'not found')

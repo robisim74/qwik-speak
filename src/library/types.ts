@@ -34,9 +34,9 @@ export interface SpeakLocale {
 export type Translation = { [key: string]: any };
 
 /**
- * Must contain the logic to get translation data
+ * Must contain the logic to load translation data
  */
-export type GetTranslationFn = QRL<(lang: string, asset: string, url?: URL) => ValueOrPromise<Translation | null>>;
+export type LoadTranslationFn = QRL<(lang: string, asset: string, url?: URL) => ValueOrPromise<Translation | null>>;
 
 /**
  * Must contain the logic to resolve which locale to use during SSR
@@ -55,9 +55,9 @@ export type HandleMissingTranslationFn = QRL<(key: string, value?: string, param
 
 export interface TranslateFn {
   /**
-   * Function to get translation data
+   * Function to load translation data
    */
-  getTranslation$?: GetTranslationFn;
+  loadTranslation$?: LoadTranslationFn;
   /**
    * Function to resolve which locale to use during SSR
    */

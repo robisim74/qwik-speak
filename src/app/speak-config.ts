@@ -1,7 +1,7 @@
 import { $ } from '@builder.io/qwik';
 import { isServer } from '@builder.io/qwik/build';
 import {
-  GetTranslationFn,
+  LoadTranslationFn,
   getValue,
   HandleMissingTranslationFn,
   ResolveLocaleFn,
@@ -27,7 +27,7 @@ export const config: SpeakConfig = {
 };
 
 // E.g. Fetch translation data from json files in public dir or i18n/[lang]/[asset].json endpoint 
-export const getTranslation$: GetTranslationFn = $(async (lang: string, asset: string, url?: URL) => {
+export const loadTranslation$: LoadTranslationFn = $(async (lang: string, asset: string, url?: URL) => {
   let endpoint = '';
   // Absolute urls on server
   if (isServer && url) {
@@ -92,7 +92,7 @@ export const handleMissingTranslation$: HandleMissingTranslationFn = $((
  * Translation functions
  */
 export const translateFn: TranslateFn = {
-  getTranslation$: getTranslation$,
+  loadTranslation$: loadTranslation$,
   resolveLocale$: resolveLocale$,
   storeLocale$: storeLocale$,
   handleMissingTranslation$: handleMissingTranslation$
