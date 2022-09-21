@@ -52,13 +52,13 @@ npm install qwik-speak --save-dev
 ```
 ### Getting the translation
 ```jsx
-import { translate as t, plural as p } from 'qwik-speak';
+import { $translate as t, plural as p } from 'qwik-speak';
 
 export default component$(() => {
   return (
     <>
       <p>{t('app.title', { name: 'Qwik Speak' })}</p> {/* I'm Qwik Speak */}
-      <p>{p(1, 'app.devs')}</p> {/* One software developer */}
+      <p>{p(1, 'app.devs')}</p> {/* 1 software developer */}
     </>
   );
 });
@@ -97,7 +97,7 @@ Assets will be loaded through the implementation of `getTranslation$` function b
   "app": {
     "title": "I'm {{name}}",
     "devs": {
-      "one": "One software developer",
+      "one": "{{value}} software developer",
       "other": "{{value}} software developers"
     }
   }
@@ -191,9 +191,7 @@ The translation data of the additional languages are preloaded along with the cu
 
 ## Production
 ### Using a server
-At the state of the art, this library implements translations only at runtime: this means that the translations, even if lazy loaded for each page, are downloaded at runtime during the SSR or on the client, and the lookup also happens at runtime.
-
-See this [discussion](https://github.com/robisim74/qwik-speak/discussions/8)
+Translation happens at runtime: translations are downloaded during  SSR or on client, and the lookup also happens at runtime.
 
 ### Static Site Generation (SSG)
 Using SSG offered by Qwik City, translations can be inlined at build time.
@@ -240,7 +238,7 @@ and optionally contains:
 
 ## APIs
 ### Functions
-- `translate(keys: string | string[], params?: any, ctx?: SpeakState, lang?: string)`
+- `$translate(keys: string | string[], params?: any, ctx?: SpeakState, lang?: string)`
 Translates a key or an array of keys
 
 - `plural(value: number | string, prefix?: string, options?: Intl.PluralRulesOptions, ctx?: SpeakState, lang?: string)`

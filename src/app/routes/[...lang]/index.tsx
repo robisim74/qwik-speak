@@ -1,7 +1,7 @@
-import { component$ } from '@builder.io/qwik';
+import { component$, useStore } from '@builder.io/qwik';
 import { DocumentHead, StaticGenerateHandler } from '@builder.io/qwik-city';
 import {
-  translate as t,
+  $translate as t,
   plural as p,
   formatDate as fd,
   formatNumber as fn,
@@ -13,6 +13,8 @@ import { config } from '../../speak-config';
 
 export const Home = component$(() => {
   const units = useSpeakLocale().units!;
+
+  const state = useStore({ count: 0 });
 
   return (
     <>
@@ -26,8 +28,8 @@ export const Home = component$(() => {
       <p dangerouslySetInnerHTML={t('home.text')}></p>
 
       <h3>{t('home.plural')}</h3>
-      <p>{p(1, 'home.devs')}</p>
-      <p>{p(2, 'home.devs')}</p>
+      <button onClick$={() => state.count++}>{t('home.increment')}</button>
+      <p>{p(state.count, 'home.devs')}</p>
 
       <h3>{t('home.dates')}</h3>
       <p>{fd(Date.now(), { dateStyle: 'full', timeStyle: 'short' })}</p>

@@ -8,8 +8,9 @@
     "dates": "Date",
     "numbers": "Numeri e valute",
     "devs": {
-      "one": "Uno sviluppatore software",
+      "one": "{{ value }} sviluppatore software",
       "other": "{{ value }} sviluppatori software"
-    }
+    },
+    "increment": "Incrementa"
   }
 }

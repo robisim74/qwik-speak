@@ -10,7 +10,7 @@ import { getValue } from './core';
  * @param lang Optional language if different from the current one
  * @returns The translated values
  */
-export const translate = (
+export const $translate = (
   keys: string | string[],
   params?: any,
   ctx?: SpeakState,
@@ -22,7 +22,7 @@ export const translate = (
   lang = lang ?? locale.lang;
 
   if (Array.isArray(keys)) {
-    const values = keys.map(key => translate(key, params, ctx, lang));
+    const values = keys.map(key => $translate(key, params, ctx, lang));
     return values;
   }
 

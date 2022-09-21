@@ -1,5 +1,5 @@
 import { changeLocale } from '../library/change-locale';
-import { translate as t } from '../library/translate';
+import { $translate as t } from '../library/translate';
 import { ctx } from './config';
 
 describe('translate function', () => {

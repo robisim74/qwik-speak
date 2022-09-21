@@ -68,9 +68,9 @@ export const storeLocale$: StoreLocaleFn = $((locale: SpeakLocale, url?: URL) =>
     } else if (locale.lang !== config.defaultLocale.lang) {
       url.pathname = `/${locale.lang}${url.pathname}`;
     }
-  }
 
-  window.history.pushState({}, '', url);
+    window.history.pushState({}, '', url);
+  }
 
   // Store locale in cookie 
   document.cookie = `locale=${JSON.stringify(locale)};path=/`;
