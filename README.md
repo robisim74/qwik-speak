@@ -108,7 +108,7 @@ Assets will be loaded through the implementation of `loadTranslation$` function 
 ```typescript
 import { $ } from '@builder.io/qwik';
 
-export const loadTranslation$: GetTranslationFn = $((lang: string, asset: string, url?: URL) => {
+export const loadTranslation$: LoadTranslationFn = $((lang: string, asset: string, url?: URL) => {
   /* Must contain the logic to load translation data */
   
   // E.g. Fetch translation data from json files in public dir or i18n/[lang]/[asset].json endpoint 
