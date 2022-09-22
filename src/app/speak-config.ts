@@ -2,12 +2,9 @@ import { $ } from '@builder.io/qwik';
 import { isServer } from '@builder.io/qwik/build';
 import {
   LoadTranslationFn,
-  getValue,
-  HandleMissingTranslationFn,
   ResolveLocaleFn,
   SpeakConfig,
   SpeakLocale,
-  SpeakState,
   StoreLocaleFn,
   TranslateFn
 } from 'qwik-speak';
@@ -76,24 +73,11 @@ export const storeLocale$: StoreLocaleFn = $((locale: SpeakLocale, url?: URL) =>
   document.cookie = `locale=${JSON.stringify(locale)};path=/`;
 });
 
-// E.g. Use a fallback language for missing values
-// The language must be added when QwikSpeak or Speak are used
-export const handleMissingTranslation$: HandleMissingTranslationFn = $((
-  key: string,
-  value?: string,
-  params?: any,
-  ctx?: SpeakState
-) => {
-  value = getValue(key, ctx?.translation['en-US'], params, ctx?.config.keySeparator);
-  return value || key;
-});
-
 /**
  * Translation functions
  */
 export const translateFn: TranslateFn = {
   loadTranslation$: loadTranslation$,
   resolveLocale$: resolveLocale$,
-  storeLocale$: storeLocale$,
-  handleMissingTranslation$: handleMissingTranslation$
+  storeLocale$: storeLocale$
 };

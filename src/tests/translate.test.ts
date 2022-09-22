@@ -7,6 +7,10 @@ describe('translate function', () => {
     const value = t('test', {}, ctx);
     expect(value).toBe('Test');
   });
+  test('translate with default value', () => {
+    const value = t('test@@Default', {}, ctx);
+    expect(value).toBe('Test');
+  });
   test('translate with params', () => {
     const value = t('testParams', { param: 'params' }, ctx);
     expect(value).toBe('Test params');

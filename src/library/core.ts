@@ -34,12 +34,21 @@ export const addData = (translation: Translation, data: Translation, lang: strin
 /**
  * Get the value of a key
  */
-export const getValue = (key: string, data: Translation, params?: any, keySeparator = '.'): string | undefined => {
-  if (data) {
-    const value = key.split(keySeparator).reduce((acc, cur) => (acc && acc[cur] != null) ? acc[cur] : null, data);
-    if (typeof value === 'string') return params ? handleParams(value, params) : value;
-  }
-  return undefined;
+export const getValue = (
+  key: string,
+  data: Translation,
+  params?: any,
+  keySeparator = '.',
+  keyValueSeparator = '@@'
+): string | undefined => {
+  let defaultValue: string | undefined = undefined;
+
+  [key, defaultValue] = <[string, string | undefined]>key.split(keyValueSeparator);
+
+  const value = key.split(keySeparator).reduce((acc, cur) => (acc && acc[cur] != null) ? acc[cur] : null, data);
+
+  if (typeof value === 'string') return params ? handleParams(value, params) : value;
+  return defaultValue;
 };
 
 /**

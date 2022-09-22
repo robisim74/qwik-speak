@@ -12,7 +12,18 @@ export type {
   StoreLocaleFn,
   HandleMissingTranslationFn,
 } from './library/types';
-// Hooks
+// Components
+export { QwikSpeak } from './library/qwik-speak';
+export { Speak } from './library/speak';
+// Functions
+export { $translate } from './library/translate';
+export { plural } from './library/plural';
+export { formatNumber } from './library/format-number';
+export { formatDate } from './library/format-date';
+export { changeLocale } from './library/change-locale';
+// Core functions
+export { getValue, handleParams } from './library/core';
+// Use functions
 export {
   useSpeakContext,
   useSpeakLocale,
@@ -20,14 +31,3 @@ export {
   useSpeakConfig,
   useUrl,
 } from './library/use-functions';
-// Components
-export { QwikSpeak } from './library/qwik-speak';
-export { Speak } from './library/speak';
-// Functions
-export { changeLocale } from './library/change-locale';
-export { $translate } from './library/translate';
-export { plural } from './library/plural';
-export { formatNumber } from './library/format-number';
-export { formatDate } from './library/format-date';
-// Core functions
-export { getValue } from './library/core';

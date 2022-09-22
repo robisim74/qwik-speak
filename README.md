@@ -130,7 +130,7 @@ export const storeLocale$: StoreLocaleFn = $((locale: SpeakLocale, url?: URL) =>
 });
 
 export const handleMissingTranslation$: HandleMissingTranslationFn = $((key: string, value?: string, params?: any, ctx?: SpeakState) => {
-  /* Must contain the logic to handle missing values: by default returns the default value or the key */
+  /* Must contain the logic to handle missing values: by default returns the key */
 });
 
 export const translateFn: TranslateFn = {

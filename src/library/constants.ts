@@ -19,18 +19,6 @@ export const resolveLocale$: ResolveLocaleFn = $(() => {
 
 export const storeLocale$: StoreLocaleFn = $(() => { });
 
-/**
- * Returns the default value or the key
- */
-export const handleMissingTranslation$: HandleMissingTranslationFn = $((
-  key: string,
-  value?: string,
-  params?: any,
-  ctx?: SpeakState
-) => {
-  if (ctx?.config.keyValueSeparator) {
-    [key, value] = key.split(ctx.config.keyValueSeparator);
-    if (value) return params ? handleParams(value, params) : value;
-  }
+export const handleMissingTranslation$: HandleMissingTranslationFn = $((key: string) => {
   return key;
 });
