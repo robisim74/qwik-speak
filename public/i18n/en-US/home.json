@@ -5,7 +5,7 @@
     "params": "Parameters",
     "tags": "Html tags",
     "plural": "Plural",
-    "dates": "Dates",
+    "dates": "Dates & relative time",
     "numbers": "Numbers & currencies",
     "devs": {
       "one": "{{ value }} software developer",

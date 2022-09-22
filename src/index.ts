@@ -20,6 +20,7 @@ export { $translate } from './library/translate';
 export { plural } from './library/plural';
 export { formatNumber } from './library/format-number';
 export { formatDate } from './library/format-date';
+export { relativeTime } from './library/relative-time';
 export { changeLocale } from './library/change-locale';
 // Core functions
 export { getValue, handleParams } from './library/core';

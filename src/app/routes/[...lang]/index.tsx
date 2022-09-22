@@ -1,10 +1,11 @@
-import { component$, useStore } from '@builder.io/qwik';
+import { component$, useClientEffect$, useStore } from '@builder.io/qwik';
 import { DocumentHead, StaticGenerateHandler } from '@builder.io/qwik-city';
 import {
   $translate as t,
   plural as p,
   formatDate as fd,
   formatNumber as fn,
+  relativeTime as rt,
   Speak,
   useSpeakLocale
 } from 'qwik-speak';
@@ -33,6 +34,7 @@ export const Home = component$(() => {
 
       <h3>{t('home.dates')}</h3>
       <p>{fd(Date.now(), { dateStyle: 'full', timeStyle: 'short' })}</p>
+      <RelativeTime />
 
       <h3>{t('home.numbers')}</h3>
       <p>{fn(1000000)}</p>
@@ -40,6 +42,22 @@ export const Home = component$(() => {
       <p>{fn(1, { style: 'unit', unit: units['length'] })}</p>
     </>
   );
+});
+
+export const RelativeTime = component$(() => {
+  const state = useStore({ time: -0 });
+
+  useClientEffect$(() => {
+    setInterval(() => {
+      state.time--;
+    }, 1000);
+  });
+
+  return (
+    <>
+      <p>{rt(state.time, 'second')}</p>
+    </>
+  )
 });
 
 export default component$(() => {

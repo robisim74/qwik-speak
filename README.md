@@ -63,14 +63,15 @@ export default component$(() => {
   );
 });
 ```
-### Getting dates & numbers
+### Getting dates, relative time & numbers
 ```jsx
-import { formatDate as fd, formatNumber as fn } from 'qwik-speak';
+import { formatDate as fd, relativeTime as rt, formatNumber as fn } from 'qwik-speak';
 
 export default component$(() => {
   return (
     <>
       <p>{fd(Date.now(), { dateStyle: 'full', timeStyle: 'short' })}</p> {/* Wednesday, July 20, 2022 at 7:09 AM */}
+      <p>{rt(-1, 'day')}</p> {/* 1 day ago */}
       <p>{fn(1000000, { style: 'currency' })}</p> {/* $1,000,000.00 */}
     </>
   );
@@ -252,6 +253,9 @@ Gets the plural by a number
 - `formatDate(value: Date | number | string, options?: Intl.DateTimeFormatOptions, locale?: SpeakLocale, lang?: string, timeZone?: string)`
 Formats a date
 
+- `relativeTime(value: number | string, unit: Intl.RelativeTimeFormatUnit, options?: Intl.RelativeTimeFormatOptions, locale?: SpeakLocale, lang?: string)`
+Format a relative time
+
 - `formatNumber(value: number | string, options?: Intl.NumberFormatOptions, locale?: SpeakLocale, lang?: string, currency?: string)`
 Formats a number
 
@@ -320,6 +324,7 @@ npm run serve.ssg
 ## What's new
 > Released v0.0.13
 
+- Added `relativeTime` function
 - Added default value to strings: `key@@[default value]`
 
 ## License
