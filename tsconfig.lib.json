@@ -9,6 +9,7 @@
     "src/entry.*.tsx",
     "src/app/**",
     "src/tests/**",
-    "src/e2e/**"
+    "src/e2e/**",
+    "tools/**"
   ]
 }

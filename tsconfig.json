@@ -18,11 +18,12 @@
     "types": [
       "node",
       "vite/client",
+      "vite",
       "jest"
     ],
     "paths": {
       "qwik-speak": ["./src/index.ts"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "tools"]
 }
