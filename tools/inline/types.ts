@@ -2,18 +2,13 @@ export type Format = 'json';
 
 export interface QwikSpeakInlineVitePluginOptions {
   /**
-   * Alias for $translate, Default to '$translate'.
-   * E.g. import { $translate as t } from 'qwik-speak'
+   * The base path. Default to './'
    */
-  $translateAlias?: string;
+  basePath: string;
   /**
-   * Directory of the translation assets. Default to `public/i18n`
+   * Path to translation files: [basePath]/[assetsPath]/[lang]/*.json. Default to 'public/i18n'
    */
-  assetsDir?: string;
-  /**
-   * The format of the translation files. Default to 'json'
-   */
-  format?: Format;
+  assetsPath?: string;
   /**
    * Supported langs. Required
    */

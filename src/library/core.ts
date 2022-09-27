@@ -14,14 +14,14 @@ export const loadTranslation = async (
   assets = assets ?? config.assets;
   // Get translation
   const tasks = assets.map(asset => translateFn.loadTranslation$(lang, asset, url));
-  const results = await Promise.all(tasks);
+  const sources = await Promise.all(tasks);
 
   const translation: Translation = {};
-  results.forEach(data => {
+  for (const data of sources) {
     if (data) {
       addData(translation, data, lang)
     }
-  });
+  }
   return translation;
 };
 
