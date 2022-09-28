@@ -1,3 +1,3 @@
-export type { QwikSpeakInlineVitePluginOptions as QwikSpeakVitePluginOptions } from './types';
+export type { QwikSpeakInlineOptions } from './types';
 
-export { qwikSpeak } from './plugin';
+export { qwikSpeakInline } from './plugin';
