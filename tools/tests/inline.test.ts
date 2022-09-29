@@ -64,7 +64,7 @@ describe('inline', () => {
       defaultLang: 'en-US'
     }) as any;
     await plugin.buildStart?.();
-    const inlined = await plugin.renderChunk?.(mockChunk);
+    const inlined = await plugin.renderChunk?.(mockChunk, { fileName: 'mock-chunk' });
     expect(inlined).toBe(inlinedChunk);
   });
 });

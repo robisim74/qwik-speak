@@ -5,9 +5,10 @@ import path from 'path';
 
 import type { QwikSpeakInlineOptions, Translation } from './types';
 import { translateFnTest, translateFnMatch, translateFnSignatureMatch, globalLang } from './constants';
+import log from '../logger';
 
 /**
- * Qwik Speak Inline - Vite plugin
+ * Qwik Speak Inline Vite plugin
  * 
  * Inline $translate values: $lang === 'lang' && 'value' || 'default value'
  */
@@ -67,8 +68,14 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
      */
     async renderChunk(code: string, chunk: RenderedChunk) {
       if (!translateFnTest.test(code)) return null; // no transformation
+
+      if (chunk.fileName.startsWith('entry')) log(chunk.fileName);
       return inline(code, translation, opts);
     },
+
+    async closeBundle() {
+      log(`Qwik Speak Inline: build ends at ${new Date().toLocaleString()}`);
+    }
   };
 
   return plugin;
@@ -106,7 +113,7 @@ export function inline(
       // Get default value
       const defaultValue = getValue(key, translation[opts.defaultLang], params[1], opts.keySeparator);
       if (!defaultValue) {
-        console.log(`${opts.defaultLang}: key not found or dynamic: ${params[0]} - Skip`);
+        log(`${opts.defaultLang}: key not found or dynamic: ${key} - Skip`);
         continue;
       }
 
@@ -117,7 +124,7 @@ export function inline(
       for (const lang of opts.supportedLangs.filter(x => x !== opts.defaultLang)) {
         const value = getValue(key, translation[lang], params[1], opts.keySeparator);
         if (!value) {
-          console.log(`${lang}: key not found or dynamic params: ${params[0]}`);
+          log(`${lang}: key not found or dynamic params: ${key}`);
           continue;
         }
         values.set(lang, value);

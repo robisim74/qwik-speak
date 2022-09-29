@@ -1,3 +1,6 @@
+/**
+ * Qwik Speak Inline Vite Plugin Options
+ */
 export interface QwikSpeakInlineOptions {
   /**
    * The base path. Default to './'
@@ -20,7 +23,7 @@ export interface QwikSpeakInlineOptions {
    */
   keySeparator?: string;
   /**
-   * Key-value separator. Default is '@@'
+   * Key-value separator. Default is '\@\@'
    */
   keyValueSeparator?: string;
 }

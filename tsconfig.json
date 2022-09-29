@@ -7,8 +7,6 @@
     "jsx": "react-jsx",
     "jsxImportSource": "@builder.io/qwik",
     "strict": true,
-    "declaration": true,
-    "declarationDir": "lib/types",
     "resolveJsonModule": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
