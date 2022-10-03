@@ -97,31 +97,43 @@ export function inline(
   for (const originalFn of matches) {
     // Get signature
     const signature = originalFn.match(translateFnSignatureMatch);
-    // Get signature parameters
+
     if (signature) {
-      // Get params
+      // Get signature parameters
       const params = getParams(signature);
 
       // Skip internals
-      if (params[0] === "'key'") continue;
-      // Skip multilingual ('lang' param)
-      if (params[3]) continue;
+      if (params[0] === 'key') continue;
+
+      let supportedLangs: string[];
+      let defaultLang: string;
+
+      // Check multilingual
+      const optionalLang = multilingual(params[3], opts.supportedLangs);
+
+      if (!optionalLang) {
+        supportedLangs = opts.supportedLangs;
+        defaultLang = opts.defaultLang;
+      } else {
+        supportedLangs = [optionalLang];
+        defaultLang = optionalLang;
+      }
 
       // Get key
       const key = getKey(params[0], opts.keyValueSeparator);
 
       // Get default value
-      const defaultValue = getValue(key, translation[opts.defaultLang], params[1], opts.keySeparator);
+      const defaultValue = getValue(key, translation[defaultLang], params[1], opts.keySeparator);
       if (!defaultValue) {
-        log(`${opts.defaultLang}: key not found or dynamic: ${key} - Skip`);
+        log(`${defaultLang}: key not found or dynamic: ${key} - Skip`);
         continue;
       }
 
       // Map of values
       const values = new Map<string, string>();
-      values.set(opts.defaultLang, defaultValue);
+      values.set(defaultLang, defaultValue);
 
-      for (const lang of opts.supportedLangs.filter(x => x !== opts.defaultLang)) {
+      for (const lang of supportedLangs.filter(x => x !== defaultLang)) {
         const value = getValue(key, translation[lang], params[1], opts.keySeparator);
         if (!value) {
           log(`${lang}: key not found or dynamic params: ${key}`);
@@ -131,7 +143,7 @@ export function inline(
       }
 
       // Build translated line
-      const line = buildLine(opts, values);
+      const line = buildLine(values, supportedLangs, defaultLang);
 
       // Replace
       code = code.replace(originalFn, line);
@@ -139,6 +151,13 @@ export function inline(
   }
 
   return code;
+}
+
+export function multilingual(param: string | undefined, supportedLangs: string[]): string | undefined {
+  if (!param) return undefined;
+  // Trim "|'|`
+  let lang = param.replace(/(^("|'|`))|("|'|`)$/g, '');
+  return supportedLangs.find(x => x === lang);
 }
 
 export function getParams(signature: RegExpMatchArray): string[] {
@@ -202,11 +221,11 @@ export function interpolateParam(param: string): string {
 /**
  * Build the translated line
  */
-export function buildLine(opts: QwikSpeakInlineOptions, values: Map<string, string>): string {
+export function buildLine(values: Map<string, string>, supportedLangs: string[], defaultLang: string): string {
   let translatedLine = '';
-  for (const lang of opts.supportedLangs.filter(x => x !== opts.defaultLang)) {
+  for (const lang of supportedLangs.filter(x => x !== defaultLang)) {
     translatedLine += `${globalLang} === ${quoteValue(lang)} && ${values.get(lang)} || `;
   }
-  translatedLine += values.get(opts.defaultLang);
+  translatedLine += values.get(defaultLang);
   return translatedLine;
 }

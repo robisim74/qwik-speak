@@ -40,22 +40,14 @@ describe('inline', () => {
     expect(value).toBeUndefined();
   });
   test('buildLine', () => {
-    let opts = {
-      supportedLangs: ['en-US', 'it-IT'],
-      defaultLang: 'en-US'
-    };
     let values = new Map<string, string>();
     values.set('en-US', '`Value`');
     values.set('it-IT', '`Valore`');
-    let line = buildLine(opts, values);
+    let line = buildLine(values, ['en-US', 'it-IT'], 'en-US');
     expect(line).toBe('$lang === `it-IT` && `Valore` || `Value`');
-    opts = {
-      supportedLangs: ['en-US'],
-      defaultLang: 'en-US'
-    };
     values = new Map<string, string>();
     values.set('en-US', '`Value`');
-    line = buildLine(opts, values);
+    line = buildLine(values, ['en-US'], 'en-US');
     expect(line).toBe('`Value`');
   });
   test('renderChunk', async () => {
