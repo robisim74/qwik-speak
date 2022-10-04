@@ -1,6 +1,6 @@
 import { component$ } from '@builder.io/qwik';
 import { DocumentHead, StaticGenerateHandler } from '@builder.io/qwik-city';
-import { Speak, $translate as t } from 'qwik-speak';
+import { Speak, $translate as t, $inline as i } from 'qwik-speak';
 
 import { config } from '../../../speak-config';
 
@@ -27,8 +27,8 @@ export default component$(() => {
 });
 
 export const head: DocumentHead = {
-  title: 'app.page.title',
-  meta: [{ name: 'description', content: 'app.page.description' }]
+  title: i('page.head.title@@Page - {{name}}', { name: 'Qwik Speak' }),
+  meta: [{ name: 'description', content: i("page.head.description@@I'm another page") }]
 };
 
 // E.g. SSG

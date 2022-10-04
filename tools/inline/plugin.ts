@@ -92,18 +92,23 @@ export function inline(
   opts: Required<QwikSpeakInlineOptions>
 ): string | null {
   const matches = code.match(translateFnMatch);
+  // Skip dynamic keys
   if (!matches) return null;
 
   for (const originalFn of matches) {
     // Get signature
-    const signature = originalFn.match(translateFnSignatureMatch);
+    const args = originalFn.match(translateFnSignatureMatch)?.[0];
 
-    if (signature) {
+    if (args) {
       // Get signature parameters
-      const params = getParams(signature);
+      const params = getParams(args);
 
-      // Skip internals
-      if (params[0] === 'key') continue;
+      // Skip dynamic params
+      if (params[1]) {
+        // "{ name: 'Qwik Speak' }" => 'name'
+        const paramNames = params[1].match(/(\w+(?=:|\s+:))/g);
+        if (!paramNames) continue;
+      }
 
       let supportedLangs: string[];
       let defaultLang: string;
@@ -125,7 +130,7 @@ export function inline(
       // Get default value
       const defaultValue = getValue(key, translation[defaultLang], params[1], opts.keySeparator);
       if (!defaultValue) {
-        log(`${defaultLang}: key not found or dynamic: ${key} - Skip`);
+        log(`${defaultLang} - missing value for key: ${key} - Skip`);
         continue;
       }
 
@@ -136,7 +141,7 @@ export function inline(
       for (const lang of supportedLangs.filter(x => x !== defaultLang)) {
         const value = getValue(key, translation[lang], params[1], opts.keySeparator);
         if (!value) {
-          log(`${lang}: key not found or dynamic params: ${key}`);
+          log(`${lang} - missing value for key: ${key}`);
           continue;
         }
         values.set(lang, value);
@@ -155,21 +160,12 @@ export function inline(
 
 export function multilingual(param: string | undefined, supportedLangs: string[]): string | undefined {
   if (!param) return undefined;
-  // Trim "|'|`
-  let lang = param.replace(/(^("|'|`))|("|'|`)$/g, '');
+  const lang = trimQuotes(param);
   return supportedLangs.find(x => x === lang);
 }
 
-export function getParams(signature: RegExpMatchArray): string[] {
-  let params = signature[0].split(',');
-  // Change all groups of white-spaces characters to a single space & trim the result
-  params = params.map(x => x.replace(/\s+/g, ' ').trim());
-  return params;
-}
-
 export function getKey(param: string, keyValueSeparator: string): string {
-  // Trim "|'|`
-  let key = param.replace(/(^("|'|`))|("|'|`)$/g, '');
+  let key = trimQuotes(param);
   key = key.split(keyValueSeparator)[0];
   return key;
 }
@@ -177,24 +173,21 @@ export function getKey(param: string, keyValueSeparator: string): string {
 export function getValue(
   key: string,
   data: Translation,
-  params: string | undefined,
+  args: string | undefined,
   keySeparator: string
 ): string | undefined {
   const value = key.split(keySeparator).reduce((acc, cur) => (acc && acc[cur] != null) ? acc[cur] : null, data);
-  if (typeof value === 'string') return params ? handleParams(value, params) : quoteValue(value);
+  if (typeof value === 'string') return args ? handleParams(value, args) : quoteValue(value);
   return undefined;
 }
 
-export function handleParams(value: string, params: string): string | undefined {
-  // "{ name: 'Qwik Speak' }" => 'name'
-  const paramNames = params.match(/(\w+(?=:|\s+:))/g);
-  if (!paramNames) return undefined;
+export function handleParams(value: string, args: string): string | undefined {
+  // Trim brackets
+  args = args.replace(/(^({))|(})$/g, '');
 
-  // Trim { }
-  params = params.replace(/(^({))|(})$/g, '');
+  const params = getParams(args);
 
-  const splitParams = params.split(',');
-  for (const param of splitParams) {
+  for (const param of params) {
     const parts = param.split(':').map(x => x.trim());
     if (parts.length === 2) {
       value = value.replace(/{{\s?([^{}\s]*)\s?}}/g, (substring: string, parsedKey: string) => {
@@ -203,6 +196,21 @@ export function handleParams(value: string, params: string): string | undefined 
     }
   }
   return quoteValue(value);
+}
+
+export function getParams(args: string): string[] {
+  // Split by comma outside single or double quotes, backticks and brackets
+  let params = args
+    .split(/((?:[^,'"`]*(?:"(?:[^"])*"|'(?:[^'])*'|'(?:[^`])*`|,(?:[^{]*\}))[^,'"`]*)+)|,/gs)
+    .filter(Boolean);
+
+  // Change all groups of white-spaces characters to a single space & trim the result
+  params = params.map(x => x.replace(/\s+/g, ' ').trim());
+  return params;
+}
+
+export function trimQuotes(value: string): string {
+  return value.replace(/(^("|'|`))|("|'|`)$/g, '');
 }
 
 /**

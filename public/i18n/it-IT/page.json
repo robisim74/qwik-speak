@@ -1,3 +1,8 @@
 {
-  "page": {}
+  "page": {
+    "head": {
+      "title": "Pagina - {{name}}",
+      "description": "Io sono un'altra pagina"
+    }
+  }
 }

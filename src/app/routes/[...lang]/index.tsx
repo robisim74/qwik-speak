@@ -2,6 +2,7 @@ import { component$, useClientEffect$, useStore } from '@builder.io/qwik';
 import { DocumentHead, StaticGenerateHandler } from '@builder.io/qwik-city';
 import {
   $translate as t,
+  $inline as i,
   plural as p,
   formatDate as fd,
   formatNumber as fn,
@@ -72,8 +73,8 @@ export default component$(() => {
 });
 
 export const head: DocumentHead = {
-  title: 'app.home.title',
-  meta: [{ name: 'description', content: 'app.home.description' }]
+  title: i('home.head.title@@{{name}}', { name: 'Qwik Speak' }),
+  meta: [{ name: 'description', content: i('home.head.description@@Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps') }]
 };
 
 // E.g. SSG

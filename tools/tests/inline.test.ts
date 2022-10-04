@@ -3,13 +3,42 @@ import { getParams, getKey, getValue, qwikSpeakInline, buildLine } from '../inli
 import { inlinedChunk, mockChunk } from './mock';
 
 describe('inline', () => {
-  const originalFn = `$translate('home.greeting', {
-      name: 'Qwik Speak'
-  })`;
-  const signature = <RegExpMatchArray>originalFn.match(translateFnSignatureMatch);
   test('getParams', () => {
-    const params = getParams(signature);
-    expect(params).toEqual(["'home.greeting'", "{ name: 'Qwik Speak' }"]);
+    let originalFn = `$translate('key1.subkey1', {
+      param1: 'Param1'
+    })`;
+    let args = originalFn.match(translateFnSignatureMatch)![0];
+    let params = getParams(args);
+    expect(params).toEqual([
+      "'key1.subkey1'",
+      "{ param1: 'Param1' }"
+    ]);
+    originalFn = `$translate("key1.subkey1", {
+      param1: "Param1"
+    })`;
+    args = originalFn.match(translateFnSignatureMatch)![0];
+    params = getParams(args);
+    expect(params).toEqual([
+      '"key1.subkey1"',
+      '{ param1: "Param1" }'
+    ]);
+    originalFn = `$translate('key1.subkey1@@value, value', {
+      param1: 'Param1, Param1',
+      param2: Param2
+    }, ctx, 'lang')`;
+    args = originalFn.match(translateFnSignatureMatch)![0];
+    params = getParams(args);
+    expect(params).toEqual([
+      "'key1.subkey1@@value, value'",
+      "{ param1: 'Param1, Param1', param2: Param2 }",
+      'ctx',
+      "'lang'"
+    ]);
+    params = getParams("param1: 'Param1, Param1', param2: Param2");
+    expect(params).toEqual([
+      "param1: 'Param1, Param1'",
+      'param2: Param2'
+    ]);
   });
   test('getKey', () => {
     let key = getKey("'key1'", '@@');
@@ -36,8 +65,6 @@ describe('inline', () => {
     expect(value).toBe('`Key1`');
     value = getValue('key1', { key1: 'Key1 {{param1}}' }, "{ param2: 'Param2' }", '.');
     expect(value).toBe('`Key1 {{param1}}`');
-    value = getValue('key1', { key1: 'Key1 {{param1}}' }, 'variable', '.');
-    expect(value).toBeUndefined();
   });
   test('buildLine', () => {
     let values = new Map<string, string>();

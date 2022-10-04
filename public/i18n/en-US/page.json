@@ -1,5 +1,9 @@
 {
   "page": {
+    "head": {
+      "title": "Page - {{name}}",
+      "description": "I'm another page"
+    },
     "text": "I'm a value"
   }
 }

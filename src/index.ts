@@ -20,6 +20,7 @@ export { QwikSpeak } from './library/qwik-speak';
 export { Speak } from './library/speak';
 // Functions
 export { $translate } from './library/translate';
+export { $inline } from './library/inline';
 export { plural } from './library/plural';
 export { formatNumber } from './library/format-number';
 export { formatDate } from './library/format-date';
