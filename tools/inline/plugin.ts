@@ -1,16 +1,14 @@
 import type { Plugin } from 'vite';
-import type { RenderedChunk } from 'rollup';
 import { readFile, readdir } from 'fs/promises';
 import path from 'path';
 
 import type { QwikSpeakInlineOptions, Translation } from './types';
-import { translateFnTest, translateFnMatch, translateFnSignatureMatch, globalLang } from './constants';
 import log from '../logger';
 
 /**
  * Qwik Speak Inline Vite plugin
  * 
- * Inline $translate values: $lang === 'lang' && 'value' || 'default value'
+ * Inline $translate values: $lang === 'lang' && 'value' || 'value'
  */
 export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
   // Resolve options
@@ -22,11 +20,11 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
     keyValueSeparator: options.keyValueSeparator ?? '@@',
   }
 
-  // Resolve translation data
+  // Translation data
   const translation: Translation = Object.fromEntries(opts.supportedLangs.map(value => [value, {}]));
 
   const plugin: Plugin = {
-    name: 'qwik-speak-inline-vite-plugin',
+    name: 'vite-plugin-qwik-speak-inline',
     enforce: 'post',
     // Apply only on build
     apply: 'build',
@@ -37,7 +35,7 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
     async buildStart() {
       // For all langs
       await Promise.all(opts.supportedLangs.map(async lang => {
-        const baseDir = `${opts.basePath}${opts.assetsPath}/${lang}`;
+        const baseDir = path.normalize(`${opts.basePath}${opts.assetsPath}/${lang}`);
         // For all files
         const files = await readdir(baseDir);
 
@@ -64,13 +62,18 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
     },
 
     /**
-     * Inline translation data in chunk files
+     * Inline translation data
+     * 
+     * Prefer transform hook because unused imports will be removed, unlike renderChunk
      */
-    async renderChunk(code: string, chunk: RenderedChunk) {
-      if (!translateFnTest.test(code)) return null; // no transformation
-
-      if (chunk.fileName.startsWith('entry')) log(chunk.fileName);
-      return inline(code, translation, opts);
+    async transform(code: string, id: string) {
+      // Filter id
+      if (id.includes('/src') && id.endsWith('.js')) {
+        // Filter code
+        if (/(\$translate|\$inline)/.test(code)) {
+          return inline(code, translation, opts);
+        }
+      }
     },
 
     async closeBundle() {
@@ -91,16 +94,18 @@ export function inline(
   translation: Translation,
   opts: Required<QwikSpeakInlineOptions>
 ): string | null {
-  const matches = code.match(translateFnMatch);
+  const alias = getAlias(code);
+  const matches = code.match(new RegExp(`${alias}\\(("|'|\`).*?("|'|\`).*?\\)`, 'gs'));
+
   // Skip dynamic keys
   if (!matches) return null;
 
   for (const originalFn of matches) {
-    // Get signature
-    const args = originalFn.match(translateFnSignatureMatch)?.[0];
+    // Get args
+    const args = originalFn.match(new RegExp(`(?<=^${alias}\\()("|'|\`).*?("|'|\`).*?(?=\\)$)`, 'gs'))?.[0];
 
     if (args) {
-      // Get signature parameters
+      // Get parameters
       const params = getParams(args);
 
       // Skip dynamic params
@@ -158,6 +163,26 @@ export function inline(
   return code;
 }
 
+export function getAlias(code: string): string {
+  let translateAlias = code.match(/(?<=\$translate as).*?(?=,|\})/s)?.[0]?.trim() || '$translate';
+  let inlineAlias = code.match(/(?<=\$inline as).*?(?=,|\})/s)?.[0]?.trim() || '$inline';
+  // Escape special characters / Assert position at a word boundary
+  translateAlias = translateAlias.startsWith('$') ? `\\${translateAlias}` : `\\b${translateAlias}`;
+  inlineAlias = inlineAlias.startsWith('$') ? `\\${inlineAlias}` : `\\b${inlineAlias}`;
+  return `(${translateAlias}|${inlineAlias})`;
+}
+
+export function getParams(args: string): string[] {
+  // Split by comma outside single or double quotes, backticks and brackets
+  let params = args
+    .split(/((?:[^,'"`]*(?:"(?:[^"])*"|'(?:[^'])*'|'(?:[^`])*`|,(?:[^{]*\}))[^,'"`]*)+)|,/gs)
+    .filter(Boolean);
+
+  // Change all groups of white-spaces characters to a single space & trim the result
+  params = params.map(x => x.replace(/\s+/g, ' ').trim());
+  return params;
+}
+
 export function multilingual(param: string | undefined, supportedLangs: string[]): string | undefined {
   if (!param) return undefined;
   const lang = trimQuotes(param);
@@ -198,17 +223,6 @@ export function handleParams(value: string, args: string): string | undefined {
   return quoteValue(value);
 }
 
-export function getParams(args: string): string[] {
-  // Split by comma outside single or double quotes, backticks and brackets
-  let params = args
-    .split(/((?:[^,'"`]*(?:"(?:[^"])*"|'(?:[^'])*'|'(?:[^`])*`|,(?:[^{]*\}))[^,'"`]*)+)|,/gs)
-    .filter(Boolean);
-
-  // Change all groups of white-spaces characters to a single space & trim the result
-  params = params.map(x => x.replace(/\s+/g, ' ').trim());
-  return params;
-}
-
 export function trimQuotes(value: string): string {
   return value.replace(/(^("|'|`))|("|'|`)$/g, '');
 }
@@ -232,7 +246,7 @@ export function interpolateParam(param: string): string {
 export function buildLine(values: Map<string, string>, supportedLangs: string[], defaultLang: string): string {
   let translatedLine = '';
   for (const lang of supportedLangs.filter(x => x !== defaultLang)) {
-    translatedLine += `${globalLang} === ${quoteValue(lang)} && ${values.get(lang)} || `;
+    translatedLine += `${'$lang'} === ${quoteValue(lang)} && ${values.get(lang)} || `;
   }
   translatedLine += values.get(defaultLang);
   return translatedLine;

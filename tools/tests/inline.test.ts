@@ -1,33 +1,43 @@
-import { translateFnSignatureMatch } from '../inline/constants';
-import { getParams, getKey, getValue, qwikSpeakInline, buildLine } from '../inline/plugin';
-import { inlinedChunk, mockChunk } from './mock';
+import { getParams, getKey, getValue, qwikSpeakInline, buildLine, getAlias } from '../inline/plugin';
+import { inlinedCode, mockCode } from './mock';
 
 describe('inline', () => {
+  test('getAlias', () => {
+    let alias = getAlias(`import {
+      $translate as t,
+      $inline as i,
+      plural as p,
+      formatDate as fd,
+      formatNumber as fn,
+      relativeTime as rt,
+      Speak,
+      useSpeakLocale
+    } from 'qwik-speak';`);
+    expect(alias).toBe('(\\bt|\\bi)');
+    alias = getAlias("import { $translate as t } from 'qwik-speak';");
+    expect(alias).toBe('(\\bt|\\$inline)');
+    alias = getAlias("import { $translate } from 'qwik-speak';");
+    expect(alias).toBe('(\\$translate|\\$inline)');
+  });
   test('getParams', () => {
-    let originalFn = `$translate('key1.subkey1', {
+    let params = getParams(`'key1.subkey1', {
       param1: 'Param1'
-    })`;
-    let args = originalFn.match(translateFnSignatureMatch)![0];
-    let params = getParams(args);
+    }`);
     expect(params).toEqual([
       "'key1.subkey1'",
       "{ param1: 'Param1' }"
     ]);
-    originalFn = `$translate("key1.subkey1", {
+    params = getParams(`"key1.subkey1", {
       param1: "Param1"
-    })`;
-    args = originalFn.match(translateFnSignatureMatch)![0];
-    params = getParams(args);
+    }`);
     expect(params).toEqual([
       '"key1.subkey1"',
       '{ param1: "Param1" }'
     ]);
-    originalFn = `$translate('key1.subkey1@@value, value', {
+    params = getParams(`'key1.subkey1@@value, value', {
       param1: 'Param1, Param1',
       param2: Param2
-    }, ctx, 'lang')`;
-    args = originalFn.match(translateFnSignatureMatch)![0];
-    params = getParams(args);
+    }, ctx, 'lang'`);
     expect(params).toEqual([
       "'key1.subkey1@@value, value'",
       "{ param1: 'Param1, Param1', param2: Param2 }",
@@ -77,13 +87,13 @@ describe('inline', () => {
     line = buildLine(values, ['en-US'], 'en-US');
     expect(line).toBe('`Value`');
   });
-  test('renderChunk', async () => {
+  test('transform', async () => {
     const plugin = qwikSpeakInline({
       supportedLangs: ['en-US', 'it-IT'],
       defaultLang: 'en-US'
     }) as any;
     await plugin.buildStart?.();
-    const inlined = await plugin.renderChunk?.(mockChunk, { fileName: 'mock-chunk' });
-    expect(inlined).toBe(inlinedChunk);
+    const inlined = await plugin.transform?.(mockCode, '/src/mock.code.js');
+    expect(inlined).toBe(inlinedCode);
   });
 });
