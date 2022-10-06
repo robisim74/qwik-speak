@@ -25,12 +25,12 @@ test.describe('Home', () => {
     await expect(page.locator('main')).toContainText('Traduci le tue app Qwik in qualsiasi lingua');
     await expect(page.locator('main')).toContainText('Ciao! Sono Qwik Speak');
 
-    /* await expect(page.locator('title')).toContainText('Qwik Speak');
+    await expect(page.locator('title')).toContainText('Qwik Speak');
     await expect(page.locator('meta[name="description"]'))
       .toHaveAttribute(
         'content',
         'Libreria di internazionalizzazione (i18n) per tradurre testi, date e numeri nelle app Qwik'
-      ); */
+      );
 
     await Promise.all([
       page.waitForNavigation(),

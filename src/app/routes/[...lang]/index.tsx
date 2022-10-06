@@ -2,7 +2,6 @@ import { component$, useClientEffect$, useStore } from '@builder.io/qwik';
 import { DocumentHead, StaticGenerateHandler } from '@builder.io/qwik-city';
 import {
   $translate as t,
-  $inline as i,
   plural as p,
   formatDate as fd,
   formatNumber as fn,
@@ -31,7 +30,7 @@ export const Home = component$(() => {
 
       <h3>{t('home.plural')}</h3>
       <button onClick$={() => state.count++}>{t('home.increment')}</button>
-      <p>{p(state.count, 'home.devs')}</p>
+      <p>{p(state.count, 'devs')}</p>
 
       <h3>{t('home.dates')}</h3>
       <p>{fd(Date.now(), { dateStyle: 'full', timeStyle: 'short' })}</p>
@@ -73,8 +72,8 @@ export default component$(() => {
 });
 
 export const head: DocumentHead = {
-  title: i('home.head.title@@{{name}}', { name: 'Qwik Speak' }),
-  meta: [{ name: 'description', content: i('home.head.description@@Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps') }]
+  title: 'head.home.title',
+  meta: [{ name: 'description', content: 'head.home.description' }]
 };
 
 // E.g. SSG

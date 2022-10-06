@@ -4,10 +4,8 @@ import type {
   LoadTranslationFn,
   StoreLocaleFn,
   HandleMissingTranslationFn,
-  ResolveLocaleFn,
-  SpeakState
+  ResolveLocaleFn
 } from './types';
-import { handleParams } from './core';
 
 export const loadTranslation$: LoadTranslationFn = $(() => {
   return null;

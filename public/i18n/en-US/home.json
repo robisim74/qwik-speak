@@ -1,9 +1,5 @@
 {
   "home": {
-    "head": {
-      "title": "{{name}}",
-      "description": "Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps"
-    },
     "greeting": "Hi! I am {{name}}",
     "text": "<em>Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps</em>",
     "params": "Parameters",
@@ -11,10 +7,6 @@
     "plural": "Plural",
     "dates": "Dates & relative time",
     "numbers": "Numbers & currencies",
-    "devs": {
-      "one": "{{ value }} software developer",
-      "other": "{{value}} software developers"
-    },
     "increment": "Increment"
   }
 }

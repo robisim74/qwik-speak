@@ -1,5 +1,10 @@
 import { QRL, ValueOrPromise } from '@builder.io/qwik';
 
+declare global {
+  /* eslint-disable-next-line no-var */
+  var $lang: string;
+}
+
 export interface SpeakLocale {
   /**
    * language[-script][-region]
