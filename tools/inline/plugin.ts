@@ -5,6 +5,11 @@ import path from 'path';
 import type { QwikSpeakInlineOptions, Translation } from './types';
 import log from '../logger';
 
+// Logs
+const missingValues: string[] = [];
+const dynamicKeys: string[] = [];
+const dynamicParams: string[] = [];
+
 /**
  * Qwik Speak Inline Vite plugin
  * 
@@ -70,13 +75,17 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
       // Filter id
       if (id.includes('/src') && id.endsWith('.js')) {
         // Filter code
-        if (/(\$translate|\$inline)/.test(code)) {
+        if (/\$translate/.test(code)) {
           return inline(code, translation, opts);
         }
       }
     },
 
     async closeBundle() {
+      // Logs
+      missingValues.forEach(x => log(x));
+      dynamicKeys.forEach(x => log(x));
+      dynamicParams.forEach(x => log(x));
       log(`Qwik Speak Inline: build ends at ${new Date().toLocaleString()}`);
     }
   };
@@ -95,24 +104,33 @@ export function inline(
   opts: Required<QwikSpeakInlineOptions>
 ): string | null {
   const alias = getAlias(code);
-  const matches = code.match(new RegExp(`${alias}\\(("|'|\`).*?("|'|\`).*?\\)`, 'gs'));
 
-  // Skip dynamic keys
+  const matches = code.match(new RegExp(`${alias}\\(.*?\\)`, 'gs'));
   if (!matches) return null;
 
   for (const originalFn of matches) {
     // Get args
-    const args = originalFn.match(new RegExp(`(?<=^${alias}\\()("|'|\`).*?("|'|\`).*?(?=\\)$)`, 'gs'))?.[0];
+    const args = originalFn.match(new RegExp(`(?<=^${alias}\\().*?(?=\\)$)`, 'gs'))?.[0];
 
     if (args) {
       // Get parameters
       const params = getParams(args);
 
-      // Skip dynamic params
+      // Dynamic key
+      const validFn = originalFn.match(new RegExp(`${alias}\\(("|'|\`).*?("|'|\`).*?\\)`, 's'))?.[0];
+      if (!validFn) {
+        if (params[0] !== 'key') dynamicKeys.push(`dynamic key: ${originalFn.replace(/\s+/g, ' ')} - skip`)
+        continue;
+      }
+
+      // Dynamic params
       if (params[1]) {
         // "{ name: 'Qwik Speak' }" => 'name'
         const paramNames = params[1].match(/(\w+(?=:|\s+:))/g);
-        if (!paramNames) continue;
+        if (!paramNames) {
+          dynamicParams.push(`dynamic params: ${originalFn.replace(/\s+/g, ' ')} - skip`);
+          continue;
+        }
       }
 
       let supportedLangs: string[];
@@ -135,7 +153,7 @@ export function inline(
       // Get default value
       const defaultValue = getValue(key, translation[defaultLang], params[1], opts.keySeparator);
       if (!defaultValue) {
-        log(`${defaultLang} - missing value for key: ${key} - Skip`);
+        missingValues.push(`${defaultLang} - missing value for key: ${key}`);
         continue;
       }
 
@@ -146,7 +164,7 @@ export function inline(
       for (const lang of supportedLangs.filter(x => x !== defaultLang)) {
         const value = getValue(key, translation[lang], params[1], opts.keySeparator);
         if (!value) {
-          log(`${lang} - missing value for key: ${key}`);
+          missingValues.push(`${lang} - missing value for key: ${key}`);
           continue;
         }
         values.set(lang, value);
@@ -165,11 +183,9 @@ export function inline(
 
 export function getAlias(code: string): string {
   let translateAlias = code.match(/(?<=\$translate as).*?(?=,|\})/s)?.[0]?.trim() || '$translate';
-  let inlineAlias = code.match(/(?<=\$inline as).*?(?=,|\})/s)?.[0]?.trim() || '$inline';
   // Escape special characters / Assert position at a word boundary
   translateAlias = translateAlias.startsWith('$') ? `\\${translateAlias}` : `\\b${translateAlias}`;
-  inlineAlias = inlineAlias.startsWith('$') ? `\\${inlineAlias}` : `\\b${inlineAlias}`;
-  return `(${translateAlias}|${inlineAlias})`;
+  return translateAlias;
 }
 
 export function getParams(args: string): string[] {

@@ -5,7 +5,6 @@ describe('inline', () => {
   test('getAlias', () => {
     let alias = getAlias(`import {
       $translate as t,
-      $inline as i,
       plural as p,
       formatDate as fd,
       formatNumber as fn,
@@ -13,11 +12,11 @@ describe('inline', () => {
       Speak,
       useSpeakLocale
     } from 'qwik-speak';`);
-    expect(alias).toBe('(\\bt|\\bi)');
+    expect(alias).toBe('\\bt');
     alias = getAlias("import { $translate as t } from 'qwik-speak';");
-    expect(alias).toBe('(\\bt|\\$inline)');
+    expect(alias).toBe('\\bt');
     alias = getAlias("import { $translate } from 'qwik-speak';");
-    expect(alias).toBe('(\\$translate|\\$inline)');
+    expect(alias).toBe('\\$translate');
   });
   test('getParams', () => {
     let params = getParams(`'key1.subkey1', {
