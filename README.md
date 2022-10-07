@@ -18,34 +18,27 @@ stateDiagram-v2
     State1 --> State4
     State1 --> State5
     note right of State2
-        Creates subscriptions 
-        and rerenders components with translations
+        - lang
+        - extension (Intl)
+        - currency
+        - timezone
+        - unit
     end note
-    note right of State3: Immutable
-    note right of State4: Immutable
+    note right of State3
+        key-value pairs
+        of translation data
+    end note
+    note right of State4: Configuration
     note right of State5
-        Immutable
-        QRL functions to be serializable
+        Custom APIs:
+        - loadTranslation$
+        - resolveLocale$
+        - storeLocale$
+        - handleMissingTranslation$
     end note
 ```
 
 ## Usage
-<!---
-```mermaid
-C4Container
-    Container_Boundary(a, "App") {
-        Component(a0, "QwikSpeak", "", "Uses Speak context")
-        Container_Boundary(b1, "Home") {
-            Component(a10, "Speak", "", "Adds its own translation data to the context")        
-        }  
-        Container_Boundary(b2, "Page") {
-            Component(a20, "Speak", "", "Adds its own translation data to the context")        
-        }       
-    }
-```
--->
-![Usage](images/usage.svg)
-
 ### Getting started
 ```shell
 npm install qwik-speak --save-dev
@@ -88,7 +81,7 @@ export const config: SpeakConfig = {
     { language: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles' }
   ],
   assets: [
-    'app', // Shared
+    'app', // Translations shared from the whole app
   ]
 };
 ```
@@ -140,7 +133,7 @@ export const translateFn: TranslateFn = {
 };
 ```
 
-Add the `QwikSpeak` component in `root.tsx`:
+Add `QwikSpeak` component in `root.tsx`:
 ```jsx
 import { QwikSpeak } from 'qwik-speak';
 
@@ -151,7 +144,7 @@ export default component$(() => {
      */
     <QwikSpeak config={config} translateFn={translateFn}>
       <QwikCity>
-        <Head />
+        <head></head>
         <body>
           <RouterOutlet />
         </body>
@@ -161,7 +154,7 @@ export default component$(() => {
 });
 ```
 ### Lazy loading of translation data
-Use the `Speak` component to add translation data to the context:
+Create a different translation data file (asset) for each page and use `Speak` component to add translation data to the context:
 ```jsx
 import { Speak } from 'qwik-speak';
 
@@ -191,11 +184,15 @@ export default component$(() => {
 The translation data of the additional languages are preloaded along with the current language. They can be used as a fallback for missing values by implementing `handleMissingTranslation$` below, or for multilingual pages.
 
 ## Production
-### Using a server
-Translation happens at runtime: translations are downloaded during SSR or on client, and the lookup also happens at runtime.
+You have three solutions:
+- **Build as is**  Translation happens _at runtime_: translations are loaded during SSR or on client, and the lookup also happens at runtime as in development mode
+- **Build using Qwik Speak Inline Vite plugin** Translation happens _at compile-time_: translations are loaded and inlined during the buid
+- **Build using Qwik Speak Inline Vite plugin & runtime** Translation happens _at compile-time_ or _at runtime_ as needed: static translations are loaded and inlined during the buid, while dynamic translations occur at runtime
+
+See [Qwik Speak Inline Vite plugin](./tools/inline.md) for more information on how it works and how to use it.
 
 ### Static Site Generation (SSG)
-Using SSG offered by Qwik City, translations can be inlined at build time.
+Using SSG offered by Qwik City, you can prerender the pages for each language.
 
 What you need:
 - A `lang` parameter in the root, like:
@@ -211,7 +208,7 @@ What you need:
 - Handle the localized routing in `resolveLocale$` and `storeLocale$`
 - Qwik City Static Site Generation config and dynamic routes
 
-See the [sample app](https://github.com/robisim74/qwik-speak/tree/main/src/app)
+The [sample app](./src/app) in this project uses _Qwik Speak Inline Vite plugin & runtime_ solution and implements SSG.
 
 ## Speak config
 - `defaultLocale`
@@ -301,31 +298,16 @@ With an Express server running to provide http requests, execute in another Term
 ```Shell
 npm run ssg
 ```
-Since the sample app implements a localized routing, the command will download the translations at compile-time and generate a single app with the localized paths and inlined translations:
-```
-dist
-│   index.html 
-│
-└───page
-│       index.html
-│   
-└───it-IT
-    │   index.html 
-    │
-    └───page
-            index.html
-```
-Translations are also serialized and made available at runtime.
+and stop the Express server. Then serve the static app:
 
 ```Shell
 npm run serve.ssg
 ```
 
 ## What's new
-> Released v0.0.13
+> Released v0.1.0
 
-- Added `relativeTime` function
-- Added default value to strings: `key@@[default value]`
+- Inline translation data at compile time
 
 ## License
 MIT
