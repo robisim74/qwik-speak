@@ -16,9 +16,7 @@ export const Header = component$(() => {
   useClientEffect$(() => {
     // Set html lang
     document.documentElement.lang = lang;
-    // Set global $lang for inlining (temporary workaround)
-    globalThis.$lang = lang;
-  });
+  }, { eagerness: 'load' });
 
   const getHref = (name: string) => {
     return lang === config.defaultLocale.lang ? name : `/${lang}${name}`
