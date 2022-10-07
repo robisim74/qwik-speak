@@ -75,10 +75,10 @@ export default component$(() => {
 import { SpeakConfig } from 'qwik-speak';
 
 export const config: SpeakConfig = {
-  defaultLocale: { language: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles' },
+  defaultLocale: { lang: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles' },
   supportedLocales: [
-    { language: 'it-IT', currency: 'EUR', timeZone: 'Europe/Rome' },
-    { language: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles' }
+    { lang: 'it-IT', currency: 'EUR', timeZone: 'Europe/Rome' },
+    { lang: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles' }
   ],
   assets: [
     'app', // Translations shared from the whole app
