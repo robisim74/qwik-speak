@@ -1,3 +1,4 @@
+import { inlinedQrl } from '@builder.io/qwik';
 import { handleMissingTranslation$, loadTranslation$, resolveLocale$, storeLocale$ } from '../library/constants';
 import { SpeakLocale, SpeakConfig, Translation, SpeakState } from '../library/types';
 
@@ -39,9 +40,9 @@ export const ctx: SpeakState = new Proxy({
   translation: translationData,
   config: config,
   translateFn: {
-    loadTranslation$: loadTranslation$,
-    resolveLocale$: resolveLocale$,
-    storeLocale$: storeLocale$,
-    handleMissingTranslation$: handleMissingTranslation$
+    loadTranslation$: inlinedQrl(() => { return null; }, 'loadTranslation'),
+    resolveLocale$: inlinedQrl(() => { return null; }, 'resolveLocale'),
+    storeLocale$: inlinedQrl(() => { }, 'storeLocale'),
+    handleMissingTranslation$: inlinedQrl((key: string) => { return key; }, 'handleMissingTranslation'),
   }
 }, {});

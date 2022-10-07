@@ -78,9 +78,10 @@ export const QwikSpeak = component$((props: QwikSpeakProps) => {
     // Prevent Qwik from creating subscriptions
     if (isServer) {
       // Shallow freeze: only applies to the immediate properties of object itself
-      Object.freeze(translation);
+      // https://github.com/BuilderIO/qwik/issues/1631
+      /* Object.freeze(translation);
       Object.freeze(config);
-      Object.freeze(translateFn)
+      Object.freeze(translateFn) */
     }
   });
 
