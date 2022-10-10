@@ -27,9 +27,13 @@ describe('translate function', () => {
     const value = t('nested.test', {}, ctx);
     expect(value).toBe('Test');
   });
-  test('key-value separator', async () => {
-    const value = await t('test1@@Test 1', {}, ctx);
+  test('key-value separator', () => {
+    const value = t('test1@@Test 1', {}, ctx);
     expect(value).toBe('Test 1');
+  });
+  test('key-value separator with params', () => {
+    const value = t('test1@@Test {{param}}', { param: 'params' }, ctx);
+    expect(value).toBe('Test params');
   });
   test('translate when locale changes', async () => {
     await changeLocale({

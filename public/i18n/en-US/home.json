@@ -7,10 +7,6 @@
     "plural": "Plural",
     "dates": "Dates & relative time",
     "numbers": "Numbers & currencies",
-    "devs": {
-      "one": "{{ value }} software developer",
-      "other": "{{value}} software developers"
-    },
     "increment": "Increment"
   }
 }

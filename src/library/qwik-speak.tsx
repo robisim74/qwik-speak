@@ -24,12 +24,12 @@ export interface QwikSpeakProps {
 
 export const QwikSpeak = component$((props: QwikSpeakProps) => {
   // Assign functions
-  const resolvedTranslateFn: TranslateFn = {};
-  resolvedTranslateFn.loadTranslation$ = props.translateFn?.loadTranslation$ ?? loadTranslation$;
-  resolvedTranslateFn.resolveLocale$ = props.translateFn?.resolveLocale$ ?? resolveLocale$;
-  resolvedTranslateFn.storeLocale$ = props.translateFn?.storeLocale$ ?? storeLocale$;
-  resolvedTranslateFn.handleMissingTranslation$ = props.translateFn?.handleMissingTranslation$ ??
-    handleMissingTranslation$;
+  const resolvedTranslateFn: TranslateFn = {
+    loadTranslation$: props.translateFn?.loadTranslation$ ?? loadTranslation$,
+    resolveLocale$: props.translateFn?.resolveLocale$ ?? resolveLocale$,
+    storeLocale$: props.translateFn?.storeLocale$ ?? storeLocale$,
+    handleMissingTranslation$: props.translateFn?.handleMissingTranslation$ ?? handleMissingTranslation$
+  };
 
   // Set initial state
   const state = useStore<InternalSpeakState>({
@@ -75,9 +75,10 @@ export const QwikSpeak = component$((props: QwikSpeakProps) => {
     // Prevent Qwik from creating subscriptions
     if (isServer) {
       // Shallow freeze: only applies to the immediate properties of object itself
-      Object.freeze(translation);
+      // https://github.com/BuilderIO/qwik/issues/1631
+      /* Object.freeze(translation);
       Object.freeze(config);
-      Object.freeze(translateFn)
+      Object.freeze(translateFn) */
     }
   });
 

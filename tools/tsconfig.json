@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "module": "ES2020",
+    "lib": [
+      "es2020"
+    ],
+    "strict": true,
+    "declaration": true,
+    "declarationDir": "../dts-out",
+    "emitDeclarationOnly": true,
+    "incremental": false,
+    "resolveJsonModule": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "types": [],
+  },
+  "include": [
+    "inline"
+  ]
+}

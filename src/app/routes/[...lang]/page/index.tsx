@@ -27,8 +27,8 @@ export default component$(() => {
 });
 
 export const head: DocumentHead = {
-  title: 'app.page.title',
-  meta: [{ name: 'description', content: 'app.page.description' }]
+  title: 'head.page.title',
+  meta: [{ name: 'description', content: 'head.page.description' }]
 };
 
 // E.g. SSG

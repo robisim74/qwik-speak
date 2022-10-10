@@ -19,20 +19,26 @@ export const config: SpeakConfig = {
     { lang: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles', units: { 'length': 'mile' } }
   ],
   assets: [
-    'app', // Shared
+    'app', // Translations shared by the pages
+    'runtime' // Translations with dynamic keys or parameters
   ]
 };
 
-// E.g. Fetch translation data from json files in public dir or i18n/[lang]/[asset].json endpoint 
+/**
+ * E.g. Fetch translation data from json files in public dir or i18n/[lang]/[asset].json endpoint
+ * In productions with inlined translations, only the runtime file is loaded
+ */
 export const loadTranslation$: LoadTranslationFn = $(async (lang: string, asset: string, url?: URL) => {
-  let endpoint = '';
-  // Absolute urls on server
-  if (isServer && url) {
-    endpoint = url.origin;
+  if (import.meta.env.DEV || asset === 'runtime') {
+    let endpoint = '';
+    // Absolute urls on server
+    if (isServer && url) {
+      endpoint = url.origin;
+    }
+    endpoint += `/i18n/${lang}/${asset}.json`;
+    const data = await fetch(endpoint);
+    return data.json();
   }
-  endpoint += `/i18n/${lang}/${asset}.json`;
-  const data = await fetch(endpoint);
-  return data.json();
 });
 
 // E.g. Resolve locale by url during SSR
@@ -43,12 +49,15 @@ export const resolveLocale$: ResolveLocaleFn = $((url?: URL) => {
     const locale = config.supportedLocales.find(x => x.lang == lang);
     return locale;
   }
-  return null;
 });
 
-// E.g. Store locale on Client replacing url
+// E.g. Store the locale on client replacing URL
 export const storeLocale$: StoreLocaleFn = $((locale: SpeakLocale, url?: URL) => {
+  // Store locale in cookie 
+  document.cookie = `locale=${JSON.stringify(locale)};path=/`;
+
   if (url) {
+    // Localize the route
     const pathLang = config.supportedLocales.find(x => url.pathname.startsWith(`/${x.lang}`))?.lang;
 
     const regex = new RegExp(`(/${pathLang}/)|(/${pathLang}$)`);
@@ -68,9 +77,6 @@ export const storeLocale$: StoreLocaleFn = $((locale: SpeakLocale, url?: URL) =>
 
     window.history.pushState({}, '', url);
   }
-
-  // Store locale in cookie 
-  document.cookie = `locale=${JSON.stringify(locale)};path=/`;
 });
 
 /**

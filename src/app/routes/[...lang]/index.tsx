@@ -1,4 +1,4 @@
-import { component$, useClientEffect$, useStore } from '@builder.io/qwik';
+import { component$, useStore } from '@builder.io/qwik';
 import { DocumentHead, StaticGenerateHandler } from '@builder.io/qwik-city';
 import {
   $translate as t,
@@ -30,11 +30,11 @@ export const Home = component$(() => {
 
       <h3>{t('home.plural')}</h3>
       <button onClick$={() => state.count++}>{t('home.increment')}</button>
-      <p>{p(state.count, 'home.devs')}</p>
+      <p>{p(state.count, 'devs')}</p>
 
       <h3>{t('home.dates')}</h3>
       <p>{fd(Date.now(), { dateStyle: 'full', timeStyle: 'short' })}</p>
-      <RelativeTime />
+      <p>{rt(-1, 'second')}</p>
 
       <h3>{t('home.numbers')}</h3>
       <p>{fn(1000000)}</p>
@@ -42,22 +42,6 @@ export const Home = component$(() => {
       <p>{fn(1, { style: 'unit', unit: units['length'] })}</p>
     </>
   );
-});
-
-export const RelativeTime = component$(() => {
-  const state = useStore({ time: -0 });
-
-  useClientEffect$(() => {
-    setInterval(() => {
-      state.time--;
-    }, 1000);
-  });
-
-  return (
-    <>
-      <p>{rt(state.time, 'second')}</p>
-    </>
-  )
 });
 
 export default component$(() => {
@@ -72,8 +56,8 @@ export default component$(() => {
 });
 
 export const head: DocumentHead = {
-  title: 'app.home.title',
-  meta: [{ name: 'description', content: 'app.home.description' }]
+  title: 'head.home.title',
+  meta: [{ name: 'description', content: 'head.home.description' }]
 };
 
 // E.g. SSG

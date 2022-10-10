@@ -14,14 +14,14 @@ export const loadTranslation = async (
   assets = assets ?? config.assets;
   // Get translation
   const tasks = assets.map(asset => translateFn.loadTranslation$(lang, asset, url));
-  const results = await Promise.all(tasks);
+  const sources = await Promise.all(tasks);
 
   const translation: Translation = {};
-  results.forEach(data => {
+  for (const data of sources) {
     if (data) {
       addData(translation, data, lang)
     }
-  });
+  }
   return translation;
 };
 
@@ -43,12 +43,20 @@ export const getValue = (
 ): string | undefined => {
   let defaultValue: string | undefined = undefined;
 
-  [key, defaultValue] = <[string, string | undefined]>key.split(keyValueSeparator);
+  [key, defaultValue] = separateKeyValue(key, keyValueSeparator);
 
   const value = key.split(keySeparator).reduce((acc, cur) => (acc && acc[cur] != null) ? acc[cur] : null, data);
 
   if (typeof value === 'string') return params ? handleParams(value, params) : value;
-  return defaultValue;
+
+  return defaultValue ? handleParams(defaultValue, params) : defaultValue;
+};
+
+/**
+ * Separate key & value
+ */
+export const separateKeyValue = (key: string, keyValueSeparator: string): [string, string | undefined] => {
+  return <[string, string | undefined]>key.split(keyValueSeparator);
 };
 
 /**

@@ -1,6 +1,8 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    "declaration": true,
+    "declarationDir": "dts-out/lib",
     "emitDeclarationOnly": true,
     "incremental": false,
   },
@@ -9,6 +11,7 @@
     "src/entry.*.tsx",
     "src/app/**",
     "src/tests/**",
-    "src/e2e/**"
+    "src/e2e/**",
+    "tools/**"
   ]
 }
