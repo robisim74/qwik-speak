@@ -44,5 +44,5 @@ tsconfig.lib.tsbuildinfo
 /test-results/
 /playwright-report/
 /playwright/.cache/
-dts-out
-inline
+/dts-out/
+/inline/

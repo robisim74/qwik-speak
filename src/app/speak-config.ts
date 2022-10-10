@@ -52,7 +52,9 @@ export const resolveLocale$: ResolveLocaleFn = $((url?: URL) => {
 });
 
 // E.g. Store the locale on client replacing URL
-export const storeLocale$: StoreLocaleFn = $((locale: SpeakLocale, url?: URL) => {
+export const storeLocale$: StoreLocaleFn = $((locale: SpeakLocale) => {
+  const url = new URL(document.location.href);
+
   // Store locale in cookie 
   document.cookie = `locale=${JSON.stringify(locale)};path=/`;
 
