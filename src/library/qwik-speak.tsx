@@ -61,9 +61,6 @@ export const QwikSpeak = component$((props: QwikSpeakProps) => {
       resolvedLocale = config.defaultLocale;
     }
 
-    // Set global $lang for inlining
-    globalThis.$lang = resolvedLocale.lang;
-
     const resolvedLangs = new Set(props.langs || []);
     resolvedLangs.add(resolvedLocale.lang);
 

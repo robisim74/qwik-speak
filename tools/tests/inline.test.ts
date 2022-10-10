@@ -1,4 +1,4 @@
-import { getParams, getKey, getValue, qwikSpeakInline, buildLine, getAlias } from '../inline/plugin';
+import { getParams, getKey, getValue, qwikSpeakInline, buildLine, getAlias, addLang } from '../inline/plugin';
 import { inlinedCode, mockCode } from './mock';
 
 describe('inline', () => {
@@ -85,6 +85,33 @@ describe('inline', () => {
     values.set('en-US', '`Value`');
     line = buildLine(values, ['en-US'], 'en-US');
     expect(line).toBe('`Value`');
+  });
+  test('addLang', () => {
+    let code = addLang(`import { useStore } from "@builder.io/qwik";
+export const s_xJBzwgVGKaQ = ()=>{
+    return /*#__PURE__*/ _jsxs(_Fragment, {
+    });
+};`);
+    expect(code).toBe(`import { useSpeakLocale } from "qwik-speak";
+import { useStore } from "@builder.io/qwik";
+export const s_xJBzwgVGKaQ = ()=>{
+    const $lang = useSpeakLocale().lang;
+    return /*#__PURE__*/ _jsxs(_Fragment, {
+    });
+};`);
+    code = addLang(`import { useStore } from "@builder.io/qwik";
+import { useSpeakLocale } from "qwik-speak";
+export const s_xJBzwgVGKaQ = ()=>{
+    return /*#__PURE__*/ _jsxs(_Fragment, {
+    });
+};`);
+    expect(code).toBe(`import { useStore } from "@builder.io/qwik";
+import { useSpeakLocale } from "qwik-speak";
+export const s_xJBzwgVGKaQ = ()=>{
+    const $lang = useSpeakLocale().lang;
+    return /*#__PURE__*/ _jsxs(_Fragment, {
+    });
+};`);
   });
   test('transform', async () => {
     const plugin = qwikSpeakInline({

@@ -1,13 +1,10 @@
 import { $ } from '@builder.io/qwik';
 import { isServer } from '@builder.io/qwik/build';
 import {
-  getValue,
-  HandleMissingTranslationFn,
   LoadTranslationFn,
   ResolveLocaleFn,
   SpeakConfig,
   SpeakLocale,
-  SpeakState,
   StoreLocaleFn,
   TranslateFn
 } from 'qwik-speak';
@@ -22,7 +19,7 @@ export const config: SpeakConfig = {
     { lang: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles', units: { 'length': 'mile' } }
   ],
   assets: [
-    'app', // Translations shared from the whole app
+    'app', // Translations shared by the pages
     'runtime' // Translations with dynamic keys or parameters
   ]
 };
@@ -54,10 +51,7 @@ export const resolveLocale$: ResolveLocaleFn = $((url?: URL) => {
   }
 });
 
-/**
- * E.g. Store the locale on Client
- * In productions with inlined translations, the page is reloaded
- */
+// E.g. Store the locale on client replacing URL
 export const storeLocale$: StoreLocaleFn = $((locale: SpeakLocale, url?: URL) => {
   // Store locale in cookie 
   document.cookie = `locale=${JSON.stringify(locale)};path=/`;
@@ -81,26 +75,8 @@ export const storeLocale$: StoreLocaleFn = $((locale: SpeakLocale, url?: URL) =>
       url.pathname = `/${locale.lang}${url.pathname}`;
     }
 
-    if (import.meta.env.DEV) {
-      window.history.pushState({}, '', url);
-    } else {
-      window.location.href = url.pathname;
-    }
+    window.history.pushState({}, '', url);
   }
-});
-
-/**
- * E.g. Use a fallback language for missing values
- * The language must be added when QwikSpeak or Speak are used
- */
-export const handleMissingTranslation$: HandleMissingTranslationFn = $((
-  key: string,
-  value?: string,
-  params?: any,
-  ctx?: SpeakState
-) => {
-  value = getValue(key, ctx?.translation['en-US'], params, ctx?.config.keySeparator);
-  return value || key;
 });
 
 /**
@@ -109,6 +85,5 @@ export const handleMissingTranslation$: HandleMissingTranslationFn = $((
 export const translateFn: TranslateFn = {
   loadTranslation$: loadTranslation$,
   resolveLocale$: resolveLocale$,
-  storeLocale$: storeLocale$,
-  handleMissingTranslation$: handleMissingTranslation$
+  storeLocale$: storeLocale$
 };

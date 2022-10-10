@@ -1,10 +1,5 @@
 import { QRL, ValueOrPromise } from '@builder.io/qwik';
 
-declare global {
-  /* eslint-disable-next-line no-var */
-  var $lang: string;
-}
-
 export interface SpeakLocale {
   /**
    * language[-script][-region]
@@ -49,12 +44,12 @@ export type LoadTranslationFn = QRL<(lang: string, asset: string, url?: URL) => 
 export type ResolveLocaleFn = QRL<(url?: URL) => ValueOrPromise<SpeakLocale | null | undefined>>;
 
 /**
- * Must contain the logic to store the locale on Client when changes
+ * Must contain the logic to store the locale on client when changes
  */
 export type StoreLocaleFn = QRL<(locale: SpeakLocale, url?: URL) => ValueOrPromise<void>>;
 
 /**
- * Must contain the logic to handle missing values
+ * Must contain the logic to handle missing values at runtime
  */
 export type HandleMissingTranslationFn = QRL<(key: string, value?: string, params?: any, ctx?: SpeakState) => any>;
 
@@ -68,11 +63,11 @@ export interface TranslateFn {
    */
   resolveLocale$?: ResolveLocaleFn;
   /**
-   * Function to store the locale on Client
+   * Function to store the locale on client
    */
   storeLocale$?: StoreLocaleFn;
   /**
-   * Function to handle missing values
+   * Function to handle missing values at runtime
    */
   handleMissingTranslation$?: HandleMissingTranslationFn;
 }

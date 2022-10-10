@@ -10,7 +10,7 @@ export const Page = component$(() => {
       <h1>{t('app.title')}</h1>
       <h2>{t('app.subtitle')}</h2>
 
-      <p>{t('page.text')}</p>
+      <p>{t("page.text@@I'm a default value")}</p>
     </>
   );
 });
@@ -19,10 +19,8 @@ export default component$(() => {
   return (
     /**
      * Add Page translation (only available in child components)
-     * In this example, there is an additional language that is used as a fallback for missing values 
-     * by the handleMissingTranslation$ implemented during configuration
      */
-    <Speak assets={['page']} langs={['en-US']}>
+    <Speak assets={['page']}>
       <Page />
     </Speak>
   );

@@ -92,6 +92,7 @@ import { $translate as t } from "qwik-speak";
 import { useSpeakLocale } from "qwik-speak";
 import { useStore } from "@builder.io/qwik";
 export const s_xJBzwgVGKaQ = ()=>{
+    const $lang = useSpeakLocale().lang;
     const units = useSpeakLocale().units;
     const state = useStore({
         count: 0

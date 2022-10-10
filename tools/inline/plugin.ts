@@ -108,6 +108,7 @@ export function inline(
   const matches = code.match(new RegExp(`${alias}\\(.*?\\)`, 'gs'));
   if (!matches) return null;
 
+  let replaced = false;
   for (const originalFn of matches) {
     // Get args
     const args = originalFn.match(new RegExp(`(?<=^${alias}\\().*?(?=\\)$)`, 'gs'))?.[0];
@@ -128,6 +129,12 @@ export function inline(
         // "{ name: 'Qwik Speak' }" => 'name'
         const paramNames = params[1].match(/(\w+(?=:|\s+:))/g);
         if (!paramNames) {
+          dynamicParams.push(`dynamic params: ${originalFn.replace(/\s+/g, ' ')} - skip`);
+          continue;
+        }
+      }
+      if (params[2]) {
+        if (params[2] !== 'undefined' && params[2] !== 'null') {
           dynamicParams.push(`dynamic params: ${originalFn.replace(/\s+/g, ' ')} - skip`);
           continue;
         }
@@ -175,7 +182,13 @@ export function inline(
 
       // Replace
       code = code.replace(originalFn, line);
+      replaced = true;
     }
+  }
+
+  // Add $lang
+  if (replaced && opts.supportedLangs.length > 1) {
+    code = addLang(code);
   }
 
   return code;
@@ -266,4 +279,15 @@ export function buildLine(values: Map<string, string>, supportedLangs: string[],
   }
   translatedLine += values.get(defaultLang);
   return translatedLine;
+}
+
+/**
+ * Add $lang to component
+ */
+export function addLang(code: string): string {
+  if (!/useSpeakLocale/.test(code)) {
+    code = code.replace(/^/, 'import { useSpeakLocale } from "qwik-speak";\n')
+  }
+  code = code.replace(/\(\)=>\{/, '()=>{\n    const $lang = useSpeakLocale().lang;')
+  return code;
 }

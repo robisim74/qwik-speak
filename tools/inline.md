@@ -4,49 +4,13 @@
 
 ## Usage
 ### Build using Qwik Speak Inline Vite plugin
-#### Prepare the code
+#### Get the code ready
 Make sure that the translation files are only loaded in dev mode, for example:
 ```typescript
 export const loadTranslation$: LoadTranslationFn = $(async (lang: string, asset: string, url?: URL) => {
   if (import.meta.env.DEV ) {
     // Load translations
   }
-});
-```
-Likewise, be sure to store the locale, for example through a cookie, and to navigate/reload the page when the locale changes:
-```typescript
-export const storeLocale$: StoreLocaleFn = $((locale: SpeakLocale, url?: URL) => {
-  // Store locale in cookie 
-  document.cookie = `locale=${JSON.stringify(locale)};path=/`;
-
-  if (url) {
-    // Localize the route
-    /* ... */
-
-    if (import.meta.env.DEV) {
-      window.history.pushState({}, '', url);
-    } else {
-      window.location.href = url.pathname;
-    }
-  }
-});
-```
-Wherever you want in the body, add the `QwikSpeakInline` component:
-```jsx
-import { QwikSpeak } from 'qwik-speak';
-
-export default component$(() => {
-  return (
-    <QwikSpeak config={config} translateFn={translateFn}>
-      <QwikCity>
-        <head></head>
-        <body>
-          <RouterOutlet />
-          <QwikSpeakInline />
-        </body>
-      </QwikCity>
-    </QwikSpeak>
-  );
 });
 ```
 #### Configure
@@ -60,6 +24,8 @@ export default defineConfig(() => {
       qwikCity(),
       qwikVite(),
       qwikSpeakInline({
+        basePath: './',
+        assetsPath: './public/i18n'
         supportedLangs: ['en-US', 'it-IT'],
         defaultLang: 'en-US'
       }),
@@ -74,16 +40,18 @@ At the end of the build, in root folder a `qwik-speak.log` file is generated whi
 - Translations with dynamic keys
 - Translations with dynamic params
 
+> Note. Currently, only `json` files are supported as assets
+
 ### Build using Qwik Speak Inline Vite plugin & runtime
 When there are translations with dynamic keys or params, you can manage them at runtime as follows:
 - Insert dynamic translations into separate files, such as `runtime.json`
-- Handlee these files when they are loaded:
+- Handle these files when they are loaded:
   
   ```typescript
   export const config: SpeakConfig = {
     /* ... */
     assets: [
-      'app', // Translations shared from the whole app
+      'app', // Translations shared by the pages
       'runtime' // Translations with dynamic keys or parameters
     ]
   };
@@ -120,7 +88,7 @@ to:
     children: $lang === `it-IT` && `Ciao! Sono ${'Qwik Speak'}` || `Hi! I am ${'Qwik Speak'}`
 }),
 ```
-`$lang` is a global variable set by `QwikSpeak` component on server, and by `QwikSpeakInline` component on client.
+`$lang` is imported from `useSpeakLocale` and added during compilation.
 
 ### Build an app for each language
 You can also build a different app for each language. Just provide one language at a time and iterate through the build process (for both server and client files):

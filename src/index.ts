@@ -18,7 +18,6 @@ export type { SpeakProps } from './library/speak';
 // Components
 export { QwikSpeak } from './library/qwik-speak';
 export { Speak } from './library/speak';
-export { QwikSpeakInline } from './library/qwik-speak-inline';
 // Functions
 export { $translate } from './library/translate';
 export { plural } from './library/plural';

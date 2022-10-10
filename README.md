@@ -81,7 +81,7 @@ export const config: SpeakConfig = {
     { lang: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles' }
   ],
   assets: [
-    'app', // Translations shared from the whole app
+    'app', // Translations shared by the pages
   ]
 };
 ```
@@ -120,11 +120,11 @@ export const resolveLocale$: ResolveLocaleFn = $((url?: URL) => {
 });
 
 export const storeLocale$: StoreLocaleFn = $((locale: SpeakLocale, url?: URL) => {
-  /* Must contain the logic to store the locale on Client when changes */
+  /* Must contain the logic to store the locale on client when changes */
 });
 
 export const handleMissingTranslation$: HandleMissingTranslationFn = $((key: string, value?: string, params?: any, ctx?: SpeakState) => {
-  /* Must contain the logic to handle missing values: by default returns the key */
+  /* Must contain the logic to handle missing values at runtime: by default returns the key */
 });
 
 export const translateFn: TranslateFn = {
@@ -181,7 +181,7 @@ export default component$(() => {
   );
 });
 ```
-The translation data of the additional languages are preloaded along with the current language. They can be used as a fallback for missing values by implementing `handleMissingTranslation$` below, or for multilingual pages.
+The translation data of the additional languages are preloaded along with the current language. They can be used as a fallback for missing values by implementing `handleMissingTranslation$`, or for multilingual pages.
 
 ## Production
 You have three solutions:
@@ -272,11 +272,11 @@ Returns the translation data in Speak context
 Returns the configuration in Speak context
 
 ## Development Builds
-### Build the library
+### Build library & tools
 ```Shell
 npm run build
 ```
-### Test the library
+### Test library & tools
 ```Shell
 npm test
 npm run test.e2e
@@ -307,7 +307,7 @@ npm run serve.ssg
 ## What's new
 > Released v0.1.0
 
-- Inline translation data at compile time
+- Inline translation data at compile time: [Qwik Speak Inline Vite plugin](./tools/inline.md) 
 
 ## License
 MIT
