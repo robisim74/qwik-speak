@@ -35,7 +35,7 @@ export default defineConfig(() => {
 ```
 and build the app.
 
-At the end of the build, in root folder a `qwik-speak.log` file is generated which contains:
+At the end of the build, in root folder a `qwik-speak-inline.log` file is generated which contains:
 - Missing values
 - Translations with dynamic keys
 - Translations with dynamic params
@@ -68,7 +68,7 @@ Likewise, you can also create lazy loaded runtime files for the different pages.
 > Note. The `plural` function must be handled as a dynamic translation
 
 ## How it works
-During the transformation of the modules, and before tree shaking and bundling, the `$translate` function (or its alias) is replaced with the translation values for the languages provided, for example from:
+During the transformation of the modules, and before tree shaking and bundling, the `$translate` function (or its alias) is replaced with the translation values for the languages provided, both in server file and in chunks sent to the browser. For example from:
 ```javascript
 /*#__PURE__*/ _jsx("h2", {
     children: t('app.subtitle')

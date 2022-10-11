@@ -46,7 +46,7 @@ export type ResolveLocaleFn = QRL<(url?: URL) => ValueOrPromise<SpeakLocale | nu
 /**
  * Must contain the logic to store the locale on client when changes
  */
-export type StoreLocaleFn = QRL<(locale: SpeakLocale, url?: URL) => ValueOrPromise<void>>;
+export type StoreLocaleFn = QRL<(locale: SpeakLocale) => ValueOrPromise<void>>;
 
 /**
  * Must contain the logic to handle missing values at runtime

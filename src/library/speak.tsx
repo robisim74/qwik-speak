@@ -1,6 +1,6 @@
-import { component$, Slot, useMount$ } from '@builder.io/qwik';
+import { component$, Slot, useEnvData, useMount$ } from '@builder.io/qwik';
 
-import { useUrl, useSpeakContext } from './use-functions';
+import { useSpeakContext } from './use-functions';
 import { loadTranslation, addData } from './core';
 
 export interface SpeakProps {
@@ -22,7 +22,7 @@ export const Speak = component$((props: SpeakProps) => {
   const { locale, translation, config } = ctx;
 
   // Get URL object
-  const url = useUrl();
+  const url = new URL(useEnvData('url') ?? document.location.href);
 
   // Will block the rendering until callback resolves
   useMount$(async () => {

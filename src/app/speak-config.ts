@@ -53,13 +53,12 @@ export const resolveLocale$: ResolveLocaleFn = $((url?: URL) => {
 
 // E.g. Store the locale on client replacing URL
 export const storeLocale$: StoreLocaleFn = $((locale: SpeakLocale) => {
-  const url = new URL(document.location.href);
-
   // Store locale in cookie 
   document.cookie = `locale=${JSON.stringify(locale)};path=/`;
 
+  // Localize the route
+  const url = new URL(document.location.href);
   if (url) {
-    // Localize the route
     const pathLang = config.supportedLocales.find(x => url.pathname.startsWith(`/${x.lang}`))?.lang;
 
     const regex = new RegExp(`(/${pathLang}/)|(/${pathLang}$)`);

@@ -33,5 +33,4 @@ export {
   useSpeakLocale,
   useTranslation,
   useSpeakConfig,
-  useUrl,
 } from './library/use-functions';

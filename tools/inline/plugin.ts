@@ -1,9 +1,10 @@
 import type { Plugin } from 'vite';
 import { readFile, readdir } from 'fs/promises';
+import { createWriteStream } from 'fs';
 import path from 'path';
+import util from 'util';
 
 import type { QwikSpeakInlineOptions, Translation } from './types';
-import log from '../logger';
 
 // Logs
 const missingValues: string[] = [];
@@ -83,10 +84,13 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
 
     async closeBundle() {
       // Logs
-      missingValues.forEach(x => log(x));
-      dynamicKeys.forEach(x => log(x));
-      dynamicParams.forEach(x => log(x));
-      log(`Qwik Speak Inline: build ends at ${new Date().toLocaleString()}`);
+      const log = createWriteStream('./qwik-speak-inline.log', { flags: 'w' });
+
+      missingValues.forEach(x => log.write(x + '\n'));
+      dynamicKeys.forEach(x => log.write(x + '\n'));
+      dynamicParams.forEach(x => log.write(x + '\n'));
+
+      log.write((`Qwik Speak Inline: build ends at ${new Date().toLocaleString()}`));
     }
   };
 

@@ -119,7 +119,7 @@ export const resolveLocale$: ResolveLocaleFn = $((url?: URL) => {
   /* Must contain the logic to resolve which locale to use during SSR */
 });
 
-export const storeLocale$: StoreLocaleFn = $((locale: SpeakLocale, url?: URL) => {
+export const storeLocale$: StoreLocaleFn = $((locale: SpeakLocale) => {
   /* Must contain the logic to store the locale on client when changes */
 });
 
@@ -186,7 +186,7 @@ The translation data of the additional languages are preloaded along with the cu
 ## Production
 You have three solutions:
 - **Build as is**  Translation happens _at runtime_: translations are loaded during SSR or on client, and the lookup also happens at runtime as in development mode
-- **Build using Qwik Speak Inline Vite plugin** Translation happens _at compile-time_: translations are loaded and inlined during the buid
+- **Build using Qwik Speak Inline Vite plugin** Translation happens _at compile-time_: translations are loaded and inlined during the buid (both in server file and in chunks sent to the browser)
 - **Build using Qwik Speak Inline Vite plugin & runtime** Translation happens _at compile-time_ or _at runtime_ as needed: static translations are loaded and inlined during the buid, while dynamic translations occur at runtime
 
 See [Qwik Speak Inline Vite plugin](./tools/inline.md) for more information on how it works and how to use it.
@@ -256,7 +256,7 @@ Format a relative time
 - `formatNumber(value: number | string, options?: Intl.NumberFormatOptions, locale?: SpeakLocale, lang?: string, currency?: string)`
 Formats a number
 
-- `changeLocale(newLocale: SpeakLocale, ctx: SpeakState, url?: URL)`
+- `changeLocale(newLocale: SpeakLocale, ctx: SpeakState)`
 Changes locale at runtime: loads translation data and rerenders components that uses translations
 ### Speak context
 - `useSpeakContext()`

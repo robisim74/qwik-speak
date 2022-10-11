@@ -1,11 +1,10 @@
-import { component$, Slot, useContextProvider, useMount$, useStore } from '@builder.io/qwik';
+import { component$, Slot, useContextProvider, useEnvData, useMount$, useStore } from '@builder.io/qwik';
 import { isServer } from '@builder.io/qwik/build';
 
 import type { InternalSpeakState, SpeakConfig, SpeakState, TranslateFn } from './types';
 import { loadTranslation$, resolveLocale$, storeLocale$, handleMissingTranslation$ } from './constants';
 import { SpeakContext } from './context';
 import { loadTranslation } from './core';
-import { useUrl } from './use-functions';
 
 export interface QwikSpeakProps {
   /**
@@ -50,7 +49,7 @@ export const QwikSpeak = component$((props: QwikSpeakProps) => {
   useContextProvider(SpeakContext, ctx);
 
   // Get URL object
-  const url = useUrl();
+  const url = new URL(useEnvData('url') ?? document.location.href);
 
   // Will block the rendering until callback resolves
   useMount$(async () => {
