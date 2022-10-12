@@ -68,7 +68,7 @@ Likewise, you can also create lazy loaded runtime files for the different pages.
 > Note. The `plural` function must be handled as a dynamic translation
 
 ## How it works
-During the transformation of the modules, and before tree shaking and bundling, the `$translate` function (or its alias) is replaced with the translation values for the languages provided, both in server file and in chunks sent to the browser. For example from:
+During the transformation of the modules, and before tree shaking and bundling, the `$translate` function (or its alias) is replaced with the translation values for the languages provided, both in server files and in chunks sent to the browser. For example from:
 ```javascript
 /*#__PURE__*/ _jsx("h2", {
     children: t('app.subtitle')
@@ -88,36 +88,4 @@ to:
     children: $lang === `it-IT` && `Ciao! Sono ${'Qwik Speak'}` || `Hi! I am ${'Qwik Speak'}`
 }),
 ```
-`$lang` is imported from `useSpeakLocale` and added during compilation.
-
-### Build an app for each language
-You can also build a different app for each language. Just provide one language at a time and iterate through the build process (for both server and client files):
-```javascript
-const build = async (lang) => {
-  await build({
-    build: {
-      /* ... */
-    },
-    plugins: [
-      qwikVite({
-        client: {
-          /* ... */
-        }
-      }),
-      qwikSpeakInline({
-        supportedLangs: [lang],
-        defaultLang: lang
-      }),
-    ],
-  });
-};
-```
-Result:
-```javascript
-/*#__PURE__*/ _jsx("h2", {
-    children: `Translate your Qwik apps into any language`
-}),
-/*#__PURE__*/ _jsx("p", {
-    children: `Hi! I am ${'Qwik Speak'}`
-}),
-```
+`$lang` is imported from `useSpeakLocale` and added during compilation, so that you can still change locales at runtime without redirecting or reloading the page.
