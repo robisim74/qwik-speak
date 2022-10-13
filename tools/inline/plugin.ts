@@ -2,7 +2,6 @@ import type { Plugin } from 'vite';
 import { readFile, readdir } from 'fs/promises';
 import { createWriteStream } from 'fs';
 import path from 'path';
-import util from 'util';
 
 import type { QwikSpeakInlineOptions, Translation } from './types';
 
