@@ -24,10 +24,10 @@
     "qwik": "qwik"
   },
   "peerDependencies": {
-    "@builder.io/qwik": ">=0.10.0"
+    "@builder.io/qwik": ">=0.11.0"
   },
   "devDependencies": {
-    "@builder.io/qwik": "0.10.0",
+    "@builder.io/qwik": "0.11.0",
     "@builder.io/qwik-city": "0.0.112",
     "@microsoft/api-extractor": "^7.32.0",
     "@playwright/test": "^1.24.0",
@@ -45,7 +45,7 @@
     "np": "7.6.2",
     "ts-jest": "^29.0.3",
     "typescript": "4.8.4",
-    "vite": "3.1.1",
+    "vite": "3.1.7",
     "vite-tsconfig-paths": "3.5.0"
   },
   "engines": {

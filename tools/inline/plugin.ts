@@ -2,7 +2,6 @@ import type { Plugin } from 'vite';
 import { readFile, readdir } from 'fs/promises';
 import { createWriteStream } from 'fs';
 import path from 'path';
-import util from 'util';
 
 import type { QwikSpeakInlineOptions, Translation } from './types';
 
@@ -109,7 +108,7 @@ export function inline(
 ): string | null {
   const alias = getAlias(code);
 
-  const matches = code.match(new RegExp(`${alias}\\(.*?\\)`, 'gs'));
+  const matches = code.match(new RegExp(`${alias}\\(([^()]*|\\([^()]*\\))*\\)`, 'gs'));
   if (!matches) return null;
 
   let replaced = false;
@@ -208,7 +207,7 @@ export function getAlias(code: string): string {
 export function getParams(args: string): string[] {
   // Split by comma outside single or double quotes, backticks and brackets
   let params = args
-    .split(/((?:[^,'"`]*(?:"(?:[^"])*"|'(?:[^'])*'|'(?:[^`])*`|,(?:[^{]*\}))[^,'"`]*)+)|,/gs)
+    .split(/((?:[^,'"`]*(?:"(?:[^"])*"|'(?:[^'])*'|`(?:[^`])*`|,(?:[^{]*\}))[^,'"`]*)+)|,/gs)
     .filter(Boolean);
 
   // Change all groups of white-spaces characters to a single space & trim the result

@@ -15,8 +15,7 @@ export default defineConfig(() => {
         external: [
           'fs',
           'fs/promises',
-          'path',
-          'util'
+          'path'
         ]
       }
     }

@@ -16,8 +16,6 @@
     "types": [
       "node",
       "vite/client",
-      "vite",
-      "rollup",
       "jest"
     ],
     "paths": {
