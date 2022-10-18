@@ -15,7 +15,13 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "isolatedModules": true,
-    "types": [],
+    "types": [
+      "node",
+      "vite/client",
+      "vite",
+      "rollup",
+      "jest"
+    ],
   },
   "include": [
     "inline",

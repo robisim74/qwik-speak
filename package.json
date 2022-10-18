@@ -1,6 +1,6 @@
 {
   "name": "qwik-speak",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps",
   "scripts": {
     "build": "npm run lint && vite build --mode lib --config vite.config.lib.ts && tsc --project tsconfig.lib.json && api-extractor run --local && npm run build.tools",
@@ -27,10 +27,10 @@
     "qwik-speak-extract": "./extract/cli.js"
   },
   "peerDependencies": {
-    "@builder.io/qwik": ">=0.10.0"
+    "@builder.io/qwik": ">=0.11.0"
   },
   "devDependencies": {
-    "@builder.io/qwik": "0.10.0",
+    "@builder.io/qwik": "0.11.0",
     "@builder.io/qwik-city": "0.0.112",
     "@microsoft/api-extractor": "^7.32.0",
     "@playwright/test": "^1.24.0",
@@ -48,8 +48,8 @@
     "np": "7.6.2",
     "ts-jest": "^29.0.3",
     "typescript": "4.8.4",
-    "vite": "3.1.1",
     "vite-plugin-static-copy": "^0.9.0",
+    "vite": "3.1.7",
     "vite-tsconfig-paths": "3.5.0"
   },
   "engines": {
