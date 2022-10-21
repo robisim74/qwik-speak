@@ -1,8 +1,5 @@
 export async function extract() {
-    const args = process.argv;
-    const [, , supportedLangs, defaultLang] = args;
-    const langs = supportedLangs.split(',');
+  const args = process.argv;
 
-    console.log(langs);
-    console.log(defaultLang);
+  // TODO
 }

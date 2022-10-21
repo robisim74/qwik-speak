@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
+    "target": "ES2020",
     "module": "ES2020",
     "lib": [
       "es2020"
@@ -22,9 +22,5 @@
       "rollup",
       "jest"
     ],
-  },
-  "include": [
-    "inline",
-    "extract"
-  ]
+  }
 }
