@@ -83,35 +83,21 @@ describe('inline', () => {
     values.set('en-US', '`Value`');
     values.set('it-IT', '`Valore`');
     let line = transpileFn(values, ['en-US', 'it-IT'], 'en-US');
-    expect(line).toBe('$lang === `it-IT` && `Valore` || `Value`');
+    expect(line).toBe('$lang() === `it-IT` && `Valore` || `Value`');
     values = new Map<string, string>();
     values.set('en-US', '`Value`');
     line = transpileFn(values, ['en-US'], 'en-US');
     expect(line).toBe('`Value`');
   });
   test('addLang', () => {
-    let code = addLang(`import { useStore } from "@builder.io/qwik";
+    const code = addLang(`import { useStore } from "@builder.io/qwik";
 export const s_xJBzwgVGKaQ = ()=>{
     return /*#__PURE__*/ _jsxs(_Fragment, {
     });
 };`);
-    expect(code).toBe(`import { useSpeakLocale } from "qwik-speak";
+    expect(code).toBe(`import { $lang } from "qwik-speak";
 import { useStore } from "@builder.io/qwik";
 export const s_xJBzwgVGKaQ = ()=>{
-    const $lang = useSpeakLocale().lang;
-    return /*#__PURE__*/ _jsxs(_Fragment, {
-    });
-};`);
-    code = addLang(`import { useStore } from "@builder.io/qwik";
-import { useSpeakLocale } from "qwik-speak";
-export const s_xJBzwgVGKaQ = ()=>{
-    return /*#__PURE__*/ _jsxs(_Fragment, {
-    });
-};`);
-    expect(code).toBe(`import { useStore } from "@builder.io/qwik";
-import { useSpeakLocale } from "qwik-speak";
-export const s_xJBzwgVGKaQ = ()=>{
-    const $lang = useSpeakLocale().lang;
     return /*#__PURE__*/ _jsxs(_Fragment, {
     });
 };`);

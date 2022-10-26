@@ -15,7 +15,7 @@ const dynamicParams: string[] = [];
 /**
  * Qwik Speak Inline Vite plugin
  * 
- * Inline $translate values: $lang === 'lang' && 'value' || 'value'
+ * Inline $translate values: $lang() === 'lang' && 'value' || 'value'
  */
 export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
   // Resolve options
@@ -136,11 +136,11 @@ export function inline(
       }
 
       // Dynamic argument
-      if (args[1]) {
-        if (args[1].type === 'Identifier' || args[1].type === 'CallExpression') {
-          dynamicParams.push(`dynamic params: ${originalFn.replace(/\s+/g, ' ')} - skip`);
-          continue;
-        }
+      if (args[1]?.type === 'Identifier' || args[1]?.type === 'CallExpression' ||
+        args[2]?.type === 'Identifier' || args[2]?.type === 'CallExpression' ||
+        args[3]?.type === 'Identifier' || args[3]?.type === 'CallExpression') {
+        dynamicParams.push(`dynamic params: ${originalFn.replace(/\s+/g, ' ')} - skip`);
+        continue;
       }
 
       let supportedLangs: string[];
@@ -256,7 +256,7 @@ export function transpileParams(value: string, params: Argument): string | undef
 export function transpileFn(values: Map<string, string>, supportedLangs: string[], defaultLang: string): string {
   let translation = '';
   for (const lang of supportedLangs.filter(x => x !== defaultLang)) {
-    translation += `${'$lang'} === ${quoteValue(lang)} && ${values.get(lang)} || `;
+    translation += `$lang() === ${quoteValue(lang)} && ${values.get(lang)} || `;
   }
   translation += values.get(defaultLang);
   return translation;
@@ -266,9 +266,5 @@ export function transpileFn(values: Map<string, string>, supportedLangs: string[
  * Add $lang to component
  */
 export function addLang(code: string): string {
-  if (!/useSpeakLocale/.test(code)) {
-    code = code.replace(/^/, 'import { useSpeakLocale } from "qwik-speak";\n')
-  }
-  code = code.replace(/\(\)=>\{/, '()=>{\n    const $lang = useSpeakLocale().lang;')
-  return code;
+  return code.replace(/^/, 'import { $lang } from "qwik-speak";\n');
 }

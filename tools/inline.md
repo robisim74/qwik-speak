@@ -82,10 +82,10 @@ During the transformation of the modules, and before tree shaking and bundling, 
 to:
 ```javascript
 /*#__PURE__*/ _jsx("h2", {
-    children: $lang === `it-IT` && `Traduci le tue app Qwik in qualsiasi lingua` || `Translate your Qwik apps into any language`
+    children: $lang() === `it-IT` && `Traduci le tue app Qwik in qualsiasi lingua` || `Translate your Qwik apps into any language`
 }),
 /*#__PURE__*/ _jsx("p", {
-    children: $lang === `it-IT` && `Ciao! Sono ${'Qwik Speak'}` || `Hi! I am ${'Qwik Speak'}`
+    children: $lang() === `it-IT` && `Ciao! Sono ${'Qwik Speak'}` || `Hi! I am ${'Qwik Speak'}`
 }),
 ```
-`$lang` is imported from `useSpeakLocale` and added during compilation, so that you can still change locales at runtime without redirecting or reloading the page.
+`$lang` is imported and added during compilation, so that you can still change locales at runtime without redirecting or reloading the page.
