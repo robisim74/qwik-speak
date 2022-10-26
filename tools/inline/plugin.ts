@@ -234,11 +234,11 @@ export function getValue(
   keySeparator: string
 ): string | undefined {
   const value = key.split(keySeparator).reduce((acc, cur) => (acc && acc[cur] != null) ? acc[cur] : null, data);
-  if (typeof value === 'string') return args ? handleParams(value, args) : quoteValue(value);
+  if (typeof value === 'string') return args ? transpileParams(value, args) : quoteValue(value);
   return undefined;
 }
 
-export function handleParams(value: string, args: string): string | undefined {
+export function transpileParams(value: string, args: string): string | undefined {
   // Trim brackets
   args = args.replace(/(^({))|(})$/g, '');
 

@@ -1,169 +1,308 @@
-/**
- * Abstract Syntax Tree (AST) of every function
- */
-export interface CallExpression {
-    type: 'CallExpression';
+export interface Property {
+  type: 'Property';
+  key: {
+    type: 'Identifier';
     value: string;
-    arguments: {
-        type: 'Literal' | 'ObjectExpression' | 'Identifier';
-        value: string;
-    } | {
-        type: 'ObjectExpression';
-        properties: {
-            type: 'Property' | 'Identifier';
-            key: {
-                type: 'Identifier';
-                value: string;
-            };
-            value: {
-                type: 'Literal' | 'Identifier';
-                value: string;
-            };
-        }[];
-    }[];
+  };
+  value: {
+    type: 'Literal' | 'Identifier' | 'CallExpression';
+    value: string;
+  };
 }
 
-export type TokenType = 'Identifier' | 'Literal' | 'Punctuator';
+export interface Argument {
+  type: 'Literal' | 'Identifier' | 'ObjectExpression';
+  value?: string;
+  properties?: Property[];
+}
+
+/**
+ * Abstract Syntax Tree (AST) of every call expression
+ */
+export interface CallExpression {
+  type: 'CallExpression';
+  value: string;
+  arguments: Argument[];
+}
+
+/**
+ * Literal:
+ * String literals
+ * Numeric literals
+ * Null literal
+ * Boolean literal
+ * 
+ * Identifier:
+ * [0-9a-zA-Z_$]
+ * 
+ * Punctuator:
+ * [(){},:;.[]?!]
+ */
+export type TokenType = 'Literal' | 'Identifier' | 'Punctuator';
 
 /**
  * Token data structure
  */
 export interface Token {
-    type: TokenType;
-    value: string;
-    position: {
-        start: number;
-        end: number;
-    };
+  type: TokenType;
+  value: string;
+  position: {
+    start: number;
+    end: number;
+  };
 }
 
 /**
  * Lexical analysis
  * t('app.title') => ['t', '(', "'app.title'", ')']
  * 
- * Rules:
- * 'Identifier': [a-zA-Z_$]
+ * Start rules:
  * 'Literal': ["'`0-9]
- * 'Punctuator': [(){},:]
- * @param code 
+ * 'Identifier': [a-zA-Z_$]
+ * 'Punctuator': [(){},:;.[]?!]
  */
-export function tokenize(code: string): Token[] {
-    const tokens: Token[] = [];
+export function tokenize(code: string, start = 0): Token[] {
+  const tokens: Token[] = [];
 
-    const parenthesisStack: string[] = [];
-    const quotesStack: string[] = [];
+  const parenthesisStack: string[] = [];
+  const quotesStack: string[] = [];
 
-    let start = 0;
-    let index = 0;
+  let identifierBuffer: string = '';
 
-    let token: Token;
+  let index = start;
 
-    const getRawValue = (): string => code.substring(start, index + 1);
+  const createToken = (type: TokenType): Token => {
+    start = index;
+    return { type: type, value: getRawValue(), position: { start: start, end: index } };
+  };
 
-    const scanIdentifier = (ch: string): boolean => {
-        return /[a-zA-Z_$]/.test(ch) || (token?.type === 'Identifier' && /[0-9a-zA-Z_$]/.test(ch));
-    };
+  const updateToken = (token: Token) => {
+    token.value = getRawValue();
+    token.position.start = start;
+    token.position.end = index;
+  }
 
-    const scanLiteral = (ch: string): boolean => {
-        return /["'`0-9]/.test(ch) || (token?.type === 'Literal' && quotesStack.length > 0);
-    };
+  const next = () => code[++index];
 
-    const scanPunctuator = (ch: string): boolean => /[(){},:]/.test(ch);
+  const getRawValue = () => code.substring(start, index + 1);
 
-    const nextToken = (type: TokenType) => {
-        start = index;
-        token = { type: type, value: getRawValue(), position: { start: start, end: index } };
-        tokens.push(token);
-    };
+  const startLiteral = (ch: string) => /["'`0-9]/.test(ch);
 
-    const updateToken = () => {
-        token.value = getRawValue();
-        token.position.start = start;
-        token.position.end = index;
+  const startIdentifier = (ch: string) => /[a-zA-Z_$]/.test(ch);
+
+  const startPunctuator = (ch: string) => /[(){},:;.[\]?!]/.test(ch);
+
+  const scanLiteral = (ch: string, token?: Token): Token[] => {
+    if (!token) {
+      token = createToken('Literal');
+      tokens.push(token);
+    } else if (quotesStack.length === 0 && !/[0-9.]/.test(ch)) {
+      // No String literals or Numeric literals
+      return scan(ch);
+    } else {
+      updateToken(token);
     }
 
-    const endOfScan = () => (token.type === 'Punctuator' && parenthesisStack.length === 0) || index === code.length;
+    // Open/close quotes
+    if (quotesStack.length === 0 && /["'`]/.test(ch))
+      quotesStack.push(ch);
+    else if (quotesStack.length > 0 && quotesStack[quotesStack.length - 1] === ch)
+      quotesStack.pop();
+    // Escaped quotes
+    if (/\\/.test(ch))
+      quotesStack.push(ch);
+    else if (/["'`]/.test(ch) && /\\/.test(quotesStack[quotesStack.length - 1]))
+      quotesStack.pop();
 
-    const scan = (): Token[] => {
-        const ch = code[index];
+    return scanLiteral(next(), token);
+  }
 
-        if (scanLiteral(ch)) {
-            if (token?.type !== 'Literal')
-                nextToken('Literal');
-            else
-                updateToken();
+  const scanIdentifier = (ch: string, token?: Token): Token[] => {
+    if (!token) {
+      identifierBuffer = ch;
+      token = createToken('Identifier');
+      tokens.push(token);
+    } else if (!/[0-9a-zA-Z_$]/.test(ch)) {
+      // No Identifier
+      return scan(ch);
+    } else {
+      identifierBuffer += ch;
+      if (identifierBuffer == 'null' ||
+        identifierBuffer == 'undefined' ||
+        identifierBuffer == 'true' ||
+        identifierBuffer == 'false') {
+        token.type = 'Literal';
+        updateToken(token);
+      }
+      else {
+        updateToken(token);
+      }
+    }
 
-            // Open/close quotes
-            if (quotesStack.length === 0 && /["'`]/.test(ch))
-                quotesStack.push(ch);
-            else if (quotesStack.length > 0 && quotesStack[quotesStack.length - 1] === ch)
-                quotesStack.pop();
-            // Escaped quotes
-            if (/\\/.test(ch))
-                quotesStack.push(ch);
-            else if (/["'`]/.test(ch) && /\\/.test(quotesStack[quotesStack.length - 1]))
-                quotesStack.pop();
-        }
-        else if (scanIdentifier(ch)) {
-            if (token?.type !== 'Identifier')
-                nextToken('Identifier');
-            else
-                updateToken();
-        } else if (scanPunctuator(ch)) {
-            nextToken('Punctuator');
+    return scanIdentifier(next(), token);
+  };
 
-            // Open/close parenthesis
-            if (/\(/.test(ch))
-                parenthesisStack.push(ch);
-            else if (/\)/.test(ch))
-                parenthesisStack.pop();
-        }
+  const scanPunctuator = (ch: string, token?: Token): Token[] => {
+    token = createToken('Punctuator');
+    tokens.push(token);
 
-        index++;
+    // Open/close parenthesis
+    if (/\(/.test(ch))
+      parenthesisStack.push(ch);
+    else if (/\)/.test(ch))
+      parenthesisStack.pop();
 
-        return endOfScan() ? tokens : scan();
-    };
+    return scan(next());
+  };
 
-    return scan();
+  const endOfScan = () => (tokens[tokens.length - 1]?.type === 'Punctuator' && parenthesisStack.length === 0) ||
+    index === code.length;
+
+  /**
+   * Tail recursion
+   */
+  const scan = (ch = code[index]): Token[] => {
+    if (endOfScan()) return tokens;
+
+    if (startLiteral(ch)) return scanLiteral(ch);
+
+    if (startIdentifier(ch)) return scanIdentifier(ch);
+
+    if (startPunctuator(ch)) return scanPunctuator(ch);
+
+    return scan(next());
+  };
+
+  return scan();
 }
 
 /**
  * Syntax analysis
- * @param tokens 
+ * 
+ * EBNF grammar:
+ * letter = ? any letter ?;
+ * digit = ? any digit ?;
+ * character = ? any character ?;
+ * quote = "'" | '"' | "`";
+ * literal = quote, character, quote | digit | "null" | "undefined" | "true" | "false"
+ * identifier = letter, { letter | digit | "_" | "$" };
+ * key = identifier
+ * value = literal | identifier ["." | "?." | "!.", identifier, [!]] | callExpr;
+ * property = key, ":", value
+ * objectExpr = "{", { property, [","] }, "}";
+ * args = "(", { literal | identifier | objectExpr, [","] }, ")";
+ * callExpr = alias, args;
+ * 
+ * Recursive Descent Parsing
  */
-export function parse(tokens: Token[]): any {
-    return null;
+export function parse(tokens: Token[], code: string, alias: string): CallExpression | undefined {
+  let node: CallExpression;
+
+  let c = 0;
+
+  const lookAhead = () => tokens[c + 1];
+  const next = () => tokens[++c];
+  const last = () => tokens[tokens.length - 1];
+
+  const trimQuotes = (value: string) => value.replace(/^["'`]|["'`]$/g, '');
+
+  const parseLiteral = (token: Token): CallExpression => {
+    node.arguments.push({ type: 'Literal', value: trimQuotes(token.value) });
+    return parseArgs(next());
+  };
+
+  const parseIdentifier = (token: Token): CallExpression => {
+    node.arguments.push({ type: 'Identifier', value: token.value });
+    return parseArgs(next());
+  };
+
+  const parseProperty = (token: Token, properties: Property[], property?: Property): CallExpression => {
+    if (!property) {
+      property = {
+        type: 'Property',
+        key: { type: 'Identifier', value: token.value }, value: { type: 'Literal', value: '' }
+      };
+      properties.push(property);
+    }
+
+    if (!/:/.test(token.value) && !/:/.test(lookAhead().value)) {
+      if (token.type === 'Literal') {
+        property.value.value = trimQuotes(token.value);
+      } else {
+        property.value.type = /[()]/.test(token.value) ? 'CallExpression' : 'Identifier';
+        property.value.value += token.value;
+      }
+
+      if (/[,}]/.test(lookAhead().value)) return parseObject(next(), properties);
+    }
+
+    return parseProperty(next(), properties, property);
+  };
+
+  const parseObject = (token: Token, properties?: Property[]): CallExpression => {
+    if (!properties) {
+      properties = [];
+      node.arguments.push({ type: 'ObjectExpression', properties: properties });
+    }
+
+    // End of object
+    if (/}/.test(token.value)) return parseArgs(next());
+
+    if (!/{/.test(token.value))
+      if (/:/.test(lookAhead().value)) return parseProperty(token, properties)
+
+    return parseObject(next(), properties);
+  };
+
+  const parseArgs = (token: Token): CallExpression => {
+    if (Object.is(token, last())) return node;
+
+    if (token.type === 'Literal') return parseLiteral(token);
+    if (token.type === 'Identifier') return parseIdentifier(token);
+    if (/{/.test(token.value)) return parseObject(token);
+
+    return parseArgs(next());
+  };
+
+  const parseCallExpr = (token = tokens[c]): CallExpression | undefined => {
+    if (token.type === 'Identifier' && new RegExp(alias).test(token.value)) {
+      node = {
+        type: 'CallExpression',
+        value: code.substring(token.position.start, last().position.end + 1),
+        arguments: []
+      };
+      return parseArgs(next());
+    }
+  }
+
+  return parseCallExpr();
 }
 
 /**
  * Parse in the code the sequence of functions defined by the alias
- * @param code 
- * @param alias
  */
 export function parseSequenceExpressions(code: string, alias: string): CallExpression[] {
-    const sequenceExpressions: CallExpression[] = [];
+  const sequenceExpressions: CallExpression[] = [];
 
-    let i = 0;
-    let p = 0;
-    do {
-        i = code.slice(p).search(new RegExp(`${alias}\\(`, 'gs'));
+  let i = 0;
+  let p = 0;
+  do {
+    i = code.slice(p).search(new RegExp(`${alias}\\(`, 'gs'));
 
-        if (i >= 0) {
-            code = code.substring(i);
+    if (i >= 0) {
+      const tokens = tokenize(code, i + p);
+      if (tokens.length > 0) {
+        const callExpression = parse(tokens, code, alias);
+        if (callExpression) sequenceExpressions.push(callExpression);
 
-            const tokens = tokenize(code);
-            if (tokens.length > 0) {
-                const callExpression = parse(tokens);
-                sequenceExpressions.push(callExpression);
+        p = tokens[tokens.length - 1].position.end;
+      }
+      else {
+        break;
+      }
+    }
 
-                p = tokens[tokens.length - 1].position.end;
-            }
-            else {
-                break;
-            }
-        }
+  } while (i >= 0);
 
-    } while (i >= 0);
-
-    return sequenceExpressions;
+  return sequenceExpressions;
 }
