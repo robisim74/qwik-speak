@@ -307,6 +307,21 @@ describe('parser: parse', () => {
       }
     );
   });
+  test('parse with function call params', () => {
+    const code = `t('home.greeting', getGreeting())`;
+    const tokens = tokenize(code);
+    const callExpression = parse(tokens, code, '\\bt')
+    expect(callExpression).toEqual(
+      {
+        type: 'CallExpression',
+        value: "t('home.greeting', getGreeting())",
+        arguments: [
+          { type: 'Literal', value: 'home.greeting' },
+          { type: 'CallExpression', value: 'getGreeting' }
+        ]
+      }
+    );
+  });
 });
 
 describe('parser: parseSequenceExpressions', () => {

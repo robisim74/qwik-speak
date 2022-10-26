@@ -4,6 +4,8 @@ import { createWriteStream } from 'fs';
 import path from 'path';
 
 import type { QwikSpeakInlineOptions, Translation } from './types';
+import type { Argument, Property } from '../core/parser';
+import { parseSequenceExpressions } from '../core/parser';
 
 // Logs
 const missingValues: string[] = [];
@@ -17,7 +19,7 @@ const dynamicParams: string[] = [];
  */
 export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
   // Resolve options
-  const opts: Required<QwikSpeakInlineOptions> = {
+  const ResolvedOptions: Required<QwikSpeakInlineOptions> = {
     ...options,
     basePath: options.basePath ?? './',
     assetsPath: options.assetsPath ?? 'public/i18n',
@@ -26,7 +28,7 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
   }
 
   // Translation data
-  const translation: Translation = Object.fromEntries(opts.supportedLangs.map(value => [value, {}]));
+  const translation: Translation = Object.fromEntries(ResolvedOptions.supportedLangs.map(value => [value, {}]));
 
   const plugin: Plugin = {
     name: 'vite-plugin-qwik-speak-inline',
@@ -39,8 +41,8 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
      */
     async buildStart() {
       // For all langs
-      await Promise.all(opts.supportedLangs.map(async lang => {
-        const baseDir = path.normalize(`${opts.basePath}${opts.assetsPath}/${lang}`);
+      await Promise.all(ResolvedOptions.supportedLangs.map(async lang => {
+        const baseDir = path.normalize(`${ResolvedOptions.basePath}${ResolvedOptions.assetsPath}/${lang}`);
         // For all files
         const files = await readdir(baseDir);
 
@@ -76,7 +78,7 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
       if (id.includes('/src') && id.endsWith('.js')) {
         // Filter code
         if (/\$translate/.test(code)) {
-          return inline(code, translation, opts);
+          return inline(code, translation, ResolvedOptions);
         }
       }
     },
@@ -108,36 +110,34 @@ export function inline(
 ): string | null {
   const alias = getAlias(code);
 
-  const matches = code.match(new RegExp(`${alias}\\(([^()]*|\\([^()]*\\))*\\)`, 'gs'));
-  if (!matches) return null;
+  // Parse sequence
+  const sequence = parseSequenceExpressions(code, alias);
+
+  if (sequence.length === 0) return null;
 
   let replaced = false;
-  for (const originalFn of matches) {
-    // Get args
-    const args = originalFn.match(new RegExp(`(?<=^${alias}\\().*?(?=\\)$)`, 'gs'))?.[0];
+  for (const expr of sequence) {
+    // Original function
+    const originalFn = expr.value;
+    // Arguments
+    const args = expr.arguments;
 
-    if (args) {
-      // Get parameters
-      const params = getParams(args);
-
+    if (args[0]?.value) {
       // Dynamic key
-      const validFn = originalFn.match(new RegExp(`${alias}\\(("|'|\`).*?("|'|\`).*?\\)`, 's'))?.[0];
-      if (!validFn) {
-        if (params[0] !== 'key') dynamicKeys.push(`dynamic key: ${originalFn.replace(/\s+/g, ' ')} - skip`)
+      if (args[0].type === 'Identifier') {
+        if (args[0].value !== 'key') dynamicKeys.push(`dynamic key: ${originalFn.replace(/\s+/g, ' ')} - skip`)
         continue;
       }
-
-      // Dynamic params
-      if (params[1]) {
-        // "{ name: 'Qwik Speak' }" => 'name'
-        const paramNames = params[1].match(/(\w+(?=:|\s+:))/g);
-        if (!paramNames) {
-          dynamicParams.push(`dynamic params: ${originalFn.replace(/\s+/g, ' ')} - skip`);
+      if (args[0].type === 'Literal') {
+        if (args[0].value !== 'key' && /\${.*}/.test(args[0].value)) {
+          dynamicKeys.push(`dynamic key: ${originalFn.replace(/\s+/g, ' ')} - skip`)
           continue;
         }
       }
-      if (params[2]) {
-        if (params[2] !== 'undefined' && params[2] !== 'null') {
+
+      // Dynamic argument
+      if (args[1]) {
+        if (args[1].type === 'Identifier' || args[1].type === 'CallExpression') {
           dynamicParams.push(`dynamic params: ${originalFn.replace(/\s+/g, ' ')} - skip`);
           continue;
         }
@@ -145,9 +145,12 @@ export function inline(
 
       let supportedLangs: string[];
       let defaultLang: string;
+      let optionalLang: string | undefined;
 
       // Check multilingual
-      const optionalLang = multilingual(params[3], opts.supportedLangs);
+      if (args[3]?.type === 'Literal') {
+        optionalLang = multilingual(args[3].value, opts.supportedLangs);
+      }
 
       if (!optionalLang) {
         supportedLangs = opts.supportedLangs;
@@ -158,10 +161,10 @@ export function inline(
       }
 
       // Get key
-      const key = getKey(params[0], opts.keyValueSeparator);
+      const key = getKey(args[0].value, opts.keyValueSeparator);
 
       // Get default value
-      const defaultValue = getValue(key, translation[defaultLang], params[1], opts.keySeparator);
+      const defaultValue = getValue(key, translation[defaultLang], args[1], opts.keySeparator);
       if (!defaultValue) {
         missingValues.push(`${defaultLang} - missing value for key: ${key}`);
         continue;
@@ -172,7 +175,7 @@ export function inline(
       values.set(defaultLang, defaultValue);
 
       for (const lang of supportedLangs.filter(x => x !== defaultLang)) {
-        const value = getValue(key, translation[lang], params[1], opts.keySeparator);
+        const value = getValue(key, translation[lang], args[1], opts.keySeparator);
         if (!value) {
           missingValues.push(`${lang} - missing value for key: ${key}`);
           continue;
@@ -180,11 +183,11 @@ export function inline(
         values.set(lang, value);
       }
 
-      // Build translated line
-      const line = buildLine(values, supportedLangs, defaultLang);
+      // Transpile
+      const transpiled = transpileFn(values, supportedLangs, defaultLang);
 
       // Replace
-      code = code.replace(originalFn, line);
+      code = code.replace(originalFn, transpiled);
       replaced = true;
     }
   }
@@ -204,25 +207,23 @@ export function getAlias(code: string): string {
   return translateAlias;
 }
 
-export function getParams(args: string): string[] {
-  // Split by comma outside single or double quotes, backticks and brackets
-  let params = args
-    .split(/((?:[^,'"`]*(?:"(?:[^"])*"|'(?:[^'])*'|`(?:[^`])*`|,(?:[^{]*\}))[^,'"`]*)+)|,/gs)
-    .filter(Boolean);
-
-  // Change all groups of white-spaces characters to a single space & trim the result
-  params = params.map(x => x.replace(/\s+/g, ' ').trim());
-  return params;
-}
-
-export function multilingual(param: string | undefined, supportedLangs: string[]): string | undefined {
-  if (!param) return undefined;
-  const lang = trimQuotes(param);
+export function multilingual(lang: string | undefined, supportedLangs: string[]): string | undefined {
+  if (!lang) return undefined;
   return supportedLangs.find(x => x === lang);
 }
 
-export function getKey(param: string, keyValueSeparator: string): string {
-  let key = trimQuotes(param);
+/**
+ * Return the value in backticks
+ */
+export function quoteValue(value: string): string {
+  return '`' + value + '`';
+}
+
+export function interpolateParam(property: Property): string {
+  return property.value.type === 'Literal' ? "${'" + property.value.value + "'}" : '${' + property.value.value + '}';
+}
+
+export function getKey(key: string, keyValueSeparator: string): string {
   key = key.split(keyValueSeparator)[0];
   return key;
 }
@@ -230,58 +231,35 @@ export function getKey(param: string, keyValueSeparator: string): string {
 export function getValue(
   key: string,
   data: Translation,
-  args: string | undefined,
+  params: Argument | undefined,
   keySeparator: string
 ): string | undefined {
   const value = key.split(keySeparator).reduce((acc, cur) => (acc && acc[cur] != null) ? acc[cur] : null, data);
-  if (typeof value === 'string') return args ? transpileParams(value, args) : quoteValue(value);
+  if (typeof value === 'string') return params ? transpileParams(value, params) : quoteValue(value);
   return undefined;
 }
 
-export function transpileParams(value: string, args: string): string | undefined {
-  // Trim brackets
-  args = args.replace(/(^({))|(})$/g, '');
-
-  const params = getParams(args);
-
-  for (const param of params) {
-    const parts = param.split(':').map(x => x.trim());
-    if (parts.length === 2) {
+export function transpileParams(value: string, params: Argument): string | undefined {
+  if (params.properties) {
+    for (const property of params.properties) {
       value = value.replace(/{{\s?([^{}\s]*)\s?}}/g, (substring: string, parsedKey: string) => {
-        return parsedKey === parts[0] ? interpolateParam(parts[1]) : substring;
+        return parsedKey === property.key.value ? interpolateParam(property) : substring;
       });
     }
   }
   return quoteValue(value);
 }
 
-export function trimQuotes(value: string): string {
-  return value.replace(/(^("|'|`))|("|'|`)$/g, '');
-}
-
 /**
- * Ready for inlining
- * @param value 
- * @returns The value in backticks
+ * Transpile the function
  */
-export function quoteValue(value: string): string {
-  return '`' + value + '`';
-}
-
-export function interpolateParam(param: string): string {
-  return '${' + param + '}';
-}
-
-/**
- * Build the translated line
- */
-export function buildLine(values: Map<string, string>, supportedLangs: string[], defaultLang: string): string {
-  let translatedLine = '';
+export function transpileFn(values: Map<string, string>, supportedLangs: string[], defaultLang: string): string {
+  let translation = '';
   for (const lang of supportedLangs.filter(x => x !== defaultLang)) {
-    translatedLine += `${'$lang'} === ${quoteValue(lang)} && ${values.get(lang)} || `;
+    translation += `${'$lang'} === ${quoteValue(lang)} && ${values.get(lang)} || `;
   }
-  translatedLine += values.get(defaultLang);
-  return translatedLine;
+  translation += values.get(defaultLang);
+  return translation;
 }
 
 /**

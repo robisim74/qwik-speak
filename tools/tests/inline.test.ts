@@ -1,4 +1,4 @@
-import { getParams, getKey, getValue, qwikSpeakInline, buildLine, getAlias, addLang } from '../inline/plugin';
+import { getKey, getValue, qwikSpeakInline, transpileFn, getAlias, addLang } from '../inline/plugin';
 import { inlinedCode, mockCode } from './mock';
 
 describe('inline', () => {
@@ -18,45 +18,10 @@ describe('inline', () => {
     alias = getAlias("import { $translate } from 'qwik-speak';");
     expect(alias).toBe('\\$translate');
   });
-  test('getParams', () => {
-    let params = getParams(`'key1.subkey1', {
-      param1: 'Param1'
-    }`);
-    expect(params).toEqual([
-      "'key1.subkey1'",
-      "{ param1: 'Param1' }"
-    ]);
-    params = getParams(`"key1.subkey1", {
-      param1: "Param1"
-    }`);
-    expect(params).toEqual([
-      '"key1.subkey1"',
-      '{ param1: "Param1" }'
-    ]);
-    params = getParams(`'key1.subkey1@@value, value', {
-      param1: 'Param1, Param1',
-      param2: Param2
-    }, ctx, 'lang'`);
-    expect(params).toEqual([
-      "'key1.subkey1@@value, value'",
-      "{ param1: 'Param1, Param1', param2: Param2 }",
-      'ctx',
-      "'lang'"
-    ]);
-    params = getParams("param1: 'Param1, Param1', param2: Param2");
-    expect(params).toEqual([
-      "param1: 'Param1, Param1'",
-      'param2: Param2'
-    ]);
-  });
   test('getKey', () => {
-    let key = getKey("'key1'", '@@');
+    let key = getKey('key1', '@@');
     expect(key).toBe('key1');
-    key = getKey('"key1"', '@@');
-    expect(key).toBe('key1');
-    key = getKey('`key1`', '@@');
-    expect(key).toBe('key1');
-    key = getKey("'key1@@Key1'", '@@');
+    key = getKey('key1@@Key1', '@@');
     expect(key).toBe('key1');
   });
   test('getValue', () => {
@@ -66,24 +31,62 @@ describe('inline', () => {
     expect(value).toBe('`Subkey1`');
     value = getValue('key1.subkey2', { key1: { subkey1: 'Subkey1' } }, undefined, '.');
     expect(value).toBeUndefined();
-    value = getValue('key1', { key1: 'Key1 {{param1}}' }, "{ param1: 'Param1' }", '.');
+    value = getValue('key1', { key1: 'Key1 {{param1}}' }, {
+      type: 'ObjectExpression', properties: [
+        {
+          type: 'Property',
+          key: { type: 'Identifier', value: 'param1' },
+          value: { type: 'Literal', value: 'Param1' }
+        }
+      ]
+    }, '.');
     expect(value).toBe("`Key1 ${'Param1'}`");
-    value = getValue('key1', { key1: 'Key1 {{param1}} and {{param2}}' }, "{ param1: 'Param1', param2: variable }", '.');
+    value = getValue('key1', { key1: 'Key1 {{param1}} and {{param2}}' },
+      {
+        type: 'ObjectExpression', properties: [
+          {
+            type: 'Property',
+            key: { type: 'Identifier', value: 'param1' },
+            value: { type: 'Literal', value: 'Param1' }
+          },
+          {
+            type: 'Property',
+            key: { type: 'Identifier', value: 'param2' },
+            value: { type: 'Identifier', value: 'variable' }
+          }
+        ]
+      }, '.');
     expect(value).toBe("`Key1 ${'Param1'} and ${variable}`");
-    value = getValue('key1', { key1: 'Key1' }, "{ param1: 'Param1' }", '.');
+    value = getValue('key1', { key1: 'Key1' }, {
+      type: 'ObjectExpression', properties: [
+        {
+          type: 'Property',
+          key: { type: 'Identifier', value: 'param1' },
+          value: { type: 'Literal', value: 'Param1' }
+        }
+      ]
+    }, '.');
     expect(value).toBe('`Key1`');
-    value = getValue('key1', { key1: 'Key1 {{param1}}' }, "{ param2: 'Param2' }", '.');
+    value = getValue('key1', { key1: 'Key1 {{param1}}' }, {
+      type: 'ObjectExpression', properties: [
+        {
+          type: 'Property',
+          key: { type: 'Identifier', value: 'param2' },
+          value: { type: 'Literal', value: 'Param2' }
+        }
+      ]
+    }, '.');
     expect(value).toBe('`Key1 {{param1}}`');
   });
-  test('buildLine', () => {
+  test('transpileFn', () => {
     let values = new Map<string, string>();
     values.set('en-US', '`Value`');
     values.set('it-IT', '`Valore`');
-    let line = buildLine(values, ['en-US', 'it-IT'], 'en-US');
+    let line = transpileFn(values, ['en-US', 'it-IT'], 'en-US');
     expect(line).toBe('$lang === `it-IT` && `Valore` || `Value`');
     values = new Map<string, string>();
     values.set('en-US', '`Value`');
-    line = buildLine(values, ['en-US'], 'en-US');
+    line = transpileFn(values, ['en-US'], 'en-US');
     expect(line).toBe('`Value`');
   });
   test('addLang', () => {

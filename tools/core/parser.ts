@@ -11,7 +11,7 @@ export interface Property {
 }
 
 export interface Argument {
-  type: 'Literal' | 'Identifier' | 'ObjectExpression';
+  type: 'Literal' | 'Identifier' | 'CallExpression' | 'ObjectExpression';
   value?: string;
   properties?: Property[];
 }
@@ -190,7 +190,7 @@ export function tokenize(code: string, start = 0): Token[] {
  * value = literal | identifier ["." | "?." | "!.", identifier, [!]] | callExpr;
  * property = key, ":", value
  * objectExpr = "{", { property, [","] }, "}";
- * args = "(", { literal | identifier | objectExpr, [","] }, ")";
+ * args = "(", { literal | identifier | objectExpr | callExpr, [","] }, ")";
  * callExpr = alias, args;
  * 
  * Recursive Descent Parsing
@@ -258,19 +258,23 @@ export function parse(tokens: Token[], code: string, alias: string): CallExpress
     if (Object.is(token, last())) return node;
 
     if (token.type === 'Literal') return parseLiteral(token);
+    if (token.type === 'Identifier' && /\(/.test(lookAhead().value)) return parseCallExpr(token);
     if (token.type === 'Identifier') return parseIdentifier(token);
     if (/{/.test(token.value)) return parseObject(token);
 
     return parseArgs(next());
   };
 
-  const parseCallExpr = (token = tokens[c]): CallExpression | undefined => {
-    if (token.type === 'Identifier' && new RegExp(alias).test(token.value)) {
+  const parseCallExpr = (token = tokens[c]): CallExpression => {
+    if (new RegExp(alias).test(token.value)) {
       node = {
         type: 'CallExpression',
         value: code.substring(token.position.start, last().position.end + 1),
         arguments: []
       };
+      return parseArgs(next());
+    } else {
+      node.arguments.push({ type: 'CallExpression', value: token.value });
       return parseArgs(next());
     }
   }
