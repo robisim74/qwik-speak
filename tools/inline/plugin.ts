@@ -19,7 +19,7 @@ const dynamicParams: string[] = [];
  */
 export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
   // Resolve options
-  const ResolvedOptions: Required<QwikSpeakInlineOptions> = {
+  const resolvedOptions: Required<QwikSpeakInlineOptions> = {
     ...options,
     basePath: options.basePath ?? './',
     assetsPath: options.assetsPath ?? 'public/i18n',
@@ -28,7 +28,11 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
   }
 
   // Translation data
-  const translation: Translation = Object.fromEntries(ResolvedOptions.supportedLangs.map(value => [value, {}]));
+  const translation: Translation = Object.fromEntries(resolvedOptions.supportedLangs.map(value => [value, {}]));
+
+  // Client or server files
+  let target: string;
+  let input: string | undefined;
 
   const plugin: Plugin = {
     name: 'vite-plugin-qwik-speak-inline',
@@ -36,13 +40,26 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
     // Apply only on build
     apply: 'build',
 
+    configResolved(resolvedConfig) {
+      target = resolvedConfig.build?.ssr || resolvedConfig.mode === 'ssr' ? 'ssr' : 'client';
+
+      const inputOption = resolvedConfig.build.rollupOptions.input;
+      if (inputOption) {
+        if (Array.isArray(inputOption))
+          input = inputOption[0];
+        else if (typeof inputOption === 'string')
+          input = inputOption
+      }
+      input = input?.split('/').pop();
+    },
+
     /**
      * Load translation files when build starts
      */
     async buildStart() {
       // For all langs
-      await Promise.all(ResolvedOptions.supportedLangs.map(async lang => {
-        const baseDir = path.normalize(`${ResolvedOptions.basePath}${ResolvedOptions.assetsPath}/${lang}`);
+      await Promise.all(resolvedOptions.supportedLangs.map(async lang => {
+        const baseDir = path.normalize(`${resolvedOptions.basePath}${resolvedOptions.assetsPath}/${lang}`);
         // For all files
         const files = await readdir(baseDir);
 
@@ -78,20 +95,22 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
       if (id.includes('/src') && id.endsWith('.js')) {
         // Filter code
         if (/\$translate/.test(code)) {
-          return inline(code, translation, ResolvedOptions);
+          return inline(code, translation, resolvedOptions);
         }
       }
     },
 
     async closeBundle() {
       // Logs
-      const log = createWriteStream('./qwik-speak-inline.log', { flags: 'w' });
+      const log = createWriteStream('./qwik-speak-inline.log', { flags: 'a' });
+
+      log.write(`${target}: ` + (input ?? '-') + '\n');
 
       missingValues.forEach(x => log.write(x + '\n'));
       dynamicKeys.forEach(x => log.write(x + '\n'));
       dynamicParams.forEach(x => log.write(x + '\n'));
 
-      log.write((`Qwik Speak Inline: build ends at ${new Date().toLocaleString()}`));
+      log.write((`Qwik Speak Inline: build ends at ${new Date().toLocaleString()}\n`));
     }
   };
 
@@ -122,7 +141,7 @@ export function inline(
     // Arguments
     const args = expr.arguments;
 
-    if (args[0]?.value) {
+    if (args?.[0]?.value) {
       // Dynamic key
       if (args[0].type === 'Identifier') {
         if (args[0].value !== 'key') dynamicKeys.push(`dynamic key: ${originalFn.replace(/\s+/g, ' ')} - skip`)
@@ -242,8 +261,8 @@ export function getValue(
 export function transpileParams(value: string, params: Argument): string | undefined {
   if (params.properties) {
     for (const property of params.properties) {
-      value = value.replace(/{{\s?([^{}\s]*)\s?}}/g, (substring: string, parsedKey: string) => {
-        return parsedKey === property.key.value ? interpolateParam(property) : substring;
+      value = value.replace(/{{\s?([^{}\s]*)\s?}}/g, (token: string, key: string) => {
+        return key === property.key.value ? interpolateParam(property) : token;
       });
     }
   }

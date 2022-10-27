@@ -88,4 +88,4 @@ to:
     children: $lang() === `it-IT` && `Ciao! Sono ${'Qwik Speak'}` || `Hi! I am ${'Qwik Speak'}`
 }),
 ```
-`$lang` is imported and added during compilation, so that you can still change locales at runtime without redirecting or reloading the page.
+`$lang` is imported and added during compilation, and you can still change locales at runtime without redirecting or reloading the page.

@@ -21,6 +21,7 @@
       "vite",
       "rollup",
       "jest"
-    ],
-  }
+    ]
+  },
+  "exclude": ["tests/**", "vite.**.ts"]
 }
