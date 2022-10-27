@@ -22,5 +22,5 @@
       "qwik-speak": ["./src/index.ts"]
     }
   },
-  "include": ["src", "tools"]
+  "include": ["src", "tools/**/*.ts"]
 }
