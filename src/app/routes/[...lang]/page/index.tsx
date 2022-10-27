@@ -10,7 +10,7 @@ export const Page = component$(() => {
       <h1>{t('app.title')}</h1>
       <h2>{t('app.subtitle')}</h2>
 
-      <p>{t("page.text@@I'm a default value")}</p>
+      <p>{t('page.text@@I\'m a default value')}</p>
     </>
   );
 });

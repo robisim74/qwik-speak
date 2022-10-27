@@ -46,3 +46,4 @@ tsconfig.lib.tsbuildinfo
 /playwright/.cache/
 /dts-out/
 /inline/
+/extract/

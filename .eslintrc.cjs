@@ -13,7 +13,7 @@ module.exports = {
   parser: '@typescript-eslint/parser',
   parserOptions: {
     tsconfigRootDir: __dirname,
-    project: ['./tsconfig.json'],
+    project: ['./tsconfig.json', './tools/tsconfig.json'],
     ecmaVersion: 2021,
     sourceType: 'module',
     ecmaFeatures: {
@@ -37,6 +37,6 @@ module.exports = {
     'no-case-declarations': 'off',
     'no-console': 'off',
     'max-len': ["error", { "code": 120, "tabWidth": 2, "ignoreRegExpLiterals": true, "ignoreStrings": true }],
-    'quotes': ["error", "single", { "avoidEscape": true }],
+    'quotes': ["error", "single", { "avoidEscape": true, "allowTemplateLiterals": true }],
   },
 };

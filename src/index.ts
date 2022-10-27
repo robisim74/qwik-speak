@@ -34,3 +34,4 @@ export {
   useTranslation,
   useSpeakConfig,
 } from './library/use-functions';
+export { $lang } from './library/use-functions';

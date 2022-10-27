@@ -30,3 +30,5 @@ tsconfig.tsbuildinfo
 vite.config.ts
 vite.config.lib.ts
 playwright.config.ts
+tools/vite.config.inline.ts
+tools/vite.config.extract.ts
