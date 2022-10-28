@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
-import { viteStaticCopy } from 'vite-plugin-static-copy'
+import shebang from 'rollup-plugin-add-shebang';
+import { readFile } from 'fs/promises';
 
 export default defineConfig(() => {
   return {
@@ -8,27 +9,26 @@ export default defineConfig(() => {
       outDir: 'extract',
       target: 'es2020',
       lib: {
-        entry: 'tools/extract/index.ts',
+        entry: ['tools/extract/index.ts', 'tools/extract/cli.ts'],
         formats: ['es', 'cjs'],
-        fileName: (format) => `index.${format === 'es' ? 'mjs' : 'cjs'}`,
+        fileName: (format, entryName) => `${entryName}.${format === 'es' ? 'mjs' : 'cjs'}`,
       },
       rollupOptions: {
+        output: {
+          banner: () => readFile('./banner.txt', 'utf8')
+        },
         external: [
           'fs',
           'fs/promises',
           'path'
+        ],
+        plugins: [
+          shebang({
+            shebang: '#!/usr/bin/env node',
+            include: ['./extract/cli.mjs', './extract/cli.cjs']
+          })
         ]
       }
-    },
-    plugins: [
-      viteStaticCopy({
-        targets: [
-          {
-            src: 'tools/extract/cli.js',
-            dest: './'
-          }
-        ]
-      })
-    ]
+    }
   };
 });
