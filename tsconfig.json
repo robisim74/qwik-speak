@@ -13,6 +13,7 @@
     "skipLibCheck": true,
     "incremental": true,
     "isolatedModules": true,
+    "outDir": "tmp",
     "types": [
       "node",
       "vite/client",
