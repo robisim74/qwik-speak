@@ -1,16 +1,18 @@
 {
-  "head": {
-    "home": {
-      "title": "{{name}}",
-      "description": "Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps"
+  "runtime": {
+    "devs": {
+      "one": "{{ value }} software developer",
+      "other": "{{value}} software developers"
     },
-    "page": {
-      "title": "Page - {{name}}",
-      "description": "I'm another page"
+    "head": {
+      "home": {
+        "description": "Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps",
+        "title": "{{name}}"
+      },
+      "page": {
+        "description": "I'm another page",
+        "title": "Page - {{name}}"
+      }
     }
-  },
-  "devs": {
-    "one": "{{ value }} software developer",
-    "other": "{{value}} software developers"
   }
 }

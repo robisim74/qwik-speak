@@ -1,10 +1,10 @@
 import type { Plugin } from 'vite';
 import { readFile, readdir } from 'fs/promises';
 import { createWriteStream } from 'fs';
-import path from 'path';
+import { extname, normalize } from 'path';
 
 import type { QwikSpeakInlineOptions, Translation } from './types';
-import type { Argument, Property } from '../core/parser';
+import { Argument, getTranslateAlias, parseJson, Property } from '../core/parser';
 import { parseSequenceExpressions } from '../core/parser';
 
 // Logs
@@ -59,12 +59,12 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
     async buildStart() {
       // For all langs
       await Promise.all(resolvedOptions.supportedLangs.map(async lang => {
-        const baseDir = path.normalize(`${resolvedOptions.basePath}${resolvedOptions.assetsPath}/${lang}`);
+        const baseDir = normalize(`${resolvedOptions.basePath}/${resolvedOptions.assetsPath}/${lang}`);
         // For all files
         const files = await readdir(baseDir);
 
         if (files.length > 0) {
-          const ext = path.extname(files[0]);
+          const ext = extname(files[0]);
           let data: Translation = {};
 
           const tasks = files.map(filename => readFile(`${baseDir}/${filename}`, 'utf8'));
@@ -74,7 +74,7 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
             if (source) {
               switch (ext) {
                 case '.json':
-                  data = await parseJson(data, source);
+                  data = parseJson(data, source);
                   break;
               }
             }
@@ -117,17 +117,12 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
   return plugin;
 }
 
-export async function parseJson(target: Translation, source: string): Promise<Translation> {
-  target = { ...target, ...JSON.parse(source) };
-  return target;
-}
-
 export function inline(
   code: string,
   translation: Translation,
   opts: Required<QwikSpeakInlineOptions>
 ): string | null {
-  const alias = getAlias(code);
+  const alias = getTranslateAlias(code);
 
   // Parse sequence
   const sequence = parseSequenceExpressions(code, alias);
@@ -217,13 +212,6 @@ export function inline(
   }
 
   return code;
-}
-
-export function getAlias(code: string): string {
-  let translateAlias = code.match(/(?<=\$translate as).*?(?=,|\})/s)?.[0]?.trim() || '$translate';
-  // Escape special characters / Assert position at a word boundary
-  translateAlias = translateAlias.startsWith('$') ? `\\${translateAlias}` : `\\b${translateAlias}`;
-  return translateAlias;
 }
 
 export function multilingual(lang: string | undefined, supportedLangs: string[]): string | undefined {

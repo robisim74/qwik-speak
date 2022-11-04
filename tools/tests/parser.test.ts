@@ -1,4 +1,4 @@
-import { parse, parseSequenceExpressions, tokenize } from '../core/parser';
+import { getTranslateAlias, parse, parseSequenceExpressions, tokenize } from '../core/parser';
 
 describe('parser: tokenize', () => {
   test('tokenize', () => {
@@ -360,5 +360,24 @@ describe('parser: parseSequenceExpressions', () => {
         }
       ]
     );
+  });
+});
+
+describe('alias', () => {
+  test('getTranslateAlias', () => {
+    let alias = getTranslateAlias(`import {
+      $translate as t,
+      plural as p,
+      formatDate as fd,
+      formatNumber as fn,
+      relativeTime as rt,
+      Speak,
+      useSpeakLocale
+    } from 'qwik-speak';`);
+    expect(alias).toBe('\\bt');
+    alias = getTranslateAlias("import { $translate as t } from 'qwik-speak';");
+    expect(alias).toBe('\\bt');
+    alias = getTranslateAlias("import { $translate } from 'qwik-speak';");
+    expect(alias).toBe('\\$translate');
   });
 });

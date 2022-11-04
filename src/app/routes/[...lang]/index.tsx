@@ -30,7 +30,7 @@ export const Home = component$(() => {
 
       <h3>{t('home.plural')}</h3>
       <button onClick$={() => state.count++}>{t('home.increment')}</button>
-      <p>{p(state.count, 'devs')}</p>
+      <p>{p(state.count, 'runtime.devs')}</p>
 
       <h3>{t('home.dates')}</h3>
       <p>{fd(Date.now(), { dateStyle: 'full', timeStyle: 'short' })}</p>
@@ -56,8 +56,8 @@ export default component$(() => {
 });
 
 export const head: DocumentHead = {
-  title: 'head.home.title',
-  meta: [{ name: 'description', content: 'head.home.description' }]
+  title: 'runtime.head.home.title',
+  meta: [{ name: 'description', content: 'runtime.head.home.description' }]
 };
 
 // E.g. SSG

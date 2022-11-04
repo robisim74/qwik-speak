@@ -10,8 +10,8 @@ export default defineConfig(() => {
       target: 'es2020',
       lib: {
         entry: ['tools/extract/index.ts', 'tools/extract/cli.ts'],
-        formats: ['es', 'cjs'],
-        fileName: (format, entryName) => `${entryName}.${format === 'es' ? 'mjs' : 'cjs'}`,
+        formats: ['es'],
+        fileName: (format, entryName) => `${entryName}.js`,
       },
       rollupOptions: {
         output: {
@@ -25,7 +25,7 @@ export default defineConfig(() => {
         plugins: [
           shebang({
             shebang: '#!/usr/bin/env node',
-            include: ['./extract/cli.mjs', './extract/cli.cjs']
+            include: ['./extract/cli.js']
           })
         ]
       }

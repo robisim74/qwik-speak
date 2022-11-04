@@ -1,11 +1,11 @@
 {
   "app": {
-    "title": "Qwik Speak",
-    "subtitle": "Translate your Qwik apps into any language",
     "changeLocale": "Change locale",
     "nav": {
       "home": "Home",
       "page": "Page"
-    }    
+    },
+    "subtitle": "Translate your Qwik apps into any language",
+    "title": "Qwik Speak"
   }
 }

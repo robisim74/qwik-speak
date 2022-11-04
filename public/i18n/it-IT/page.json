@@ -1,3 +1,5 @@
 {
-  "page": {}
+  "page": {
+    "text": "I'm a default value"
+  }
 }

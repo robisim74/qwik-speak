@@ -1,5 +1,5 @@
 /**
- * Qwik Speak Extract Command Options
+ * Qwik Speak Extract Options
  */
 export interface QwikSpeakExtractOptions {
   /**
@@ -23,10 +23,6 @@ export interface QwikSpeakExtractOptions {
    */
   supportedLangs: string[];
   /**
-   * Default lang. Required
-   */
-  defaultLang: string;
-  /**
    * Separator of nested keys. Default is '.'
    */
   keySeparator?: string;
@@ -35,3 +31,8 @@ export interface QwikSpeakExtractOptions {
    */
   keyValueSeparator?: string;
 }
+
+/**
+ * Translation data
+ */
+export type Translation = { [key: string]: any };

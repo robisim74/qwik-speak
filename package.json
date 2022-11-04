@@ -22,10 +22,10 @@
     "test.e2e": "playwright test",
     "test.watch": "jest ./src/tests ./tools/tests --watch",
     "qwik": "qwik",
-    "qwik-speak-extract": "qwik-speak-extract"
+    "qwik-speak-extract": "qwik-speak-extract --supportedLangs=en-US,it-IT --sourceFilesPath=src/app"
   },
   "bin": {
-    "qwik-speak-extract": "./extract/cli.js --supportedLangs=en-US,it-IT --defaultLang=en-US"
+    "qwik-speak-extract": "./extract/cli.js"
   },
   "peerDependencies": {
     "@builder.io/qwik": ">=0.11.0"

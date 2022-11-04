@@ -1,23 +1,7 @@
-import { getKey, getValue, qwikSpeakInline, transpileFn, getAlias, addLang } from '../inline/plugin';
+import { getKey, getValue, qwikSpeakInline, transpileFn, addLang } from '../inline/plugin';
 import { inlinedCode, mockCode } from './mock';
 
 describe('inline', () => {
-  test('getAlias', () => {
-    let alias = getAlias(`import {
-      $translate as t,
-      plural as p,
-      formatDate as fd,
-      formatNumber as fn,
-      relativeTime as rt,
-      Speak,
-      useSpeakLocale
-    } from 'qwik-speak';`);
-    expect(alias).toBe('\\bt');
-    alias = getAlias("import { $translate as t } from 'qwik-speak';");
-    expect(alias).toBe('\\bt');
-    alias = getAlias("import { $translate } from 'qwik-speak';");
-    expect(alias).toBe('\\$translate');
-  });
   test('getKey', () => {
     let key = getKey('key1', '@@');
     expect(key).toBe('key1');
