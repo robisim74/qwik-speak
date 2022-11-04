@@ -92,7 +92,7 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
      */
     async transform(code: string, id: string) {
       // Filter id
-      if (id.includes('/src') && id.endsWith('.js')) {
+      if (/\/src\//.test(id) && /\.(js|cjs|mjs|jsx|ts|tsx)$/.test(id)) {
         // Filter code
         if (/\$translate/.test(code)) {
           return inline(code, translation, resolvedOptions);
