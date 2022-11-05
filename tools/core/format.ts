@@ -25,4 +25,4 @@ export function sortTarget(target: { [key: string]: any }) {
  */
 function replacer(key: string, value: any) {
   return typeof value === 'string' ? value.replace(/\\/g, '') : value;
-};
+}

@@ -3,9 +3,9 @@
  */
 export function deepSet(target: { [key: string]: any }, keys: string[], val: string) {
   let i = 0;
-  let len = keys.length;
+  const len = keys.length;
   while (i < len) {
-    let key = keys[i++];
+    const key = keys[i++];
     target[key] = (i === len) ? val : typeof target[key] === 'object' ? target[key] : {};
     target = target[key];
   }

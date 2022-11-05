@@ -146,7 +146,8 @@ export async function extract(options: QwikSpeakExtractOptions) {
           let data: string;
           switch (resolvedOptions.format) {
             case 'json':
-              data = toJsonString({ [topLevelProperty]: translation[lang][topLevelProperty] }); // computed property name
+              // Computed property name
+              data = toJsonString({ [topLevelProperty]: translation[lang][topLevelProperty] });
               break;
           }
           const file = normalize(`${baseAssets}/${topLevelProperty}.${resolvedOptions.format}`);
