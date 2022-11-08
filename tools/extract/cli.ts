@@ -1,6 +1,6 @@
 import type { QwikSpeakExtractOptions } from './types';
 import { parseArgument } from '../core/cli-parser';
-import { extract } from './index';
+import { qwikSpeakExtract } from './index';
 
 const assertType = (value: any, type: string): boolean => {
   if (type === value) return true;
@@ -75,4 +75,4 @@ if (errors.length > 0) {
 console.log('\x1b[36m%s\x1b[0m', 'Qwik Speak Extract');
 console.log('\x1b[32m%s\x1b[0m', 'extracting translation...');
 
-extract(options as QwikSpeakExtractOptions);
+qwikSpeakExtract(options as QwikSpeakExtractOptions);

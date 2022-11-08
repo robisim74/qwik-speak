@@ -10,7 +10,7 @@ import { minDepth, sortTarget, toJsonString } from '../core/format';
 /**
  * Extract translations from source files
  */
-export async function extract(options: QwikSpeakExtractOptions) {
+export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
   // Resolve options
   const resolvedOptions: Required<QwikSpeakExtractOptions> = {
     ...options,

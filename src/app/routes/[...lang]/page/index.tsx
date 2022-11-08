@@ -18,7 +18,7 @@ export const Page = component$(() => {
 export default component$(() => {
   return (
     /**
-     * Add Page translation (only available in child components)
+     * Add Page translations (only available in child components)
      */
     <Speak assets={['page']}>
       <Page />

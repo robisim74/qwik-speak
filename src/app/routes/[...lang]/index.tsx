@@ -47,7 +47,7 @@ export const Home = component$(() => {
 export default component$(() => {
   return (
     /**
-     * Add Home translation (only available in child components)
+     * Add Home translations (only available in child components)
      */
     <Speak assets={['home']}>
       <Home />
