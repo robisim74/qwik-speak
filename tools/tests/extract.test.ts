@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import { normalize } from 'path';
 
-import { extract } from '../extract/index';
+import { qwikSpeakExtract } from '../extract/index';
 import { mockAsset, mockSource } from './mock';
 
 jest.mock('fs/promises');
@@ -21,7 +21,7 @@ describe('extract', () => {
       .mockImplementationOnce(() => mockAsset);
     fs.writeFile = jest.fn();
 
-    await extract({
+    await qwikSpeakExtract({
       supportedLangs: ['en-US']
     });
 

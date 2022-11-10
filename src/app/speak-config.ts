@@ -76,7 +76,8 @@ export const storeLocale$: StoreLocaleFn = $((locale: SpeakLocale) => {
       url.pathname = `/${locale.lang}${url.pathname}`;
     }
 
-    window.history.pushState({}, '', url);
+    // E.g. Just replace the state: no back or forward on language change
+    window.history.replaceState({}, '', url);
   }
 });
 

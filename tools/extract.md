@@ -35,7 +35,6 @@ But if you use some non-nested key, only one file for each language will be gene
 Add the command in `package.json`, and provide at least the supported languages:
 ```json
 "scripts": {
-  ...
   "qwik-speak-extract": "qwik-speak-extract --supportedLangs=en-US,it-IT"
 }
 ```
@@ -48,7 +47,7 @@ Available options:
 - `keySeparator` Separator of nested keys. Default is `'.'`
 - `keyValueSeparator` Key-value separator. Default is `'@@'`
 
-> Note. Currently, only `json` files are supported as assets
+> Note. Currently, only `json` is supported as format
 
 #### Running
 ```shell
