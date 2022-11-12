@@ -117,7 +117,7 @@ export default component$(() => {
   );
 });
 ```
-### Scoped translation data
+### Scoped translations
 ```mermaid
 C4Container
     Container_Boundary(a, "App") {

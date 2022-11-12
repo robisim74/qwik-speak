@@ -16,7 +16,7 @@ When you use a default value, it will be used as initial value for the key in ev
 > Note. A key will not be extracted when a function argument is a variable (dynamic).
 
 #### Naming conventions
-If you use nested keys _in all app keys_, the first property will be used as filename:
+If you use scoped translations, the first property will be used as filename:
 ```html
 <p>{t('app.text)}</p>
 <p>{t('home.greeting)}</p>
@@ -29,7 +29,7 @@ public/i18n
         app.json
         home.json
 ```
-But if you use some non-nested key, only one file for each language will be generated, called `app.json`
+But if you don't always use scoped translations, only one file for each language will be generated, called `app.json`
 
 #### Configuration
 Add the command in `package.json`, and provide at least the supported languages:
