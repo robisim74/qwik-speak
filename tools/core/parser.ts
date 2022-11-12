@@ -310,3 +310,18 @@ export function parseSequenceExpressions(code: string, alias: string): CallExpre
 
   return sequenceExpressions;
 }
+
+/**
+ * Get $translate alias
+ */
+export function getTranslateAlias(code: string): string {
+  let translateAlias = code.match(/(?<=\$translate as).*?(?=,|\})/s)?.[0]?.trim() || '$translate';
+  // Escape special characters / Assert position at a word boundary
+  translateAlias = translateAlias.startsWith('$') ? `\\${translateAlias}` : `\\b${translateAlias}`;
+  return translateAlias;
+}
+
+export function parseJson(target: { [key: string]: any }, source: string): { [key: string]: any } {
+  target = { ...target, ...JSON.parse(source) };
+  return target;
+}

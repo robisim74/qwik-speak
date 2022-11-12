@@ -1,12 +1,12 @@
 {
   "home": {
-    "greeting": "Ciao! Sono {{name}}",
-    "text": "<em>Libreria di internazionalizzazione (i18n) per tradurre testi, date e numeri nelle app Qwik</em>",
-    "params": "Parametri",
-    "tags": "Tag Html",
-    "plural": "Plurale",
     "dates": "Date e tempo relativo",
+    "greeting": "Ciao! Sono {{name}}",
+    "increment": "Incrementa",
     "numbers": "Numeri e valute",
-    "increment": "Incrementa"
+    "params": "Parametri",
+    "plural": "Plurale",
+    "tags": "Tag Html",
+    "text": "<em>Libreria di internazionalizzazione (i18n) per tradurre testi, date e numeri nelle app Qwik</em>"
   }
 }

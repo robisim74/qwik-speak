@@ -25,7 +25,7 @@ export default defineConfig(() => {
       qwikVite(),
       qwikSpeakInline({
         basePath: './',
-        assetsPath: './public/i18n',
+        assetsPath: 'public/i18n',
         supportedLangs: ['en-US', 'it-IT'],
         defaultLang: 'en-US'
       }),
@@ -63,7 +63,7 @@ When there are translations with dynamic keys or params, you can manage them at 
     }
   });
   ```
-Likewise, you can also create lazy loaded runtime files for the different pages.
+Likewise, you can also create scoped runtime files for the different pages.
 
 > Note. The `plural` function must be handled as a dynamic translation
 

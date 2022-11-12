@@ -1,12 +1,12 @@
 {
   "home": {
-    "greeting": "Hi! I am {{name}}",
-    "text": "<em>Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps</em>",
-    "params": "Parameters",
-    "tags": "Html tags",
-    "plural": "Plural",
     "dates": "Dates & relative time",
+    "greeting": "Hi! I am {{name}}",
+    "increment": "Increment",
     "numbers": "Numbers & currencies",
-    "increment": "Increment"
+    "params": "Parameters",
+    "plural": "Plural",
+    "tags": "Html tags",
+    "text": "<em>Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps</em>"
   }
 }
