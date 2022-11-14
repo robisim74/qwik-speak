@@ -14,8 +14,6 @@
     "lint": "eslint src/**/*.ts* tools/**/*.ts*",
     "release": "npm run build && np",
     "serve": "node server/entry.express",
-    "serve.ssg": "npx http-server ./dist -a localhost",
-    "ssg": "vite build -c adaptors/static/vite.config.ts",
     "start": "vite --open --mode ssr",
     "test": "jest ./src/tests ./tools/tests",
     "test.e2e": "playwright test",

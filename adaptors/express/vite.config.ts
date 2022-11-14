@@ -11,6 +11,8 @@ export default extendConfig(baseConfig, () => {
       },
     },
     plugins: [
+      expressAdaptor({
+      }),
     ],
   };
 });

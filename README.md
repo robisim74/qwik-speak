@@ -186,7 +186,7 @@ You have three solutions:
 
 See [Qwik Speak Inline Vite plugin](./tools/inline.md) for more information on how it works and how to use it.
 
-The [sample app](./src/app) in this project uses a localized routing, _Qwik Speak Inline Vite plugin & runtime_ solution and implements SSG.
+The [sample app](./src/app) in this project implements a localized routing and _Qwik Speak Inline Vite plugin & runtime_ solution.
 
 ## Speak config
 - `defaultLocale`
@@ -303,16 +303,6 @@ npm run build.app
 #### Express server
 ```Shell
 npm run serve
-```
-#### Static Site Generation (SSG)
-With an Express server running to provide http requests, execute in another Terminal:
-```Shell
-npm run ssg
-```
-and stop the Express server. Then serve the static app:
-
-```Shell
-npm run serve.ssg
 ```
 
 ## What's new

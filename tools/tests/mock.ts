@@ -161,7 +161,7 @@ export const s_xJBzwgVGKaQ = ()=>{
 };`;
 
 export const mockSource = `import { component$, useStore } from '@builder.io/qwik';
-import { DocumentHead, StaticGenerateHandler } from '@builder.io/qwik-city';
+import { DocumentHead } from '@builder.io/qwik-city';
 import {
   $translate as t,
   plural as p,
@@ -171,8 +171,6 @@ import {
   Speak,
   useSpeakLocale
 } from 'qwik-speak';
-
-import { config } from '../../speak-config';
 
 export const Home = component$(() => {
   const units = useSpeakLocale().units!;
@@ -220,15 +218,6 @@ export default component$(() => {
 export const head: DocumentHead = {
   title: 'runtime.head.home.title',
   meta: [{ name: 'description', content: 'runtime.head.home.description' }]
-};
-
-// E.g. SSG
-export const onStaticGenerate: StaticGenerateHandler = () => {
-  return {
-    params: config.supportedLocales.map(locale => {
-      return { lang: locale.lang !== config.defaultLocale.lang ? locale.lang : '' };
-    }),
-  };
 };`;
 
 export const mockAsset = JSON.stringify({
