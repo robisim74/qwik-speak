@@ -26,6 +26,10 @@ export interface QwikSpeakInlineOptions {
    * Key-value separator. Default is '@@'
    */
   keyValueSeparator?: string;
+  /**
+   * If true, split chunks by lang
+   */
+  splitChunks?: boolean;
 }
 
 /**

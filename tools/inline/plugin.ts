@@ -1,6 +1,7 @@
 import type { Plugin } from 'vite';
-import { readFile, readdir } from 'fs/promises';
-import { createWriteStream } from 'fs';
+import type { NormalizedOutputOptions, OutputBundle, OutputAsset, OutputChunk } from 'rollup';
+import { readFile, readdir, writeFile } from 'fs/promises';
+import { createWriteStream, existsSync, mkdirSync } from 'fs';
 import { extname, normalize } from 'path';
 
 import type { QwikSpeakInlineOptions, Translation } from './types';
@@ -15,7 +16,7 @@ const dynamicParams: string[] = [];
 /**
  * Qwik Speak Inline Vite plugin
  * 
- * Inline $translate values: $lang() === 'lang' && 'value' || 'value'
+ * Inline $translate values
  */
 export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
   // Resolve options
@@ -25,6 +26,7 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
     assetsPath: options.assetsPath ?? 'public/i18n',
     keySeparator: options.keySeparator ?? '.',
     keyValueSeparator: options.keyValueSeparator ?? '@@',
+    splitChunks: options.splitChunks ?? false
   }
 
   // Translation data
@@ -95,8 +97,31 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
       if (/\/src\//.test(id) && /\.(js|cjs|mjs|jsx|ts|tsx)$/.test(id)) {
         // Filter code
         if (/\$translate/.test(code)) {
-          return inline(code, translation, resolvedOptions);
+          if (target === 'ssr' || !resolvedOptions.splitChunks) {
+            const alias = getTranslateAlias(code);
+            return inline(code, translation, alias, resolvedOptions);
+          }
+          else {
+            /* console.log('');
+            console.log('');
+            console.log(code); */
+            return inlinePlaceholder(code);
+          }
         }
+      }
+    },
+
+    /**
+     * Split chunks by lang
+     */
+    async writeBundle(options: NormalizedOutputOptions, bundle: OutputBundle) {
+      if (target === 'client' && resolvedOptions.splitChunks) {
+        const dir = options.dir ? options.dir : normalize(`${resolvedOptions.basePath}/dist`);
+        const bundles = Object.values(bundle);
+
+        const tasks = resolvedOptions.supportedLangs
+          .map(x => writeChunks(x, bundles, dir, translation, resolvedOptions));
+        await Promise.all(tasks);
       }
     },
 
@@ -120,10 +145,9 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
 export function inline(
   code: string,
   translation: Translation,
+  alias: string,
   opts: Required<QwikSpeakInlineOptions>
 ): string | null {
-  const alias = getTranslateAlias(code);
-
   // Parse sequence
   const sequence = parseSequenceExpressions(code, alias);
 
@@ -137,25 +161,7 @@ export function inline(
     const args = expr.arguments;
 
     if (args?.[0]?.value) {
-      // Dynamic key
-      if (args[0].type === 'Identifier') {
-        if (args[0].value !== 'key') dynamicKeys.push(`dynamic key: ${originalFn.replace(/\s+/g, ' ')} - skip`)
-        continue;
-      }
-      if (args[0].type === 'Literal') {
-        if (args[0].value !== 'key' && /\${.*}/.test(args[0].value)) {
-          dynamicKeys.push(`dynamic key: ${originalFn.replace(/\s+/g, ' ')} - skip`)
-          continue;
-        }
-      }
-
-      // Dynamic argument
-      if (args[1]?.type === 'Identifier' || args[1]?.type === 'CallExpression' ||
-        args[2]?.type === 'Identifier' || args[2]?.type === 'CallExpression' ||
-        args[3]?.type === 'Identifier' || args[3]?.type === 'CallExpression') {
-        dynamicParams.push(`dynamic params: ${originalFn.replace(/\s+/g, ' ')} - skip`);
-        continue;
-      }
+      if (checkDynamic(args, originalFn)) continue;
 
       let supportedLangs: string[];
       let defaultLang: string;
@@ -212,6 +218,89 @@ export function inline(
   }
 
   return code;
+}
+
+export function inlinePlaceholder(code: string): string | null {
+  const alias = getTranslateAlias(code);
+
+  // Parse sequence
+  const sequence = parseSequenceExpressions(code, alias);
+
+  if (sequence.length === 0) return null;
+
+  for (const expr of sequence) {
+    // Original function
+    const originalFn = expr.value;
+    // Arguments
+    const args = expr.arguments;
+
+    if (args?.[0]?.value) {
+      if (checkDynamic(args, originalFn)) continue;
+
+      // Transpile with $inline placeholder
+      const transpiled = originalFn.replace(new RegExp(`${alias}\\(`, 's'), '$inline(');
+      // Replace
+      code = code.replace(originalFn, transpiled);
+    }
+  }
+
+  return code;
+}
+
+export async function writeChunks(
+  lang: string,
+  bundles: (OutputAsset | OutputChunk)[],
+  dir: string,
+  translation: Translation,
+  opts: Required<QwikSpeakInlineOptions>
+) {
+  const targetDir = normalize(`${dir}/build/${lang}`);
+  if (!existsSync(targetDir)) {
+    mkdirSync(targetDir, { recursive: true });
+  }
+
+  const tasks: Promise<void>[] = [];
+  for (const chunk of bundles) {
+    if (chunk.type === 'chunk' && 'code' in chunk && /build\//.test(chunk.fileName)) {
+      const filename = normalize(`${targetDir}/${chunk.fileName.split('/')[1]}`);
+      const alias = '\\$inline';
+      const code = inline(chunk.code, translation, alias, { ...opts, supportedLangs: [lang], defaultLang: lang });
+      tasks.push(writeFile(filename, code || chunk.code));
+
+      // Original chunks to default lang
+      if (lang === opts.defaultLang) {
+        const defaultTargetDir = normalize(`${dir}/build`);
+        const defaultFilename = normalize(`${defaultTargetDir}/${chunk.fileName.split('/')[1]}`);
+        tasks.push(writeFile(defaultFilename, code || chunk.code));
+      }
+    }
+  }
+  await Promise.all(tasks);
+}
+
+export function checkDynamic(args: Argument[], originalFn: string): boolean {
+  // Dynamic key
+  if (args?.[0]?.value) {
+    if (args[0].type === 'Identifier') {
+      if (args[0].value !== 'key') dynamicKeys.push(`dynamic key: ${originalFn.replace(/\s+/g, ' ')} - skip`)
+      return true;
+    }
+    if (args[0].type === 'Literal') {
+      if (args[0].value !== 'key' && /\${.*}/.test(args[0].value)) {
+        dynamicKeys.push(`dynamic key: ${originalFn.replace(/\s+/g, ' ')} - skip`)
+        return true;
+      }
+    }
+
+    // Dynamic argument
+    if (args[1]?.type === 'Identifier' || args[1]?.type === 'CallExpression' ||
+      args[2]?.type === 'Identifier' || args[2]?.type === 'CallExpression' ||
+      args[3]?.type === 'Identifier' || args[3]?.type === 'CallExpression') {
+      dynamicParams.push(`dynamic params: ${originalFn.replace(/\s+/g, ' ')} - skip`);
+      return true;
+    }
+  }
+  return false;
 }
 
 export function multilingual(lang: string | undefined, supportedLangs: string[]): string | undefined {
