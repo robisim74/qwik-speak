@@ -13,7 +13,7 @@ Optionally, you can use a default value for the keys. The syntax is `key@@[defau
 ```
 When you use a default value, it will be used as initial value for the key in every translation.
 
-> Note. A key will not be extracted when a function argument is a variable (dynamic).
+> Note. A key will not be extracted when a function argument is a variable (dynamic)
 
 #### Naming conventions
 If you use scoped translations, the first property will be used as filename:
@@ -26,6 +26,9 @@ will generate two files for each language:
 public/i18n
 │   
 └───en-US
+│       app.json
+│       home.json
+└───it-IT
         app.json
         home.json
 ```

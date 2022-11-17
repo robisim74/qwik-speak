@@ -97,15 +97,12 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
       if (/\/src\//.test(id) && /\.(js|cjs|mjs|jsx|ts|tsx)$/.test(id)) {
         // Filter code
         if (/\$translate/.test(code)) {
-          if (target === 'ssr' || !resolvedOptions.splitChunks) {
-            const alias = getTranslateAlias(code);
-            return inline(code, translation, alias, resolvedOptions);
+          if (target === 'client' && resolvedOptions.splitChunks) {
+            return inlinePlaceholder(code);
           }
           else {
-            /* console.log('');
-            console.log('');
-            console.log(code); */
-            return inlinePlaceholder(code);
+            const alias = getTranslateAlias(code);
+            return inline(code, translation, alias, resolvedOptions);
           }
         }
       }
@@ -362,5 +359,8 @@ export function transpileFn(values: Map<string, string>, supportedLangs: string[
  * Add $lang to component
  */
 export function addLang(code: string): string {
-  return code.replace(/^/, 'import { $lang } from "qwik-speak";\n');
+  if (!/^import\s*\{.*\$lang.*}\s*from\s*/s.test(code)) {
+    code = code.replace(/^/, 'import { $lang } from "qwik-speak";\n');
+  }
+  return code;
 }
