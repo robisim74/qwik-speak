@@ -1,12 +1,12 @@
 /* eslint-disable */
-export const mockCode = `import { RelativeTime } from "./app/routes/[...lang]/index";
-import { Fragment as _Fragment } from "@builder.io/qwik/jsx-runtime";
+export const mockCode = `import { Fragment as _Fragment } from "@builder.io/qwik/jsx-runtime";
 import { jsx as _jsx } from "@builder.io/qwik/jsx-runtime";
 import { jsxs as _jsxs } from "@builder.io/qwik/jsx-runtime";
 import { formatDate as fd } from "qwik-speak";
 import { formatNumber as fn } from "qwik-speak";
 import { plural as p } from "qwik-speak";
 import { qrl } from "@builder.io/qwik";
+import { relativeTime as rt } from "qwik-speak";
 import { $translate as t } from "qwik-speak";
 import { useSpeakLocale } from "qwik-speak";
 import { useStore } from "@builder.io/qwik";
@@ -47,7 +47,7 @@ export const s_xJBzwgVGKaQ = ()=>{
                 children: t('home.increment')
             }),
             /*#__PURE__*/ _jsx("p", {
-                children: p(state.count, 'home.devs')
+                children: p(state.count, 'runtime.devs')
             }),
             /*#__PURE__*/ _jsx("h3", {
                 children: t('home.dates')
@@ -58,7 +58,9 @@ export const s_xJBzwgVGKaQ = ()=>{
                     timeStyle: 'short'
                 })
             }),
-            /*#__PURE__*/ _jsx(RelativeTime, {}),
+            /*#__PURE__*/ _jsx("p", {
+                children: rt(-1, 'second')
+            }),
             /*#__PURE__*/ _jsx("h3", {
                 children: t('home.numbers')
             }),
@@ -81,7 +83,6 @@ export const s_xJBzwgVGKaQ = ()=>{
 };`;
 
 export const inlinedCode = `import { $lang } from "qwik-speak";
-import { RelativeTime } from "./app/routes/[...lang]/index";
 import { Fragment as _Fragment } from "@builder.io/qwik/jsx-runtime";
 import { jsx as _jsx } from "@builder.io/qwik/jsx-runtime";
 import { jsxs as _jsxs } from "@builder.io/qwik/jsx-runtime";
@@ -89,6 +90,7 @@ import { formatDate as fd } from "qwik-speak";
 import { formatNumber as fn } from "qwik-speak";
 import { plural as p } from "qwik-speak";
 import { qrl } from "@builder.io/qwik";
+import { relativeTime as rt } from "qwik-speak";
 import { $translate as t } from "qwik-speak";
 import { useSpeakLocale } from "qwik-speak";
 import { useStore } from "@builder.io/qwik";
@@ -127,7 +129,7 @@ export const s_xJBzwgVGKaQ = ()=>{
                 children: $lang() === \`it-IT\` && \`Incrementa\` || \`Increment\`
             }),
             /*#__PURE__*/ _jsx("p", {
-                children: p(state.count, 'home.devs')
+                children: p(state.count, 'runtime.devs')
             }),
             /*#__PURE__*/ _jsx("h3", {
                 children: $lang() === \`it-IT\` && \`Date e tempo relativo\` || \`Dates & relative time\`
@@ -138,7 +140,9 @@ export const s_xJBzwgVGKaQ = ()=>{
                     timeStyle: 'short'
                 })
             }),
-            /*#__PURE__*/ _jsx(RelativeTime, {}),
+            /*#__PURE__*/ _jsx("p", {
+                children: rt(-1, 'second')
+            }),
             /*#__PURE__*/ _jsx("h3", {
                 children: $lang() === \`it-IT\` && \`Numeri e valute\` || \`Numbers & currencies\`
             }),

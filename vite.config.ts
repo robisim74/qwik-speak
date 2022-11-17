@@ -7,6 +7,9 @@ import { qwikSpeakInline } from './tools/inline';
 
 export default defineConfig(() => {
   return {
+    build: {
+      minify: false
+    },
     plugins: [
       qwikCity({
         routesDir: './src/app/routes',
@@ -14,7 +17,8 @@ export default defineConfig(() => {
       qwikVite(),
       qwikSpeakInline({
         supportedLangs: ['en-US', 'it-IT'],
-        defaultLang: 'en-US'
+        defaultLang: 'en-US',
+        //splitChunks: true
       }),
       tsconfigPaths(),
     ],

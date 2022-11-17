@@ -8,7 +8,7 @@
 Make sure that the translation files are only loaded in dev mode, for example:
 ```typescript
 export const loadTranslation$: LoadTranslationFn = $(async (lang: string, asset: string, url?: URL) => {
-  if (import.meta.env.DEV ) {
+  if (import.meta.env.DEV) {
     // Load translations
   }
 });
@@ -63,7 +63,7 @@ When there are translations with dynamic keys or params, you can manage them at 
     }
   });
   ```
-Likewise, you can also create scoped runtime files for the different pages.
+Likewise, you can also create scoped runtime files for different pages.
 
 > Note. The `plural` function must be handled as a dynamic translation
 
@@ -73,19 +73,67 @@ During the transformation of the modules, and before tree shaking and bundling, 
 /*#__PURE__*/ _jsx("h2", {
     children: t('app.subtitle')
 }),
-/*#__PURE__*/ _jsx("p", {
-    children: t('home.greeting', {
-        name: 'Qwik Speak'
-    })
-}),
 ```
 to:
 ```javascript
 /*#__PURE__*/ _jsx("h2", {
     children: $lang() === `it-IT` && `Traduci le tue app Qwik in qualsiasi lingua` || `Translate your Qwik apps into any language`
 }),
-/*#__PURE__*/ _jsx("p", {
-    children: $lang() === `it-IT` && `Ciao! Sono ${'Qwik Speak'}` || `Hi! I am ${'Qwik Speak'}`
-}),
 ```
 `$lang` is imported and added during compilation, and you can still change locales at runtime without redirecting or reloading the page.
+
+## Advanced inlining
+If you have many languages, or long texts, you can further optimize the chunks sent to the browser by enabling the `splitChunks` option :
+```typescript
+qwikSpeakInline({
+  basePath: './',
+  assetsPath: 'public/i18n',
+  supportedLangs: ['en-US', 'it-IT'],
+  defaultLang: 'en-US',
+  splitChunks: true
+})
+```
+In this way the browser chunks are generated one for each language:
+```
+dist/build
+│   
+└───en-US
+│       q-*.js
+└───it-IT
+        q-*.js
+```
+Each contains only its own translation:
+```javascript
+/* @__PURE__ */ Ut("h2", {
+  children: `Translate your Qwik apps into any language`
+}),
+```
+```javascript
+/* @__PURE__ */ Ut("h2", {
+  children: `Traduci le tue app Qwik in qualsiasi lingua`
+}),
+```
+
+Qwik uses the `q:base` attribute to determine the base URL for loading the chunks in the browser, so you have to set it in `entry.ssr.tsx` file. For example, if you have a localized router:
+```typescript
+export function extractBase({ envData }: RenderOptions): string {
+  const url = new URL(envData!.url);
+  const lang = config.supportedLocales.find(x => url.pathname.startsWith(`/${x.lang}`))?.lang;
+
+  if (!import.meta.env.DEV && lang) {
+    return '/build/' + lang;
+  } else {
+    return '/build';
+  }
+}
+
+export default function (opts: RenderToStreamOptions) {
+  return renderToStream(<Root />, {
+    manifest,
+    ...opts,
+    base: extractBase,
+  });
+}
+```
+
+> Note. To update the `q:base` when language changes, you need to navigate to the new localized URL or reload the page. Therefore, it is not possible to use the `changeLocale` function

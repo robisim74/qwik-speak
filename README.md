@@ -306,10 +306,10 @@ npm run serve
 ```
 
 ## What's new
-> Released v0.2.0
+> Released v0.3.0
 
+- Advanced inlining: [Qwik Speak Inline Vite plugin](./tools/inline.md)
 - Extract translations: [Qwik Speak Extract](./tools/extract.md) 
-- Inline translation data at compile time: [Qwik Speak Inline Vite plugin](./tools/inline.md) 
 
 ## License
 MIT
