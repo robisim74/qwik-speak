@@ -65,8 +65,6 @@ When there are translations with dynamic keys or params, you can manage them at 
   ```
 Likewise, you can also create scoped runtime files for different pages.
 
-> Note. The `plural` function must be handled as a dynamic translation
-
 ## How it works
 During the transformation of the modules, and before tree shaking and bundling, the `$translate` function (or its alias) is replaced with the translation values for the languages provided, both in server files and in chunks sent to the browser. For example from:
 ```javascript

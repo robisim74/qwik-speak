@@ -20,7 +20,7 @@ export { QwikSpeak } from './library/qwik-speak';
 export { Speak } from './library/speak';
 // Functions
 export { $translate } from './library/translate';
-export { plural } from './library/plural';
+export { $plural } from './library/plural';
 export { formatNumber } from './library/format-number';
 export { formatDate } from './library/format-date';
 export { relativeTime } from './library/relative-time';

@@ -1,6 +1,6 @@
 # Qwik Speak ⚡️
 [![Node.js CI](https://github.com/robisim74/qwik-speak/actions/workflows/node.js.yml/badge.svg)](https://github.com/robisim74/qwik-speak/actions/workflows/node.js.yml) [![Playwright](https://github.com/robisim74/qwik-speak/actions/workflows/playwright.yml/badge.svg)](https://github.com/robisim74/qwik-speak/actions/workflows/playwright.yml)
-
+S
 > Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps
 
 Live example on [StackBlitz](https://stackblitz.com/edit/qwik-speak)
@@ -11,7 +11,7 @@ npm install qwik-speak --save-dev
 ```
 ### Getting the translation
 ```jsx
-import { $translate as t, plural as p } from 'qwik-speak';
+import { $translate as t, $plural as p } from 'qwik-speak';
 
 export default component$(() => {
   return (

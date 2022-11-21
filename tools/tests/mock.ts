@@ -4,7 +4,7 @@ import { jsx as _jsx } from "@builder.io/qwik/jsx-runtime";
 import { jsxs as _jsxs } from "@builder.io/qwik/jsx-runtime";
 import { formatDate as fd } from "qwik-speak";
 import { formatNumber as fn } from "qwik-speak";
-import { plural as p } from "qwik-speak";
+import { $plural as p } from "qwik-speak";
 import { qrl } from "@builder.io/qwik";
 import { relativeTime as rt } from "qwik-speak";
 import { $translate as t } from "qwik-speak";
@@ -88,7 +88,7 @@ import { jsx as _jsx } from "@builder.io/qwik/jsx-runtime";
 import { jsxs as _jsxs } from "@builder.io/qwik/jsx-runtime";
 import { formatDate as fd } from "qwik-speak";
 import { formatNumber as fn } from "qwik-speak";
-import { plural as p } from "qwik-speak";
+import { $plural as p } from "qwik-speak";
 import { qrl } from "@builder.io/qwik";
 import { relativeTime as rt } from "qwik-speak";
 import { $translate as t } from "qwik-speak";
@@ -168,7 +168,7 @@ export const mockSource = `import { component$, useStore } from '@builder.io/qwi
 import { DocumentHead } from '@builder.io/qwik-city';
 import {
   $translate as t,
-  plural as p,
+  $plural as p,
   formatDate as fd,
   formatNumber as fn,
   relativeTime as rt,

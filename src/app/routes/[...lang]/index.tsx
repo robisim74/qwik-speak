@@ -2,7 +2,7 @@ import { component$, useStore } from '@builder.io/qwik';
 import { DocumentHead } from '@builder.io/qwik-city';
 import {
   $translate as t,
-  plural as p,
+  $plural as p,
   formatDate as fd,
   formatNumber as fn,
   relativeTime as rt,

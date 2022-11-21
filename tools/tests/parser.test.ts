@@ -367,7 +367,7 @@ describe('alias', () => {
   test('getTranslateAlias', () => {
     let alias = getTranslateAlias(`import {
       $translate as t,
-      plural as p,
+      $plural as p,
       formatDate as fd,
       formatNumber as fn,
       relativeTime as rt,
