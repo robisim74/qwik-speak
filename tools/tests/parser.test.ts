@@ -212,7 +212,7 @@ describe('parser: tokenize', () => {
     );
   });
   test('tokenize with numbers', () => {
-    const code = "t('count', { value: 1.2 })";
+    const code = "t('count', { value: +1.2 })";
     const tokens = tokenize(code);
     expect(tokens).toEqual(
       [
@@ -227,9 +227,9 @@ describe('parser: tokenize', () => {
           position: { start: 13, end: 17 }
         },
         { type: 'Punctuator', value: ':', position: { start: 18, end: 18 } },
-        { type: 'Literal', value: '1.2', position: { start: 20, end: 22 } },
-        { type: 'Punctuator', value: '}', position: { start: 24, end: 24 } },
-        { type: 'Punctuator', value: ')', position: { start: 25, end: 25 } }
+        { type: 'Literal', value: '+1.2', position: { start: 20, end: 23 } },
+        { type: 'Punctuator', value: '}', position: { start: 25, end: 25 } },
+        { type: 'Punctuator', value: ')', position: { start: 26, end: 26 } }
       ]
     );
   });
@@ -318,6 +318,21 @@ describe('parser: parse', () => {
         arguments: [
           { type: 'Literal', value: 'home.greeting' },
           { type: 'CallExpression', value: 'getGreeting' }
+        ]
+      }
+    );
+  });
+  test('parse with nested properties params', () => {
+    const code = `t('home.greeting', state.greeting)`;
+    const tokens = tokenize(code);
+    const callExpression = parse(tokens, code, '\\bt')
+    expect(callExpression).toEqual(
+      {
+        type: 'CallExpression',
+        value: "t('home.greeting', state.greeting)",
+        arguments: [
+          { type: 'Literal', value: 'home.greeting' },
+          { type: 'Identifier', value: 'state.greeting' }
         ]
       }
     );

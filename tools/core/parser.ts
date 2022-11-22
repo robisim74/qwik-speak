@@ -57,7 +57,7 @@ export interface Token {
  * t('app.title') => ['t', '(', "'app.title'", ')']
  * 
  * Start rules:
- * 'Literal': ["'`0-9]
+ * 'Literal': ["'`0-9+-]
  * 'Identifier': [a-zA-Z_$]
  * 'Punctuator': [(){},:;.[]?!]
  */
@@ -86,7 +86,7 @@ export function tokenize(code: string, start = 0): Token[] {
 
   const getRawValue = () => code.substring(start, index + 1);
 
-  const startLiteral = (ch: string) => /["'`0-9]/.test(ch);
+  const startLiteral = (ch: string) => /["'`0-9+-]/.test(ch);
 
   const startIdentifier = (ch: string) => /[a-zA-Z_$]/.test(ch);
 
@@ -122,7 +122,7 @@ export function tokenize(code: string, start = 0): Token[] {
       identifierBuffer = ch;
       token = createToken('Identifier');
       tokens.push(token);
-    } else if (!/[0-9a-zA-Z_$]/.test(ch)) {
+    } else if (!/[0-9a-zA-Z_$.]/.test(ch)) {
       // No Identifier
       return scan(ch);
     } else {
@@ -314,11 +314,21 @@ export function parseSequenceExpressions(code: string, alias: string): CallExpre
 /**
  * Get $translate alias
  */
-export function getTranslateAlias(code: string): string {
+export function getTranslateAlias(code: string, escape = true): string {
   let translateAlias = code.match(/(?<=\$translate as).*?(?=,|\})/s)?.[0]?.trim() || '$translate';
   // Escape special characters / Assert position at a word boundary
-  translateAlias = translateAlias.startsWith('$') ? `\\${translateAlias}` : `\\b${translateAlias}`;
+  if (escape) translateAlias = translateAlias.startsWith('$') ? `\\${translateAlias}` : `\\b${translateAlias}`;
   return translateAlias;
+}
+
+/**
+ * Get $plural alias
+ */
+export function getPluralAlias(code: string): string {
+  let pluralAlias = code.match(/(?<=\$plural as).*?(?=,|\})/s)?.[0]?.trim() || '$plural';
+  // Escape special characters / Assert position at a word boundary
+  pluralAlias = pluralAlias.startsWith('$') ? `\\${pluralAlias}` : `\\b${pluralAlias}`;
+  return pluralAlias;
 }
 
 export function parseJson(target: { [key: string]: any }, source: string): { [key: string]: any } {

@@ -129,7 +129,9 @@ export const s_xJBzwgVGKaQ = ()=>{
                 children: $lang() === \`it-IT\` && \`Incrementa\` || \`Increment\`
             }),
             /*#__PURE__*/ _jsx("p", {
-                children: p(state.count, 'runtime.devs')
+                children: $lang() === \`it-IT\` && (new Intl.PluralRules(\`it-IT\`, undefined).select(+state.count) === \`other\` && 
+          \`\${state.count} sviluppatori software\` || \`\${state.count} sviluppatore software\`) || (new Intl.PluralRules(\`en-US\`, undefined).select(+state.count) === \`other\` && 
+          \`\${state.count} software developers\` || \`\${state.count} software developer\`)
             }),
             /*#__PURE__*/ _jsx("h3", {
                 children: $lang() === \`it-IT\` && \`Date e tempo relativo\` || \`Dates & relative time\`
