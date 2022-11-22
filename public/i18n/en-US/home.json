@@ -1,6 +1,10 @@
 {
   "home": {
     "dates": "Dates & relative time",
+    "devs": {
+      "one": "{{ value }} software developer",
+      "other": "{{ value }} software developers"
+    },
     "greeting": "Hi! I am {{name}}",
     "increment": "Increment",
     "numbers": "Numbers & currencies",

@@ -1,9 +1,5 @@
 {
   "runtime": {
-    "devs": {
-      "one": "{{ value }} software developer",
-      "other": "{{value}} software developers"
-    },
     "head": {
       "home": {
         "description": "Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps",

@@ -1,6 +1,10 @@
 {
   "home": {
     "dates": "Date e tempo relativo",
+    "devs": {
+      "one": "{{ value }} sviluppatore software",
+      "other": "{{ value }} sviluppatori software"
+    },
     "greeting": "Ciao! Sono {{name}}",
     "increment": "Incrementa",
     "numbers": "Numeri e valute",
