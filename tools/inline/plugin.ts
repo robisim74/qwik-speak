@@ -204,7 +204,7 @@ export function inline(
     // Arguments
     const args = expr.arguments;
 
-    if (args.length > 0) {
+    if (args?.length > 0) {
       if (checkDynamic(args, originalFn)) continue;
 
       const { defaultLang, supportedLangs } = withLang(args[3], opts);
@@ -321,7 +321,7 @@ export function checkDynamic(args: Argument[], originalFn: string): boolean {
   if (args?.[0]?.value) {
     // Dynamic key
     if (args[0].type === 'Identifier') {
-      if (args[0].value === 'key') dynamicKeys.push(`dynamic key: ${originalFn.replace(/\s+/g, ' ')} - skip`)
+      if (args[0].value !== 'key') dynamicKeys.push(`dynamic key: ${originalFn.replace(/\s+/g, ' ')} - skip`)
       return true;
     }
     if (args[0].type === 'Literal') {
