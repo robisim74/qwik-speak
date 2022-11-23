@@ -163,7 +163,7 @@ export function transformPlural(
     // Arguments
     const args = expr.arguments;
 
-    if (args?.[0]?.value) {
+    if (args?.length > 0) {
       if (checkDynamicPlural(args, originalFn)) continue;
 
       const { defaultLang, supportedLangs } = withLang(args[4], opts);
@@ -204,32 +204,42 @@ export function inline(
     // Arguments
     const args = expr.arguments;
 
-    if (args?.[0]?.value) {
+    if (args.length > 0) {
       if (checkDynamic(args, originalFn)) continue;
 
       const { defaultLang, supportedLangs } = withLang(args[3], opts);
 
-      // Get key
-      const key = getKey(args[0].value, opts.keyValueSeparator);
-
-      // Get default value
-      const defaultValue = getValue(key, translation[defaultLang], args[1], opts.keySeparator);
-      if (!defaultValue) {
-        missingValues.push(`${defaultLang} - missing value for key: ${key}`);
-        continue;
-      }
-
       // Map of values
-      const values = new Map<string, string>();
-      values.set(defaultLang, defaultValue);
+      const values = new Map<string, string | string[]>();
 
-      for (const lang of supportedLangs.filter(x => x !== defaultLang)) {
-        const value = getValue(key, translation[lang], args[1], opts.keySeparator);
-        if (!value) {
-          missingValues.push(`${lang} - missing value for key: ${key}`);
-          continue;
+      // Get array of keys or key
+      if (args[0].type === 'ArrayExpression') {
+        const keys = getKeys(args[0], opts.keyValueSeparator);
+
+        for (const lang of supportedLangs) {
+          const keyValues: string[] = [];
+          for (const key of keys) {
+            const value = getValue(key, translation[lang], args[1], opts.keySeparator);
+            if (!value) {
+              missingValues.push(`${lang} - missing value for key: ${key}`);
+              continue;
+            }
+            keyValues.push(value);
+          }
+
+          values.set(lang, keyValues);
         }
-        values.set(lang, value);
+      } else if (args?.[0]?.value) {
+        const key = getKey(args[0].value, opts.keyValueSeparator);
+
+        for (const lang of supportedLangs) {
+          const value = getValue(key, translation[lang], args[1], opts.keySeparator);
+          if (!value) {
+            missingValues.push(`${lang} - missing value for key: ${key}`);
+            continue;
+          }
+          values.set(lang, value);
+        }
       }
 
       // Transpile
@@ -263,7 +273,7 @@ export function inlinePlaceholder(code: string): string | null {
     // Arguments
     const args = expr.arguments;
 
-    if (args?.[0]?.value) {
+    if (args?.length > 0) {
       if (checkDynamic(args, originalFn)) continue;
 
       // Transpile with $inline placeholder
@@ -391,6 +401,18 @@ export function getKey(key: string, keyValueSeparator: string): string {
   return key;
 }
 
+export function getKeys(key: Argument, keyValueSeparator: string): string[] {
+  const keys: string[] = [];
+  if (key.elements) {
+    for (const element of key.elements) {
+      if (element.type === 'Literal') {
+        keys.push(element.value.split(keyValueSeparator)[0]);
+      }
+    }
+  }
+  return keys;
+}
+
 export function getValue(
   key: string,
   data: Translation,
@@ -416,12 +438,24 @@ export function transpileParams(value: string, params: Argument): string | undef
 /**
  * Transpile the function
  */
-export function transpileFn(values: Map<string, string>, supportedLangs: string[], defaultLang: string): string {
+export function transpileFn(
+  values: Map<string, string | string[]>,
+  supportedLangs: string[],
+  defaultLang: string
+): string {
   let translation = '';
   for (const lang of supportedLangs.filter(x => x !== defaultLang)) {
-    translation += `$lang() === ${quoteValue(lang)} && ${values.get(lang)} || `;
+    if (Array.isArray(values.get(lang))) {
+      translation += `$lang() === ${quoteValue(lang)} && [${values.get(lang)}] || `;
+    } else {
+      translation += `$lang() === ${quoteValue(lang)} && ${values.get(lang)} || `;
+    }
   }
-  translation += values.get(defaultLang);
+  if (Array.isArray(values.get(defaultLang))) {
+    translation += `[${values.get(defaultLang)}]`;
+  } else {
+    translation += values.get(defaultLang);
+  }
   return translation;
 }
 

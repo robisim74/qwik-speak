@@ -62,28 +62,40 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
       const alias = getTranslateAlias(code);
       // Parse sequence
       const sequence = parseSequenceExpressions(code, alias);
+
       for (const expr of sequence) {
         const args = expr.arguments;
 
-        if (args?.[0]?.value) {
-          if (args[0].type === 'Identifier') {
-            stats.set('dynamic', (stats.get('dynamic') ?? 0) + 1);
-            continue;
-          }
-          if (args[0].type === 'Literal') {
-            if (args[0].value !== 'key' && /\${.*}/.test(args[0].value)) {
+        if (args?.length > 0) {
+          // Get array of keys or key
+          if (args[0].type === 'ArrayExpression') {
+            if (args[0].elements) {
+              for (const element of args[0].elements) {
+                if (element.type === 'Literal') {
+                  keys.push(element.value.split(resolvedOptions.keyValueSeparator)[0]);
+                }
+              }
+            }
+          } else if (args?.[0]?.value) {
+            if (args[0].type === 'Identifier') {
               stats.set('dynamic', (stats.get('dynamic') ?? 0) + 1);
               continue;
             }
-          }
-          if (args[1]?.type === 'Identifier' || args[1]?.type === 'CallExpression' ||
-            args[2]?.type === 'Identifier' || args[2]?.type === 'CallExpression' ||
-            args[3]?.type === 'Identifier' || args[3]?.type === 'CallExpression') {
-            stats.set('dynamic', (stats.get('dynamic') ?? 0) + 1);
-            continue;
-          }
+            if (args[0].type === 'Literal') {
+              if (args[0].value !== 'key' && /\${.*}/.test(args[0].value)) {
+                stats.set('dynamic', (stats.get('dynamic') ?? 0) + 1);
+                continue;
+              }
+            }
+            if (args[1]?.type === 'Identifier' || args[1]?.type === 'CallExpression' ||
+              args[2]?.type === 'Identifier' || args[2]?.type === 'CallExpression' ||
+              args[3]?.type === 'Identifier' || args[3]?.type === 'CallExpression') {
+              stats.set('dynamic', (stats.get('dynamic') ?? 0) + 1);
+              continue;
+            }
 
-          keys.push(args[0].value);
+            keys.push(args[0].value);
+          }
         }
       }
     }
@@ -96,7 +108,7 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
       for (const expr of sequence) {
         const args = expr.arguments;
 
-        if (args?.[0]?.value) {
+        if (args?.length > 0) {
           if (args[1]?.type === 'Identifier' || args[1]?.type === 'CallExpression' ||
             args[2]?.type === 'Identifier' || args[2]?.type === 'CallExpression' ||
             args[3]?.type === 'Identifier' || args[3]?.type === 'CallExpression' ||
