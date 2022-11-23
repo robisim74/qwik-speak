@@ -12,7 +12,7 @@ import { $translate } from './translate';
  * @param lang Optional language if different from the current one
  * @returns The translation for the plural
  */
-export const plural = (
+export const $plural = (
   value: number | string,
   prefix?: string,
   options?: Intl.PluralRulesOptions,

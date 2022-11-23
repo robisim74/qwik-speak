@@ -3,9 +3,10 @@ import { existsSync, mkdirSync } from 'fs';
 import { extname, join, normalize } from 'path';
 
 import type { QwikSpeakExtractOptions, Translation } from './types';
-import { getTranslateAlias, parseJson, parseSequenceExpressions } from '../core/parser';
+import { getPluralAlias, getTranslateAlias, parseJson, parseSequenceExpressions } from '../core/parser';
 import { deepMerge, deepSet } from '../core/merge';
 import { minDepth, sortTarget, toJsonString } from '../core/format';
+import { getRules } from '../core/intl-parser';
 
 /**
  * Extract translations from source files
@@ -56,33 +57,80 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
 
     const code = await readFile(normalize(`${resolvedOptions.basePath}/${file}`), 'utf8');
 
+    // $translate
     if (/\$translate/.test(code)) {
       const alias = getTranslateAlias(code);
+      // Parse sequence
+      const sequence = parseSequenceExpressions(code, alias);
+
+      for (const expr of sequence) {
+        const args = expr.arguments;
+
+        if (args?.length > 0) {
+          // Get array of keys or key
+          if (args[0].type === 'ArrayExpression') {
+            if (args[0].elements) {
+              for (const element of args[0].elements) {
+                if (element.type === 'Literal') {
+                  keys.push(element.value.split(resolvedOptions.keyValueSeparator)[0]);
+                }
+              }
+            }
+          } else if (args?.[0]?.value) {
+            if (args[0].type === 'Identifier') {
+              stats.set('dynamic', (stats.get('dynamic') ?? 0) + 1);
+              continue;
+            }
+            if (args[0].type === 'Literal') {
+              if (args[0].value !== 'key' && /\${.*}/.test(args[0].value)) {
+                stats.set('dynamic', (stats.get('dynamic') ?? 0) + 1);
+                continue;
+              }
+            }
+            if (args[1]?.type === 'Identifier' || args[1]?.type === 'CallExpression' ||
+              args[2]?.type === 'Identifier' || args[2]?.type === 'CallExpression' ||
+              args[3]?.type === 'Identifier' || args[3]?.type === 'CallExpression') {
+              stats.set('dynamic', (stats.get('dynamic') ?? 0) + 1);
+              continue;
+            }
+
+            keys.push(args[0].value);
+          }
+        }
+      }
+    }
+
+    // $plural
+    if (/\$plural/.test(code)) {
+      const alias = getPluralAlias(code);
       // Parse sequence
       const sequence = parseSequenceExpressions(code, alias);
       for (const expr of sequence) {
         const args = expr.arguments;
 
-        if (args?.[0]?.value) {
-          if (args[0].type === 'Identifier') {
-            stats.set('dynamic', (stats.get('dynamic') ?? 0) + 1);
-            continue;
-          }
-          if (args[0].type === 'Literal') {
-            if (args[0].value !== 'key' && /\${.*}/.test(args[0].value)) {
-              stats.set('dynamic', (stats.get('dynamic') ?? 0) + 1);
-              continue;
-            }
-          }
+        if (args?.length > 0) {
           if (args[1]?.type === 'Identifier' || args[1]?.type === 'CallExpression' ||
             args[2]?.type === 'Identifier' || args[2]?.type === 'CallExpression' ||
-            args[3]?.type === 'Identifier' || args[3]?.type === 'CallExpression') {
-            stats.set('dynamic', (stats.get('dynamic') ?? 0) + 1);
+            args[3]?.type === 'Identifier' || args[3]?.type === 'CallExpression' ||
+            args[4]?.type === 'Identifier' || args[4]?.type === 'CallExpression') {
+            stats.set('dynamic plural', (stats.get('dynamic plural') ?? 0) + 1);
             continue;
           }
 
-          keys.push(args[0].value);
-          stats.set('keys', (stats.get('keys') ?? 0) + 1);
+          // Map of rules
+          const rules = new Set<string>();
+          for (const lang of resolvedOptions.supportedLangs) {
+            const rulesBylang = getRules(lang);
+            for (const rule of rulesBylang) {
+              rules.add(rule);
+            }
+          }
+
+          for (const rule of rules) {
+            const prefix = args?.[1]?.value;
+            const key = prefix ? `${prefix}${resolvedOptions.keySeparator}${rule}` : rule;
+            keys.push(key);
+          }
         }
       }
     }
@@ -182,6 +230,10 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
     keys = keys.concat(source);
   }
 
+  // Unique
+  keys = [...new Set<string>(keys)];
+  stats.set('unique keys', (stats.get('unique keys') ?? 0) + keys.length);
+
   // Deep set
   for (let key of keys) {
     let defaultValue: string | undefined = undefined;
@@ -202,11 +254,14 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
   // Log
   for (const [key, value] of stats) {
     switch (key) {
-      case 'keys':
+      case 'unique keys':
         console.log('\x1b[32m%s\x1b[0m', `extracted keys: ${value}`);
         break;
       case 'dynamic':
         console.log('\x1b[32m%s\x1b[0m', `skipped keys due to dynamic params: ${value}`);
+        break;
+      case 'dynamic plural':
+        console.log('\x1b[32m%s\x1b[0m', `skipped plurals due to dynamic params: ${value}`);
         break;
     }
   }

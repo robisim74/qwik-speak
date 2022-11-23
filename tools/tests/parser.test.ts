@@ -212,7 +212,7 @@ describe('parser: tokenize', () => {
     );
   });
   test('tokenize with numbers', () => {
-    const code = "t('count', { value: 1.2 })";
+    const code = "t('count', { value: +1.2 })";
     const tokens = tokenize(code);
     expect(tokens).toEqual(
       [
@@ -227,9 +227,29 @@ describe('parser: tokenize', () => {
           position: { start: 13, end: 17 }
         },
         { type: 'Punctuator', value: ':', position: { start: 18, end: 18 } },
-        { type: 'Literal', value: '1.2', position: { start: 20, end: 22 } },
-        { type: 'Punctuator', value: '}', position: { start: 24, end: 24 } },
-        { type: 'Punctuator', value: ')', position: { start: 25, end: 25 } }
+        { type: 'Literal', value: '+1.2', position: { start: 20, end: 23 } },
+        { type: 'Punctuator', value: '}', position: { start: 25, end: 25 } },
+        { type: 'Punctuator', value: ')', position: { start: 26, end: 26 } }
+      ]
+    );
+  });
+  test('tokenize with array of keys', () => {
+    const code = "t(['key1', 'key2'])";
+    const tokens = tokenize(code);
+    expect(tokens).toEqual(
+      [
+        { type: 'Identifier', value: 't', position: { start: 0, end: 0 } },
+        { type: 'Punctuator', value: '(', position: { start: 1, end: 1 } },
+        { type: 'Punctuator', value: '[', position: { start: 2, end: 2 } },
+        { type: 'Literal', value: "'key1'", position: { start: 3, end: 8 } },
+        { type: 'Punctuator', value: ',', position: { start: 9, end: 9 } },
+        {
+          type: 'Literal',
+          value: "'key2'",
+          position: { start: 11, end: 16 }
+        },
+        { type: 'Punctuator', value: ']', position: { start: 17, end: 17 } },
+        { type: 'Punctuator', value: ')', position: { start: 18, end: 18 } }
       ]
     );
   });
@@ -239,7 +259,7 @@ describe('parser: parse', () => {
   test('parse', () => {
     const code = "t('app.title')";
     const tokens = tokenize(code);
-    const callExpression = parse(tokens, code, '\\bt')
+    const callExpression = parse(tokens, code, '\\bt');
     expect(callExpression).toEqual(
       {
         type: 'CallExpression',
@@ -253,7 +273,7 @@ describe('parser: parse', () => {
       name: 'Qwik Speak'
   })`;
     const tokens = tokenize(code);
-    const callExpression = parse(tokens, code, '\\bt')
+    const callExpression = parse(tokens, code, '\\bt');
     expect(callExpression).toEqual(
       {
         type: 'CallExpression',
@@ -278,7 +298,7 @@ describe('parser: parse', () => {
       name: obj.name, greeting: getGreeting()
   }, ctx, 'en-US')`;
     const tokens = tokenize(code);
-    const callExpression = parse(tokens, code, '\\bt')
+    const callExpression = parse(tokens, code, '\\bt');
     expect(callExpression).toEqual(
       {
         type: 'CallExpression',
@@ -310,7 +330,7 @@ describe('parser: parse', () => {
   test('parse with function call params', () => {
     const code = `t('home.greeting', getGreeting())`;
     const tokens = tokenize(code);
-    const callExpression = parse(tokens, code, '\\bt')
+    const callExpression = parse(tokens, code, '\\bt');
     expect(callExpression).toEqual(
       {
         type: 'CallExpression',
@@ -318,6 +338,46 @@ describe('parser: parse', () => {
         arguments: [
           { type: 'Literal', value: 'home.greeting' },
           { type: 'CallExpression', value: 'getGreeting' }
+        ]
+      }
+    );
+  });
+  test('parse with nested properties params', () => {
+    const code = `t('home.greeting', state.greeting)`;
+    const tokens = tokenize(code);
+    const callExpression = parse(tokens, code, '\\bt');
+    expect(callExpression).toEqual(
+      {
+        type: 'CallExpression',
+        value: "t('home.greeting', state.greeting)",
+        arguments: [
+          { type: 'Literal', value: 'home.greeting' },
+          { type: 'Identifier', value: 'state.greeting' }
+        ]
+      }
+    );
+  });
+  test('parse with array of keys', () => {
+    const code = `t(['key1', 'key2'])`;
+    const tokens = tokenize(code);
+    const callExpression = parse(tokens, code, '\\bt');
+    expect(callExpression).toEqual(
+      {
+        type: 'CallExpression',
+        value: "t(['key1', 'key2'])",
+        arguments: [
+          {
+            type: 'ArrayExpression', elements: [
+              {
+                type: 'Literal',
+                value: 'key1'
+              },
+              {
+                type: 'Literal',
+                value: 'key2'
+              }
+            ]
+          }
         ]
       }
     );
@@ -367,7 +427,7 @@ describe('alias', () => {
   test('getTranslateAlias', () => {
     let alias = getTranslateAlias(`import {
       $translate as t,
-      plural as p,
+      $plural as p,
       formatDate as fd,
       formatNumber as fn,
       relativeTime as rt,

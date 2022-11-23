@@ -10,10 +10,16 @@ export interface Property {
   };
 }
 
+export interface Element {
+  type: 'Literal';
+  value: string;
+}
+
 export interface Argument {
-  type: 'Literal' | 'Identifier' | 'CallExpression' | 'ObjectExpression';
+  type: 'Literal' | 'Identifier' | 'CallExpression' | 'ObjectExpression' | 'ArrayExpression';
   value?: string;
   properties?: Property[];
+  elements?: Element[];
 }
 
 /**
@@ -57,7 +63,7 @@ export interface Token {
  * t('app.title') => ['t', '(', "'app.title'", ')']
  * 
  * Start rules:
- * 'Literal': ["'`0-9]
+ * 'Literal': ["'`0-9+-]
  * 'Identifier': [a-zA-Z_$]
  * 'Punctuator': [(){},:;.[]?!]
  */
@@ -86,7 +92,7 @@ export function tokenize(code: string, start = 0): Token[] {
 
   const getRawValue = () => code.substring(start, index + 1);
 
-  const startLiteral = (ch: string) => /["'`0-9]/.test(ch);
+  const startLiteral = (ch: string) => /["'`0-9+-]/.test(ch);
 
   const startIdentifier = (ch: string) => /[a-zA-Z_$]/.test(ch);
 
@@ -122,7 +128,7 @@ export function tokenize(code: string, start = 0): Token[] {
       identifierBuffer = ch;
       token = createToken('Identifier');
       tokens.push(token);
-    } else if (!/[0-9a-zA-Z_$]/.test(ch)) {
+    } else if (!/[0-9a-zA-Z_$.]/.test(ch)) {
       // No Identifier
       return scan(ch);
     } else {
@@ -184,12 +190,14 @@ export function tokenize(code: string, start = 0): Token[] {
  * digit = ? any digit ?;
  * character = ? any character ?;
  * quote = "'" | '"' | "`";
- * literal = quote, character, quote | digit | "null" | "undefined" | "true" | "false"
+ * literal = quote, character, quote | digit | "null" | "undefined" | "true" | "false";
  * identifier = letter | "_" | "$", { digit | letter | "_" | "$" };
- * key = identifier
+ * key = identifier;
  * value = literal | identifier ["." | "?." | "!.", identifier, [!]] | callExpr;
- * property = key, ":", value
+ * property = key, ":", value;
  * objectExpr = "{", { property, [","] }, "}";
+ * element = quote, character, quote
+ * arrayExpr = "[", { element, [","] }, "]";
  * args = "(", { literal | identifier | objectExpr | callExpr, [","] }, ")";
  * callExpr = alias, args;
  * 
@@ -254,6 +262,22 @@ export function parse(tokens: Token[], code: string, alias: string): CallExpress
     return parseObject(next(), properties);
   };
 
+  const parseArrayExpr = (token: Token, elements?: Element[]): CallExpression => {
+    if (!elements) {
+      elements = [];
+      node.arguments.push({ type: 'ArrayExpression', elements: elements });
+    }
+
+    // End of array
+    if (/]/.test(token.value)) return parseArgs(next());
+
+    if (token.type === 'Literal') {
+      elements.push({ type: 'Literal', value: trimQuotes(token.value) });
+    }
+
+    return parseArrayExpr(next(), elements);
+  };
+
   const parseArgs = (token: Token): CallExpression => {
     if (Object.is(token, last())) return node;
 
@@ -261,6 +285,7 @@ export function parse(tokens: Token[], code: string, alias: string): CallExpress
     if (token.type === 'Identifier' && /\(/.test(lookAhead().value)) return parseCallExpr(token);
     if (token.type === 'Identifier') return parseIdentifier(token);
     if (/{/.test(token.value)) return parseObject(token);
+    if (/\[/.test(token.value)) return parseArrayExpr(token);
 
     return parseArgs(next());
   };
@@ -314,11 +339,21 @@ export function parseSequenceExpressions(code: string, alias: string): CallExpre
 /**
  * Get $translate alias
  */
-export function getTranslateAlias(code: string): string {
+export function getTranslateAlias(code: string, escape = true): string {
   let translateAlias = code.match(/(?<=\$translate as).*?(?=,|\})/s)?.[0]?.trim() || '$translate';
   // Escape special characters / Assert position at a word boundary
-  translateAlias = translateAlias.startsWith('$') ? `\\${translateAlias}` : `\\b${translateAlias}`;
+  if (escape) translateAlias = translateAlias.startsWith('$') ? `\\${translateAlias}` : `\\b${translateAlias}`;
   return translateAlias;
+}
+
+/**
+ * Get $plural alias
+ */
+export function getPluralAlias(code: string): string {
+  let pluralAlias = code.match(/(?<=\$plural as).*?(?=,|\})/s)?.[0]?.trim() || '$plural';
+  // Escape special characters / Assert position at a word boundary
+  pluralAlias = pluralAlias.startsWith('$') ? `\\${pluralAlias}` : `\\b${pluralAlias}`;
+  return pluralAlias;
 }
 
 export function parseJson(target: { [key: string]: any }, source: string): { [key: string]: any } {

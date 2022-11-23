@@ -4,7 +4,7 @@ import { jsx as _jsx } from "@builder.io/qwik/jsx-runtime";
 import { jsxs as _jsxs } from "@builder.io/qwik/jsx-runtime";
 import { formatDate as fd } from "qwik-speak";
 import { formatNumber as fn } from "qwik-speak";
-import { plural as p } from "qwik-speak";
+import { $plural as p } from "qwik-speak";
 import { qrl } from "@builder.io/qwik";
 import { relativeTime as rt } from "qwik-speak";
 import { $translate as t } from "qwik-speak";
@@ -47,7 +47,7 @@ export const s_xJBzwgVGKaQ = ()=>{
                 children: t('home.increment')
             }),
             /*#__PURE__*/ _jsx("p", {
-                children: p(state.count, 'runtime.devs')
+                children: p(state.count, 'home.devs')
             }),
             /*#__PURE__*/ _jsx("h3", {
                 children: t('home.dates')
@@ -88,7 +88,7 @@ import { jsx as _jsx } from "@builder.io/qwik/jsx-runtime";
 import { jsxs as _jsxs } from "@builder.io/qwik/jsx-runtime";
 import { formatDate as fd } from "qwik-speak";
 import { formatNumber as fn } from "qwik-speak";
-import { plural as p } from "qwik-speak";
+import { $plural as p } from "qwik-speak";
 import { qrl } from "@builder.io/qwik";
 import { relativeTime as rt } from "qwik-speak";
 import { $translate as t } from "qwik-speak";
@@ -129,7 +129,9 @@ export const s_xJBzwgVGKaQ = ()=>{
                 children: $lang() === \`it-IT\` && \`Incrementa\` || \`Increment\`
             }),
             /*#__PURE__*/ _jsx("p", {
-                children: p(state.count, 'runtime.devs')
+                children: $lang() === \`it-IT\` && (new Intl.PluralRules(\`it-IT\`, undefined).select(+state.count) === \`other\` && 
+          \`\${state.count} sviluppatori software\` || \`\${state.count} sviluppatore software\`) || (new Intl.PluralRules(\`en-US\`, undefined).select(+state.count) === \`other\` && 
+          \`\${state.count} software developers\` || \`\${state.count} software developer\`)
             }),
             /*#__PURE__*/ _jsx("h3", {
                 children: $lang() === \`it-IT\` && \`Date e tempo relativo\` || \`Dates & relative time\`
@@ -168,7 +170,7 @@ export const mockSource = `import { component$, useStore } from '@builder.io/qwi
 import { DocumentHead } from '@builder.io/qwik-city';
 import {
   $translate as t,
-  plural as p,
+  $plural as p,
   formatDate as fd,
   formatNumber as fn,
   relativeTime as rt,
@@ -194,7 +196,7 @@ export const Home = component$(() => {
 
       <h3>{t('home.plural')}</h3>
       <button onClick$={() => state.count++}>{t('home.increment')}</button>
-      <p>{p(state.count, 'runtime.devs')}</p>
+      <p>{p(state.count, 'home.devs')}</p>
 
       <h3>{t('home.dates')}</h3>
       <p>{fd(Date.now(), { dateStyle: 'full', timeStyle: 'short' })}</p>

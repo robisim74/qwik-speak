@@ -2,7 +2,7 @@ import { component$, useStore } from '@builder.io/qwik';
 import { DocumentHead } from '@builder.io/qwik-city';
 import {
   $translate as t,
-  plural as p,
+  $plural as p,
   formatDate as fd,
   formatNumber as fn,
   relativeTime as rt,
@@ -28,7 +28,7 @@ export const Home = component$(() => {
 
       <h3>{t('home.plural')}</h3>
       <button onClick$={() => state.count++}>{t('home.increment')}</button>
-      <p>{p(state.count, 'runtime.devs')}</p>
+      <p>{p(state.count, 'home.devs')}</p>
 
       <h3>{t('home.dates')}</h3>
       <p>{fd(Date.now(), { dateStyle: 'full', timeStyle: 'short' })}</p>

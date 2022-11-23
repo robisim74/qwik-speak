@@ -1,4 +1,4 @@
-import { plural as p } from '../library/plural';
+import { $plural as p } from '../library/plural';
 import { ctx } from './config';
 
 describe('plural function', () => {

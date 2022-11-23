@@ -35,6 +35,10 @@ describe('extract', () => {
     expect(fs.writeFile).toHaveBeenNthCalledWith(2, normalize('public/i18n/en-US/home.json'), `{
   "home": {
     "dates": "Dates & relative time",
+    "devs": {
+      "one": "",
+      "other": ""
+    },
     "greeting": "Hi! I am {{name}}",
     "increment": "Increment",
     "numbers": "Numbers & currencies",
