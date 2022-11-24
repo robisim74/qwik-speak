@@ -13,6 +13,8 @@ export default defineConfig(() => {
     plugins: [
       qwikCity({
         routesDir: './src/app/routes',
+        // https://github.com/BuilderIO/qwik/issues/2262
+        trailingSlash: false
       }),
       qwikVite(),
       qwikSpeakInline({

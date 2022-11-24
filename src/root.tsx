@@ -1,5 +1,5 @@
 import { component$, useStyles$ } from '@builder.io/qwik';
-import { QwikCity, RouterOutlet, ServiceWorkerRegister } from '@builder.io/qwik-city';
+import { QwikCityProvider, RouterOutlet, ServiceWorkerRegister } from '@builder.io/qwik-city';
 import { QwikSpeak } from 'qwik-speak';
 
 import { RouterHead } from './app/components/router-head/router-head';
@@ -15,7 +15,7 @@ export default component$(() => {
      * Init Qwik Speak (only available in child components)
      */
     <QwikSpeak config={config} translateFn={translateFn}>
-      <QwikCity>
+      <QwikCityProvider>
         <head>
           <meta charSet="utf-8" />
           <link rel="manifest" href="/manifest.json" />
@@ -25,7 +25,7 @@ export default component$(() => {
           <RouterOutlet />
           <ServiceWorkerRegister />
         </body>
-      </QwikCity>
+      </QwikCityProvider>
     </QwikSpeak>
   );
 });

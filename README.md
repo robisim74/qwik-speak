@@ -171,7 +171,8 @@ What you need:
       └───page
               index.html
   ```
-- Handle the localized routing in `resolveLocale$` and `storeLocale$`
+- Handling the localized routing in `resolveLocale$` and `storeLocale$`
+- Optionally redirecting based on user language (in `layout` or in adaptor)
 
 ## Extraction of translations
 To extract translations directly from the components, a command is available that automatically generates the files with the keys and default values.
@@ -306,8 +307,9 @@ npm run serve
 ```
 
 ## What's new
-> Released v0.3.0
+> Released v0.4.0
 
+- Extract & inline: support `$plural ` and array of keys
 - Advanced inlining: [Qwik Speak Inline Vite plugin](./tools/inline.md)
 - Extract translations: [Qwik Speak Extract](./tools/extract.md) 
 

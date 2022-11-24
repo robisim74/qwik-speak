@@ -77,6 +77,7 @@ export const storeLocale$: StoreLocaleFn = $((locale: SpeakLocale) => {
     }
 
     // E.g. Just replace the state: no back or forward on language change
+    // https://github.com/BuilderIO/qwik/issues/1490
     window.history.replaceState({}, '', url);
   }
 });

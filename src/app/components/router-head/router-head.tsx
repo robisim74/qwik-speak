@@ -18,7 +18,7 @@ export const RouterHead = component$(() => {
       <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
       {head.meta.map((m) => (
-        m.name === 'description' ? <meta name="description" content={t(m.content!)} /> : <meta {...m} />
+        <meta name={m.name} content={m.name === 'description' ? t(m.content!) : m.content} />
       ))}
 
       {head.links.map((l) => (

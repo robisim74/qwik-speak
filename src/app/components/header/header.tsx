@@ -21,7 +21,7 @@ export const Header = component$(() => {
     <header>
       <div class="header-inner">
         <section class="logo">
-          <Link href="/">Qwik Speak ⚡️</Link>
+          <Link href={getHref('/')}>Qwik Speak ⚡️</Link>
         </section>
         <nav>
           <Link href={getHref('/')}
