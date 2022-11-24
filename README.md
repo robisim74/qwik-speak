@@ -1,6 +1,6 @@
 # Qwik Speak ⚡️
 [![Node.js CI](https://github.com/robisim74/qwik-speak/actions/workflows/node.js.yml/badge.svg)](https://github.com/robisim74/qwik-speak/actions/workflows/node.js.yml) [![Playwright](https://github.com/robisim74/qwik-speak/actions/workflows/playwright.yml/badge.svg)](https://github.com/robisim74/qwik-speak/actions/workflows/playwright.yml)
-S
+
 > Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps
 
 Live example on [StackBlitz](https://stackblitz.com/edit/qwik-speak)
@@ -107,12 +107,12 @@ export default component$(() => {
      * Init Qwik Speak (only available in child components)
      */
     <QwikSpeak config={config} translateFn={translateFn}>
-      <QwikCity>
+      <QwikCityProvider>
         <head></head>
         <body>
           <RouterOutlet />
         </body>
-      </QwikCity>
+      </QwikCityProvider>
     </QwikSpeak>
   );
 });
@@ -161,7 +161,7 @@ The translation data of the additional languages are preloaded along with the cu
 
 ### Localized routing
 What you need:
-- A `lang` parameter in the root, like:
+- A `lang` parameter in routes, like:
   ```
   routes
   │   
