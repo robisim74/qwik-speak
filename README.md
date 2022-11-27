@@ -18,7 +18,7 @@ export default component$(() => {
     <>
       <h1>{t('app.title')}</h1> {/* Qwik Speak */}
       <p>{t('home.greeting', { name: 'Qwik Speak' })}</p> {/* Hi! I am Qwik Speak */}
-      <p>{p(state.count, 'runtime.devs')}</p> {/* 1 software developer, 2 software developers */}
+      <p>{p(state.count, 'home.devs')}</p> {/* 1 software developer, 2 software developers */}
     </>
   );
 });
