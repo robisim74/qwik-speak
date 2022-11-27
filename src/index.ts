@@ -34,4 +34,8 @@ export {
   useTranslation,
   useSpeakConfig,
 } from './library/use-functions';
-export { $lang } from './library/use-functions';
+// Inline functions
+export {
+  $lang,
+  $rule,
+} from './library/inline-functions';

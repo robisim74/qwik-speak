@@ -67,7 +67,7 @@ describe('inline', () => {
     values.set('en-US', '`Value`');
     values.set('it-IT', '`Valore`');
     let line = transpileFn(values, ['en-US', 'it-IT'], 'en-US');
-    expect(line).toBe('$lang() === `it-IT` && `Valore` || `Value`');
+    expect(line).toBe('$lang(`it-IT`) && `Valore` || `Value`');
     values = new Map<string, string>();
     values.set('en-US', '`Value`');
     line = transpileFn(values, ['en-US'], 'en-US');
@@ -78,7 +78,7 @@ describe('inline', () => {
     values.set('en-US', ['`Value1`', '`Value2`']);
     values.set('it-IT', ['`Valore1`', '`Valore2`']);
     const line = transpileFn(values, ['en-US', 'it-IT'], 'en-US');
-    expect(line).toBe('$lang() === `it-IT` && [`Valore1`,`Valore2`] || [`Value1`,`Value2`]');
+    expect(line).toBe('$lang(`it-IT`) && [`Valore1`,`Valore2`] || [`Value1`,`Value2`]');
   });
   test('addLang', () => {
     const code = addLang(`import { useStore } from "@builder.io/qwik";
@@ -110,6 +110,6 @@ export const s_xJBzwgVGKaQ = ()=>{
     await plugin.buildStart?.();
     const inlined = await plugin.transform?.(`const values = $translate(['app.title', 'app.subtitle'])`, '/src/mock.code.js');
     expect(inlined).toBe(`import { $lang } from "qwik-speak";
-const values = $lang() === \`it-IT\` && [\`Qwik Speak\`,\`Traduci le tue app Qwik in qualsiasi lingua\`] || [\`Qwik Speak\`,\`Translate your Qwik apps into any language\`]`);
+const values = $lang(\`it-IT\`) && [\`Qwik Speak\`,\`Traduci le tue app Qwik in qualsiasi lingua\`] || [\`Qwik Speak\`,\`Translate your Qwik apps into any language\`]`);
   });
 });

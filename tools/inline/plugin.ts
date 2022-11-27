@@ -157,6 +157,7 @@ export function transformPlural(
 
   if (sequence.length === 0) return code;
 
+  let replaced = false;
   for (const expr of sequence) {
     // Original function
     const originalFn = expr.value;
@@ -180,7 +181,13 @@ export function transformPlural(
 
       // Replace
       code = code.replace(originalFn, transpiled);
+      replaced = true;
     }
+  }
+
+  // Add $rule
+  if (replaced) {
+    code = addRule(code);
   }
 
   return code;
@@ -446,9 +453,9 @@ export function transpileFn(
   let translation = '';
   for (const lang of supportedLangs.filter(x => x !== defaultLang)) {
     if (Array.isArray(values.get(lang))) {
-      translation += `$lang() === ${quoteValue(lang)} && [${values.get(lang)}] || `;
+      translation += `$lang(${quoteValue(lang)}) && [${values.get(lang)}] || `;
     } else {
-      translation += `$lang() === ${quoteValue(lang)} && ${values.get(lang)} || `;
+      translation += `$lang(${quoteValue(lang)}) && ${values.get(lang)} || `;
     }
   }
   if (Array.isArray(values.get(defaultLang))) {
@@ -474,12 +481,18 @@ export function transpilePluralFn(
     const rulesBylang = rules.get(lang);
     if (rulesBylang) {
       for (const rule of rulesBylang) {
-        const prefix = args?.[1]?.value;
+        const prefix = args[1]?.value;
         const key = prefix ? `${prefix}${opts.keySeparator}${rule}` : rule;
 
         if (rule !== rulesBylang[rulesBylang.length - 1]) {
-          expr += `new Intl.PluralRules(${quoteValue(lang)}, ${args[2]}).select(+${args[0].value}) === ${quoteValue(rule)} && 
-          ${translateAlias}(${quoteValue(key)}, { value: ${args[0].value}}, ${args[3]?.value}, ${quoteValue(lang)}) || `;
+          if (args[2]?.properties) {
+            const options = args[2].properties.map(p => `${p.key.value}: ${quoteValue(p.value.value)}`).join(', ');
+            expr += `$rule(${quoteValue(lang)}, ${args[0].value}, ${quoteValue(rule)}, {${options}}) && 
+            ${translateAlias}(${quoteValue(key)}, { value: ${args[0].value}}, ${args[3]?.value}, ${quoteValue(lang)}) || `;
+          } else {
+            expr += `$rule(${quoteValue(lang)}, ${args[0].value}, ${quoteValue(rule)}) && 
+            ${translateAlias}(${quoteValue(key)}, { value: ${args[0].value}}, ${args[3]?.value}, ${quoteValue(lang)}) || `;
+          }
         } else {
           expr += `${translateAlias}(${quoteValue(key)}, { value: ${args[0].value}}, ${args[3]?.value}, ${quoteValue(lang)})`;
         }
@@ -490,7 +503,7 @@ export function transpilePluralFn(
   }
 
   for (const lang of supportedLangs.filter(x => x !== defaultLang)) {
-    translation += `$lang() === ${quoteValue(lang)} && `;
+    translation += `$lang(${quoteValue(lang)}) && `;
     translation += transpileRules(lang);
     translation += ' || ';
   }
@@ -505,6 +518,16 @@ export function transpilePluralFn(
 export function addLang(code: string): string {
   if (!/^import\s*\{.*\$lang.*}\s*from\s*/s.test(code)) {
     code = code.replace(/^/, 'import { $lang } from "qwik-speak";\n');
+  }
+  return code;
+}
+
+/**
+ * Add $rule to component
+ */
+export function addRule(code: string): string {
+  if (!/^import\s*\{.*\$rule.*}\s*from\s*/s.test(code)) {
+    code = code.replace(/^/, 'import { $rule } from "qwik-speak";\n');
   }
   return code;
 }
