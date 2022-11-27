@@ -18,7 +18,7 @@ When you use a default value, it will be used as initial value for the key in ev
 #### Naming conventions
 If you use scoped translations, the first property will be used as filename:
 ```html
-<p>{t('app.text)}</p>
+<p>{t('app.title)}</p>
 <p>{t('home.greeting)}</p>
 ```
 will generate two files for each language:
