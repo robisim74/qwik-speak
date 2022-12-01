@@ -25,30 +25,28 @@ export const config: SpeakConfig = {
 };
 
 /**
- * E.g. Fetch translation data from json files in public dir or i18n/[lang]/[asset].json endpoint
+ * E.g. Fetch translation data from json files
  * In productions with inlined translations, only the runtime file is loaded
  */
-export const loadTranslation$: LoadTranslationFn = $(async (lang: string, asset: string, url?: URL) => {
+export const loadTranslation$: LoadTranslationFn = $(async (lang: string, asset: string, origin?: string) => {
   if (import.meta.env.DEV || asset === 'runtime') {
-    let endpoint = '';
+    let url = '';
     // Absolute urls on server
-    if (isServer && url) {
-      endpoint = url.origin;
+    if (isServer && origin) {
+      url = origin;
     }
-    endpoint += `/i18n/${lang}/${asset}.json`;
-    const data = await fetch(endpoint);
+    url += `/i18n/${lang}/${asset}.json`;
+    const data = await fetch(url);
     return data.json();
   }
 });
 
 // E.g. Resolve locale by url during SSR
-export const resolveLocale$: ResolveLocaleFn = $((url?: URL) => {
-  if (url) {
-    const pathLang = config.supportedLocales.find(x => url.pathname.startsWith(`/${x.lang}`))?.lang;
-    const lang = pathLang || config.defaultLocale.lang;
-    const locale = config.supportedLocales.find(x => x.lang == lang);
-    return locale;
-  }
+export const resolveLocale$: ResolveLocaleFn = $((url: URL) => {
+  const pathLang = config.supportedLocales.find(x => url.pathname.startsWith(`/${x.lang}`))?.lang;
+  const lang = pathLang || config.defaultLocale.lang;
+  const locale = config.supportedLocales.find(x => x.lang == lang);
+  return locale;
 });
 
 // E.g. Store the locale on client replacing URL
@@ -58,28 +56,26 @@ export const storeLocale$: StoreLocaleFn = $((locale: SpeakLocale) => {
 
   // Localize the route
   const url = new URL(document.location.href);
-  if (url) {
-    const pathLang = config.supportedLocales.find(x => url.pathname.startsWith(`/${x.lang}`))?.lang;
+  const pathLang = config.supportedLocales.find(x => url.pathname.startsWith(`/${x.lang}`))?.lang;
 
-    const regex = new RegExp(`(/${pathLang}/)|(/${pathLang}$)`);
-    const segment = url.pathname.match(regex)?.[0];
+  const regex = new RegExp(`(/${pathLang}/)|(/${pathLang}$)`);
+  const segment = url.pathname.match(regex)?.[0];
 
-    if (pathLang && segment) {
-      let newSegment = '';
-      if (locale.lang !== config.defaultLocale.lang) {
-        newSegment = segment.replace(pathLang, locale.lang);
-      } else {
-        newSegment = '/';
-      }
-      url.pathname = url.pathname.replace(segment, newSegment);
-    } else if (locale.lang !== config.defaultLocale.lang) {
-      url.pathname = `/${locale.lang}${url.pathname}`;
+  if (pathLang && segment) {
+    let newSegment = '';
+    if (locale.lang !== config.defaultLocale.lang) {
+      newSegment = segment.replace(pathLang, locale.lang);
+    } else {
+      newSegment = '/';
     }
-
-    // E.g. Just replace the state: no back or forward on language change
-    // https://github.com/BuilderIO/qwik/issues/1490
-    window.history.replaceState({}, '', url);
+    url.pathname = url.pathname.replace(segment, newSegment);
+  } else if (locale.lang !== config.defaultLocale.lang) {
+    url.pathname = `/${locale.lang}${url.pathname}`;
   }
+
+  // E.g. Just replace the state: no back or forward on language change
+  // https://github.com/BuilderIO/qwik/issues/1490
+  window.history.replaceState({}, '', url);
 });
 
 /**

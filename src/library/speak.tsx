@@ -31,7 +31,7 @@ export const Speak = component$((props: SpeakProps) => {
 
     // Load translation data
     for (const lang of resolvedLangs) {
-      const loadedTranslation = await loadTranslation(lang, ctx, url, props.assets);
+      const loadedTranslation = await loadTranslation(lang, ctx, url.origin, props.assets);
       addData(loadedTranslation, translation[lang], lang);
       Object.assign(translation[lang], loadedTranslation[lang]);
     }

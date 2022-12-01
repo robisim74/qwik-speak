@@ -426,7 +426,10 @@ export function getValue(
   params: Argument | undefined,
   keySeparator: string
 ): string | undefined {
-  const value = key.split(keySeparator).reduce((acc, cur) => (acc && acc[cur] != null) ? acc[cur] : null, data);
+  const value = key.split(keySeparator).reduce((acc, cur) =>
+    (acc && acc[cur] !== undefined) ?
+      acc[cur] :
+      undefined, data);
   if (typeof value === 'string') return params ? transpileParams(value, params) : quoteValue(value);
   return undefined;
 }

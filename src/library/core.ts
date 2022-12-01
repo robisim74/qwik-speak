@@ -6,14 +6,14 @@ import type { Translation, SpeakState } from './types';
 export const loadTranslation = async (
   lang: string,
   ctx: SpeakState,
-  url?: URL,
+  origin?: string,
   assets?: string[]
 ): Promise<Translation> => {
   const { config, translateFn } = ctx;
 
   assets = assets ?? config.assets;
   // Get translation
-  const tasks = assets.map(asset => translateFn.loadTranslation$(lang, asset, url));
+  const tasks = assets.map(asset => translateFn.loadTranslation$(lang, asset, origin));
   const sources = await Promise.all(tasks);
 
   const translation: Translation = {};
@@ -45,11 +45,14 @@ export const getValue = (
 
   [key, defaultValue] = separateKeyValue(key, keyValueSeparator);
 
-  const value = key.split(keySeparator).reduce((acc, cur) => (acc && acc[cur] != null) ? acc[cur] : null, data);
+  const value = key.split(keySeparator).reduce((acc, cur) =>
+    (acc && acc[cur] !== undefined) ?
+      acc[cur] :
+      undefined, data);
 
-  if (typeof value === 'string') return params ? handleParams(value, params) : value;
+  if (typeof value === 'string') return params ? transpileParams(value, params) : value;
 
-  return defaultValue ? handleParams(defaultValue, params) : defaultValue;
+  return defaultValue ? transpileParams(defaultValue, params) : undefined;
 };
 
 /**
@@ -62,7 +65,7 @@ export const separateKeyValue = (key: string, keyValueSeparator: string): [strin
 /**
  * Replace params in the value
  */
-export const handleParams = (value: string, params: any): string => {
+export const transpileParams = (value: string, params: any): string => {
   const replacedValue = value.replace(/{{\s?([^{}\s]*)\s?}}/g, (substring: string, parsedKey: string) => {
     const replacer = params[parsedKey];
     return replacer !== undefined ? replacer : substring;

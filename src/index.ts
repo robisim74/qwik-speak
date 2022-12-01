@@ -10,8 +10,7 @@ export type {
 export type {
   LoadTranslationFn,
   ResolveLocaleFn,
-  StoreLocaleFn,
-  HandleMissingTranslationFn,
+  StoreLocaleFn
 } from './library/types';
 export type { QwikSpeakProps } from './library/qwik-speak';
 export type { SpeakProps } from './library/speak';
@@ -25,8 +24,6 @@ export { formatNumber } from './library/format-number';
 export { formatDate } from './library/format-date';
 export { relativeTime } from './library/relative-time';
 export { changeLocale } from './library/change-locale';
-// Core functions
-export { getValue, handleParams } from './library/core';
 // Use functions
 export {
   useSpeakContext,

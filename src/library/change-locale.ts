@@ -12,13 +12,13 @@ export const changeLocale = async (
 ): Promise<void> => {
   const { locale, translation, translateFn } = ctx;
 
-  // Store the locale
-  await translateFn.storeLocale$(newLocale);
-
   // Load translation data
   const loadedTranslation = await loadTranslation(newLocale.lang, ctx);
 
   // Update state
   Object.assign(translation, loadedTranslation);
   Object.assign(locale, newLocale);
+
+  // Store the locale
+  await translateFn.storeLocale$(newLocale);
 };

@@ -65,30 +65,24 @@ Assets will be loaded through the implementation of `loadTranslation$` function 
 ```typescript
 import { $ } from '@builder.io/qwik';
 
-export const loadTranslation$: LoadTranslationFn = $((lang: string, asset: string, url?: URL) => {
-  /* Must contain the logic to load translation data */
-  
-  // E.g. Fetch translation data from json files in public dir or i18n/[lang]/[asset].json endpoint 
-  let endpoint = '';
+export const loadTranslation$: LoadTranslationFn = $((lang: string, asset: string, origin?: string) => { 
+  // E.g. Fetch translation data from json files
+  let url = '';
   // Absolute urls on server
-  if (isServer && url) {
-    endpoint = url.origin;
+  if (isServer && origin) {
+    url = origin;
   }
-  endpoint += `/i18n/${lang}/${asset}.json`;
-  const data = await fetch(endpoint);
+  url += `/i18n/${lang}/${asset}.json`;
+  const data = await fetch(url);
   return data.json();
 });
 
-export const resolveLocale$: ResolveLocaleFn = $((url?: URL) => {
+export const resolveLocale$: ResolveLocaleFn = $((url: URL) => {
   /* Must contain the logic to resolve which locale to use during SSR */
 });
 
 export const storeLocale$: StoreLocaleFn = $((locale: SpeakLocale) => {
   /* Must contain the logic to store the locale on client when changes */
-});
-
-export const handleMissingTranslation$: HandleMissingTranslationFn = $((key: string, value?: string, params?: any, ctx?: SpeakState) => {
-  /* Must contain the logic to handle missing values at runtime: by default returns the key */
 });
 
 export const translateFn: TranslateFn = {
@@ -157,22 +151,7 @@ export default component$(() => {
   );
 });
 ```
-The translation data of the additional languages are preloaded along with the current language. They can be used as a fallback for missing values by implementing `handleMissingTranslation$`, or for multilingual pages.
-
-### Localized routing
-What you need:
-- A `lang` parameter in routes, like:
-  ```
-  routes
-  │   
-  └───[...lang]
-      │   index.html 
-      │
-      └───page
-              index.html
-  ```
-- Handling the localized routing in `resolveLocale$` and `storeLocale$`
-- Optionally redirecting based on user language (in `layout` or in adaptor)
+The translation data of the additional languages are preloaded along with the current language. They can be used for multilingual pages.
 
 ## Extraction of translations
 To extract translations directly from the components, a command is available that automatically generates the files with the keys and default values.
@@ -186,8 +165,6 @@ You have three solutions:
 - **Build using Qwik Speak Inline Vite plugin & runtime** Translation happens _at compile-time_ or _at runtime_ as needed: static translations are loaded and inlined during the build, while dynamic translations occur at runtime
 
 See [Qwik Speak Inline Vite plugin](./tools/inline.md) for more information on how it works and how to use it.
-
-The [sample app](./src/app) in this project implements a localized routing and _Qwik Speak Inline Vite plugin & runtime_ solution.
 
 ## Speak config
 - `defaultLocale`

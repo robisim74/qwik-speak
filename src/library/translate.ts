@@ -9,25 +9,26 @@ import { getValue } from './core';
  * @param params Optional parameters contained in the value
  * @param ctx Optional Speak context to be provided outside the component$
  * @param lang Optional language if different from the current one
- * @returns The translated values
+ * @returns The translated value or the key if not found
  */
 export const $translate = (
   keys: string | string[],
   params?: any,
   ctx?: SpeakState,
   lang?: string
-): string | string[] | any => {
+): string | string[] => {
   ctx = ctx ?? useSpeakContext();
-  const { locale, translation, config, translateFn } = ctx;
+  const { locale, translation, config } = ctx;
 
   lang = lang ?? locale.lang;
 
   if (Array.isArray(keys)) {
-    const values = keys.map(key => $translate(key, params, ctx, lang));
+    const values: string[] = [];
+    for (const key of keys) {
+      values.push(getValue(key, translation[lang], params, config.keySeparator) || key);
+    }
     return values;
   }
 
-  const value = getValue(keys, translation[lang], params, config.keySeparator);
-
-  return value || translateFn.handleMissingTranslation$(keys, value, params, ctx);
+  return getValue(keys, translation[lang], params, config.keySeparator) || keys;
 };

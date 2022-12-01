@@ -1,4 +1,4 @@
-import { getValue, handleParams } from '../library/core';
+import { getValue, transpileParams } from '../library/core';
 
 describe('core', () => {
   test('getValue', () => {
@@ -12,9 +12,9 @@ describe('core', () => {
     expect(value).toBeUndefined();
   });
   test('handleParams', () => {
-    let value = handleParams('Test {{param}}', { param: 'params' });
+    let value = transpileParams('Test {{param}}', { param: 'params' });
     expect(value).toBe('Test params');
-    value = handleParams('Test {{ number }} {{param}}', { number: 2, param: 'params' });
+    value = transpileParams('Test {{ number }} {{param}}', { number: 2, param: 'params' });
     expect(value).toBe('Test 2 params');
   });
 });

@@ -36,22 +36,18 @@ export type Translation = { [key: string]: any };
 /**
  * Must contain the logic to load translation data
  */
-export type LoadTranslationFn = QRL<(lang: string, asset: string, url?: URL) => ValueOrPromise<Translation | null>>;
+export type LoadTranslationFn = QRL<(lang: string, asset: string, origin?: string) =>
+  ValueOrPromise<Translation | null>>;
 
 /**
  * Must contain the logic to resolve which locale to use during SSR
  */
-export type ResolveLocaleFn = QRL<(url?: URL) => ValueOrPromise<SpeakLocale | null | undefined>>;
+export type ResolveLocaleFn = QRL<(url: URL) => ValueOrPromise<SpeakLocale | null | undefined>>;
 
 /**
  * Must contain the logic to store the locale on client when changes
  */
 export type StoreLocaleFn = QRL<(locale: SpeakLocale) => ValueOrPromise<void>>;
-
-/**
- * Must contain the logic to handle missing values at runtime
- */
-export type HandleMissingTranslationFn = QRL<(key: string, value?: string, params?: any, ctx?: SpeakState) => any>;
 
 export interface TranslateFn {
   /**
@@ -66,10 +62,6 @@ export interface TranslateFn {
    * Function to store the locale on client
    */
   storeLocale$?: StoreLocaleFn;
-  /**
-   * Function to handle missing values at runtime
-   */
-  handleMissingTranslation$?: HandleMissingTranslationFn;
 }
 
 export interface SpeakConfig {

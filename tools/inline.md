@@ -7,7 +7,7 @@
 #### Get the code ready
 Make sure that the translation files are only loaded in dev mode, for example:
 ```typescript
-export const loadTranslation$: LoadTranslationFn = $(async (lang: string, asset: string, url?: URL) => {
+export const loadTranslation$: LoadTranslationFn = $(async (lang: string, asset: string, origin?: string) => {
   if (import.meta.env.DEV) {
     // Load translations
   }
@@ -57,7 +57,7 @@ When there are translations with dynamic keys or params, you can manage them at 
   };
   ```
   ```typescript
-  export const loadTranslation$: LoadTranslationFn = $(async (lang: string, asset: string, url?: URL) => {
+  export const loadTranslation$: LoadTranslationFn = $(async (lang: string, asset: string, origin?: string) => {
     if (import.meta.env.DEV || asset === 'runtime') {
       // Load translations
     }
