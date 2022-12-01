@@ -42,7 +42,7 @@ export const onRequest: RequestHandler = ({ request, response, params }) => {
     }
 
     if (lang !== config.defaultLocale.lang) {
-      if (config.supportedLocales.find(x => x.lang == lang)) {
+      if (config.supportedLocales.find(x => x.lang === lang)) {
         const url = new URL(request.url);
         throw response.redirect(`/${lang}${url.pathname.replace(/\/$/, '')}`, 302);
       }
