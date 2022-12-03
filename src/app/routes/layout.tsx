@@ -17,7 +17,10 @@ export default component$(() => {
 
 // E.g. Redirect if the language is different from the default language
 export const onRequest: RequestHandler = ({ request, response, params }) => {
-  let lang = params.lang;
+  let lang = params.lang?.replace(/^\/|\/$/g, '');
+
+  // Set locale in response
+  response.locale = lang || config.defaultLocale.lang;
 
   if (!lang) {
     const cookie = request.headers?.get('cookie');
@@ -36,15 +39,11 @@ export const onRequest: RequestHandler = ({ request, response, params }) => {
         lang = acceptLanguage.split(';')[0]?.split(',')[0];
       }
     }
-    // Use default language
-    if (!lang) {
-      lang = config.defaultLocale.lang;
-    }
 
     if (lang !== config.defaultLocale.lang) {
       if (config.supportedLocales.find(x => x.lang === lang)) {
         const url = new URL(request.url);
-        throw response.redirect(`/${lang}${url.pathname.replace(/\/$/, '')}`, 302);
+        throw response.redirect(`/${lang}${url.pathname}`, 302);
       }
     }
   }

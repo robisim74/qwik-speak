@@ -82,7 +82,7 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
               continue;
             }
             if (args[0].type === 'Literal') {
-              if (args[0].value !== 'key' && /\${.*}/.test(args[0].value)) {
+              if (/\${.*}/.test(args[0].value)) {
                 stats.set('dynamic', (stats.get('dynamic') ?? 0) + 1);
                 continue;
               }

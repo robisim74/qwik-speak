@@ -18,7 +18,7 @@ export const $plural = (
   options?: Intl.PluralRulesOptions,
   ctx?: SpeakState,
   lang?: string
-): string | any => {
+): string => {
   ctx = ctx ?? useSpeakContext();
   const { locale, config } = ctx;
 

@@ -200,7 +200,7 @@ and optionally contains:
 - `$translate(keys: string | string[], params?: any, ctx?: SpeakState, lang?: string)`
 Translates a key or an array of keys. The syntax of the string is `key@@[default value]`
 
-- `plural(value: number | string, prefix?: string, options?: Intl.PluralRulesOptions, ctx?: SpeakState, lang?: string)`
+- `$plural(value: number | string, prefix?: string, options?: Intl.PluralRulesOptions, ctx?: SpeakState, lang?: string)`
 Gets the plural by a number
 
 - `formatDate(value: Date | number | string, options?: Intl.DateTimeFormatOptions, locale?: SpeakLocale, lang?: string, timeZone?: string)`
@@ -244,7 +244,6 @@ stateDiagram-v2
         - loadTranslation$
         - resolveLocale$
         - storeLocale$
-        - handleMissingTranslation$
     end note
 ```
 
@@ -261,26 +260,31 @@ Returns the translation data in Speak context
 Returns the configuration in Speak context
 
 ## Development Builds
-### Build library & tools
+### Library & tools
+#### Build
 ```Shell
 npm run build
 ```
-### Test library & tools
+#### Test
 ```Shell
 npm test
-npm run test.e2e
 ```
-### Run the sample app
+### Sample app
+#### Run
 ```Shell
 npm start
 ```
-### Build the sample app
+#### Build
 ```Shell
 npm run build.app
 ```
-#### Express server
+##### Express server
 ```Shell
 npm run serve
+```
+#### Test
+```Shell
+npm run test.e2e
 ```
 
 ## What's new

@@ -328,11 +328,11 @@ export function checkDynamic(args: Argument[], originalFn: string): boolean {
   if (args?.[0]?.value) {
     // Dynamic key
     if (args[0].type === 'Identifier') {
-      if (args[0].value !== 'key') dynamicKeys.push(`dynamic key: ${originalFn.replace(/\s+/g, ' ')} - skip`)
+      if (args[0].value !== 'key' && args[0].value !== 'keys') dynamicKeys.push(`dynamic key: ${originalFn.replace(/\s+/g, ' ')} - skip`)
       return true;
     }
     if (args[0].type === 'Literal') {
-      if (args[0].value !== 'key' && /\${.*}/.test(args[0].value)) {
+      if (args[0].value !== 'key' && args[0].value !== 'keys' && /\${.*}/.test(args[0].value)) {
         dynamicKeys.push(`dynamic key: ${originalFn.replace(/\s+/g, ' ')} - skip`)
         return true;
       }
@@ -351,10 +351,6 @@ export function checkDynamic(args: Argument[], originalFn: string): boolean {
 
 export function checkDynamicPlural(args: Argument[], originalFn: string): boolean {
   if (args?.[0]?.value) {
-    if (args[0].type === 'Identifier') {
-      if (args[0].value === 'value' && args[1]?.value === 'prefix') return true;
-    }
-
     // Dynamic argument
     if (args[1]?.type === 'Identifier' || args[1]?.type === 'CallExpression' ||
       args[2]?.type === 'Identifier' || args[2]?.type === 'CallExpression' ||

@@ -25,11 +25,11 @@ export const Header = component$(() => {
         </section>
         <nav>
           <Link href={getHref('/')}
-            class={{ active: pathname.endsWith('/') || config.supportedLocales.some(x => pathname.endsWith(x.lang)) }}>
+            class={{ active: pathname === '/' || config.supportedLocales.some(x => pathname.endsWith(`${x.lang}/`)) }}>
             {t('app.nav.home')}
           </Link>
           <Link href={getHref('/page')}
-            class={{ active: pathname.endsWith('/page') }}>
+            class={{ active: pathname.endsWith('/page/') }}>
             {t('app.nav.page')}
           </Link>
         </nav>
