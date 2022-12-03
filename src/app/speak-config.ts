@@ -4,8 +4,6 @@ import {
   LoadTranslationFn,
   ResolveLocaleFn,
   SpeakConfig,
-  SpeakLocale,
-  StoreLocaleFn,
   TranslateFn
 } from 'qwik-speak';
 
@@ -49,40 +47,10 @@ export const resolveLocale$: ResolveLocaleFn = $((url: URL) => {
   return locale;
 });
 
-// E.g. Store the locale on client replacing URL
-export const storeLocale$: StoreLocaleFn = $((locale: SpeakLocale) => {
-  // Store locale in cookie 
-  document.cookie = `locale=${JSON.stringify(locale)};max-age=86400;path=/`;
-
-  // Localize the route
-  const url = new URL(document.location.href);
-  const pathLang = config.supportedLocales.find(x => url.pathname.startsWith(`/${x.lang}`))?.lang;
-
-  const regex = new RegExp(`(/${pathLang}/)|(/${pathLang}$)`);
-  const segment = url.pathname.match(regex)?.[0];
-
-  if (pathLang && segment) {
-    let newSegment = '';
-    if (locale.lang !== config.defaultLocale.lang) {
-      newSegment = segment.replace(pathLang, locale.lang);
-    } else {
-      newSegment = '/';
-    }
-    url.pathname = url.pathname.replace(segment, newSegment);
-  } else if (locale.lang !== config.defaultLocale.lang) {
-    url.pathname = `/${locale.lang}${url.pathname}`;
-  }
-
-  // E.g. Just replace the state: no back or forward on language change
-  // https://github.com/BuilderIO/qwik/issues/1490
-  window.history.replaceState({}, '', url);
-});
-
 /**
  * Translation functions
  */
 export const translateFn: TranslateFn = {
   loadTranslation$: loadTranslation$,
-  resolveLocale$: resolveLocale$,
-  storeLocale$: storeLocale$
+  resolveLocale$: resolveLocale$
 };

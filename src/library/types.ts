@@ -44,11 +44,6 @@ export type LoadTranslationFn = QRL<(lang: string, asset: string, origin?: strin
  */
 export type ResolveLocaleFn = QRL<(url: URL) => ValueOrPromise<SpeakLocale | null | undefined>>;
 
-/**
- * Must contain the logic to store the locale on client when changes
- */
-export type StoreLocaleFn = QRL<(locale: SpeakLocale) => ValueOrPromise<void>>;
-
 export interface TranslateFn {
   /**
    * Function to load translation data
@@ -58,10 +53,6 @@ export interface TranslateFn {
    * Function to resolve which locale to use during SSR
    */
   resolveLocale$?: ResolveLocaleFn;
-  /**
-   * Function to store the locale on client
-   */
-  storeLocale$?: StoreLocaleFn;
 }
 
 export interface SpeakConfig {

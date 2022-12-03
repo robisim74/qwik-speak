@@ -40,7 +40,6 @@ export const ctx: SpeakState = new Proxy({
   config: config,
   translateFn: {
     loadTranslation$: inlinedQrl(() => { return null; }, 'loadTranslation'),
-    resolveLocale$: inlinedQrl(() => { return null; }, 'resolveLocale'),
-    storeLocale$: inlinedQrl(() => { }, 'storeLocale')
+    resolveLocale$: inlinedQrl(() => { return null; }, 'resolveLocale')
   }
 }, {});

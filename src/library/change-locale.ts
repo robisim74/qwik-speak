@@ -6,10 +6,7 @@ import { loadTranslation } from './core';
  * @param newLocale The new locale to set
  * @param ctx Speak context
  */
-export const changeLocale = async (
-  newLocale: SpeakLocale,
-  ctx: SpeakState
-): Promise<void> => {
+export const changeLocale = async (newLocale: SpeakLocale, ctx: SpeakState): Promise<void> => {
   const { locale, translation, translateFn } = ctx;
 
   // Load translation data
@@ -18,7 +15,4 @@ export const changeLocale = async (
   // Update state
   Object.assign(translation, loadedTranslation);
   Object.assign(locale, newLocale);
-
-  // Store the locale
-  await translateFn.storeLocale$(newLocale);
 };

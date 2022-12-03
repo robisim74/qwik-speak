@@ -81,10 +81,6 @@ export const resolveLocale$: ResolveLocaleFn = $((url: URL) => {
   /* Must contain the logic to resolve which locale to use during SSR */
 });
 
-export const storeLocale$: StoreLocaleFn = $((locale: SpeakLocale) => {
-  /* Must contain the logic to store the locale on client when changes */
-});
-
 export const translateFn: TranslateFn = {
   loadTranslation$: loadTranslation$,
   /* other functions */
@@ -243,7 +239,6 @@ stateDiagram-v2
         Custom APIs:
         - loadTranslation$
         - resolveLocale$
-        - storeLocale$
     end note
 ```
 
@@ -252,9 +247,6 @@ Returns the Speak state
 
 - `useSpeakLocale()`
 Returns the locale in Speak context
-
-- `useTranslation()`
-Returns the translation data in Speak context
 
 - `useSpeakConfig()`
 Returns the configuration in Speak context

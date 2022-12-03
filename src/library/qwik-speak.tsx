@@ -2,7 +2,7 @@ import { component$, Slot, useContextProvider, useEnvData, useMount$, useStore }
 import { isServer } from '@builder.io/qwik/build';
 
 import type { InternalSpeakState, SpeakConfig, SpeakState, TranslateFn } from './types';
-import { loadTranslation$, resolveLocale$, storeLocale$ } from './constants';
+import { loadTranslation$, resolveLocale$ } from './constants';
 import { SpeakContext } from './context';
 import { loadTranslation } from './core';
 
@@ -25,8 +25,7 @@ export const QwikSpeak = component$((props: QwikSpeakProps) => {
   // Assign functions
   const resolvedTranslateFn: TranslateFn = {
     loadTranslation$: props.translateFn?.loadTranslation$ ?? loadTranslation$,
-    resolveLocale$: props.translateFn?.resolveLocale$ ?? resolveLocale$,
-    storeLocale$: props.translateFn?.storeLocale$ ?? storeLocale$
+    resolveLocale$: props.translateFn?.resolveLocale$ ?? resolveLocale$
   };
 
   // Set initial state

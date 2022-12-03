@@ -10,7 +10,6 @@ export type {
 export type {
   LoadTranslationFn,
   ResolveLocaleFn,
-  StoreLocaleFn
 } from './library/types';
 export type { QwikSpeakProps } from './library/qwik-speak';
 export type { SpeakProps } from './library/speak';
@@ -28,7 +27,6 @@ export { changeLocale } from './library/change-locale';
 export {
   useSpeakContext,
   useSpeakLocale,
-  useTranslation,
   useSpeakConfig,
 } from './library/use-functions';
 // Inline functions

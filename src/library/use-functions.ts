@@ -7,6 +7,5 @@ export const useSpeakContext = (): SpeakState => useContext(SpeakContext);
 
 export const useSpeakLocale = (): SpeakLocale => useContext(SpeakContext).locale;
 
-export const useTranslation = (): Translation => useContext(SpeakContext).translation;
-
 export const useSpeakConfig = (): SpeakConfig => useContext(SpeakContext).config;
+
