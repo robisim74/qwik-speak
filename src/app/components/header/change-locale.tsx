@@ -29,7 +29,7 @@ export const ChangeLocale = component$(() => {
       pathname = `/${locale.lang}${pathname}`;
     }
 
-    // Allow to navigate without causing a full-page reload
+    // No full-page reload
     nav.path = pathname;
   });
 

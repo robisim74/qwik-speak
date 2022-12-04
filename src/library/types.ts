@@ -39,20 +39,11 @@ export type Translation = { [key: string]: any };
 export type LoadTranslationFn = QRL<(lang: string, asset: string, origin?: string) =>
   ValueOrPromise<Translation | null>>;
 
-/**
- * Must contain the logic to resolve which locale to use during SSR
- */
-export type ResolveLocaleFn = QRL<(url: URL) => ValueOrPromise<SpeakLocale | null | undefined>>;
-
-export interface TranslateFn {
+export interface TranslationFn {
   /**
    * Function to load translation data
    */
   loadTranslation$?: LoadTranslationFn;
-  /**
-   * Function to resolve which locale to use during SSR
-   */
-  resolveLocale$?: ResolveLocaleFn;
 }
 
 export interface SpeakConfig {
@@ -94,7 +85,7 @@ export interface InternalSpeakState {
   /**
    * Functions to use
    */
-  translateFn: TranslateFn;
+  translationFn: TranslationFn;
 }
 
 /**
@@ -102,5 +93,5 @@ export interface InternalSpeakState {
  */
 export interface SpeakState extends InternalSpeakState {
   locale: SpeakLocale;
-  translateFn: Required<TranslateFn>;
+  translationFn: Required<TranslationFn>;
 }

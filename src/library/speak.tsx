@@ -15,7 +15,7 @@ export interface SpeakProps {
 }
 
 /**
- * Add translation data to a Speak context
+ * Add scoped translation data to the context
  */
 export const Speak = component$((props: SpeakProps) => {
   const ctx = useSpeakContext();

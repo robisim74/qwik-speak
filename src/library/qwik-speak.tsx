@@ -1,8 +1,7 @@
-import { component$, Slot, useContextProvider, useEnvData, useMount$, useStore } from '@builder.io/qwik';
+import { $, component$, Slot, useContextProvider, useEnvData, useMount$, useStore } from '@builder.io/qwik';
 import { isServer } from '@builder.io/qwik/build';
 
-import type { InternalSpeakState, SpeakConfig, SpeakState, TranslateFn } from './types';
-import { loadTranslation$, resolveLocale$ } from './constants';
+import type { InternalSpeakState, SpeakConfig, SpeakLocale, SpeakState, TranslationFn } from './types';
 import { SpeakContext } from './context';
 import { loadTranslation } from './core';
 
@@ -14,7 +13,11 @@ export interface QwikSpeakProps {
   /**
    * Optional functions to use
    */
-  translateFn?: TranslateFn;
+  translationFn?: TranslationFn;
+  /**
+   * Optional locale to use
+   */
+  locale?: SpeakLocale;
   /**
    * Optional additional languages to preload data for
    */
@@ -23,9 +26,8 @@ export interface QwikSpeakProps {
 
 export const QwikSpeak = component$((props: QwikSpeakProps) => {
   // Assign functions
-  const resolvedTranslateFn: TranslateFn = {
-    loadTranslation$: props.translateFn?.loadTranslation$ ?? loadTranslation$,
-    resolveLocale$: props.translateFn?.resolveLocale$ ?? resolveLocale$
+  const resolvedTranslationFn: TranslationFn = {
+    loadTranslation$: props.translationFn?.loadTranslation$ ?? $(() => null)
   };
 
   // Set initial state
@@ -39,10 +41,10 @@ export const QwikSpeak = component$((props: QwikSpeakProps) => {
       keySeparator: props.config.keySeparator || '.',
       keyValueSeparator: props.config.keyValueSeparator || '@@'
     },
-    translateFn: resolvedTranslateFn
+    translationFn: resolvedTranslationFn
   }, { recursive: true });
   const ctx = state as SpeakState;
-  const { locale, translation, config, translateFn } = ctx;
+  const { locale, translation, config, translationFn } = ctx;
 
   useContextProvider(SpeakContext, ctx);
 
@@ -52,11 +54,7 @@ export const QwikSpeak = component$((props: QwikSpeakProps) => {
   // Will block the rendering until callback resolves
   useMount$(async () => {
     // Resolve the locale
-    let resolvedLocale = await translateFn.resolveLocale$(url);
-
-    if (!resolvedLocale) {
-      resolvedLocale = config.defaultLocale;
-    }
+    const resolvedLocale = props.locale ?? config.defaultLocale;
 
     const resolvedLangs = new Set(props.langs || []);
     resolvedLangs.add(resolvedLocale.lang);
@@ -74,7 +72,7 @@ export const QwikSpeak = component$((props: QwikSpeakProps) => {
       // Shallow freeze: only applies to the immediate properties of object itself
       Object.freeze(translation);
       Object.freeze(config);
-      Object.freeze(translateFn)
+      Object.freeze(translationFn)
     }
   });
 

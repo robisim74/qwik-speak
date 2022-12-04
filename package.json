@@ -25,10 +25,10 @@
     "qwik-speak-extract": "./extract/cli.js"
   },
   "peerDependencies": {
-    "@builder.io/qwik": ">=0.15.0"
+    "@builder.io/qwik": ">=0.15.1"
   },
   "devDependencies": {
-    "@builder.io/qwik": "0.15.0",
+    "@builder.io/qwik": "0.15.1",
     "@builder.io/qwik-city": "0.0.128",
     "@microsoft/api-extractor": "^7.33.6",
     "@playwright/test": "^1.28.1",

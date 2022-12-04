@@ -7,7 +7,7 @@ import { loadTranslation } from './core';
  * @param ctx Speak context
  */
 export const changeLocale = async (newLocale: SpeakLocale, ctx: SpeakState): Promise<void> => {
-  const { locale, translation, translateFn } = ctx;
+  const { locale, translation } = ctx;
 
   // Load translation data
   const loadedTranslation = await loadTranslation(newLocale.lang, ctx);

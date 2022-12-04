@@ -1,7 +1,25 @@
-import type { Translation, SpeakState } from './types';
+import type { Translation, SpeakState, LoadTranslationFn } from './types';
+
+const cache: Record<string, Promise<any>> = {};
 
 /**
- * Load translation data for the language
+ * In SPA mode, cache the results
+ */
+export const memoize = (fn: LoadTranslationFn) => {
+  return (...args: [string, string, string | undefined]) => {
+    const stringArgs = JSON.stringify(args);
+
+    return stringArgs in cache ?
+      cache[stringArgs] :
+      (cache[stringArgs] = fn(...args).catch((x) => {
+        delete cache[stringArgs];
+        return x;
+      }));
+  };
+};
+
+/**
+ * Load translation data
  */
 export const loadTranslation = async (
   lang: string,
@@ -9,11 +27,12 @@ export const loadTranslation = async (
   origin?: string,
   assets?: string[]
 ): Promise<Translation> => {
-  const { config, translateFn } = ctx;
+  const { config, translationFn } = ctx;
 
   assets = assets ?? config.assets;
   // Get translation
-  const tasks = assets.map(asset => translateFn.loadTranslation$(lang, asset, origin));
+  const memoized = memoize(translationFn.loadTranslation$);
+  const tasks = assets.map(asset => memoized(lang, asset, origin));
   const sources = await Promise.all(tasks);
 
   const translation: Translation = {};

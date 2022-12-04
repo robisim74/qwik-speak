@@ -2,9 +2,8 @@ import { $ } from '@builder.io/qwik';
 import { isServer } from '@builder.io/qwik/build';
 import {
   LoadTranslationFn,
-  ResolveLocaleFn,
   SpeakConfig,
-  TranslateFn
+  TranslationFn
 } from 'qwik-speak';
 
 /**
@@ -39,18 +38,9 @@ export const loadTranslation$: LoadTranslationFn = $(async (lang: string, asset:
   }
 });
 
-// E.g. Resolve locale by url during SSR
-export const resolveLocale$: ResolveLocaleFn = $((url: URL) => {
-  const pathLang = config.supportedLocales.find(x => url.pathname.startsWith(`/${x.lang}`))?.lang;
-  const lang = pathLang || config.defaultLocale.lang;
-  const locale = config.supportedLocales.find(x => x.lang == lang);
-  return locale;
-});
-
 /**
  * Translation functions
  */
-export const translateFn: TranslateFn = {
-  loadTranslation$: loadTranslation$,
-  resolveLocale$: resolveLocale$
+export const translationFn: TranslationFn = {
+  loadTranslation$: loadTranslation$
 };

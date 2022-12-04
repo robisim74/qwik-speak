@@ -15,13 +15,13 @@ export default component$(() => {
   );
 });
 
-// E.g. Redirect if the language is different from the default language
 export const onRequest: RequestHandler = ({ request, response, params }) => {
   let lang = params.lang?.replace(/^\/|\/$/g, '');
 
   // Set locale in response
   response.locale = lang || config.defaultLocale.lang;
 
+  // E.g. Redirect if the language is different from the default language
   if (!lang) {
     const cookie = request.headers?.get('cookie');
     const acceptLanguage = request.headers?.get('accept-language');

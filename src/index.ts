@@ -2,14 +2,11 @@
 export type {
   SpeakLocale,
   Translation,
-  TranslateFn,
+  TranslationFn,
   SpeakConfig,
   SpeakState,
   InternalSpeakState,
-} from './library/types';
-export type {
   LoadTranslationFn,
-  ResolveLocaleFn,
 } from './library/types';
 export type { QwikSpeakProps } from './library/qwik-speak';
 export type { SpeakProps } from './library/speak';
