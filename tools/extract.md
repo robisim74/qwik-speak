@@ -23,12 +23,12 @@ If you use scoped translations, the first property will be used as filename:
 ```
 will generate two files for each language:
 ```
-public/i18n
+public/i18n/
 │   
-└───en-US
+└───en-US/
 │       app.json
 │       home.json
-└───it-IT
+└───it-IT/
         app.json
         home.json
 ```

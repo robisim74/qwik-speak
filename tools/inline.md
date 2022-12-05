@@ -93,11 +93,11 @@ qwikSpeakInline({
 ```
 In this way the browser chunks are generated one for each language:
 ```
-dist/build
+dist/build/
 │   
-└───en-US
+└───en-US/
 │       q-*.js
-└───it-IT
+└───it-IT/
         q-*.js
 ```
 Each contains only its own translation:

@@ -9,7 +9,7 @@ export interface SpeakProps {
    */
   assets: string[];
   /**
-   * Optional additional languages to preload data for
+   * Optional additional languages to preload data for (multilingual)
    */
   langs?: string[];
 }
@@ -22,7 +22,7 @@ export const Speak = component$((props: SpeakProps) => {
   const { locale, translation, config } = ctx;
 
   // Get URL object
-  const url = new URL(useEnvData('url') ?? document.location.href);
+  const url = new URL(useEnvData<string>('url') ?? document.location.href);
 
   // Will block the rendering until callback resolves
   useMount$(async () => {

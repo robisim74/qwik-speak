@@ -1,4 +1,4 @@
-import { component$, getLocale, useStyles$ } from '@builder.io/qwik';
+import { component$, useStyles$ } from '@builder.io/qwik';
 import { QwikCityProvider, RouterOutlet, ServiceWorkerRegister } from '@builder.io/qwik-city';
 import { QwikSpeak } from 'qwik-speak';
 
@@ -10,14 +10,11 @@ import globalStyles from './global.css?inline';
 export default component$(() => {
   useStyles$(globalStyles);
 
-  const lang = getLocale();
-  const locale = config.supportedLocales.find(x => x.lang === lang);
-
   return (
     /**
      * Init Qwik Speak (only available in child components)
      */
-    <QwikSpeak config={config} translationFn={translationFn} locale={locale}>
+    <QwikSpeak config={config} translationFn={translationFn}>
       <QwikCityProvider>
         <head>
           <meta charSet="utf-8" />

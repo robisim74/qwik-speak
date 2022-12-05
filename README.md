@@ -3,12 +3,17 @@
 
 > Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps
 
-Live example on [StackBlitz](https://stackblitz.com/edit/qwik-speak)
-
-## Usage
 ```shell
 npm install qwik-speak --save-dev
 ```
+
+## Getting Started
+- [Quick Start](./doc/quick-start.md)
+- [Tutorial: localized routing](./doc/tutorial-routing.md)
+
+Live example on [StackBlitz](https://stackblitz.com/edit/qwik-speak)
+
+## Overview
 ### Getting the translation
 ```jsx
 import { $translate as t, $plural as p } from 'qwik-speak';
@@ -37,117 +42,6 @@ export default component$(() => {
   );
 });
 ```
-### Configuration
-```typescript
-import { SpeakConfig } from 'qwik-speak';
-
-export const config: SpeakConfig = {
-  defaultLocale: { lang: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles' },
-  supportedLocales: [
-    { lang: 'it-IT', currency: 'EUR', timeZone: 'Europe/Rome' },
-    { lang: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles' }
-  ],
-  assets: [
-    'app', // Translations shared by the pages
-  ]
-};
-```
-Assets will be loaded through the implementation of `loadTranslation$` function below. You can load _json_ files or call an _endpoint_ to return a `Translation` object of key-value pairs for each language:
-
-```json
-{
-  "app": {
-    "title": "Qwik Speak"
-  }
-}
-```
-#### Custom APIs
-```typescript
-import { $ } from '@builder.io/qwik';
-
-export const loadTranslation$: LoadTranslationFn = $((lang: string, asset: string, origin?: string) => { 
-  // E.g. Fetch translation data from json files
-  let url = '';
-  // Absolute urls on server
-  if (isServer && origin) {
-    url = origin;
-  }
-  url += `/i18n/${lang}/${asset}.json`;
-  const data = await fetch(url);
-  return data.json();
-});
-
-export const resolveLocale$: ResolveLocaleFn = $((url: URL) => {
-  /* Must contain the logic to resolve which locale to use during SSR */
-});
-
-export const translateFn: TranslateFn = {
-  loadTranslation$: loadTranslation$,
-  /* other functions */
-};
-```
-
-Add `QwikSpeak` component in `root.tsx`:
-```jsx
-import { QwikSpeak } from 'qwik-speak';
-
-export default component$(() => {
-  return (
-    /**
-     * Init Qwik Speak (only available in child components)
-     */
-    <QwikSpeak config={config} translateFn={translateFn}>
-      <QwikCityProvider>
-        <head></head>
-        <body>
-          <RouterOutlet />
-        </body>
-      </QwikCityProvider>
-    </QwikSpeak>
-  );
-});
-```
-### Scoped translations
-```mermaid
-C4Container
-    Container_Boundary(a, "App") {
-        Component(a0, "QwikSpeak", "", "Uses Speak context")
-        Container_Boundary(b1, "Home") {
-            Component(a10, "Speak", "", "Adds its own translation data to the context")        
-        }  
-        Container_Boundary(b2, "Page") {
-            Component(a20, "Speak", "", "Adds its own translation data to the context")        
-        }       
-    }
-```
-Create a different translation data file (asset) for each page and use `Speak` component to add translation data to the context:
-```jsx
-import { Speak } from 'qwik-speak';
-
-export default component$(() => {
-  return (
-    /**
-     * Add Home translations (only available in child components)
-     */
-    <Speak assets={['home']}>
-      <Home />
-    </Speak>
-  );
-});
-```
-### Additional languages
-```jsx
-import { Speak } from 'qwik-speak';
-
-export default component$(() => {
-  return (
-    <Speak assets={['home']} langs={['en-US']}>
-      <Home />
-    </Speak>
-  );
-});
-```
-The translation data of the additional languages are preloaded along with the current language. They can be used for multilingual pages.
 
 ## Extraction of translations
 To extract translations directly from the components, a command is available that automatically generates the files with the keys and default values.
@@ -162,27 +56,50 @@ You have three solutions:
 
 See [Qwik Speak Inline Vite plugin](./tools/inline.md) for more information on how it works and how to use it.
 
-## Speak config
-- `defaultLocale`
-The default locale
+## Speak context
+```mermaid
+stateDiagram-v2
+    State1: SpeakState
+    State2: SpeakConfig
+    State3: SpeakLocale
+    State4: TranslationFn
+    State5: Translation
+    State1 --> State2
+    State1 --> State3
+    State1 --> State4
+    State1 --> State5
+    note right of State2: configuration
+    note right of State3
+        - lang
+        - extension (Intl)
+        - currency
+        - timezone
+        - unit
+    end note 
+    note right of State4
+        - loadTranslation$
+    end note
+    note right of State5
+        key-value pairs
+        of translation data
+    end note
+```
 
-- `supportedLocales`
-Supported locales
+- `useSpeakContext()` Returns the Speak state
+- `useSpeakConfig()` Returns the configuration in Speak context
+- `useSpeakLocale()` Returns the locale in Speak context
 
-- `assets`
-An array of strings: each asset is passed to the `loadTranslation$` function to obtain data according to the language
+### Speak config
+- `defaultLocale` The default locale
+- `supportedLocales` Supported locales
+- `assets` An array of strings: each asset is passed to the `loadTranslation$` function to obtain data according to the language
+- `keySeparator` Separator of nested keys. Default is `.`
+- `keyValueSeparator` Key-value separator. Default is `@@`. The default value of a key can be passed directly into the string: `t('app.title@@Qwik Speak')`
 
-- `keySeparator`
-Separator of nested keys. Default is `.`
-
-- `keyValueSeparator`
-Key-value separator. Default is `@@`
-
-  The default value of a key can be passed directly into the string: `t('app.title@@Qwik Speak')`
-
+### SpeakLocale
 The `SpeakLocale` object contains the `lang`, in the format `language[-script][-region]`, where:
-- `language`: ISO 639 two-letter or three-letter code
-- `script`: ISO 15924 four-letter script code
+- `language` ISO 639 two-letter or three-letter code
+- `script` ISO 15924 four-letter script code
 - `region` ISO 3166 two-letter, uppercase code
 
 and optionally contains:
@@ -191,7 +108,36 @@ and optionally contains:
 - `timezone` From the IANA time zone database
 - `units` Key value pairs of unit identifiers
 
+### Translation functions
+`TranslationFn` interface can be implemented to change the behavior of the library:
+- `loadTranslation$?: LoadTranslationFn` Function to load translation data
+
 ## APIs
+### Components
+```mermaid
+C4Container
+    Container_Boundary(a, "App") {
+        Component(a0, "QwikSpeak", "", "Uses Speak context")
+        Container_Boundary(b1, "Home") {
+            Component(a10, "Speak", "", "Adds its own translation data to the context")        
+        }  
+        Container_Boundary(b2, "Page") {
+            Component(a20, "Speak", "", "Adds its own translation data to the context")        
+        }       
+    }
+```
+#### Qwik Speak component
+`QwikSpeak` component provides the Speak context to the app. `Props`:
+  - `config`: Speak config
+  - `translationFn`: Optional functions to use
+  - `locale`: Optional locale to use
+  - `langs`: Optional additional languages to preload data for (multilingual)
+
+#### Speak component (scoped translations)
+`Speak` component can be used for scoped translations. `Props`:
+  - `assets`: Assets to load
+  - `langs`: Optional additional languages to preload data for (multilingual)
+
 ### Functions
 - `$translate(keys: string | string[], params?: any, ctx?: SpeakState, lang?: string)`
 Translates a key or an array of keys. The syntax of the string is `key@@[default value]`
@@ -210,46 +156,6 @@ Formats a number
 
 - `changeLocale(newLocale: SpeakLocale, ctx: SpeakState)`
 Changes locale at runtime: loads translation data and rerenders components that uses translations
-
-### Speak context
-```mermaid
-stateDiagram-v2
-    State1: SpeakState
-    State2: SpeakLocale
-    State3: Translation
-    State4: SpeakConfig
-    State5: TranslateFn
-    State1 --> State2
-    State1 --> State3
-    State1 --> State4
-    State1 --> State5
-    note right of State2
-        - lang
-        - extension (Intl)
-        - currency
-        - timezone
-        - unit
-    end note
-    note right of State3
-        key-value pairs
-        of translation data
-    end note
-    note right of State4: Configuration
-    note right of State5
-        Custom APIs:
-        - loadTranslation$
-        - resolveLocale$
-    end note
-```
-
-- `useSpeakContext()`
-Returns the Speak state
-
-- `useSpeakLocale()`
-Returns the locale in Speak context
-
-- `useSpeakConfig()`
-Returns the configuration in Speak context
 
 ## Development Builds
 ### Library & tools
@@ -278,13 +184,6 @@ npm run serve
 ```Shell
 npm run test.e2e
 ```
-
-## What's new
-> Released v0.4.0
-
-- Extract & inline: support `$plural ` and array of keys
-- Advanced inlining: [Qwik Speak Inline Vite plugin](./tools/inline.md)
-- Extract translations: [Qwik Speak Extract](./tools/extract.md) 
 
 ## License
 MIT

@@ -19,7 +19,7 @@ export interface QwikSpeakProps {
    */
   locale?: SpeakLocale;
   /**
-   * Optional additional languages to preload data for
+   * Optional additional languages to preload data for (multilingual)
    */
   langs?: string[];
 }
@@ -49,12 +49,15 @@ export const QwikSpeak = component$((props: QwikSpeakProps) => {
   useContextProvider(SpeakContext, ctx);
 
   // Get URL object
-  const url = new URL(useEnvData('url') ?? document.location.href);
+  const url = new URL(useEnvData<string>('url') ?? document.location.href);
+  const lang = useEnvData<string>('locale');
 
   // Will block the rendering until callback resolves
   useMount$(async () => {
     // Resolve the locale
-    const resolvedLocale = props.locale ?? config.defaultLocale;
+    const resolvedLocale = props.locale ??
+      config.supportedLocales.find(value => value.lang === lang) ??
+      config.defaultLocale;
 
     const resolvedLangs = new Set(props.langs || []);
     resolvedLangs.add(resolvedLocale.lang);
