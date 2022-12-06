@@ -47,3 +47,4 @@ tsconfig.lib.tsbuildinfo
 /dts-out/
 /inline/
 /extract/
+/tmp/

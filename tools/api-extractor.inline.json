@@ -7,7 +7,8 @@
     "enabled": false
   },
   "docModel": {
-    "enabled": false
+    "enabled": true,
+    "apiJsonFilePath": "../tmp/inline.api.json"
   },
   "dtsRollup": {
     "enabled": true,
