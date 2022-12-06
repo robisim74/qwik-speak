@@ -97,7 +97,7 @@ Here we are doing two things:
 - secondly, if `lang` parameter is not defined we redirect based on the locale saved in a cookie (which we will set later) or based on the user's language if available. Note that we are on the server, and we need to get these values from the request headers.
 
 ## Adding Qwik Speak
-Just wrap Qwik City provider with Qwik Speak component in `root.tsx` and pass it the configuration and translation functions:
+Just wrap Qwik City provider with `QwikSpeak` component in `root.tsx` and pass it the configuration and the translation functions:
 
 _src/root.tsx_
 ```jsx
@@ -157,7 +157,7 @@ export const head: DocumentHead = {
   meta: [{ name: 'description', content: 'home.head.description@@Qwik Speak with localized routing' }]
 };
 ```
-Here we have used the Speak component to add scoped translations to the home page. This means that in addition to the `app` asset that comes with the configuration, the home page will also use the `home` asset. To distinguish them, `app` asset keys start with `app` and home asset keys start with `home`.
+Here we have used the `Speak` component to add scoped translations to the home page. This means that in addition to the `app` asset that comes with the configuration, the home page will also use the `home` asset. To distinguish them, `app` asset keys start with `app` and home asset keys start with `home`.
 
 We are also providing default values for each translation: `key@@[default value]`.
 
@@ -191,7 +191,7 @@ export default function (opts: RenderToStreamOptions) {
 ```
 
 ## Change locale
-We now want to change locale without reloading the page, just rerendering components that use translations. Let's create a `ChangeLocale` component:
+Now we want to change locale without reloading the page, just rerendering components that use translations. Let's create a `ChangeLocale` component:
 
 _src/components/header/change-locale.tsx_
 ```jsx
@@ -249,13 +249,15 @@ export default component$(() => {
 ```
 `changeLocale` function by Qwik Speak is responsible for the language change. Then we store the locale in a cookie (which we handled in layout) and replace the language in the URL, using the Qwik City navigation API, therefore without reloading the page.
 
+> As an alternative you could avoid calling `changeLocale` and updating the URL - you could just navigate directly to the new localized URL.
+
 ## Running
 You can already try the app: `npm start`
 
 You will notice that in the translations there are default values for both languages, and that when you change language the URL updates.
 
-## Extraction [Qwik Speak Extract](../tools/extract.md)
-We can now extract the translations and generate the translation files (assets) as json. In `package.json` add the following command to the scripts:
+## Extraction: [Qwik Speak Extract](../tools/extract.md)
+We can now extract the translations and generate the `assets` as json. In `package.json` add the following command to the scripts:
 ```json
 "qwik-speak-extract": "qwik-speak-extract --supportedLangs=en-US,it-IT"
 ```
@@ -292,7 +294,7 @@ _public/i18n/[lang]/runtime.json_
 
 We can translate the `it-IT` files, and run the app again.
 
-## Inlining [Qwik Speak Inline Vite plugin](../tools/inline.md)
+## Inlining: [Qwik Speak Inline Vite plugin](../tools/inline.md)
 Let's make sure that the `runtime` file is loaded and others only in dev mode. Update the `loadTranslation$` function:
 
 _src/speak-config.ts_

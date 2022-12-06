@@ -8,8 +8,8 @@ npm install qwik-speak --save-dev
 ```
 
 ## Getting Started
-- [Quick Start](./doc/quick-start.md)
-- [Tutorial: localized routing](./doc/tutorial-routing.md)
+- [Quick Start](./docs/quick-start.md)
+- [Tutorial: localized routing](./docs/tutorial-routing.md)
 
 Live example on [StackBlitz](https://stackblitz.com/edit/qwik-speak)
 
@@ -110,7 +110,7 @@ and optionally contains:
 
 ### Translation functions
 `TranslationFn` interface can be implemented to change the behavior of the library:
-- `loadTranslation$?: LoadTranslationFn` Function to load translation data
+- `loadTranslation$?` Function to load translation data
 
 ## APIs
 ### Components
@@ -128,15 +128,15 @@ C4Container
 ```
 #### Qwik Speak component
 `QwikSpeak` component provides the Speak context to the app. `Props`:
-  - `config`: Speak config
-  - `translationFn`: Optional functions to use
-  - `locale`: Optional locale to use
-  - `langs`: Optional additional languages to preload data for (multilingual)
+  - `config` Speak config
+  - `translationFn` Optional functions to use
+  - `locale` Optional locale to use
+  - `langs` Optional additional languages to preload data for (multilingual)
 
 #### Speak component (scoped translations)
 `Speak` component can be used for scoped translations. `Props`:
-  - `assets`: Assets to load
-  - `langs`: Optional additional languages to preload data for (multilingual)
+  - `assets` Assets to load
+  - `langs` Optional additional languages to preload data for (multilingual)
 
 ### Functions
 - `$translate(keys: string | string[], params?: any, ctx?: SpeakState, lang?: string)`
@@ -149,7 +149,7 @@ Gets the plural by a number
 Formats a date
 
 - `relativeTime(value: number | string, unit: Intl.RelativeTimeFormatUnit, options?: Intl.RelativeTimeFormatOptions, locale?: SpeakLocale, lang?: string)`
-Format a relative time
+Formats a relative time
 
 - `formatNumber(value: number | string, options?: Intl.NumberFormatOptions, locale?: SpeakLocale, lang?: string, currency?: string)`
 Formats a number
@@ -176,7 +176,6 @@ npm start
 ```Shell
 npm run build.app
 ```
-##### Express server
 ```Shell
 npm run serve
 ```
