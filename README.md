@@ -172,12 +172,9 @@ npm test
 ```Shell
 npm start
 ```
-#### Build
+#### Preview
 ```Shell
-npm run build.app
-```
-```Shell
-npm run serve
+npm run preview
 ```
 #### Test
 ```Shell
