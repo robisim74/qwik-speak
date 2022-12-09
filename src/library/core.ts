@@ -19,35 +19,31 @@ export const memoize = (fn: LoadTranslationFn) => {
 };
 
 /**
- * Load translation data
+ * Load translations
  */
-export const loadTranslation = async (
-  lang: string,
+export const loadTranslations = async (
   ctx: SpeakState,
   origin?: string,
+  langs?: string[],
   assets?: string[]
-): Promise<Translation> => {
-  const { config, translationFn } = ctx;
+): Promise<void> => {
+  const { locale, translation, config, translationFn } = ctx;
 
   assets = assets ?? config.assets;
-  // Get translation
-  const memoized = memoize(translationFn.loadTranslation$);
-  const tasks = assets.map(asset => memoized(lang, asset, origin));
-  const sources = await Promise.all(tasks);
 
-  const translation: Translation = {};
-  for (const data of sources) {
-    if (data) {
-      addData(translation, data, lang)
+  // Multilingual
+  const resolvedLangs = new Set(langs || []);
+  resolvedLangs.add(locale.lang);
+
+  for (const lang of resolvedLangs) {
+    const memoized = memoize(translationFn.loadTranslation$);
+    const tasks = assets.map(asset => memoized(lang, asset, origin));
+    const sources = await Promise.all(tasks);
+
+    for (const data of sources) {
+      if (data) Object.assign(translation[lang], data); // Shallow merge
     }
   }
-  return translation;
-};
-
-export const addData = (translation: Translation, data: Translation, lang: string): void => {
-  translation[lang] = translation[lang] !== undefined
-    ? { ...translation[lang], ...data } // Shallow merge
-    : data;
 };
 
 /**

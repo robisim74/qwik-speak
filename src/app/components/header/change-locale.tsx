@@ -4,7 +4,6 @@ import { useLocation, useNavigate } from '@builder.io/qwik-city';
 import { changeLocale, $translate as t, useSpeakContext, SpeakLocale } from 'qwik-speak';
 import { config } from '../../speak-config';
 
-
 export const ChangeLocale = component$(() => {
   const loc = useLocation();
   const nav = useNavigate();

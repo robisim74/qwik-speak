@@ -1,9 +1,9 @@
-import { $, component$, Slot, useContextProvider, useEnvData, useMount$, useStore } from '@builder.io/qwik';
+import { $, component$, Slot, useContextProvider, useEnvData, useStore, useWatch$ } from '@builder.io/qwik';
 import { isServer } from '@builder.io/qwik/build';
 
 import type { InternalSpeakState, SpeakConfig, SpeakLocale, SpeakState, TranslationFn } from './types';
 import { SpeakContext } from './context';
-import { loadTranslation } from './core';
+import { loadTranslations } from './core';
 
 export interface QwikSpeakProps {
   /**
@@ -25,19 +25,29 @@ export interface QwikSpeakProps {
 }
 
 export const QwikSpeak = component$((props: QwikSpeakProps) => {
-  // Assign functions
+  // Get URL object
+  const url = new URL(useEnvData<string>('url') ?? document.location.href);
+  // Get Qwik locale
+  const lang = useEnvData<string>('locale');
+
+  // Resolve functions
   const resolvedTranslationFn: TranslationFn = {
     loadTranslation$: props.translationFn?.loadTranslation$ ?? $(() => null)
   };
 
+  // Resolve locale
+  const resolvedLocale = props.locale ??
+    props.config.supportedLocales.find(value => value.lang === lang) ??
+    props.config.defaultLocale;
+
   // Set initial state
   const state = useStore<InternalSpeakState>({
-    locale: {},
+    locale: Object.assign({}, resolvedLocale),
     translation: Object.fromEntries(props.config.supportedLocales.map(value => [value.lang, {}])),
     config: {
       defaultLocale: props.config.defaultLocale,
       supportedLocales: props.config.supportedLocales,
-      assets: [...props.config.assets], // Shallow copy
+      assets: props.config.assets,
       keySeparator: props.config.keySeparator || '.',
       keyValueSeparator: props.config.keyValueSeparator || '@@'
     },
@@ -46,29 +56,15 @@ export const QwikSpeak = component$((props: QwikSpeakProps) => {
   const ctx = state as SpeakState;
   const { locale, translation, config, translationFn } = ctx;
 
+  // Create context
   useContextProvider(SpeakContext, ctx);
 
-  // Get URL object
-  const url = new URL(useEnvData<string>('url') ?? document.location.href);
-  const lang = useEnvData<string>('locale');
+  // Called the first time when the component mounts, and when lang changes
+  useWatch$(async ({ track }) => {
+    track(() => locale.lang);
 
-  // Will block the rendering until callback resolves
-  useMount$(async () => {
-    // Resolve the locale
-    const resolvedLocale = props.locale ??
-      config.supportedLocales.find(value => value.lang === lang) ??
-      config.defaultLocale;
-
-    const resolvedLangs = new Set(props.langs || []);
-    resolvedLangs.add(resolvedLocale.lang);
-
-    // Load translation data
-    for (const lang of resolvedLangs) {
-      const loadedTranslation = await loadTranslation(lang, ctx, url.origin);
-      Object.assign(translation, loadedTranslation);
-    }
-
-    Object.assign(locale, resolvedLocale);
+    // Load translations
+    await loadTranslations(ctx, url.origin, props.langs);
 
     // Prevent Qwik from creating subscriptions
     if (isServer) {

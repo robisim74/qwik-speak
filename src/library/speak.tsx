@@ -1,7 +1,7 @@
-import { component$, Slot, useEnvData, useMount$ } from '@builder.io/qwik';
+import { component$, Slot, useEnvData, useWatch$ } from '@builder.io/qwik';
 
 import { useSpeakContext } from './use-functions';
-import { loadTranslation, addData } from './core';
+import { loadTranslations } from './core';
 
 export interface SpeakProps {
   /**
@@ -19,25 +19,17 @@ export interface SpeakProps {
  */
 export const Speak = component$((props: SpeakProps) => {
   const ctx = useSpeakContext();
-  const { locale, translation, config } = ctx;
+  const { locale } = ctx;
 
   // Get URL object
   const url = new URL(useEnvData<string>('url') ?? document.location.href);
 
-  // Will block the rendering until callback resolves
-  useMount$(async () => {
-    const resolvedLangs = new Set(props.langs || []);
-    resolvedLangs.add(locale.lang);
+  // Called the first time when the component mounts, and when lang changes
+  useWatch$(async ({ track }) => {
+    track(() => locale.lang);
 
-    // Load translation data
-    for (const lang of resolvedLangs) {
-      const loadedTranslation = await loadTranslation(lang, ctx, url.origin, props.assets);
-      addData(loadedTranslation, translation[lang], lang);
-      Object.assign(translation[lang], loadedTranslation[lang]);
-    }
-
-    const resolvedAssets = new Set([...config.assets, ...props.assets]);
-    Object.assign(config.assets, Array.from(resolvedAssets));
+    // Load translations
+    await loadTranslations(ctx, url.origin, props.langs, props.assets);
   });
 
   return <Slot />;
