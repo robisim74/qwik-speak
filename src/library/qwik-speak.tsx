@@ -1,4 +1,4 @@
-import { $, component$, Slot, useContextProvider, useEnvData, useStore, useWatch$ } from '@builder.io/qwik';
+import { $, component$, Slot, useContextProvider, useEnvData, useStore, useTask$ } from '@builder.io/qwik';
 import { isServer } from '@builder.io/qwik/build';
 
 import type { InternalSpeakState, SpeakConfig, SpeakLocale, SpeakState, TranslationFn } from './types';
@@ -60,7 +60,7 @@ export const QwikSpeak = component$((props: QwikSpeakProps) => {
   useContextProvider(SpeakContext, ctx);
 
   // Called the first time when the component mounts, and when lang changes
-  useWatch$(async ({ track }) => {
+  useTask$(async ({ track }) => {
     track(() => locale.lang);
 
     // Load translations

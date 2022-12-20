@@ -1,4 +1,4 @@
-import { component$, Slot, useEnvData, useWatch$ } from '@builder.io/qwik';
+import { component$, Slot, useEnvData, useTask$ } from '@builder.io/qwik';
 
 import { useSpeakContext } from './use-functions';
 import { loadTranslations } from './core';
@@ -25,7 +25,7 @@ export const Speak = component$((props: SpeakProps) => {
   const url = new URL(useEnvData<string>('url') ?? document.location.href);
 
   // Called the first time when the component mounts, and when lang changes
-  useWatch$(async ({ track }) => {
+  useTask$(async ({ track }) => {
     track(() => locale.lang);
 
     // Load translations
