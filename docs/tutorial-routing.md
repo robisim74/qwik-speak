@@ -2,6 +2,8 @@
 
 > Step by step, let's build an app with Qwik Speak and a localized router
 
+> Requires Qwik city 0.0.128
+
 ```shell
 npm create qwik@latest
 npm install qwik-speak --save-dev

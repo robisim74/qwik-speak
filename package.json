@@ -25,10 +25,10 @@
     "qwik-speak-extract": "./extract/cli.js"
   },
   "peerDependencies": {
-    "@builder.io/qwik": ">=0.16.1"
+    "@builder.io/qwik": ">=0.16.2"
   },
   "devDependencies": {
-    "@builder.io/qwik": "0.16.1",
+    "@builder.io/qwik": "0.16.2",
     "@builder.io/qwik-city": "0.0.128",
     "@microsoft/api-extractor": "^7.33.6",
     "@microsoft/api-documenter": "^7.19.25",
@@ -40,7 +40,7 @@
     "@typescript-eslint/eslint-plugin": "5.46.1",
     "@typescript-eslint/parser": "5.46.1",
     "eslint": "8.30.0",
-    "eslint-plugin-qwik": "0.16.1",
+    "eslint-plugin-qwik": "0.16.2",
     "jest": "^29.1.1",
     "node-fetch": "3.3.0",
     "np": "7.6.2",
