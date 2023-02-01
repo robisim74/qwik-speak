@@ -26,7 +26,9 @@ export interface QwikSpeakProps {
 
 export const QwikSpeak = component$((props: QwikSpeakProps) => {
   // Get URL object
-  const url = new URL(useEnvData<string>('url') ?? document.location.href);
+  const urlEnv = useEnvData<string>('url');
+  const url = isServer && urlEnv ? new URL(urlEnv) : null;
+
   // Get Qwik locale
   const lang = useEnvData<string>('locale');
 
@@ -64,7 +66,7 @@ export const QwikSpeak = component$((props: QwikSpeakProps) => {
     track(() => locale.lang);
 
     // Load translations
-    await loadTranslations(ctx, url.origin, props.langs);
+    await loadTranslations(ctx, url?.origin, props.langs);
 
     // Prevent Qwik from creating subscriptions
     if (isServer) {

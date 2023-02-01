@@ -1,4 +1,5 @@
 import { component$, Slot, useEnvData, useTask$ } from '@builder.io/qwik';
+import { isServer } from '@builder.io/qwik/build';
 
 import { useSpeakContext } from './use-functions';
 import { loadTranslations } from './core';
@@ -22,14 +23,15 @@ export const Speak = component$((props: SpeakProps) => {
   const { locale } = ctx;
 
   // Get URL object
-  const url = new URL(useEnvData<string>('url') ?? document.location.href);
+  const urlEnv = useEnvData<string>('url');
+  const url = isServer && urlEnv ? new URL(urlEnv) : null;
 
   // Called the first time when the component mounts, and when lang changes
   useTask$(async ({ track }) => {
     track(() => locale.lang);
 
     // Load translations
-    await loadTranslations(ctx, url.origin, props.langs, props.assets);
+    await loadTranslations(ctx, url?.origin, props.langs, props.assets);
   });
 
   return <Slot />;
