@@ -44,3 +44,18 @@ export const loadTranslation$: LoadTranslationFn = $(async (lang: string, asset:
 export const translationFn: TranslationFn = {
   loadTranslation$: loadTranslation$
 };
+
+/**
+ * Unit testing
+ */
+export const loadTranslationStub$: LoadTranslationFn = $((lang: string, asset: string, origin?: string) =>
+  JSON.parse(
+    import.meta.glob('/public/i18n/**/*.json', { as: 'raw', eager: true })[
+    `/public/i18n/${lang}/${asset}.json`
+    ]
+  )
+);
+
+export const translationFnStub: TranslationFn = {
+  loadTranslation$: loadTranslationStub$
+};
