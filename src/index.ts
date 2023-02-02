@@ -8,11 +8,11 @@ export type {
   InternalSpeakState,
   LoadTranslationFn,
 } from './library/types';
-export type { QwikSpeakProps } from './library/qwik-speak';
-export type { SpeakProps } from './library/speak';
+export type { QwikSpeakProps } from './library/qwik-speak-component';
+export type { SpeakProps } from './library/speak-component';
 // Components
-export { QwikSpeak } from './library/qwik-speak';
-export { Speak } from './library/speak';
+export { QwikSpeakProvider } from './library/qwik-speak-component';
+export { Speak } from './library/speak-component';
 // Functions
 export { $translate } from './library/translate';
 export { $plural } from './library/plural';
