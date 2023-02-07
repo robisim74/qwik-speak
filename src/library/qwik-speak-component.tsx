@@ -1,4 +1,4 @@
-import { $, component$, Slot, useContextProvider, useEnvData, useStore, useTask$ } from '@builder.io/qwik';
+import { $, component$, Slot, useContextProvider, useServerData, useStore, useTask$ } from '@builder.io/qwik';
 import { isServer } from '@builder.io/qwik/build';
 
 import type { InternalSpeakState, SpeakConfig, SpeakLocale, SpeakState, TranslationFn } from './types';
@@ -26,11 +26,11 @@ export interface QwikSpeakProps {
 
 export const QwikSpeakProvider = component$((props: QwikSpeakProps) => {
   // Get URL object
-  const urlEnv = useEnvData<string>('url');
+  const urlEnv = useServerData<string>('url');
   const url = isServer && urlEnv ? new URL(urlEnv) : null;
 
   // Get Qwik locale
-  const lang = useEnvData<string>('locale');
+  const lang = useServerData<string>('locale');
 
   // Resolve functions
   const resolvedTranslationFn: TranslationFn = {

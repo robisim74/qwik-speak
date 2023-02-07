@@ -71,7 +71,7 @@ export const translationFnStub: TranslationFn = {
   loadTranslation$: loadTranslationStub$
 };
 ```
-and pass it with the language you want to `QwikSpeak` provider:
+and pass it with the language you want to `QwikSpeakProvider`:
 
 ```jsx
 test(`[Home Component]: Should render translated texts in Italian`, async () => {

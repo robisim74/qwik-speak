@@ -1,4 +1,4 @@
-import { component$, Slot, useEnvData, useTask$ } from '@builder.io/qwik';
+import { component$, Slot, useServerData, useTask$ } from '@builder.io/qwik';
 import { isServer } from '@builder.io/qwik/build';
 
 import { useSpeakContext } from './use-functions';
@@ -23,7 +23,7 @@ export const Speak = component$((props: SpeakProps) => {
   const { locale } = ctx;
 
   // Get URL object
-  const urlEnv = useEnvData<string>('url');
+  const urlEnv = useServerData<string>('url');
   const url = isServer && urlEnv ? new URL(urlEnv) : null;
 
   // Called the first time when the component mounts, and when lang changes
