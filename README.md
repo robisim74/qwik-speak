@@ -90,7 +90,7 @@ stateDiagram-v2
 - `useSpeakLocale()` Returns the locale in Speak context
 
 ### Speak config
-- `defaultLocale` The default locale
+- `defaultLocale` The default locale to use as fallback
 - `supportedLocales` Supported locales
 - `assets` An array of strings: each asset is passed to the `loadTranslation$` function to obtain data according to the language
 - `keySeparator` Separator of nested keys. Default is `.`

@@ -32,15 +32,41 @@ export const loadTranslation$: LoadTranslationFn = $(async (lang: string, asset:
     url = origin;
   }
   url += `/i18n/${lang}/${asset}.json`;
-  const data = await fetch(url);
-  return data.json();
+  const response = await fetch(url);
+  return response.json();
 });
 
 export const translationFn: TranslationFn = {
   loadTranslation$: loadTranslation$
 };
 ```
-We have added the Speak config and the implementation of the `loadTranslation$` function. Loading of translations can take place both on server and on client (in case of SPA or language change) and the `loadTranslation$` function must support both.
+We have added the Speak config and the implementation of the `loadTranslation$` function.
+
+> The `defaultLocale` and `supportedLocales` are required because the library uses the default locale if a locale is set at runtime that is not supported.
+
+Loading of translations can take place both on server and on client (in case of SPA or language change) and the `loadTranslation$` function must support both.
+
+We can also catch exceptions:
+```typescript
+export const loadTranslation$: LoadTranslationFn = $(async (lang: string, asset: string, origin?: string) => {
+  let url = '';
+  // Absolute urls on server
+  if (isServer && origin) {
+    url = origin;
+  }
+  url += `/i18n/${lang}/${asset}.json`;
+
+  let data: any = null;
+  try {
+    const response = await fetch(url);
+    data = await response.json();
+  } catch (error) {
+    // Implement error handling here
+    console.log('loadTranslation$ error: ', error);
+  }
+  return data;
+});
+```
 
 ## Routing
 Let's assume that we want to create a navigation of this type:
@@ -95,7 +121,7 @@ export const onRequest: RequestHandler = ({ request, response, params }) => {
 };
 ```
 Here we are doing two things:
-- first we assign to the response the value of the `lang` parameter or the default one. This way it will be immediately available to the library;
+- first we assign to the response the value of the `lang` parameter. This way it will be immediately available to the library;
 - secondly, if `lang` parameter is not defined we redirect based on the locale saved in a cookie (which we will set later) or based on the user's language if available. Note that we are on the server, and we need to get these values from the request headers.
 
 ## Adding Qwik Speak
@@ -249,7 +275,7 @@ export default component$(() => {
   );
 });
 ```
-`changeLocale` function by Qwik Speak is responsible for the language change. Then we store the locale in a cookie (which we handled in layout) and replace the language in the URL, using the Qwik City navigation API, therefore without reloading the page.
+`changeLocale` function by Qwik Speak is responsible for the language change, and it falls back to the default locale if the new locale is not in `supportedLocales`. Then we store the locale in a cookie (which we handled in layout) and replace the language in the URL, using the Qwik City navigation API, therefore without reloading the page.
 
 > As an alternative you could avoid calling `changeLocale` and updating the URL - you could just navigate directly to the new localized URL.
 
@@ -309,8 +335,8 @@ export const loadTranslation$: LoadTranslationFn = $(async (lang: string, asset:
       url = origin;
     }
     url += `/i18n/${lang}/${asset}.json`;
-    const data = await fetch(url);
-    return data.json();
+    const response = await fetch(url);
+    return response.json();
   }
 });
 ```

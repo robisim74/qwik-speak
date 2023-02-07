@@ -33,8 +33,18 @@ export const loadTranslation$: LoadTranslationFn = $(async (lang: string, asset:
       url = origin;
     }
     url += `/i18n/${lang}/${asset}.json`;
-    const data = await fetch(url);
-    return data.json();
+    const response = await fetch(url);
+    return response.json();
+
+    /* let data: any = null;
+    try {
+      const response = await fetch(url);
+      data = await response.json();
+    } catch (error) {
+      // Implement error handling here
+      console.log('loadTranslation$ error: ', error);
+    }
+    return data; */
   }
 });
 

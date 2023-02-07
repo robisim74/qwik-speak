@@ -6,8 +6,13 @@ import type { SpeakLocale, SpeakState } from './types';
  * @param ctx Speak context
  */
 export const changeLocale = async (newLocale: SpeakLocale, ctx: SpeakState): Promise<void> => {
-  const { locale } = ctx;
+  const { locale, config } = ctx;
+
+  // Resolve locale
+  const resolvedLocale = config.supportedLocales.find(value => value.lang === newLocale.lang) ?
+    newLocale :
+    config.defaultLocale;
 
   // Update state
-  Object.assign(locale, newLocale);
+  Object.assign(locale, resolvedLocale);
 };

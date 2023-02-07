@@ -48,3 +48,6 @@ tsconfig.lib.tsbuildinfo
 /inline/
 /extract/
 /tmp/
+
+# Playwright
+salt

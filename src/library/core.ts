@@ -11,10 +11,7 @@ export const memoize = (fn: LoadTranslationFn) => {
 
     return stringArgs in cache ?
       cache[stringArgs] :
-      (cache[stringArgs] = fn(...args).catch((x) => {
-        delete cache[stringArgs];
-        return x;
-      }));
+      cache[stringArgs] = fn(...args);
   };
 };
 

@@ -38,15 +38,41 @@ export const loadTranslation$: LoadTranslationFn = $(async (lang: string, asset:
     url = origin;
   }
   url += `/i18n/${lang}/${asset}.json`;
-  const data = await fetch(url);
-  return data.json();
+  const response = await fetch(url);
+  return response.json();
 });
 
 export const translationFn: TranslationFn = {
   loadTranslation$: loadTranslation$
 };
 ```
-We have added the Speak config and the implementation of the `loadTranslation$` function. Loading of translations can take place both on server and on client (in case of SPA or language change) and the `loadTranslation$` function must support both.
+We have added the Speak config and the implementation of the `loadTranslation$` function.
+
+> The `defaultLocale` and `supportedLocales` are required because the library uses the default locale if a locale is set at runtime that is not supported.
+
+Loading of translations can take place both on server and on client (in case of SPA or language change) and the `loadTranslation$` function must support both.
+
+We can also catch exceptions:
+```typescript
+export const loadTranslation$: LoadTranslationFn = $(async (lang: string, asset: string, origin?: string) => {
+  let url = '';
+  // Absolute urls on server
+  if (isServer && origin) {
+    url = origin;
+  }
+  url += `/i18n/${lang}/${asset}.json`;
+
+  let data: any = null;
+  try {
+    const response = await fetch(url);
+    data = await response.json();
+  } catch (error) {
+    // Implement error handling here
+    console.log('loadTranslation$ error: ', error);
+  }
+  return data;
+});
+```
 
 ## Adding Qwik Speak
 Just wrap Qwik City provider with `QwikSpeakProvider` component in `root.tsx` and pass it the configuration and the translation functions:
@@ -129,7 +155,7 @@ export const onRequest: RequestHandler = ({ request, response }) => {
   response.locale = lang || config.defaultLocale.lang;
 };
 ```
-Internally, Qwik Speak will try to take the Qwik `locale`.
+Internally, Qwik Speak will try to take the Qwik `locale`, before falling back to default locale if it not in `supportedLocales`.
 
 ## Change locale
 Now we want to change locale without reloading the page, just rerendering components that use translations. Let's create a `ChangeLocale` component:
@@ -165,7 +191,7 @@ export default component$(() => {
   );
 });
 ```
-`changeLocale` function by Qwik Speak is responsible for the language change.
+`changeLocale` function by Qwik Speak is responsible for the language change, and it falls back to the default locale if the new locale is not in `supportedLocales`.
 
 ## Running
 You can already try the app: `npm start`
@@ -206,8 +232,8 @@ export const loadTranslation$: LoadTranslationFn = $(async (lang: string, asset:
       url = origin;
     }
     url += `/i18n/${lang}/${asset}.json`;
-    const data = await fetch(url);
-    return data.json();
+    const response = await fetch(url);
+    return response.json();
   }
 });
 ```

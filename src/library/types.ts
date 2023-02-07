@@ -48,7 +48,7 @@ export interface TranslationFn {
 
 export interface SpeakConfig {
   /**
-   * The default locale
+   * The default locale to use as fallback
    */
   defaultLocale: SpeakLocale;
   /**
