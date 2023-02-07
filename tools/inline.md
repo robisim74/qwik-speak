@@ -114,8 +114,8 @@ Each contains only its own translation:
 
 Qwik uses the `q:base` attribute to determine the base URL for loading the chunks in the browser, so you have to set it in `entry.ssr.tsx` file. For example, if you have a localized router:
 ```typescript
-export function extractBase({ envData }: RenderOptions): string {
-  const url = new URL(envData!.url);
+export function extractBase({ serverData }: RenderOptions): string {
+  const url = new URL(serverData!.url);
   const lang = config.supportedLocales.find(x => url.pathname.startsWith(`/${x.lang}`))?.lang;
 
   if (!import.meta.env.DEV && lang) {
