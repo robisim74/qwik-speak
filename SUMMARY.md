@@ -4,6 +4,7 @@
 
 * [Quick Start](docs/quick-start.md)    
 * [Tutorial: localized routing](docs/tutorial-routing.md)    
+* [Testing](docs/testing.md)   
 
 ## Tools​
 

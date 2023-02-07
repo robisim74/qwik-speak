@@ -99,13 +99,13 @@ Here we are doing two things:
 - secondly, if `lang` parameter is not defined we redirect based on the locale saved in a cookie (which we will set later) or based on the user's language if available. Note that we are on the server, and we need to get these values from the request headers.
 
 ## Adding Qwik Speak
-Just wrap Qwik City provider with `QwikSpeak` component in `root.tsx` and pass it the configuration and the translation functions:
+Just wrap Qwik City provider with `QwikSpeakProvider` component in `root.tsx` and pass it the configuration and the translation functions:
 
 _src/root.tsx_
 ```jsx
 export default component$(() => {
   return (
-    <QwikSpeak config={config} translationFn={translationFn}>
+    <QwikSpeakProvider config={config} translationFn={translationFn}>
       <QwikCityProvider>
         <head>
           <meta charSet="utf-8" />
@@ -117,7 +117,7 @@ export default component$(() => {
           <ServiceWorkerRegister />
         </body>
       </QwikCityProvider>
-    </QwikSpeak>
+    </QwikSpeakProvider>
   );
 });
 ```

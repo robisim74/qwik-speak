@@ -49,15 +49,15 @@ export const translationFn: TranslationFn = {
 We have added the Speak config and the implementation of the `loadTranslation$` function. Loading of translations can take place both on server and on client (in case of SPA or language change) and the `loadTranslation$` function must support both.
 
 ## Adding Qwik Speak
-Just wrap Qwik City provider with `QwikSpeak` component in `root.tsx` and pass it the configuration and the translation functions:
+Just wrap Qwik City provider with `QwikSpeakProvider` component in `root.tsx` and pass it the configuration and the translation functions:
 
 _src/root.tsx_
 ```jsx
-import { QwikSpeak } from 'qwik-speak';
+import { QwikSpeakProvider } from 'qwik-speak';
 
 export default component$(() => {
   return (
-    <QwikSpeak config={config} translationFn={translationFn}>
+    <QwikSpeakProvider config={config} translationFn={translationFn}>
       <QwikCityProvider>
         <head>
           <meta charSet="utf-8" />
@@ -69,7 +69,7 @@ export default component$(() => {
           <ServiceWorkerRegister />
         </body>
       </QwikCityProvider>
-    </QwikSpeak>
+    </QwikSpeakProvider>
   );
 });
 ```
@@ -112,7 +112,7 @@ Here we have used the `Speak` component to add scoped translations to the home p
 We are also providing default values for each translation: `key@@[default value]`.
 
 ## Resolve locale
-We can resolve the locale to use in two ways: passing the `locale` parameter to the `QwikSpeak` component, or assigning it to the `locale` handled by Qwik. In `layout.tsx`, after the default `component$`, we add:
+We can resolve the locale to use in two ways: passing the `locale` parameter to the `QwikSpeakProvider` component, or assigning it to the `locale` handled by Qwik. In `layout.tsx`, after the default `component$`, we add:
 
 _src/routes/layout.tsx_
 ```typescript

@@ -117,7 +117,7 @@ and optionally contains:
 ```mermaid
 C4Container
     Container_Boundary(a, "App") {
-        Component(a0, "QwikSpeak", "", "Uses Speak context")
+        Component(a0, "QwikSpeakProvider", "", "Uses Speak context")
         Container_Boundary(b1, "Home") {
             Component(a10, "Speak", "", "Adds its own translation data to the context")        
         }  
@@ -126,8 +126,8 @@ C4Container
         }       
     }
 ```
-#### Qwik Speak component
-`QwikSpeak` component provides the Speak context to the app. `Props`:
+#### QwikSpeakProvider component
+`QwikSpeakProvider` component provides the Speak context to the app. `Props`:
   - `config` Speak config
   - `translationFn` Optional functions to use
   - `locale` Optional locale to use
