@@ -43,7 +43,7 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
       const ext = extname(file.name);
       if (file.isDirectory()) {
         await readSourceFiles(filePath);
-      } else if (/\.js|\.ts|\.jsx|\.tsx/.test(ext)) {
+      } else if (/\.js|\.ts|\.jsx|\.tsx/.test(ext) && !(/test|spec/).test(file.name)) {
         sourceFiles.push(filePath);
       }
     }
