@@ -24,6 +24,9 @@ export interface QwikSpeakProps {
   langs?: string[];
 }
 
+/**
+ * Create and provide SpeakContext.
+ */
 export const QwikSpeakProvider = component$((props: QwikSpeakProps) => {
   // Get URL object
   const urlEnv = useServerData<string>('url');

@@ -155,7 +155,7 @@ export const onRequest: RequestHandler = ({ request, response }) => {
   response.locale = lang || config.defaultLocale.lang;
 };
 ```
-Internally, Qwik Speak will try to take the Qwik `locale`, before falling back to default locale if it not in `supportedLocales`.
+Internally, Qwik Speak will try to take the Qwik `locale`, before falling back to default locale if it is not in `supportedLocales`.
 
 ## Change locale
 Now we want to change locale without reloading the page, just rerendering components that use translations. Let's create a `ChangeLocale` component:
