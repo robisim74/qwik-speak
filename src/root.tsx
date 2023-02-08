@@ -2,8 +2,8 @@ import { component$, useStyles$ } from '@builder.io/qwik';
 import { QwikCityProvider, RouterOutlet, ServiceWorkerRegister } from '@builder.io/qwik-city';
 import { QwikSpeakProvider } from 'qwik-speak';
 
-import { RouterHead } from './app/components/router-head/router-head';
-import { config, translationFn } from './app/speak-config';
+import { RouterHead } from './components/router-head/router-head';
+import { config, translationFn } from './speak-config';
 
 import globalStyles from './global.css?inline';
 

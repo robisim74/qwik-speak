@@ -11,9 +11,7 @@ export default defineConfig(() => {
       minify: false
     },
     plugins: [
-      qwikCity({
-        routesDir: './src/app/routes'
-      }),
+      qwikCity(),
       qwikVite(),
       qwikSpeakInline({
         supportedLangs: ['en-US', 'it-IT'],

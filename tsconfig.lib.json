@@ -9,9 +9,11 @@
   "exclude": [
     "src/root.tsx",
     "src/entry.*.tsx",
-    "src/app/**",
+    "src/components/**",
+    "src/routes/**",
     "src/tests/**",
     "src/e2e/**",
+    "src/speak-config.ts",
     "tools/**"
   ]
 }

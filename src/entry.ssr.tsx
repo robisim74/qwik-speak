@@ -13,7 +13,7 @@
 import { RenderOptions, renderToStream, RenderToStreamOptions } from '@builder.io/qwik/server';
 import { manifest } from '@qwik-client-manifest';
 import Root from './root';
-import { config } from './app/speak-config';
+import { config } from './speak-config';
 
 export function extractBase({ serverData }: RenderOptions): string {
   if (!import.meta.env.DEV && serverData?.locale) {
