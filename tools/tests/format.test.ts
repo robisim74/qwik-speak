@@ -1,3 +1,5 @@
+import { test, describe, expect } from 'vitest';
+
 import { minDepth, sortTarget } from '../core/format';
 
 describe('format', () => {

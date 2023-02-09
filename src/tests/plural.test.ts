@@ -1,3 +1,5 @@
+import { test, describe, expect } from 'vitest';
+
 import { $plural as p } from '../library/plural';
 import { ctx } from './config';
 

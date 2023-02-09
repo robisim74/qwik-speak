@@ -1,3 +1,5 @@
+import { test, describe, expect } from 'vitest';
+
 import { relativeTime as rt } from '../library/relative-time';
 import { ctx } from './config';
 

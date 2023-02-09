@@ -1,3 +1,5 @@
+import { test, describe, expect } from 'vitest';
+
 import { deepMerge, deepSet } from '../core/merge';
 
 describe('merge', () => {

@@ -1,38 +1,43 @@
-import fs from 'fs/promises';
+import { test, describe, expect, vi } from 'vitest';
+
+import { readdir, readFile, writeFile } from 'fs/promises';
 import { normalize } from 'path';
 
 import { qwikSpeakExtract } from '../extract/index';
 import { mockAsset, mockSource } from './mock';
 
-jest.mock('fs/promises');
+// Mock part of 'fs/promises' module
+vi.mock('fs/promises', async () => {
+  const mod = await vi.importActual<typeof import("fs/promises")>("fs/promises");
+  return {
+    ...mod,
+    readdir: vi.fn()
+      .mockImplementationOnce(() => [{ name: 'home.tsx', isDirectory: () => false }])
+      .mockImplementationOnce(() => ['home.json']),
+    readFile: vi.fn()
+      .mockImplementationOnce(() => mockSource)
+      .mockImplementationOnce(() => mockAsset),
+    writeFile: vi.fn()
+  };
+});
 
 describe('extract', () => {
-  beforeEach(() => {
-    // Reset mocks
-    jest.resetAllMocks();
-  });
-
   test('extract json', async () => {
-    fs.readdir = jest.fn()
-      .mockImplementationOnce(() => [{ name: 'home.tsx', isDirectory: () => false }])
-      .mockImplementationOnce(() => ['home.json']);
-    fs.readFile = jest.fn()
-      .mockImplementationOnce(() => mockSource)
-      .mockImplementationOnce(() => mockAsset);
-    fs.writeFile = jest.fn();
-
     await qwikSpeakExtract({
       supportedLangs: ['en-US']
     });
 
-    expect(fs.writeFile).toHaveBeenCalledTimes(2);
-    expect(fs.writeFile).toHaveBeenNthCalledWith(1, normalize('public/i18n/en-US/app.json'), `{
+    expect(readdir).toHaveBeenCalledTimes(2);
+    expect(readFile).toHaveBeenCalledTimes(2);
+
+    expect(writeFile).toHaveBeenCalledTimes(2);
+    expect(writeFile).toHaveBeenNthCalledWith(1, normalize('public/i18n/en-US/app.json'), `{
   "app": {
     "subtitle": "Translate your Qwik apps into any language",
     "title": "Qwik Speak"
   }
 }`);
-    expect(fs.writeFile).toHaveBeenNthCalledWith(2, normalize('public/i18n/en-US/home.json'), `{
+    expect(writeFile).toHaveBeenNthCalledWith(2, normalize('public/i18n/en-US/home.json'), `{
   "home": {
     "dates": "Dates & relative time",
     "devs": {

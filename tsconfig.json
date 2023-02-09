@@ -17,8 +17,7 @@
     "outDir": "tmp",
     "types": [
       "node",
-      "vite/client",
-      "jest"
+      "vite/client"
     ],
     "paths": {
       "qwik-speak": ["./src/index.ts"]

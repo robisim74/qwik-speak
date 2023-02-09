@@ -1,3 +1,5 @@
+import { test, describe, expect } from 'vitest';
+
 import { getKey, getValue, qwikSpeakInline, transpileFn, addLang } from '../inline/plugin';
 import { inlinedCode, mockCode } from './mock';
 

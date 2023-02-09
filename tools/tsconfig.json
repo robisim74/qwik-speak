@@ -19,8 +19,7 @@
       "node",
       "vite/client",
       "vite",
-      "rollup",
-      "jest"
+      "rollup"
     ]
   },
   "exclude": ["tests/**", "vite.**.ts"]

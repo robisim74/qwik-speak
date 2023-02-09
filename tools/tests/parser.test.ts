@@ -1,3 +1,5 @@
+import { test, describe, expect } from 'vitest';
+
 import { getTranslateAlias, parse, parseSequenceExpressions, tokenize } from '../core/parser';
 
 describe('parser: tokenize', () => {
