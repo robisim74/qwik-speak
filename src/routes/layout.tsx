@@ -15,11 +15,11 @@ export default component$(() => {
   );
 });
 
-export const onRequest: RequestHandler = ({ request, response, params }) => {
-  let lang = params.lang?.replace(/^\/|\/$/g, '');
+export const onRequest: RequestHandler = ({ request, params, locale, redirect }) => {
+  let lang = params.lang;
 
   // Set locale in response
-  response.locale = lang || config.defaultLocale.lang;
+  locale(lang || config.defaultLocale.lang);
 
   // E.g. Redirect if the language is different from the default language
   if (!lang) {
@@ -43,7 +43,7 @@ export const onRequest: RequestHandler = ({ request, response, params }) => {
     if (lang !== config.defaultLocale.lang) {
       if (config.supportedLocales.find(x => x.lang === lang)) {
         const url = new URL(request.url);
-        throw response.redirect(`/${lang}${url.pathname}`, 302);
+        redirect(302, `/${lang}${url.pathname}`);
       }
     }
   }

@@ -1,4 +1,4 @@
-import { $, component$ } from '@builder.io/qwik';
+import { $, component$, useClientEffect$ } from '@builder.io/qwik';
 import { useLocation, useNavigate } from '@builder.io/qwik-city';
 
 import { changeLocale, $translate as t, useSpeakContext, SpeakLocale } from 'qwik-speak';
@@ -9,6 +9,13 @@ export const ChangeLocale = component$(() => {
   const nav = useNavigate();
 
   const ctx = useSpeakContext();
+
+  // Workaround for https://github.com/BuilderIO/qwik/issues/2378
+  useClientEffect$(() => {
+    window.onpopstate = (event) => {
+      if (event) window.location.reload();
+    };
+  });
 
   const changeLocale$ = $(async (locale: SpeakLocale) => {
     await changeLocale(locale, ctx);
@@ -29,7 +36,7 @@ export const ChangeLocale = component$(() => {
     }
 
     // No full-page reload
-    nav.path = pathname;
+    nav(pathname);
   });
 
   return (

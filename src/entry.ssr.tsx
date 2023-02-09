@@ -30,7 +30,7 @@ export default function (opts: RenderToStreamOptions) {
     //base: extractBase,
     // Use container attributes to set attributes on the html tag.
     containerAttributes: {
-      lang: opts.serverData?.locale?.replace(/^\/|\/$/g, '') || config.defaultLocale.lang,
+      lang: opts.serverData?.locale || config.defaultLocale.lang,
       ...opts.containerAttributes,
     },
   });
