@@ -8,7 +8,7 @@ import { mockAsset, mockSource } from './mock';
 
 // Mock part of 'fs/promises' module
 vi.mock('fs/promises', async () => {
-  const mod = await vi.importActual<typeof import("fs/promises")>("fs/promises");
+  const mod = await vi.importActual<typeof import('fs/promises')>('fs/promises');
   return {
     ...mod,
     readdir: vi.fn()

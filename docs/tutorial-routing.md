@@ -2,7 +2,7 @@
 
 > Step by step, let's build an app with Qwik Speak and a localized router
 
-> Requires Qwik city 0.0.128
+> Requires Qwik city 0.1.*
 
 ```shell
 npm create qwik@latest
@@ -86,11 +86,11 @@ Now let's handle it in `layout.tsx`. After the default `component$`, we add:
 
 _src/routes/[...lang]/layout.tsx_
 ```typescript
-export const onRequest: RequestHandler = ({ request, response, params }) => {
-  let lang = params.lang?.replace(/^\/|\/$/g, '');
+export const onRequest: RequestHandler = ({ request, params, locale, redirect }) => {
+  let lang = params.lang;
 
   // Set locale in response
-  response.locale = lang || config.defaultLocale.lang;
+  locale(lang || config.defaultLocale.lang);
 
   // Redirect if the language is different from the default language
   if (!lang) {
@@ -114,7 +114,7 @@ export const onRequest: RequestHandler = ({ request, response, params }) => {
     if (lang !== config.defaultLocale.lang) {
       if (config.supportedLocales.find(x => x.lang === lang)) {
         const url = new URL(request.url);
-        throw response.redirect(`/${lang}${url.pathname}`, 302);
+        redirect(302, `/${lang}${url.pathname}`);
       }
     }
   }
@@ -211,7 +211,7 @@ export default function (opts: RenderToStreamOptions) {
     ...opts,
     // Use container attributes to set attributes on the html tag.
     containerAttributes: {
-      lang: opts.serverData?.locale?.replace(/^\/|\/$/g, '') || config.defaultLocale.lang,
+      lang: opts.serverData?.locale || config.defaultLocale.lang,
       ...opts.containerAttributes,
     },
   });
@@ -248,7 +248,7 @@ export const ChangeLocale = component$(() => {
     }
 
     // No full-page reload
-    nav.path = pathname;
+    nav(pathname);
   });
 
   return (

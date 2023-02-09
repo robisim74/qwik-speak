@@ -1,6 +1,6 @@
 # Quick Start
 
-> Requires Qwik city 0.0.128
+> Requires Qwik city 0.1.*
 
 ```shell
 npm create qwik@latest
