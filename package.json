@@ -16,7 +16,8 @@
     "qwik-speak-extract": "qwik-speak-extract --supportedLangs=en-US,it-IT",
     "release": "npm run build && np",
     "start": "vite --open --mode ssr",
-    "test": "vitest test",
+    "test": "vitest test --run",
+    "test.watch": "vitest test",
     "test.e2e": "playwright test",
     "qwik": "qwik"
   },
