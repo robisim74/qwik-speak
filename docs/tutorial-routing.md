@@ -79,12 +79,12 @@ src/routes/
 │   
 └───[...lang]/
         index.tsx
-        layout.tsx
+    layout.tsx
 ```
 
 Now let's handle it in `layout.tsx`. After the default `component$`, we add:
 
-_src/routes/[...lang]/layout.tsx_
+_src/routes/layout.tsx_
 ```typescript
 export const onRequest: RequestHandler = ({ params, locale }) => {
   const lang = params.lang;

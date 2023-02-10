@@ -18,7 +18,6 @@
     "start": "vite --open --mode ssr",
     "test": "vitest test",
     "test.e2e": "playwright test",
-    "test.unit": "vitest test",
     "qwik": "qwik"
   },
   "bin": {

@@ -155,8 +155,10 @@ export const onRequest: RequestHandler = ({ request, locale }) => {
     }
   }
   // Try to use user language
-  if (acceptLanguage) {
-    lang = acceptLanguage.split(';')[0]?.split(',')[0];
+  if (!lang) {
+    if (acceptLanguage) {
+      lang = acceptLanguage.split(';')[0]?.split(',')[0];
+    }
   }
 
   // Set Qwik locale
