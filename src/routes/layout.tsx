@@ -15,36 +15,9 @@ export default component$(() => {
   );
 });
 
-export const onRequest: RequestHandler = ({ request, params, locale, redirect }) => {
-  let lang = params.lang;
+export const onRequest: RequestHandler = ({ params, locale }) => {
+  const lang = params.lang;
 
-  // Set locale in response
+  // Set Qwik locale
   locale(lang || config.defaultLocale.lang);
-
-  // E.g. Redirect if the language is different from the default language
-  if (!lang) {
-    const cookie = request.headers?.get('cookie');
-    const acceptLanguage = request.headers?.get('accept-language');
-
-    // Try whether the language is stored in a cookie
-    if (cookie) {
-      const result = new RegExp('(?:^|; )' + encodeURIComponent('locale') + '=([^;]*)').exec(cookie);
-      if (result) {
-        lang = JSON.parse(result[1])['lang'];
-      }
-    }
-    // Try to use user language
-    if (!lang) {
-      if (acceptLanguage) {
-        lang = acceptLanguage.split(';')[0]?.split(',')[0];
-      }
-    }
-
-    if (lang !== config.defaultLocale.lang) {
-      if (config.supportedLocales.find(x => x.lang === lang)) {
-        const url = new URL(request.url);
-        redirect(302, `/${lang}${url.pathname}`);
-      }
-    }
-  }
 };

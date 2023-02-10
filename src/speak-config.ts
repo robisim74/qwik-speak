@@ -35,16 +35,6 @@ export const loadTranslation$: LoadTranslationFn = $(async (lang: string, asset:
     url += `/i18n/${lang}/${asset}.json`;
     const response = await fetch(url);
     return response.json();
-
-    /* let data: any = null;
-    try {
-      const response = await fetch(url);
-      data = await response.json();
-    } catch (error) {
-      // Implement error handling here
-      console.log('loadTranslation$ error: ', error);
-    }
-    return data; */
   }
 });
 
@@ -53,19 +43,4 @@ export const loadTranslation$: LoadTranslationFn = $(async (lang: string, asset:
  */
 export const translationFn: TranslationFn = {
   loadTranslation$: loadTranslation$
-};
-
-/**
- * Unit testing
- */
-export const loadTranslationStub$: LoadTranslationFn = $((lang: string, asset: string, origin?: string) =>
-  JSON.parse(
-    import.meta.glob('/public/i18n/**/*.json', { as: 'raw', eager: true })[
-    `/public/i18n/${lang}/${asset}.json`
-    ]
-  )
-);
-
-export const translationFnStub: TranslationFn = {
-  loadTranslation$: loadTranslationStub$
 };

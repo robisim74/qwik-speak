@@ -86,43 +86,14 @@ Now let's handle it in `layout.tsx`. After the default `component$`, we add:
 
 _src/routes/[...lang]/layout.tsx_
 ```typescript
-export const onRequest: RequestHandler = ({ request, params, locale, redirect }) => {
-  let lang = params.lang;
+export const onRequest: RequestHandler = ({ params, locale }) => {
+  const lang = params.lang;
 
-  // Set locale in response
+  // Set Qwik locale
   locale(lang || config.defaultLocale.lang);
-
-  // Redirect if the language is different from the default language
-  if (!lang) {
-    const cookie = request.headers?.get('cookie');
-    const acceptLanguage = request.headers?.get('accept-language');
-
-    // Try whether the language is stored in a cookie
-    if (cookie) {
-      const result = new RegExp('(?:^|; )' + encodeURIComponent('locale') + '=([^;]*)').exec(cookie);
-      if (result) {
-        lang = JSON.parse(result[1])['lang'];
-      }
-    }
-    // Try to use user language
-    if (!lang) {
-      if (acceptLanguage) {
-        lang = acceptLanguage.split(';')[0]?.split(',')[0];
-      }
-    }
-
-    if (lang !== config.defaultLocale.lang) {
-      if (config.supportedLocales.find(x => x.lang === lang)) {
-        const url = new URL(request.url);
-        redirect(302, `/${lang}${url.pathname}`);
-      }
-    }
-  }
 };
 ```
-Here we are doing two things:
-- first we assign to the response the value of the `lang` parameter. This way it will be immediately available to the library;
-- secondly, if `lang` parameter is not defined we redirect based on the locale saved in a cookie (which we will set later) or based on the user's language if available. Note that we are on the server, and we need to get these values from the request headers.
+We assign the value of the `lang` parameter to Qwik `locale`. This way it will be immediately available to the library.
 
 ## Adding Qwik Speak
 Just wrap Qwik City provider with `QwikSpeakProvider` component in `root.tsx` and pass it the configuration and the translation functions:
@@ -228,23 +199,30 @@ export const ChangeLocale = component$(() => {
   const nav = useNavigate();
 
   const ctx = useSpeakContext();
+  const locale = useSpeakLocale();
+  const config = useSpeakConfig();
 
-  const changeLocale$ = $(async (locale: SpeakLocale) => {
-    await changeLocale(locale, ctx);
+  // Handle localized routing
+  useTask$(async ({ track }) => {
+    track(() => loc.params.lang);
 
-    // Store locale in cookie 
-    document.cookie = `locale=${JSON.stringify(locale)};max-age=86400;path=/`;
+    const newLocale = config.supportedLocales.find(value => value.lang === loc.params.lang) || config.defaultLocale;
+    if (newLocale.lang !== locale.lang) {
+      await changeLocale(newLocale, ctx);
+    }
+  });
 
-    // Replace locale in URL
+  // Replace locale in URL
+  const localizeUrl$ = $(async (newLocale: SpeakLocale) => {
     let pathname = loc.pathname;
     if (loc.params.lang) {
-      if (locale.lang !== config.defaultLocale.lang) {
-        pathname = pathname.replace(loc.params.lang, locale.lang);
+      if (newLocale.lang !== config.defaultLocale.lang) {
+        pathname = pathname.replace(loc.params.lang, newLocale.lang);
       } else {
         pathname = pathname.replace(new RegExp(`(/${loc.params.lang}/)|(/${loc.params.lang}$)`), '/');
       }
-    } else if (locale.lang !== config.defaultLocale.lang) {
-      pathname = `/${locale.lang}${pathname}`;
+    } else if (newLocale.lang !== config.defaultLocale.lang) {
+      pathname = `/${newLocale.lang}${pathname}`;
     }
 
     // No full-page reload
@@ -254,9 +232,9 @@ export const ChangeLocale = component$(() => {
   return (
     <div>
       <div>{t('app.changeLocale@@Change locale')}</div>
-      {ctx.config.supportedLocales.map(locale => (
-        <button onClick$={async () => await changeLocale$(locale)}>
-          {locale.lang}
+      {config.supportedLocales.map(value => (
+        <button onClick$={async () => await localizeUrl$(value)}>
+          {value.lang}
         </button>
       ))}
     </div>
@@ -275,9 +253,11 @@ export default component$(() => {
   );
 });
 ```
-`changeLocale` function by Qwik Speak is responsible for the language change, and it falls back to the default locale if the new locale is not in `supportedLocales`. Then we store the locale in a cookie (which we handled in layout) and replace the language in the URL, using the Qwik City navigation API, therefore without reloading the page.
+`changeLocale` function by Qwik Speak is responsible for the language change, and it falls back to the default locale if the new locale is not in `supportedLocales`. We use it in `useTask$` to handle also user actions, like page back/forward.
 
-> As an alternative you could avoid calling `changeLocale` and updating the URL - you could just navigate directly to the new localized URL.
+In `localizeUrl$` we replace the language in the URL, using the Qwik City navigation API, therefore without reloading the page.
+
+> As an alternative you could avoid calling `changeLocale`, you could just navigate directly to the new localized URL. This may be necessary in production if you have different domains for each location.
 
 ## Running
 You can already try the app: `npm start`

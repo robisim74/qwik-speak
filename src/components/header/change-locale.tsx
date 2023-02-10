@@ -1,38 +1,37 @@
-import { $, component$, useClientEffect$ } from '@builder.io/qwik';
+import { $, component$, useTask$ } from '@builder.io/qwik';
 import { useLocation, useNavigate } from '@builder.io/qwik-city';
 
-import { changeLocale, $translate as t, useSpeakContext, SpeakLocale } from 'qwik-speak';
-import { config } from '../../speak-config';
+import { changeLocale, $translate as t, useSpeakContext, SpeakLocale, useSpeakLocale, useSpeakConfig } from 'qwik-speak';
 
 export const ChangeLocale = component$(() => {
   const loc = useLocation();
   const nav = useNavigate();
 
   const ctx = useSpeakContext();
+  const locale = useSpeakLocale();
+  const config = useSpeakConfig();
 
-  // Workaround for https://github.com/BuilderIO/qwik/issues/2378
-  useClientEffect$(() => {
-    window.onpopstate = (event) => {
-      if (event) window.location.reload();
-    };
+  // Handle localized routing
+  useTask$(async ({ track }) => {
+    track(() => loc.params.lang);
+
+    const newLocale = config.supportedLocales.find(value => value.lang === loc.params.lang) || config.defaultLocale;
+    if (newLocale.lang !== locale.lang) {
+      await changeLocale(newLocale, ctx);
+    }
   });
 
-  const changeLocale$ = $(async (locale: SpeakLocale) => {
-    await changeLocale(locale, ctx);
-
-    // E.g. Store locale in cookie 
-    document.cookie = `locale=${JSON.stringify(locale)};max-age=86400;path=/`;
-
-    // E.g. Replace locale in URL
+  // Replace locale in URL
+  const localizeUrl$ = $(async (newLocale: SpeakLocale) => {
     let pathname = loc.pathname;
     if (loc.params.lang) {
-      if (locale.lang !== config.defaultLocale.lang) {
-        pathname = pathname.replace(loc.params.lang, locale.lang);
+      if (newLocale.lang !== config.defaultLocale.lang) {
+        pathname = pathname.replace(loc.params.lang, newLocale.lang);
       } else {
         pathname = pathname.replace(new RegExp(`(/${loc.params.lang}/)|(/${loc.params.lang}$)`), '/');
       }
-    } else if (locale.lang !== config.defaultLocale.lang) {
-      pathname = `/${locale.lang}${pathname}`;
+    } else if (newLocale.lang !== config.defaultLocale.lang) {
+      pathname = `/${newLocale.lang}${pathname}`;
     }
 
     // No full-page reload
@@ -42,10 +41,10 @@ export const ChangeLocale = component$(() => {
   return (
     <div class="change-locale">
       <span>{t('app.changeLocale')}</span>
-      {ctx.config.supportedLocales.map(locale => (
-        <div class={{ active: locale.lang == ctx.locale.lang, button: true }}
-          onClick$={async () => await changeLocale$(locale)}>
-          {locale.lang}
+      {config.supportedLocales.map(value => (
+        <div class={{ active: value.lang == locale.lang, button: true }}
+          onClick$={async () => await localizeUrl$(value)}>
+          {value.lang}
         </div>
       ))}
     </div>

@@ -142,17 +142,25 @@ We can resolve the locale to use in two ways: passing the `locale` parameter to 
 
 _src/routes/layout.tsx_
 ```typescript
-export const onRequest: RequestHandler = ({ request, response }) => {
+export const onRequest: RequestHandler = ({ request, locale }) => {
+  const cookie = request.headers?.get('cookie');
   const acceptLanguage = request.headers?.get('accept-language');
 
   let lang: string | null = null;
+  // Try whether the language is stored in a cookie
+  if (cookie) {
+    const result = new RegExp('(?:^|; )' + encodeURIComponent('locale') + '=([^;]*)').exec(cookie);
+    if (result) {
+      lang = JSON.parse(result[1])['lang'];
+    }
+  }
   // Try to use user language
   if (acceptLanguage) {
     lang = acceptLanguage.split(';')[0]?.split(',')[0];
   }
 
-  // Set locale in response
-  response.locale = lang || config.defaultLocale.lang;
+  // Set Qwik locale
+  locale(lang || config.defaultLocale.lang);
 };
 ```
 Internally, Qwik Speak will try to take the Qwik `locale`, before falling back to default locale if it is not in `supportedLocales`.
@@ -162,17 +170,25 @@ Now we want to change locale without reloading the page, just rerendering compon
 
 _src/components/header/change-locale.tsx_
 ```jsx
-import { changeLocale, $translate as t, useSpeakContext } from 'qwik-speak';
+import { changeLocale, $translate as t, useSpeakContext, useSpeakConfig } from 'qwik-speak';
+
+const changeLocale$ = $(async (newLocale: SpeakLocale) => {
+  await changeLocale(newLocale, ctx);
+
+  // Store locale in cookie 
+  document.cookie = `locale=${JSON.stringify(newLocale)};max-age=86400;path=/`;
+});
 
 export const ChangeLocale = component$(() => {
   const ctx = useSpeakContext();
+  const config = useSpeakConfig();
 
   return (
     <div>
       <div>{t('app.changeLocale@@Change locale')}</div>
-      {ctx.config.supportedLocales.map(locale => (
-        <button onClick$={async () => await changeLocale(locale, ctx)}>
-          {locale.lang}
+      {config.supportedLocales.map(value => (
+        <button onClick$={async () => await changeLocale$(value)}>
+          {value.lang}
         </button>
       ))}
     </div>
