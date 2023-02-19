@@ -2,7 +2,7 @@
 
 > Step by step, let's build an app with Qwik Speak and a localized router
 
-> Requires Qwik city 0.1.*
+> Requires Qwik city 0.2.*
 
 ```shell
 npm create qwik@latest
@@ -214,7 +214,7 @@ export const ChangeLocale = component$(() => {
 
   // Replace locale in URL
   const localizeUrl$ = $(async (newLocale: SpeakLocale) => {
-    let pathname = loc.pathname;
+    let pathname = loc.url.pathname;
     if (loc.params.lang) {
       if (newLocale.lang !== config.defaultLocale.lang) {
         pathname = pathname.replace(loc.params.lang, newLocale.lang);
@@ -308,7 +308,7 @@ Let's make sure that the `runtime` file is loaded and others only in dev mode. U
 _src/speak-config.ts_
 ```typescript
 export const loadTranslation$: LoadTranslationFn = $(async (lang: string, asset: string, origin?: string) => {
-  if (import.meta.env.DEV || asset === 'runtime') {
+  if (isDev || asset === 'runtime') {
     let url = '';
     // Absolute urls on server
     if (isServer && origin) {

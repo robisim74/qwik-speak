@@ -25,11 +25,11 @@
     "qwik-speak-extract": "./extract/cli.js"
   },
   "peerDependencies": {
-    "@builder.io/qwik": ">=0.17.5"
+    "@builder.io/qwik": ">=0.18.1"
   },
   "devDependencies": {
-    "@builder.io/qwik": "0.17.5",
-    "@builder.io/qwik-city": "0.1.1",
+    "@builder.io/qwik": "0.18.1",
+    "@builder.io/qwik-city": "0.2.1",
     "@microsoft/api-documenter": "^7.21.4",
     "@microsoft/api-extractor": "^7.34.3",
     "@playwright/test": "^1.30.0",
@@ -39,7 +39,7 @@
     "@typescript-eslint/eslint-plugin": "5.51.0",
     "@typescript-eslint/parser": "5.51.0",
     "eslint": "8.33.0",
-    "eslint-plugin-qwik": "0.17.5",
+    "eslint-plugin-qwik": "0.18.1",
     "node-fetch": "3.3.0",
     "np": "^7.6.3",
     "rollup-plugin-add-shebang": "^0.3.1",

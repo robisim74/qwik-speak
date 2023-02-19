@@ -23,7 +23,7 @@ export const ChangeLocale = component$(() => {
 
   // Replace locale in URL
   const localizeUrl$ = $(async (newLocale: SpeakLocale) => {
-    let pathname = loc.pathname;
+    let pathname = loc.url.pathname;
     if (loc.params.lang) {
       if (newLocale.lang !== config.defaultLocale.lang) {
         pathname = pathname.replace(loc.params.lang, newLocale.lang);

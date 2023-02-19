@@ -1,6 +1,6 @@
 # Quick Start
 
-> Requires Qwik city 0.1.*
+> Requires Qwik city 0.2.*
 
 ```shell
 npm create qwik@latest
@@ -242,8 +242,10 @@ Let's make sure that translation files are loaded only in dev mode. Update the `
 
 _src/speak-config.ts_
 ```typescript
+import { isDev } from '@builder.io/qwik/build';
+
 export const loadTranslation$: LoadTranslationFn = $(async (lang: string, asset: string, origin?: string) => {
-  if (import.meta.env.DEV) {
+  if (isDev) {
     let url = '';
     // Absolute urls on server
     if (isServer && origin) {

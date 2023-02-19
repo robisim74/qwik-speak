@@ -10,13 +10,14 @@
  * - npm run build
  *
  */
+import { isDev } from '@builder.io/qwik/build';
 import { RenderOptions, renderToStream, RenderToStreamOptions } from '@builder.io/qwik/server';
 import { manifest } from '@qwik-client-manifest';
 import Root from './root';
 import { config } from './speak-config';
 
 export function extractBase({ serverData }: RenderOptions): string {
-  if (!import.meta.env.DEV && serverData?.locale) {
+  if (!isDev && serverData?.locale) {
     return '/build/' + serverData.locale;
   } else {
     return '/build';

@@ -1,5 +1,5 @@
 import { $ } from '@builder.io/qwik';
-import { isServer } from '@builder.io/qwik/build';
+import { isDev, isServer } from '@builder.io/qwik/build';
 import {
   LoadTranslationFn,
   SpeakConfig,
@@ -26,7 +26,7 @@ export const config: SpeakConfig = {
  * In productions with inlined translations, only the runtime file is loaded
  */
 export const loadTranslation$: LoadTranslationFn = $(async (lang: string, asset: string, origin?: string) => {
-  if (import.meta.env.DEV || asset === 'runtime') {
+  if (isDev|| asset === 'runtime') {
     let url = '';
     // Absolute urls on server
     if (isServer && origin) {
