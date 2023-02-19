@@ -174,16 +174,16 @@ _src/components/header/change-locale.tsx_
 ```jsx
 import { changeLocale, $translate as t, useSpeakContext, useSpeakConfig } from 'qwik-speak';
 
-const changeLocale$ = $(async (newLocale: SpeakLocale) => {
-  await changeLocale(newLocale, ctx);
-
-  // Store locale in cookie 
-  document.cookie = `locale=${JSON.stringify(newLocale)};max-age=86400;path=/`;
-});
-
 export const ChangeLocale = component$(() => {
   const ctx = useSpeakContext();
   const config = useSpeakConfig();
+
+  const changeLocale$ = $(async (newLocale: SpeakLocale) => {
+    await changeLocale(newLocale, ctx);
+
+    // Store locale in cookie 
+    document.cookie = `locale=${JSON.stringify(newLocale)};max-age=86400;path=/`;
+  });
 
   return (
     <div>
