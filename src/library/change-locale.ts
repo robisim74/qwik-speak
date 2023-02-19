@@ -1,4 +1,7 @@
+import { isDev } from '@builder.io/qwik/build';
+
 import type { SpeakLocale, SpeakState } from './types';
+import { logDebug, logWarn } from './log';
 
 /**
  * Change locale at runtime: loads translation data and rerenders components that uses translations.
@@ -14,5 +17,9 @@ export const changeLocale = async (newLocale: SpeakLocale, ctx: SpeakState): Pro
     Object.assign(locale, newLocale);
   } else {
     Object.assign(locale, config.defaultLocale);
+
+    if (isDev) logWarn(`${newLocale.lang} is not a supported locale. Fallback to default locale ${config.defaultLocale.lang}`);
   }
+
+  if (isDev) logDebug(`New locale: ${locale.lang}`);
 };

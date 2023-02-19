@@ -1,9 +1,10 @@
 import { $, component$, Slot, useContextProvider, useServerData, useStore, useTask$ } from '@builder.io/qwik';
-import { isServer } from '@builder.io/qwik/build';
+import { isDev, isServer } from '@builder.io/qwik/build';
 
 import type { InternalSpeakState, SpeakConfig, SpeakLocale, SpeakState, TranslationFn } from './types';
 import { SpeakContext } from './context';
 import { loadTranslations } from './core';
+import { logDebug } from './log';
 
 export interface QwikSpeakProps {
   /**
@@ -44,6 +45,8 @@ export const QwikSpeakProvider = component$((props: QwikSpeakProps) => {
   const resolvedLocale = props.locale ??
     props.config.supportedLocales.find(value => value.lang === lang) ??
     props.config.defaultLocale;
+
+  if (isDev) logDebug(`Resolved locale: ${resolvedLocale.lang}`);
 
   // Set initial state
   const state = useStore<InternalSpeakState>({
