@@ -59,7 +59,7 @@ test(`[Home Component]: Should render translated texts`, async () => {
 
 Optionally, if you need to test the translated texts in different languages, you have to provide a stub `loadTranslation$` to ensure translations are loaded in test environment. For example you could load the json files of translations as follows:
 ```typescript
-const loadTranslationStub$: LoadTranslationFn = $((lang: string, asset: string, origin?: string) =>
+const loadTranslationStub$: LoadTranslationFn = $((lang: string, asset: string) =>
   JSON.parse(
     import.meta.glob('/public/i18n/**/*.json', { as: 'raw', eager: true })[
     `/public/i18n/${lang}/${asset}.json`

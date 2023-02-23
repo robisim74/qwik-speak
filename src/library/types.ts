@@ -1,4 +1,4 @@
-import { QRL, ValueOrPromise } from '@builder.io/qwik';
+import type { QRL, ValueOrPromise } from '@builder.io/qwik';
 
 export interface SpeakLocale {
   /**
@@ -43,7 +43,7 @@ export interface TranslationFn {
   /**
    * Function to load translation data
    */
-  loadTranslation$?: LoadTranslationFn;
+  loadTranslation$: LoadTranslationFn;
 }
 
 export interface SpeakConfig {
@@ -69,11 +69,11 @@ export interface SpeakConfig {
   keyValueSeparator?: string;
 }
 
-export interface InternalSpeakState {
+export interface SpeakState {
   /**
    * Current locale
    */
-  locale: Partial<SpeakLocale>;
+  locale: SpeakLocale;
   /**
    * Translation data
    */
@@ -86,12 +86,4 @@ export interface InternalSpeakState {
    * Functions to use
    */
   translationFn: TranslationFn;
-}
-
-/**
- * Speak state
- */
-export interface SpeakState extends InternalSpeakState {
-  locale: SpeakLocale;
-  translationFn: Required<TranslationFn>;
 }

@@ -5,7 +5,6 @@ export type {
   TranslationFn,
   SpeakConfig,
   SpeakState,
-  InternalSpeakState,
   LoadTranslationFn,
 } from './library/types';
 export type { QwikSpeakProps } from './library/qwik-speak-component';

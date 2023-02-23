@@ -8,6 +8,7 @@ import { mockAsset, mockSource } from './mock';
 
 // Mock part of 'fs/promises' module
 vi.mock('fs/promises', async () => {
+  /* eslint-disable-next-line */
   const mod = await vi.importActual<typeof import('fs/promises')>('fs/promises');
   return {
     ...mod,

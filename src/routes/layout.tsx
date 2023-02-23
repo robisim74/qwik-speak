@@ -1,5 +1,5 @@
 import { component$, Slot } from '@builder.io/qwik';
-import { RequestHandler } from '@builder.io/qwik-city';
+import type { RequestHandler } from '@builder.io/qwik-city';
 
 import { Header } from '../components/header/header';
 import { config } from '../speak-config';

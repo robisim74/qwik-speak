@@ -1,7 +1,7 @@
 import { $, component$, Slot, useContextProvider, useServerData, useStore, useTask$ } from '@builder.io/qwik';
 import { isDev, isServer } from '@builder.io/qwik/build';
 
-import type { InternalSpeakState, SpeakConfig, SpeakLocale, SpeakState, TranslationFn } from './types';
+import type { SpeakConfig, SpeakLocale, SpeakState, TranslationFn } from './types';
 import { SpeakContext } from './context';
 import { loadTranslations } from './core';
 import { logDebug } from './log';
@@ -49,7 +49,7 @@ export const QwikSpeakProvider = component$((props: QwikSpeakProps) => {
   if (isDev) logDebug(`Resolved locale: ${resolvedLocale.lang}`);
 
   // Set initial state
-  const state = useStore<InternalSpeakState>({
+  const state = useStore<SpeakState>({
     locale: Object.assign({}, resolvedLocale),
     translation: Object.fromEntries(props.config.supportedLocales.map(value => [value.lang, {}])),
     config: {
@@ -61,18 +61,17 @@ export const QwikSpeakProvider = component$((props: QwikSpeakProps) => {
     },
     translationFn: resolvedTranslationFn
   }, { recursive: true });
-  const ctx = state as SpeakState;
-  const { locale, translation, config, translationFn } = ctx;
+  const { locale, translation, config, translationFn } = state;
 
   // Create context
-  useContextProvider(SpeakContext, ctx);
+  useContextProvider(SpeakContext, state);
 
   // Called the first time when the component mounts, and when lang changes
   useTask$(async ({ track }) => {
     track(() => locale.lang);
 
     // Load translations
-    await loadTranslations(ctx, url?.origin, props.langs);
+    await loadTranslations(state, url?.origin, props.langs);
 
     // Prevent Qwik from creating subscriptions
     if (isServer) {

@@ -1,5 +1,5 @@
 import { inlinedQrl } from '@builder.io/qwik';
-import { SpeakLocale, SpeakConfig, Translation, SpeakState } from '../library/types';
+import type { SpeakLocale, SpeakConfig, Translation, SpeakState } from '../library/types';
 
 const translationData: Translation = {
   'en-US': {

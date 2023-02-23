@@ -14,7 +14,7 @@ _src/speak-config.ts_
 ```typescript
 import { $ } from '@builder.io/qwik';
 import { isServer } from '@builder.io/qwik/build';
-import {
+import type {
   LoadTranslationFn,
   SpeakConfig,
   TranslationFn
@@ -211,11 +211,6 @@ export default component$(() => {
 ```
 `changeLocale` function by Qwik Speak is responsible for the language change, and it falls back to the default locale if the new locale is not in `supportedLocales`.
 
-## Running
-You can already try the app: `npm start`
-
-You will notice that in the translations there are default values for both languages.
-
 ## Extraction: [Qwik Speak Extract](../tools/extract.md)
 We can now extract the translations and generate the `assets` as json. In `package.json` add the following command to the scripts:
 ```json
@@ -235,7 +230,10 @@ public/i18n/it-IT/home.json
 ```
 `app` asset and `home` asset for each language, initialized with the default values we provided.
 
-We can translate the `it-IT` files, and run the app again.
+We can translate the `it-IT` files, and run the app.
+
+## Running
+You can try the app: `npm start`
 
 ## Inlining: [Qwik Speak Inline Vite plugin](../tools/inline.md)
 Let's make sure that translation files are loaded only in dev mode. Update the `loadTranslation$` function:

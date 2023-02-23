@@ -1,5 +1,5 @@
 import { component$, useStore } from '@builder.io/qwik';
-import { DocumentHead } from '@builder.io/qwik-city';
+import type { DocumentHead } from '@builder.io/qwik-city';
 import {
   $translate as t,
   $plural as p,

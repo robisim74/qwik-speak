@@ -1,7 +1,8 @@
 import { $, component$, useTask$ } from '@builder.io/qwik';
 import { useLocation, useNavigate } from '@builder.io/qwik-city';
 
-import { changeLocale, $translate as t, useSpeakContext, SpeakLocale, useSpeakLocale, useSpeakConfig } from 'qwik-speak';
+import type { SpeakLocale } from 'qwik-speak';
+import { changeLocale, $translate as t, useSpeakContext, useSpeakLocale, useSpeakConfig } from 'qwik-speak';
 
 export const ChangeLocale = component$(() => {
   const loc = useLocation();

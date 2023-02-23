@@ -5,7 +5,8 @@ import { createWriteStream, existsSync, mkdirSync } from 'fs';
 import { extname, normalize } from 'path';
 
 import type { QwikSpeakInlineOptions, Translation } from './types';
-import { Argument, getPluralAlias, getTranslateAlias, parseJson, Property } from '../core/parser';
+import type { Argument, Property } from '../core/parser';
+import { getPluralAlias, getTranslateAlias, parseJson } from '../core/parser';
 import { parseSequenceExpressions } from '../core/parser';
 import { getRules } from '../core/intl-parser';
 

@@ -2,12 +2,13 @@ import { createDOM } from '@builder.io/qwik/testing';
 import { $ } from '@builder.io/qwik';
 import { test, expect } from 'vitest';
 
-import { LoadTranslationFn, QwikSpeakProvider, TranslationFn } from 'qwik-speak';
+import type { LoadTranslationFn, TranslationFn } from 'qwik-speak';
+import { QwikSpeakProvider } from 'qwik-speak';
 
 import Home from './index';
 import { config } from '../../speak-config';
 
-const loadTranslationStub$: LoadTranslationFn = $((lang: string, asset: string, origin?: string) =>
+const loadTranslationStub$: LoadTranslationFn = $((lang: string, asset: string) =>
   JSON.parse(
     import.meta.glob('/public/i18n/**/*.json', { as: 'raw', eager: true })[
     `/public/i18n/${lang}/${asset}.json`
