@@ -1,7 +1,5 @@
 # Quick Start
 
-> Requires Qwik city 0.2.*
-
 ```shell
 npm create qwik@latest
 npm install qwik-speak --save-dev
@@ -27,7 +25,7 @@ export const config: SpeakConfig = {
     { lang: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles' }
   ],
   assets: [
-    'app'
+    'app' // Translations shared by the pages
   ]
 };
 
@@ -39,40 +37,22 @@ export const loadTranslation$: LoadTranslationFn = $(async (lang: string, asset:
   }
   url += `/i18n/${lang}/${asset}.json`;
   const response = await fetch(url);
-  return response.json();
+
+  if (response.ok) {
+    return response.json();
+  }
+  else if (response.status === 404) {
+    console.warn(`loadTranslation$: ${url} not found`);
+  }
 });
 
 export const translationFn: TranslationFn = {
   loadTranslation$: loadTranslation$
 };
 ```
-We have added the Speak config and the implementation of the `loadTranslation$` function.
+We have added the Speak config and the implementation of the `loadTranslation$` function. Loading of translations can take place both on server and on client (in case of SPA or language change) and the `loadTranslation$` function must support both.
 
-> The `defaultLocale` and `supportedLocales` are required because the library uses the default locale if a locale is set at runtime that is not supported.
-
-Loading of translations can take place both on server and on client (in case of SPA or language change) and the `loadTranslation$` function must support both.
-
-We can also catch exceptions:
-```typescript
-export const loadTranslation$: LoadTranslationFn = $(async (lang: string, asset: string, origin?: string) => {
-  let url = '';
-  // Absolute urls on server
-  if (isServer && origin) {
-    url = origin;
-  }
-  url += `/i18n/${lang}/${asset}.json`;
-
-  let data: any = null;
-  try {
-    const response = await fetch(url);
-    data = await response.json();
-  } catch (error) {
-    // Implement error handling here
-    console.log('loadTranslation$ error: ', error);
-  }
-  return data;
-});
-```
+> The `defaultLocale` and `supportedLocales` are required because the library uses the default locale if is set a locale at runtime that is not supported.
 
 ## Adding Qwik Speak
 Just wrap Qwik City provider with `QwikSpeakProvider` component in `root.tsx` and pass it the configuration and the translation functions:
@@ -127,6 +107,9 @@ export const Home = component$(() => {
 
 export default component$(() => {
   return (
+    /**
+     * Add Home translations (only available in child components)
+     */
     <Speak assets={['home']}>
       <Home />
     </Speak>
@@ -181,7 +164,7 @@ export const ChangeLocale = component$(() => {
   const changeLocale$ = $(async (newLocale: SpeakLocale) => {
     await changeLocale(newLocale, ctx);
 
-    // Store locale in cookie 
+    // Store locale in a cookie 
     document.cookie = `locale=${JSON.stringify(newLocale)};max-age=86400;path=/`;
   });
 
@@ -232,9 +215,6 @@ public/i18n/it-IT/home.json
 
 We can translate the `it-IT` files, and run the app.
 
-## Running
-You can try the app: `npm start`
-
 ## Inlining: [Qwik Speak Inline Vite plugin](../tools/inline.md)
 Let's make sure that translation files are loaded only in dev mode. Update the `loadTranslation$` function:
 
@@ -251,7 +231,13 @@ export const loadTranslation$: LoadTranslationFn = $(async (lang: string, asset:
     }
     url += `/i18n/${lang}/${asset}.json`;
     const response = await fetch(url);
-    return response.json();
+
+    if (response.ok) {
+      return response.json();
+    }
+    else if (response.status === 404) {
+      console.warn(`loadTranslation$: ${url} not found`);
+    }
   }
 });
 ```

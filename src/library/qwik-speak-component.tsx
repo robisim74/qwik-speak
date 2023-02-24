@@ -60,7 +60,7 @@ export const QwikSpeakProvider = component$((props: QwikSpeakProps) => {
       keyValueSeparator: props.config.keyValueSeparator || '@@'
     },
     translationFn: resolvedTranslationFn
-  }, { recursive: true });
+  }, { deep: true });
   const { locale, translation, config, translationFn } = state;
 
   // Create context

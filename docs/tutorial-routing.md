@@ -2,8 +2,6 @@
 
 > Step by step, let's build an app with Qwik Speak and a localized router
 
-> Requires Qwik city 0.2.*
-
 ```shell
 npm create qwik@latest
 npm install qwik-speak --save-dev
@@ -21,7 +19,7 @@ export const config: SpeakConfig = {
     { lang: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles' }
   ],
   assets: [
-    'app'
+    'app' // Translations shared by the pages
   ]
 };
 
@@ -33,40 +31,22 @@ export const loadTranslation$: LoadTranslationFn = $(async (lang: string, asset:
   }
   url += `/i18n/${lang}/${asset}.json`;
   const response = await fetch(url);
-  return response.json();
+
+  if (response.ok) {
+    return response.json();
+  }
+  else if (response.status === 404) {
+    console.warn(`loadTranslation$: ${url} not found`);
+  }
 });
 
 export const translationFn: TranslationFn = {
   loadTranslation$: loadTranslation$
 };
 ```
-We have added the Speak config and the implementation of the `loadTranslation$` function.
+We have added the Speak config and the implementation of the `loadTranslation$` function. Loading of translations can take place both on server and on client (in case of SPA or language change) and the `loadTranslation$` function must support both.
 
-> The `defaultLocale` and `supportedLocales` are required because the library uses the default locale if a locale is set at runtime that is not supported.
-
-Loading of translations can take place both on server and on client (in case of SPA or language change) and the `loadTranslation$` function must support both.
-
-We can also catch exceptions:
-```typescript
-export const loadTranslation$: LoadTranslationFn = $(async (lang: string, asset: string, origin?: string) => {
-  let url = '';
-  // Absolute urls on server
-  if (isServer && origin) {
-    url = origin;
-  }
-  url += `/i18n/${lang}/${asset}.json`;
-
-  let data: any = null;
-  try {
-    const response = await fetch(url);
-    data = await response.json();
-  } catch (error) {
-    // Implement error handling here
-    console.log('loadTranslation$ error: ', error);
-  }
-  return data;
-});
-```
+> The `defaultLocale` and `supportedLocales` are required because the library uses the default locale if is set a locale at runtime that is not supported.
 
 ## Routing
 Let's assume that we want to create a navigation of this type:
@@ -145,6 +125,9 @@ export const Home = component$(() => {
 
 export default component$(() => {
   return (
+    /**
+     * Add Home translations (only available in child components)
+     */
     <Speak assets={['home']}>
       <Home />
     </Speak>
@@ -293,17 +276,25 @@ _public/i18n/[lang]/runtime.json_
   }
 }
 ```
-> Don't forget to update the keys in `DocumentHead` of `index.tsx` and add `runtime` asset in Speak config.
+Don't forget to update the keys in `DocumentHead` of `index.tsx`:
+```jsx
+export const head: DocumentHead = {
+  title: 'runtime.home.head.title@@Qwik Speak',
+  meta: [{ name: 'description', content: 'runtime.home.head.description@@Qwik Speak with localized routing' }]
+};
+```
+and to add `runtime` asset in Speak config:
+```typescript
+assets: [
+  'app', // Translations shared by the pages
+  'runtime' // Translations with dynamic keys or parameters
+]
+```
 
 We can translate the `it-IT` files, and run the app.
 
-## Running
-You can try the app: `npm start`
-
-You will notice that when you change language the URL updates.
-
 ## Inlining: [Qwik Speak Inline Vite plugin](../tools/inline.md)
-Let's make sure that the `runtime` file is loaded and others only in dev mode. Update the `loadTranslation$` function:
+Let's make sure that the `runtime` file is always loaded, while the others assets only in dev mode. Update the `loadTranslation$` function:
 
 _src/speak-config.ts_
 ```typescript
@@ -316,7 +307,13 @@ export const loadTranslation$: LoadTranslationFn = $(async (lang: string, asset:
     }
     url += `/i18n/${lang}/${asset}.json`;
     const response = await fetch(url);
-    return response.json();
+
+    if (response.ok) {
+      return response.json();
+    }
+    else if (response.status === 404) {
+      console.warn(`loadTranslation$: ${url} not found`);
+    }
   }
 });
 ```

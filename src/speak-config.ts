@@ -34,7 +34,13 @@ export const loadTranslation$: LoadTranslationFn = $(async (lang: string, asset:
     }
     url += `/i18n/${lang}/${asset}.json`;
     const response = await fetch(url);
-    return response.json();
+
+    if (response.ok) {
+      return response.json();
+    }
+    else if (response.status === 404) {
+      console.warn(`loadTranslation$: ${url} not found`);
+    }
   }
 });
 

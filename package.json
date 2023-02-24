@@ -54,14 +54,17 @@
   },
   "exports": {
     ".": {
+      "types": "./lib/index.d.ts",
       "import": "./lib/index.qwik.mjs",
       "require": "./lib/index.qwik.cjs"
     },
     "./inline": {
+      "types": "./inline/index.d.ts",
       "import": "./inline/index.mjs",
       "require": "./inline/index.cjs"
     },
     "./extract": {
+      "types": "./extract/index.d.ts",
       "import": "./extract/index.mjs",
       "require": "./extract/index.cjs"
     }
