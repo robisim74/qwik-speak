@@ -1,4 +1,4 @@
-import { component$, useStore } from '@builder.io/qwik';
+import { component$, useSignal } from '@builder.io/qwik';
 import type { DocumentHead } from '@builder.io/qwik-city';
 import {
   $translate as t,
@@ -13,7 +13,7 @@ import {
 export const Home = component$(() => {
   const units = useSpeakLocale().units!;
 
-  const state = useStore({ count: 0 });
+  const count = useSignal(0);
 
   return (
     <>
@@ -27,8 +27,8 @@ export const Home = component$(() => {
       <p dangerouslySetInnerHTML={t('home.text')}></p>
 
       <h3>{t('home.plural')}</h3>
-      <button class="btn-counter" onClick$={() => state.count++}>{t('home.increment')}</button>
-      <p class="counter">{p(state.count, 'home.devs')}</p>
+      <button class="btn-counter" onClick$={() => count.value++}>{t('home.increment')}</button>
+      <p class="counter">{p(count.value, 'home.devs')}</p>
 
       <h3>{t('home.dates')}</h3>
       <p>{fd(Date.now(), { dateStyle: 'full', timeStyle: 'short' })}</p>
