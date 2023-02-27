@@ -11,6 +11,10 @@ export interface QwikSpeakExtractOptions {
    */
   sourceFilesPath?: string;
   /**
+   * Paths to exclude
+   */
+  excludedPaths?: string[];
+  /**
    * Path to translation files: [basePath]/[assetsPath]/[lang]/*.json. Default to 'public/i18n'
    */
   assetsPath?: string;

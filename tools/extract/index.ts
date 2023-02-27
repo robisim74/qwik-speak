@@ -17,6 +17,7 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
     ...options,
     basePath: options.basePath ?? './',
     sourceFilesPath: options.sourceFilesPath ?? 'src',
+    excludedPaths: options.excludedPaths ?? [],
     assetsPath: options.assetsPath ?? 'public/i18n',
     format: options.format ?? 'json',
     keySeparator: options.keySeparator ?? '.',
@@ -27,6 +28,7 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
   const stats = new Map<string, number>();
 
   const baseSources = normalize(`${resolvedOptions.basePath}/${resolvedOptions.sourceFilesPath}`);
+  const excludedPaths = resolvedOptions.excludedPaths.map(value => normalize(`${resolvedOptions.basePath}/${value}`));
 
   // Source files
   const sourceFiles: string[] = [];
@@ -36,13 +38,15 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
   /**
    * Read source files recursively
    */
-  const readSourceFiles = async (sourceFilesPath: string) => {
+  const readSourceFiles = async (sourceFilesPath: string, excludedPaths: string[]) => {
     const files = await readdir(sourceFilesPath, { withFileTypes: true });
     for (const file of files) {
       const filePath = join(sourceFilesPath, file.name);
       const ext = extname(file.name);
       if (file.isDirectory()) {
-        await readSourceFiles(filePath);
+        if (!excludedPaths.includes(filePath)) {
+          await readSourceFiles(filePath, excludedPaths);
+        }
       } else if (/\.js|\.ts|\.jsx|\.tsx/.test(ext) && !(/test|spec/).test(file.name)) {
         sourceFiles.push(filePath);
       }
@@ -220,7 +224,7 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
   /**
    * Start pipeline
    */
-  await readSourceFiles(baseSources);
+  await readSourceFiles(baseSources, excludedPaths);
 
   const tasks = sourceFiles.map(file => parseSourceFile(file));
   const sources = await Promise.all(tasks);

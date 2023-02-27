@@ -30,6 +30,11 @@ for (const arg of args) {
       if (assertType(value, 'string')) options.sourceFilesPath = value;
       else errors.push(wrongOption(key, value));
       break;
+    case 'excludedPaths':
+      if (assertType(value, 'array')) options.excludedPaths = value;
+      else if (assertType(value, 'string')) options.excludedPaths = [value];
+      else errors.push(wrongOption(key, value));
+      break;
     case 'assetsPath':
       if (assertType(value, 'string')) options.assetsPath = value;
       else errors.push(wrongOption(key, value));
@@ -40,6 +45,7 @@ for (const arg of args) {
       break;
     case 'supportedLangs':
       if (assertType(value, 'array')) options.supportedLangs = value;
+      else if (assertType(value, 'string')) options.supportedLangs = [value];
       else errors.push(wrongOption(key, value));
       break;
     case 'keySeparator':
