@@ -72,7 +72,7 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
             if (args[0].elements) {
               for (const element of args[0].elements) {
                 if (element.type === 'Literal') {
-                  keys.push(element.value.split(resolvedOptions.keyValueSeparator)[0]);
+                  keys.push(element.value);
                 }
               }
             }
