@@ -2,7 +2,7 @@ import { readdir, readFile, writeFile } from 'fs/promises';
 import { existsSync, mkdirSync } from 'fs';
 import { extname, join, normalize } from 'path';
 
-import type { QwikSpeakExtractOptions, Translation } from './types';
+import type { QwikSpeakExtractOptions, Translation } from '../core/types';
 import { getPluralAlias, getTranslateAlias, parseJson, parseSequenceExpressions } from '../core/parser';
 import { deepMerge, deepSet } from '../core/merge';
 import { minDepth, sortTarget, toJsonString } from '../core/format';
@@ -59,11 +59,13 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
   const parseSourceFile = async (file: string): Promise<string[]> => {
     const keys: string[] = [];
 
-    const code = await readFile(normalize(`${resolvedOptions.basePath}/${file}`), 'utf8');
+    let code = await readFile(normalize(`${resolvedOptions.basePath}/${file}`), 'utf8');
 
     // $translate
     if (/\$translate/.test(code)) {
       const alias = getTranslateAlias(code);
+      // Clear types
+      code = code.replace(new RegExp(`${alias}<.*>\\(`, 'g'), `${alias.replace('\\b', '')}(`);
       // Parse sequence
       const sequence = parseSequenceExpressions(code, alias);
 
@@ -240,9 +242,12 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
 
   // Deep set
   for (let key of keys) {
-    let defaultValue: string | undefined = undefined;
+    let defaultValue: string | Translation | undefined = undefined;
 
     [key, defaultValue] = key.split(resolvedOptions.keyValueSeparator);
+
+    // Objects/arrays
+    if (/^[[{](?![[{]).*[\]}]$/.test(defaultValue)) defaultValue = JSON.parse(defaultValue);
 
     for (const lang of resolvedOptions.supportedLangs) {
       deepSet(translation[lang], key.split(resolvedOptions.keySeparator), defaultValue || '');

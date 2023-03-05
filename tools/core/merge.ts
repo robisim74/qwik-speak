@@ -1,7 +1,6 @@
-/**
- * https://github.com/lukeed/dset
- */
-export function deepSet(target: { [key: string]: any }, keys: string[], val: string) {
+import type { Translation } from './types';
+
+export function deepSet(target: Translation, keys: string[], val: string | Translation) {
   let i = 0;
   const len = keys.length;
   while (i < len) {
@@ -11,7 +10,7 @@ export function deepSet(target: { [key: string]: any }, keys: string[], val: str
   }
 }
 
-export function deepMerge(target: { [key: string]: any }, source: { [key: string]: any }) {
+export function deepMerge(target: Translation, source: Translation) {
   if (typeof target === 'object' && typeof source === 'object') {
     for (const key of Object.keys(source)) {
       if (!target[key] || typeof source[key] !== 'object')

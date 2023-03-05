@@ -6,7 +6,8 @@ const translationData: Translation = {
     test: 'Test',
     testParams: 'Test {{param}}',
     nested: {
-      test: 'Test'
+      test: 'Test',
+      array: ['Test1', 'Test2'],
     },
     one: 'One software developer',
     other: '{{value}} software developers'

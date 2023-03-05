@@ -4,7 +4,7 @@ import { isDev, isServer } from '@builder.io/qwik/build';
 import type { SpeakConfig, SpeakLocale, SpeakState, TranslationFn } from './types';
 import { SpeakContext } from './context';
 import { loadTranslations } from './core';
-import { logDebug } from './log';
+import { logDebug, logWarn } from './log';
 
 export interface QwikSpeakProps {
   /**
@@ -42,11 +42,14 @@ export const QwikSpeakProvider = component$((props: QwikSpeakProps) => {
   };
 
   // Resolve locale
-  const resolvedLocale = props.locale ??
-    props.config.supportedLocales.find(value => value.lang === lang) ??
-    props.config.defaultLocale;
+  let resolvedLocale = props.locale ?? props.config.supportedLocales.find(value => value.lang === lang);
+  if (!resolvedLocale) {
+    resolvedLocale = props.config.defaultLocale;
 
-  if (isDev) logDebug(`Resolved locale: ${resolvedLocale.lang}`);
+    if (isDev) logWarn(`Locale not resolved. Fallback to default locale ${props.config.defaultLocale.lang}`);
+  } else if (isDev) {
+    logDebug(`Resolved locale: ${resolvedLocale.lang}`);
+  }
 
   // Set initial state
   const state = useStore<SpeakState>({

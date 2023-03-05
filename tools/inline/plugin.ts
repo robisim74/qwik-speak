@@ -4,7 +4,7 @@ import { readFile, readdir, writeFile } from 'fs/promises';
 import { createWriteStream, existsSync, mkdirSync } from 'fs';
 import { extname, normalize } from 'path';
 
-import type { QwikSpeakInlineOptions, Translation } from './types';
+import type { QwikSpeakInlineOptions, Translation } from '../core/types';
 import type { Argument, Property } from '../core/parser';
 import { getPluralAlias, getTranslateAlias, parseJson } from '../core/parser';
 import { parseSequenceExpressions } from '../core/parser';
@@ -218,14 +218,14 @@ export function inline(
       const { defaultLang, supportedLangs } = withLang(args[3], opts);
 
       // Map of values
-      const values = new Map<string, string | string[]>();
+      const values = new Map<string, string | Translation>();
 
       // Get array of keys or key
       if (args[0].type === 'ArrayExpression') {
         const keys = getKeys(args[0], opts.keyValueSeparator);
 
         for (const lang of supportedLangs) {
-          const keyValues: string[] = [];
+          const keyValues: (string | Translation)[] = [];
           for (const key of keys) {
             const value = getValue(key, translation[lang], args[1], opts.keySeparator);
             if (!value) {
@@ -393,7 +393,7 @@ export function multilingual(lang: string | undefined, supportedLangs: string[])
  * Return the value in backticks
  */
 export function quoteValue(value: string): string {
-  return '`' + value + '`';
+  return !/^`.*`$/.test(value) ? '`' + value + '`' : value;
 }
 
 export function interpolateParam(property: Property): string {
@@ -422,12 +422,17 @@ export function getValue(
   data: Translation,
   params: Argument | undefined,
   keySeparator: string
-): string | undefined {
+): string | Translation | undefined {
   const value = key.split(keySeparator).reduce((acc, cur) =>
     (acc && acc[cur] !== undefined) ?
       acc[cur] :
       undefined, data);
-  if (typeof value === 'string') return params ? transpileParams(value, params) : quoteValue(value);
+
+  if (value) {
+    if (typeof value === 'string') return params ? transpileParams(value, params) : quoteValue(value);
+    if (typeof value === 'object') return value;
+  }
+
   return undefined;
 }
 
@@ -446,24 +451,36 @@ export function transpileParams(value: string, params: Argument): string | undef
  * Transpile the function
  */
 export function transpileFn(
-  values: Map<string, string | string[]>,
+  values: Map<string, string | Translation>,
   supportedLangs: string[],
   defaultLang: string
 ): string {
   let translation = '';
   for (const lang of supportedLangs.filter(x => x !== defaultLang)) {
-    if (Array.isArray(values.get(lang))) {
-      translation += `$lang(${quoteValue(lang)}) && [${values.get(lang)}] || `;
+    const value = values.get(lang);
+    if (typeof value === 'object') {
+      translation += `($lang(${quoteValue(lang)}) && ${stringifyObject(value)} || `;
     } else {
-      translation += `$lang(${quoteValue(lang)}) && ${values.get(lang)} || `;
+      translation += `$lang(${quoteValue(lang)}) && ${value} || `;
     }
   }
-  if (Array.isArray(values.get(defaultLang))) {
-    translation += `[${values.get(defaultLang)}]`;
+  const defaultValue = values.get(defaultLang);
+  if (typeof defaultValue === 'object') {
+    translation += translation ? `${stringifyObject(defaultValue)})` : `${stringifyObject(defaultValue)}`;
   } else {
-    translation += values.get(defaultLang);
+    translation += defaultValue;
   }
+
   return translation;
+}
+
+/**
+ * Ensure that values between backticks are not stringified
+ */
+export function stringifyObject(value: Translation): string {
+  let strValue = JSON.stringify(value, replacer);
+  strValue = strValue.replace(/("__qsOpenBt)|(__qsCloseBt")/g, '`');
+  return strValue;
 }
 
 export function transpilePluralFn(
@@ -530,4 +547,13 @@ export function addRule(code: string): string {
     code = code.replace(/^/, 'import { $rule } from "qwik-speak";\n');
   }
   return code;
+}
+
+
+/**
+ * Replace quoted values with a placeholder
+ */
+function replacer(key: string, value: string | Translation) {
+  if (typeof value === 'string' && /^`.*`$/.test(value)) return value.replace(/^`/, '__qsOpenBt').replace(/`$/, '__qsCloseBt');
+  return value;
 }

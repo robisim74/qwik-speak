@@ -12,6 +12,7 @@ import { getValue } from './core';
  * @returns The translation or the key if not found
  */
 export function $translate(key: string, params?: any, ctx?: SpeakState, lang?: string): string;
+export function $translate<T>(key: string, params?: any, ctx?: SpeakState, lang?: string): T;
 /**
  * Translate an array of keys.
  * The syntax of the strings is 'key@@[default value]'
@@ -22,6 +23,7 @@ export function $translate(key: string, params?: any, ctx?: SpeakState, lang?: s
  * @returns The translations or the keys if not found
  */
 export function $translate(keys: string[], params?: any, ctx?: SpeakState, lang?: string): string[];
+export function $translate<T>(keys: string[], params?: any, ctx?: SpeakState, lang?: string): T[];
 
 export function $translate(keys: string | string[], params?: any, ctx?: SpeakState, lang?: string): any {
   ctx = ctx ?? useSpeakContext();

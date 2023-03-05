@@ -1,3 +1,5 @@
+import type { Translation } from './types';
+
 export interface Property {
   type: 'Property';
   key: {
@@ -356,7 +358,7 @@ export function getPluralAlias(code: string): string {
   return pluralAlias;
 }
 
-export function parseJson(target: { [key: string]: any }, source: string): { [key: string]: any } {
+export function parseJson(target: Translation, source: string): Translation {
   target = { ...target, ...JSON.parse(source) };
   return target;
 }
