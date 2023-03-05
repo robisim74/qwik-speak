@@ -1,5 +1,6 @@
 import { test, describe, expect } from 'vitest';
 
+import type { Translation } from '../core/types';
 import { getKey, getValue, qwikSpeakInline, transpileFn, addLang } from '../inline/plugin';
 import { inlinedCode, mockCode } from './mock';
 
@@ -76,11 +77,23 @@ describe('inline', () => {
     expect(line).toBe('`Value`');
   });
   test('transpileFn with array', () => {
-    const values = new Map<string, string[]>();
+    let values = new Map<string, string[]>();
     values.set('en-US', ['`Value1`', '`Value2`']);
     values.set('it-IT', ['`Valore1`', '`Valore2`']);
+    let line = transpileFn(values, ['en-US', 'it-IT'], 'en-US');
+    expect(line).toBe('($lang(`it-IT`) && [`Valore1`,`Valore2`] || [`Value1`,`Value2`])');
+    values = new Map<string, string[]>();
+    values.set('en-US', ['Value1', 'Value2']);
+    values.set('it-IT', ['Valore1', 'Valore2']);
+    line = transpileFn(values, ['en-US', 'it-IT'], 'en-US');
+    expect(line).toBe('($lang(`it-IT`) && ["Valore1","Valore2"] || ["Value1","Value2"])');
+  });
+  test('transpileFn with objects', () => {
+    const values = new Map<string, Translation>();
+    values.set('en-US', { value1: 'Value1' });
+    values.set('it-IT', { value1: 'Valore1' });
     const line = transpileFn(values, ['en-US', 'it-IT'], 'en-US');
-    expect(line).toBe('$lang(`it-IT`) && [`Valore1`,`Valore2`] || [`Value1`,`Value2`]');
+    expect(line).toBe('($lang(`it-IT`) && {"value1":"Valore1"} || {"value1":"Value1"})');
   });
   test('addLang', () => {
     const code = addLang(`import { useStore } from "@builder.io/qwik";
@@ -112,6 +125,6 @@ export const s_xJBzwgVGKaQ = ()=>{
     await plugin.buildStart?.();
     const inlined = await plugin.transform?.(`const values = $translate(['app.title', 'app.subtitle'])`, '/src/mock.code.js');
     expect(inlined).toBe(`import { $lang } from "qwik-speak";
-const values = $lang(\`it-IT\`) && [\`Qwik Speak\`,\`Traduci le tue app Qwik in qualsiasi lingua\`] || [\`Qwik Speak\`,\`Translate your Qwik apps into any language\`]`);
+const values = ($lang(\`it-IT\`) && [\`Qwik Speak\`,\`Traduci le tue app Qwik in qualsiasi lingua\`] || [\`Qwik Speak\`,\`Translate your Qwik apps into any language\`])`);
   });
 });

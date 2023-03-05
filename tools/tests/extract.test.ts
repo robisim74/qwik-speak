@@ -40,6 +40,11 @@ describe('extract', () => {
 }`);
     expect(writeFile).toHaveBeenNthCalledWith(2, normalize('public/i18n/en-US/home.json'), `{
   "home": {
+    "array": [
+      "one",
+      "two",
+      "three"
+    ],
     "dates": "Dates & relative time",
     "devs": {
       "one": "",
@@ -48,6 +53,10 @@ describe('extract', () => {
     "greeting": "Hi! I am {{name}}",
     "increment": "Increment",
     "numbers": "Numbers & currencies",
+    "obj": {
+      "one": "1",
+      "two": "2"
+    },
     "params": "",
     "plural": "Plural",
     "tags": "Html tags",

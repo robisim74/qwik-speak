@@ -1,4 +1,4 @@
-import type { QwikSpeakExtractOptions } from './types';
+import type { QwikSpeakExtractOptions } from '../core/types';
 import { parseArgument } from '../core/cli-parser';
 import { qwikSpeakExtract } from './index';
 

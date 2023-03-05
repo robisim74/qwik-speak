@@ -52,7 +52,7 @@ export const getValue = (
   params?: any,
   keySeparator = '.',
   keyValueSeparator = '@@'
-): string | undefined => {
+): string | Translation | undefined => {
   let defaultValue: string | undefined = undefined;
 
   [key, defaultValue] = separateKeyValue(key, keyValueSeparator);
@@ -62,9 +62,19 @@ export const getValue = (
       acc[cur] :
       undefined, data);
 
-  if (typeof value === 'string') return params ? transpileParams(value, params) : value;
+  if (value) {
+    if (typeof value === 'string') return params ? transpileParams(value, params) : value;
+    if (typeof value === 'object') return value;
+  }
 
-  return defaultValue ? transpileParams(defaultValue, params) : undefined;
+  if (defaultValue) {
+    if (!/^[[{](?![[{]).*[\]}]$/.test(defaultValue))
+      return params ? transpileParams(defaultValue, params) : defaultValue;
+    // Default value is an array/object
+    return JSON.parse(defaultValue);
+  }
+
+  return undefined;
 };
 
 /**

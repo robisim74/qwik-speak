@@ -37,6 +37,18 @@ describe('translate function', () => {
     const value = t('test1@@Test {{param}}', { param: 'params' }, ctx);
     expect(value).toBe('Test params');
   });
+  test('array', () => {
+    const value = t('nested.array', {}, ctx);
+    expect(value).toEqual(['Test1', 'Test2']);
+  });
+  test('array with dot notation', () => {
+    const value = t('nested.array.1', {}, ctx);
+    expect(value).toBe('Test2');
+  });
+  test('object', () => {
+    const value = t('nested', {}, ctx);
+    expect(value).toEqual({ test: 'Test', array: ['Test1', 'Test2'], });
+  });
   test('translate when locale changes', async () => {
     await changeLocale({
       lang: 'it-IT',
