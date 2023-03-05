@@ -45,6 +45,7 @@ Available options:
 - `basePath` The base path. Default to `'./'`
 - `sourceFilesPath` Path to files to search for translations. Default to `'src'`
 - `assetsPath` Path to translation files: `[basePath]/[assetsPath]/[lang]/*.json`. Default to `'public/i18n'`
+- `excludedPaths` Paths to exclude
 - `format` The format of the translation files. Default to `'json'`
 - `supportedLangs` Supported langs. Required
 - `keySeparator` Separator of nested keys. Default is `'.'`

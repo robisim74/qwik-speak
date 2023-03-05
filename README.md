@@ -10,6 +10,7 @@ npm install qwik-speak --save-dev
 ## Getting Started
 - [Quick Start](./docs/quick-start.md)
 - [Tutorial: localized routing](./docs/tutorial-routing.md)
+- [Translate](./docs/translate.md)
 - [Testing](./docs/testing.md)
 
 Live example on [StackBlitz](https://stackblitz.com/edit/qwik-speak)
