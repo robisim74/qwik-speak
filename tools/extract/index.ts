@@ -247,7 +247,9 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
     [key, defaultValue] = key.split(resolvedOptions.keyValueSeparator);
 
     // Objects/arrays
-    if (/^[[{](?![[{]).*[\]}]$/.test(defaultValue)) defaultValue = JSON.parse(defaultValue);
+    if (/^[[{].*[\]}]$/.test(defaultValue) && !/^{{/.test(defaultValue)) {
+      defaultValue = JSON.parse(defaultValue);
+    }
 
     for (const lang of resolvedOptions.supportedLangs) {
       deepSet(translation[lang], key.split(resolvedOptions.keySeparator), defaultValue || '');

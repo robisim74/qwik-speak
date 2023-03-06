@@ -16,14 +16,14 @@ $translate('home.title@@Qwik Speak')
     }
   }
   ```
-- After extraction, it returns the value in json files
+- After extraction, it returns the value in files
 - In prod mod, `$translate` function is replaced by its translation both in server files and in chunks sent to the browser:
   ```jsx
   `Qwik Speak`
   ```
 
 
-## Params
+## Params interpolation
 `$translate` function accept params as well:
 ```jsx
 $translate('home.greeting@@Hi! I am {{name}}', { name: 'Qwik Speak' })
@@ -35,7 +35,7 @@ Hi! I am Qwik Speak
 ```
 
 
-## Arrays and objects
+## Array of keys
 `$translate` function accepts array of keys:
 ```jsx
 $translate(['value1@@Value 1', 'value2@@Value 2'])
@@ -46,7 +46,8 @@ and returns an array of translated values:
 ["Value 1", "Value 2"]
 ```
 
-It can get arrays and objects directly from json files:
+## Arrays and objects as values
+It can get arrays and objects directly from files:
 ```json
 {
   "home": {
@@ -70,15 +71,15 @@ $translate<string[]>('home.array')
 $translate<Translation>('home.obj')
 ```
 
-Finally, it is possible to set arrays and objects directly as the default value:
+Finally, it is possible to set arrays and objects passing a _valid stringified_ default value:
 
 ```jsx
 $translate<string[]>('home.array@@["one","two","three"]')
 $translate<Translation>('home.obj@@{"one":"1","two":"2"}')
 ```
-and access by array position:
+You can also access by array position:
 ```jsx
 $translate('home.array.2@@three')
 ```
 
-> Make sure you are passing a valid stringified array or object as default value
+> To reduce complexity (arrays and objects are _inlined_ during build) it is recommended to use objects with _a depth not greater than 1_. For the same reason, `params` interpolation is not supported when you return an array or an object

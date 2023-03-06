@@ -45,6 +45,12 @@ describe('extract', () => {
       "two",
       "three"
     ],
+    "arrayObjects": [
+      {
+        "one": "1",
+        "two": "2"
+      }
+    ],
     "dates": "Dates & relative time",
     "devs": {
       "one": "",

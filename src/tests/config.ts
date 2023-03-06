@@ -10,7 +10,11 @@ const translationData: Translation = {
       array: ['Test1', 'Test2'],
     },
     one: 'One software developer',
-    other: '{{value}} software developers'
+    other: '{{value}} software developers',
+    arrayObjects: [
+      { one: '1' },
+      { two: '3' }
+    ]
   },
   'it-IT': {
     test: 'Prova'

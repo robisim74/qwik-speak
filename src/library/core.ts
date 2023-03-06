@@ -68,7 +68,7 @@ export const getValue = (
   }
 
   if (defaultValue) {
-    if (!/^[[{](?![[{]).*[\]}]$/.test(defaultValue))
+    if (!/^[[{].*[\]}]$/.test(defaultValue) || /^{{/.test(defaultValue))
       return params ? transpileParams(defaultValue, params) : defaultValue;
     // Default value is an array/object
     return JSON.parse(defaultValue);

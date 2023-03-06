@@ -47,7 +47,14 @@ describe('translate function', () => {
   });
   test('object', () => {
     const value = t('nested', {}, ctx);
-    expect(value).toEqual({ test: 'Test', array: ['Test1', 'Test2'], });
+    expect(value).toEqual({ test: 'Test', array: ['Test1', 'Test2'] });
+  });
+  test('array of objects', () => {
+    const value = t('arrayObjects', {}, ctx);
+    expect(value).toEqual([
+      { one: '1' },
+      { two: '3' }
+    ]);
   });
   test('translate when locale changes', async () => {
     await changeLocale({

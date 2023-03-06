@@ -184,9 +184,10 @@ export const Home = component$(() => {
 
   const state = useStore({ count: 0 });
 
-  const tArray = t('home.array@@["one", "two"]');
+  const tArray = t<string[]>('home.array@@["one", "two"]');
   const item = t('home.array.2@@three');
-  const tObject = t('home.obj@@{"one": "1", "two": "2"}');
+  const tObject = t<Translation>('home.obj@@{"one": "1", "two": "2"}');
+  const tArrayObjects = t<Translation[]>('home.arrayObjects@@[{"one": "1", "two": "2"}]');
   
   return (
     <>
