@@ -18,14 +18,13 @@ Live example on [StackBlitz](https://stackblitz.com/edit/qwik-speak)
 ## Overview
 ### Getting the translation
 ```jsx
-import { $translate as t, $plural as p } from 'qwik-speak';
+import { $translate as t } from 'qwik-speak';
 
 export default component$(() => {
   return (
     <>
-      <h1>{t('app.title')}</h1> {/* Qwik Speak */}
-      <p>{t('home.greeting', { name: 'Qwik Speak' })}</p> {/* Hi! I am Qwik Speak */}
-      <p>{p(state.count, 'home.devs')}</p> {/* 1 software developer, 2 software developers */}
+      <h1>{t('app.title@@Qwik Speak')}</h1> {/* Qwik Speak */}
+      <p>{t('home.greeting@@Hi! I am {{name}}', { name: 'Qwik Speak' })}</p> {/* Hi! I am Qwik Speak */}
     </>
   );
 });
@@ -93,7 +92,7 @@ stateDiagram-v2
 
 ### Speak config
 - `defaultLocale` The default locale to use as fallback
-- `supportedLocales` Supported locales
+- `supportedLocales` List of locales supported by the app
 - `assets` An array of strings: each asset is passed to the `loadTranslation$` function to obtain data according to the language
 - `keySeparator` Separator of nested keys. Default is `.`
 - `keyValueSeparator` Key-value separator. Default is `@@`. The default value of a key can be passed directly into the string: `t('app.title@@Qwik Speak')`
@@ -107,7 +106,7 @@ The `SpeakLocale` object contains the `lang`, in the format `language[-script][-
 and optionally contains:
 - `extension` Language with Intl extensions, in the format `language[-script][-region][-extensions]` like `en-US-u-ca-gregory-nu-latn` to format dates and numbers
 - `currency` ISO 4217 three-letter code
-- `timezone` From the IANA time zone database
+- `timeZone` From the IANA time zone database
 - `units` Key value pairs of unit identifiers
 
 ### Translation functions
@@ -130,7 +129,7 @@ C4Container
 ```
 #### QwikSpeakProvider component
 `QwikSpeakProvider` component provides the Speak context to the app. `Props`:
-  - `config` Speak config
+  - `config` Speak config (required)
   - `translationFn` Optional functions to use
   - `locale` Optional locale to use
   - `langs` Optional additional languages to preload data for (multilingual)
