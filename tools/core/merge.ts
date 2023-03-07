@@ -12,12 +12,15 @@ export function deepSet(target: Translation, keys: string[], val: string | Trans
 
 export function deepMerge(target: Translation, source: Translation) {
   if (typeof target === 'object' && typeof source === 'object') {
-    for (const key of Object.keys(source)) {
-      if (!target[key] || typeof source[key] !== 'object')
-        target[key] = source[key];
-      else
-        deepMerge(target[key], source[key]);
-    }
+    Object.keys(source).map(k => {
+      target[k] = deepMerge(target[k], source[k]);
+    });
+    return target;
   }
-  return target;
+  return source;
+}
+
+export function deepClone(value: string | Translation){
+  if (typeof value === 'object') return JSON.parse(JSON.stringify(value));
+  return value;
 }

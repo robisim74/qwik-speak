@@ -95,6 +95,20 @@ describe('inline', () => {
     const line = transpileFn(values, ['en-US', 'it-IT'], 'en-US');
     expect(line).toBe('($lang(`it-IT`) && {"value1":"Valore1"} || {"value1":"Value1"})');
   });
+  test('transpileFn with objects multiple languages', () => {
+    const values = new Map<string, Translation>();
+    values.set('en-US', { value1: 'Value1' });
+    values.set('it-IT', { value1: 'Valore1' });
+    values.set('es-ES', { value1: 'Valor1' });
+    const line = transpileFn(values, ['en-US', 'it-IT', 'es-ES'], 'en-US');
+    expect(line).toBe('($lang(`it-IT`) && {"value1":"Valore1"} || $lang(`es-ES`) && {"value1":"Valor1"} || {"value1":"Value1"})');
+  });
+  test('transpileFn with objects one language', () => {
+    const values = new Map<string, Translation>();
+    values.set('en-US', { value1: 'Value1' });
+    const line = transpileFn(values, ['en-US'], 'en-US');
+    expect(line).toBe('{"value1":"Value1"}');
+  });
   test('addLang', () => {
     const code = addLang(`import { useStore } from "@builder.io/qwik";
 export const s_xJBzwgVGKaQ = ()=>{

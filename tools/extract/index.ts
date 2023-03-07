@@ -4,7 +4,7 @@ import { extname, join, normalize } from 'path';
 
 import type { QwikSpeakExtractOptions, Translation } from '../core/types';
 import { getPluralAlias, getTranslateAlias, parseJson, parseSequenceExpressions } from '../core/parser';
-import { deepMerge, deepSet } from '../core/merge';
+import { deepClone, deepMerge, deepSet } from '../core/merge';
 import { minDepth, sortTarget, toJsonString } from '../core/format';
 import { getRules } from '../core/intl-parser';
 
@@ -148,7 +148,7 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
    * Read, deep merge & sort translation data
    */
   const readAssets = async () => {
-    await Promise.all(resolvedOptions.supportedLangs.map(async lang => {
+    for (const lang of resolvedOptions.supportedLangs) {
       const baseAssets = normalize(`${resolvedOptions.basePath}/${resolvedOptions.assetsPath}/${lang}`);
 
       if (!existsSync(baseAssets)) return;
@@ -177,7 +177,7 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
         // Sort by key
         translation[lang] = sortTarget(translation[lang]);
       }
-    }));
+    }
   };
 
   /**
@@ -252,7 +252,7 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
     }
 
     for (const lang of resolvedOptions.supportedLangs) {
-      deepSet(translation[lang], key.split(resolvedOptions.keySeparator), defaultValue || '');
+      deepSet(translation[lang], key.split(resolvedOptions.keySeparator), deepClone(defaultValue || ''));
     }
   }
 

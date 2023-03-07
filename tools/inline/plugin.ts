@@ -458,18 +458,22 @@ export function transpileFn(
   let translation = '';
   for (const lang of supportedLangs.filter(x => x !== defaultLang)) {
     const value = values.get(lang);
+    // Enclose in round brackets
+    if (!translation && typeof value === 'object') translation += '(';
     if (typeof value === 'object') {
-      translation += `($lang(${quoteValue(lang)}) && ${stringifyObject(value)} || `;
+      translation += `$lang(${quoteValue(lang)}) && ${stringifyObject(value)} || `;
     } else {
       translation += `$lang(${quoteValue(lang)}) && ${value} || `;
     }
   }
   const defaultValue = values.get(defaultLang);
   if (typeof defaultValue === 'object') {
-    translation += translation ? `${stringifyObject(defaultValue)})` : `${stringifyObject(defaultValue)}`;
+    translation += `${stringifyObject(defaultValue)}`;
   } else {
     translation += defaultValue;
   }
+  // Enclose in round brackets
+  if (supportedLangs.filter(x => x !== defaultLang).length > 0 && typeof defaultValue === 'object') translation += ')';
 
   return translation;
 }
