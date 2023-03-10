@@ -1,6 +1,6 @@
 import { test, describe, expect } from 'vitest';
 
-import { formatNumber as fn } from '../library/format-number';
+import { formatNumber as fn } from '../format-number';
 import { ctx } from './config';
 
 describe('formatNumber function', () => {

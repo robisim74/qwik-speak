@@ -22,5 +22,5 @@
       "rollup"
     ]
   },
-  "exclude": ["tests/**", "vite.**.ts"]
+  "exclude": ["vite.**.ts"]
 }

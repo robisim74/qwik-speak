@@ -1,6 +1,6 @@
 import { test, describe, expect } from 'vitest';
 
-import { $plural as p } from '../library/plural';
+import { $plural as p } from '../plural';
 import { ctx } from './config';
 
 describe('plural function', () => {

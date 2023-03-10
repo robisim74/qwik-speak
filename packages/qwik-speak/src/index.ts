@@ -6,27 +6,27 @@ export type {
   SpeakConfig,
   SpeakState,
   LoadTranslationFn,
-} from './library/types';
-export type { QwikSpeakProps } from './library/qwik-speak-component';
-export type { SpeakProps } from './library/speak-component';
+} from './types';
+export type { QwikSpeakProps } from './qwik-speak-component';
+export type { SpeakProps } from './speak-component';
 // Components
-export { QwikSpeakProvider } from './library/qwik-speak-component';
-export { Speak } from './library/speak-component';
+export { QwikSpeakProvider } from './qwik-speak-component';
+export { Speak } from './speak-component';
 // Functions
-export { $translate } from './library/translate';
-export { $plural } from './library/plural';
-export { formatNumber } from './library/format-number';
-export { formatDate } from './library/format-date';
-export { relativeTime } from './library/relative-time';
-export { changeLocale } from './library/change-locale';
+export { $translate } from './translate';
+export { $plural } from './plural';
+export { formatNumber } from './format-number';
+export { formatDate } from './format-date';
+export { relativeTime } from './relative-time';
+export { changeLocale } from './change-locale';
 // Use functions
 export {
   useSpeakContext,
   useSpeakLocale,
   useSpeakConfig,
-} from './library/use-functions';
+} from './use-functions';
 // Inline functions
 export {
   $lang,
   $rule,
-} from './library/inline-functions';
+} from './inline-functions';

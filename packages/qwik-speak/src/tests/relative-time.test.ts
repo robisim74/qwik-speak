@@ -1,6 +1,6 @@
 import { test, describe, expect } from 'vitest';
 
-import { relativeTime as rt } from '../library/relative-time';
+import { relativeTime as rt } from '../relative-time';
 import { ctx } from './config';
 
 describe('relativeTime function', () => {

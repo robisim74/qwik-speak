@@ -1,6 +1,6 @@
 import { test, describe, expect } from 'vitest';
 
-import { getValue, transpileParams } from '../library/core';
+import { getValue, transpileParams } from '../core';
 
 describe('core', () => {
   test('getValue', () => {
