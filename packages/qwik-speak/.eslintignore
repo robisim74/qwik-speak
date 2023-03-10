@@ -29,11 +29,5 @@ build
 dist
 tsconfig.tsbuildinfo
 vite.config.ts
-*.spec.tsx
-*.spec.ts
-.netlify
-pnpm-lock.yaml
-package-lock.json
-yarn.lock
-server
-playwright.config.ts
+tools/vite.config.inline.ts
+tools/vite.config.extract.ts

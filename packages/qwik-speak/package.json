@@ -1,0 +1,84 @@
+{
+  "name": "qwik-speak",
+  "version": "0.7.2",
+  "description": "Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps",
+  "scripts": {
+    "api-extractor": "api-extractor run --local && api-extractor run --local --config tools/api-extractor.inline.json && api-extractor run --local --config tools/api-extractor.extract.json",
+    "build": "npm run lint && vite build --mode lib && tsc && npm run build.tools && npm run api-extractor",
+    "build.tools": "vite build --mode lib --config tools/vite.config.inline.ts && vite build --mode lib --config tools/vite.config.extract.ts && tsc --project tools/tsconfig.json",
+    "lint": "eslint src/**/*.ts* tools/**/*.ts*",
+    "release": "np",
+    "test": "vitest test --run",
+    "test.watch": "vitest test"
+  },
+  "bin": {
+    "qwik-speak-extract": "./extract/cli.js"
+  },
+  "peerDependencies": {
+    "@builder.io/qwik": ">=0.19.2"
+  },
+  "devDependencies": {
+    "@builder.io/qwik": "0.19.2",
+    "@microsoft/api-documenter": "^7.21.5",
+    "@microsoft/api-extractor": "^7.34.4",
+    "@types/eslint": "8.21.1",
+    "@types/node": "^18.14.0",
+    "@types/node-fetch": "latest",
+    "@typescript-eslint/eslint-plugin": "5.54.0",
+    "@typescript-eslint/parser": "5.54.0",
+    "eslint": "8.35.0",
+    "eslint-plugin-qwik": "latest",
+    "node-fetch": "3.3.0",
+    "np": "^7.6.3",
+    "typescript": "4.9.5",
+    "undici": "5.20.0",
+    "vite": "4.1.4",
+    "vitest": "^0.29.2"
+  },
+  "main": "./lib/index.qwik.cjs",
+  "module": "./lib/index.qwik.mjs",
+  "qwik": "./lib/index.qwik.mjs",
+  "types": "./lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "import": "./lib/index.qwik.mjs",
+      "require": "./lib/index.qwik.cjs"
+    },
+    "./inline": {
+      "types": "./inline/index.d.ts",
+      "import": "./inline/index.mjs",
+      "require": "./inline/index.cjs"
+    },
+    "./extract": {
+      "types": "./extract/index.d.ts",
+      "import": "./extract/index.mjs",
+      "require": "./extract/index.cjs"
+    }
+  },
+  "files": [
+    "lib",
+    "inline",
+    "extract"
+  ],
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "private": false,
+  "type": "module",
+  "homepage": "https://github.com/robisim74/qwik-speak",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/robisim74/qwik-speak.git"
+  },
+  "bugs": {
+    "url": "https://github.com/robisim74/qwik-speak/issues"
+  },
+  "keywords": [
+    "qwik",
+    "i18n",
+    "intl",
+    "translate"
+  ],
+  "license": "MIT"
+}

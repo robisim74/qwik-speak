@@ -5,8 +5,8 @@ import { test, expect } from 'vitest';
 import type { LoadTranslationFn, TranslationFn } from 'qwik-speak';
 import { QwikSpeakProvider } from 'qwik-speak';
 
-import Home from './index';
-import { config } from '../../speak-config';
+import Home from '../../../../src/routes/[...lang]/index';
+import { config } from '../../../../src/speak-config';
 
 const loadTranslationStub$: LoadTranslationFn = $((lang: string, asset: string) =>
   JSON.parse(
