@@ -9,5 +9,5 @@
 
 ## Tools​
 
-* [Qwik Speak Extract](tools/extract.md)
-* [Qwik Speak Inline Vite plugin](tools/inline.md)
+* [Qwik Speak Extract](docs/extract.md)
+* [Qwik Speak Inline Vite plugin](docs/inline.md)

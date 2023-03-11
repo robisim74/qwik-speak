@@ -125,7 +125,8 @@ export const s_xJBzwgVGKaQ = ()=>{
   test('transform', async () => {
     const plugin = qwikSpeakInline({
       supportedLangs: ['en-US', 'it-IT'],
-      defaultLang: 'en-US'
+      defaultLang: 'en-US',
+      basePath: '../../'
     }) as any;
     await plugin.buildStart?.();
     const inlined = await plugin.transform?.(mockCode, '/src/mock.code.js');
@@ -134,7 +135,8 @@ export const s_xJBzwgVGKaQ = ()=>{
   test('transform arrays', async () => {
     const plugin = qwikSpeakInline({
       supportedLangs: ['en-US', 'it-IT'],
-      defaultLang: 'en-US'
+      defaultLang: 'en-US',
+      basePath: '../../'
     }) as any;
     await plugin.buildStart?.();
     const inlined = await plugin.transform?.(`const values = $translate(['app.title', 'app.subtitle'])`, '/src/mock.code.js');

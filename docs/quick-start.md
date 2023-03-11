@@ -194,7 +194,7 @@ export default component$(() => {
 ```
 `changeLocale` function by Qwik Speak is responsible for the language change, and it falls back to the default locale if the new locale is not in `supportedLocales`.
 
-## Extraction: [Qwik Speak Extract](../tools/extract.md)
+## Extraction: [Qwik Speak Extract](./extract.md)
 We can now extract the translations and generate the `assets` as json. In `package.json` add the following command to the scripts:
 ```json
 "qwik-speak-extract": "qwik-speak-extract --supportedLangs=en-US,it-IT"
@@ -215,7 +215,7 @@ public/i18n/it-IT/home.json
 
 We can translate the `it-IT` files, and run the app.
 
-## Inlining: [Qwik Speak Inline Vite plugin](../tools/inline.md)
+## Inlining: [Qwik Speak Inline Vite plugin](./inline.md)
 Let's make sure that translation files are loaded only in dev mode. Update the `loadTranslation$` function:
 
 _src/speak-config.ts_

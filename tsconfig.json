@@ -18,6 +18,8 @@
     "noEmit": true,
     "types": ["node", "vite/client"],
     "paths": {
+      "qwik-speak/inline": ["./packages/qwik-speak/tools/inline/index.ts"],
+      "qwik-speak": ["./packages/qwik-speak/src/index.ts"],
       "~/*": ["./src/*"]
     }
   },

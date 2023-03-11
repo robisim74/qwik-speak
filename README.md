@@ -47,7 +47,7 @@ export default component$(() => {
 ## Extraction of translations
 To extract translations directly from the components, a command is available that automatically generates the files with the keys and default values.
 
-See [Qwik Speak Extract](./tools/extract.md) for more information on how to use it.
+See [Qwik Speak Extract](./docs/extract.md) for more information on how to use it.
 
 ## Production
 You have three solutions:
@@ -55,7 +55,7 @@ You have three solutions:
 - **Build using Qwik Speak Inline Vite plugin** Translation happens _at compile-time_: translations are loaded and inlined during the build (both in server file and in chunks sent to the browser)
 - **Build using Qwik Speak Inline Vite plugin & runtime** Translation happens _at compile-time_ or _at runtime_ as needed: static translations are loaded and inlined during the build, while dynamic translations occur at runtime
 
-See [Qwik Speak Inline Vite plugin](./tools/inline.md) for more information on how it works and how to use it.
+See [Qwik Speak Inline Vite plugin](./docs/inline.md) for more information on how it works and how to use it.
 
 ## Speak context
 ```mermaid
@@ -162,6 +162,7 @@ Changes locale at runtime: loads translation data and rerenders components that 
 ### Library & tools
 #### Build
 ```Shell
+cd packages/qwik-speak
 npm run build
 ```
 #### Test
@@ -179,6 +180,7 @@ npm run preview
 ```
 #### Test
 ```Shell
+npm test
 npm run test.e2e
 ```
 

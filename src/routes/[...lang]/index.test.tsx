@@ -24,7 +24,7 @@ test(`[Home Component]: Should render translated texts`, async () => {
   const { screen, render, userEvent } = await createDOM();
 
   await render(
-    <QwikSpeakProvider config={config} translationFn={translationFnStub}>
+    <QwikSpeakProvider config={config} translationFn={translationFnStub} locale={config.defaultLocale}>
       <Home />
     </QwikSpeakProvider>
   );

@@ -38,3 +38,4 @@ lerna-debug.log*
 !.yarn/releases
 
 /playwright-report/
+salt
