@@ -9,7 +9,7 @@ import styles from './header.css?inline';
 export const Header = component$(() => {
   useStyles$(styles);
 
-  const pathname = useLocation().pathname;
+  const pathname = useLocation().url.pathname;
   const lang = useSpeakLocale().lang;
   const config = useSpeakConfig();
 

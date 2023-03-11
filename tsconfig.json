@@ -15,13 +15,14 @@
     "incremental": true,
     "isolatedModules": true,
     "outDir": "tmp",
-    "types": [
-      "node",
-      "vite/client"
-    ],
+    "noEmit": true,
+    "types": ["node", "vite/client"],
     "paths": {
-      "qwik-speak": ["./src/index.ts"]
+      "qwik-speak/inline": ["./packages/qwik-speak/tools/inline/index.ts"],
+      "qwik-speak": ["./packages/qwik-speak/src/index.ts"],
+      "~/*": ["./src/*"]
     }
   },
-  "include": ["src", "tools"]
+  "files": ["./.eslintrc.cjs"],
+  "include": ["src"]
 }

@@ -1,7 +1,7 @@
 import { test, describe, expect } from 'vitest';
 
-import { changeLocale } from '../library/change-locale';
-import { $translate as t } from '../library/translate';
+import { changeLocale } from '../change-locale';
+import { $translate as t } from '../translate';
 import { ctx } from './config';
 
 describe('translate function', () => {

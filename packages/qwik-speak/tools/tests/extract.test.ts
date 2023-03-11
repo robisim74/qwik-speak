@@ -25,20 +25,21 @@ vi.mock('fs/promises', async () => {
 describe('extract', () => {
   test('extract json', async () => {
     await qwikSpeakExtract({
-      supportedLangs: ['en-US']
+      supportedLangs: ['en-US'],
+      basePath: '../../'
     });
 
     expect(readdir).toHaveBeenCalledTimes(2);
     expect(readFile).toHaveBeenCalledTimes(2);
 
     expect(writeFile).toHaveBeenCalledTimes(2);
-    expect(writeFile).toHaveBeenNthCalledWith(1, normalize('public/i18n/en-US/app.json'), `{
+    expect(writeFile).toHaveBeenNthCalledWith(1, normalize('../../public/i18n/en-US/app.json'), `{
   "app": {
     "subtitle": "Translate your Qwik apps into any language",
     "title": "Qwik Speak"
   }
 }`);
-    expect(writeFile).toHaveBeenNthCalledWith(2, normalize('public/i18n/en-US/home.json'), `{
+    expect(writeFile).toHaveBeenNthCalledWith(2, normalize('../../public/i18n/en-US/home.json'), `{
   "home": {
     "array": [
       "one",

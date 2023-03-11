@@ -242,7 +242,7 @@ In `localizeUrl$` we replace the language in the URL, using the Qwik City naviga
 
 > As an alternative you could avoid calling `changeLocale`, you could just navigate directly to the new localized URL. This may be necessary in production if you have different domains for each location.
 
-## Extraction: [Qwik Speak Extract](../tools/extract.md)
+## Extraction: [Qwik Speak Extract](./extract.md)
 We can now extract the translations and generate the `assets` as json. In `package.json` add the following command to the scripts:
 ```json
 "qwik-speak-extract": "qwik-speak-extract --supportedLangs=en-US,it-IT"
@@ -293,7 +293,7 @@ assets: [
 
 We can translate the `it-IT` files, and run the app.
 
-## Inlining: [Qwik Speak Inline Vite plugin](../tools/inline.md)
+## Inlining: [Qwik Speak Inline Vite plugin](./inline.md)
 Let's make sure that the `runtime` file is always loaded, while the others assets only in dev mode. Update the `loadTranslation$` function:
 
 _src/speak-config.ts_

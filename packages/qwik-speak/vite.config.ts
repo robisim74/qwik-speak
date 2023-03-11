@@ -4,7 +4,6 @@ import { readFile } from 'fs/promises';
 
 export default defineConfig(() => {
   return {
-    publicDir: '', // Exclude public folder from lib
     build: {
       target: 'es2020',
       lib: {
@@ -18,8 +17,6 @@ export default defineConfig(() => {
         }
       }
     },
-    plugins: [
-      qwikVite(),
-    ]
+    plugins: [qwikVite()],
   };
 });
