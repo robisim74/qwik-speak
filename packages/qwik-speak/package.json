@@ -15,10 +15,10 @@
     "qwik-speak-extract": "./extract/cli.js"
   },
   "peerDependencies": {
-    "@builder.io/qwik": ">=0.19.2"
+    "@builder.io/qwik": ">=0.21.0"
   },
   "devDependencies": {
-    "@builder.io/qwik": "0.19.2",
+    "@builder.io/qwik": "0.21.0",
     "@microsoft/api-documenter": "^7.21.5",
     "@microsoft/api-extractor": "^7.34.4",
     "@types/eslint": "8.21.1",
