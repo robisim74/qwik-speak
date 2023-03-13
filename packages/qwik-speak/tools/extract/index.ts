@@ -16,7 +16,7 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
   const resolvedOptions: Required<QwikSpeakExtractOptions> = {
     ...options,
     basePath: options.basePath ?? './',
-    sourceFilesPath: options.sourceFilesPath ?? 'src',
+    sourceFilesPaths: options.sourceFilesPaths ?? ['src'],
     excludedPaths: options.excludedPaths ?? [],
     assetsPath: options.assetsPath ?? 'public/i18n',
     format: options.format ?? 'json',
@@ -27,7 +27,7 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
   // Logs
   const stats = new Map<string, number>();
 
-  const baseSources = normalize(`${resolvedOptions.basePath}/${resolvedOptions.sourceFilesPath}`);
+  const baseSources = resolvedOptions.sourceFilesPaths.map(value => normalize(`${resolvedOptions.basePath}/${value}`));
   const excludedPaths = resolvedOptions.excludedPaths.map(value => normalize(`${resolvedOptions.basePath}/${value}`));
 
   // Source files
@@ -226,7 +226,9 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
   /**
    * Start pipeline
    */
-  await readSourceFiles(baseSources, excludedPaths);
+  for (const baseSource of baseSources) {
+    await readSourceFiles(baseSource, excludedPaths);
+  }
 
   const tasks = sourceFiles.map(file => parseSourceFile(file));
   const sources = await Promise.all(tasks);

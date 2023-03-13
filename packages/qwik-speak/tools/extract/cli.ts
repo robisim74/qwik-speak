@@ -26,8 +26,9 @@ for (const arg of args) {
       if (assertType(value, 'string')) options.basePath = value;
       else errors.push(wrongOption(key, value));
       break;
-    case 'sourceFilesPath':
-      if (assertType(value, 'string')) options.sourceFilesPath = value;
+    case 'sourceFilesPaths':
+      if (assertType(value, 'array')) options.sourceFilesPaths = value;
+      else if (assertType(value, 'string')) options.sourceFilesPaths = [value];
       else errors.push(wrongOption(key, value));
       break;
     case 'excludedPaths':

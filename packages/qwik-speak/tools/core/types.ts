@@ -7,9 +7,9 @@ export interface QwikSpeakExtractOptions {
    */
   basePath?: string;
   /**
-   * Path to files to search for translations. Default to 'src'
+   * Paths to files to search for translations. Default to 'src'
    */
-  sourceFilesPath?: string;
+  sourceFilesPaths?: string[];
   /**
    * Paths to exclude
    */
