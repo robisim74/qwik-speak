@@ -103,39 +103,37 @@ export const s_xJBzwgVGKaQ = ()=>{
     return /*#__PURE__*/ _jsxs(_Fragment, {
         children: [
             /*#__PURE__*/ _jsx("h1", {
-                children: $lang(\`it-IT\`) && \`Qwik Speak\` || \`Qwik Speak\`
+                children: ($lang(\`it-IT\`) && \`Qwik Speak\` || \`Qwik Speak\`)
             }),
             /*#__PURE__*/ _jsx("h2", {
-                children: $lang(\`it-IT\`) && \`Traduci le tue app Qwik in qualsiasi lingua\` || \`Translate your Qwik apps into any language\`
+                children: ($lang(\`it-IT\`) && \`Traduci le tue app Qwik in qualsiasi lingua\` || \`Translate your Qwik apps into any language\`)
             }),
             /*#__PURE__*/ _jsx("h3", {
-                children: $lang(\`it-IT\`) && \`Parametri\` || \`Parameters\`
+                children: ($lang(\`it-IT\`) && \`Parametri\` || \`Parameters\`)
             }),
             /*#__PURE__*/ _jsx("p", {
-                children: $lang(\`it-IT\`) && \`Ciao! Sono \${'Qwik Speak'}\` || \`Hi! I am \${'Qwik Speak'}\`
+                children: ($lang(\`it-IT\`) && \`Ciao! Sono Qwik Speak\` || \`Hi! I am Qwik Speak\`)
             }),
             /*#__PURE__*/ _jsx("h3", {
-                children: $lang(\`it-IT\`) && \`Tag Html\` || \`Html tags\`
+                children: ($lang(\`it-IT\`) && \`Tag Html\` || \`Html tags\`)
             }),
             /*#__PURE__*/ _jsx("p", {
-                dangerouslySetInnerHTML: $lang(\`it-IT\`) && \`<em>Libreria di internazionalizzazione (i18n) per tradurre testi, date e numeri nelle app Qwik</em>\` || \`<em>Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps</em>\`
+                dangerouslySetInnerHTML: ($lang(\`it-IT\`) && \`<em>Libreria di internazionalizzazione (i18n) per tradurre testi, date e numeri nelle app Qwik</em>\` || \`<em>Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps</em>\`)
             }),
             /*#__PURE__*/ _jsx("h3", {
-                children: $lang(\`it-IT\`) && \`Plurale\` || \`Plural\`
+                children: ($lang(\`it-IT\`) && \`Plurale\` || \`Plural\`)
             }),
             /*#__PURE__*/ _jsx("button", {
                 onClick$: qrl(()=>import("./entry_Home.js"), "s_d7QwW4Vfl2A", [
                     state
                 ]),
-                children: $lang(\`it-IT\`) && \`Incrementa\` || \`Increment\`
+                children: ($lang(\`it-IT\`) && \`Incrementa\` || \`Increment\`)
             }),
             /*#__PURE__*/ _jsx("p", {
-                children: $lang(\`it-IT\`) && ($rule(\`it-IT\`, state.count, \`other\`) && 
-            \`\${state.count} sviluppatori software\` || \`\${state.count} sviluppatore software\`) || ($rule(\`en-US\`, state.count, \`other\`) && 
-            \`\${state.count} software developers\` || \`\${state.count} software developer\`)
+                children: ($lang(\`it-IT\`) && ($rule(\`it-IT\`, state.count, \`other\`) && \`\${state.count} sviluppatori software\` || \`\${state.count} sviluppatore software\`) || ($rule(\`en-US\`, state.count, \`other\`) && \`\${state.count} software developers\` || \`\${state.count} software developer\`))
             }),
             /*#__PURE__*/ _jsx("h3", {
-                children: $lang(\`it-IT\`) && \`Date e tempo relativo\` || \`Dates & relative time\`
+                children: ($lang(\`it-IT\`) && \`Date e tempo relativo\` || \`Dates & relative time\`)
             }),
             /*#__PURE__*/ _jsx("p", {
                 children: fd(Date.now(), {
@@ -147,7 +145,7 @@ export const s_xJBzwgVGKaQ = ()=>{
                 children: rt(-1, 'second')
             }),
             /*#__PURE__*/ _jsx("h3", {
-                children: $lang(\`it-IT\`) && \`Numeri e valute\` || \`Numbers & currencies\`
+                children: ($lang(\`it-IT\`) && \`Numeri e valute\` || \`Numbers & currencies\`)
             }),
             /*#__PURE__*/ _jsx("p", {
                 children: fn(1000000)

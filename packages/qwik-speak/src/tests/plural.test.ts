@@ -5,11 +5,11 @@ import { ctx } from './config';
 
 describe('plural function', () => {
   test('one', () => {
-    const value = p(1, '', {}, ctx);
+    const value = p(1, '', { role: 'software' }, {}, ctx);
     expect(value).toBe('One software developer');
   });
   test('other', () => {
-    const value = p(2, '', {}, ctx);
+    const value = p(2, '', { role: 'software' }, {}, ctx);
     expect(value).toBe('2 software developers');
   });
 });

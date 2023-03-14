@@ -168,7 +168,7 @@ export function transformPlural(
     if (args?.length > 0) {
       if (checkDynamicPlural(args, originalFn)) continue;
 
-      const { defaultLang, supportedLangs } = withLang(args[4], opts);
+      const { defaultLang, supportedLangs } = withLang(args[5], opts);
 
       // Map of rules
       const rules = new Map<string, string[]>();
@@ -397,7 +397,11 @@ export function quoteValue(value: string): string {
 }
 
 export function interpolateParam(property: Property): string {
-  return property.value.type === 'Literal' ? "${'" + property.value.value + "'}" : '${' + property.value.value + '}';
+  return property.value.type === 'Literal' ? property.value.value : '${' + property.value.value + '}';
+}
+
+export function strParam(property: Property): string {
+  return property.value.type === 'Literal' ? quoteValue(property.value.value) : property.value.value;
 }
 
 export function getKey(key: string, keyValueSeparator: string): string {
@@ -459,7 +463,7 @@ export function transpileFn(
   for (const lang of supportedLangs.filter(x => x !== defaultLang)) {
     const value = values.get(lang);
     // Enclose in round brackets
-    if (!translation && typeof value === 'object') translation += '(';
+    if (!translation) translation += '(';
     if (typeof value === 'object') {
       translation += `$lang(${quoteValue(lang)}) && ${stringifyObject(value)} || `;
     } else {
@@ -473,7 +477,7 @@ export function transpileFn(
     translation += defaultValue;
   }
   // Enclose in round brackets
-  if (supportedLangs.filter(x => x !== defaultLang).length > 0 && typeof defaultValue === 'object') translation += ')';
+  if (supportedLangs.filter(x => x !== defaultLang).length > 0) translation += ')';
 
   return translation;
 }
@@ -502,20 +506,29 @@ export function transpilePluralFn(
     const rulesBylang = rules.get(lang);
     if (rulesBylang) {
       for (const rule of rulesBylang) {
-        const prefix = args[1]?.value;
-        const key = prefix ? `${prefix}${opts.keySeparator}${rule}` : rule;
+        let key = args[1]?.value;
+        key = key ? `${key}${opts.keySeparator}${rule}` : rule;
+
+        // Params
+        const params: Property[] = [{
+          type: 'Property',
+          key: { type: 'Identifier', value: 'value' },
+          value: { type: 'Identifier', value: args[0].value! }
+        }];
+        if (args[2]?.properties) {
+          args[2].properties.forEach(p => params.push(p));
+        }
+        const strParams = params.map(p => `${p.key.value}: ${strParam(p)}`).join(', ');
 
         if (rule !== rulesBylang[rulesBylang.length - 1]) {
-          if (args[2]?.properties) {
-            const options = args[2].properties.map(p => `${p.key.value}: ${quoteValue(p.value.value)}`).join(', ');
-            expr += `$rule(${quoteValue(lang)}, ${args[0].value}, ${quoteValue(rule)}, {${options}}) && 
-            ${translateAlias}(${quoteValue(key)}, { value: ${args[0].value}}, ${args[3]?.value}, ${quoteValue(lang)}) || `;
+          if (args[3]?.properties) {
+            const strOptions = args[3].properties.map(p => `${p.key.value}: ${strParam(p)}`).join(', ');
+            expr += `$rule(${quoteValue(lang)}, ${args[0].value}, ${quoteValue(rule)}, {${strOptions}}) && ${translateAlias}(${quoteValue(key)}, {${strParams}}, ${args[4]?.value}, ${quoteValue(lang)}) || `;
           } else {
-            expr += `$rule(${quoteValue(lang)}, ${args[0].value}, ${quoteValue(rule)}) && 
-            ${translateAlias}(${quoteValue(key)}, { value: ${args[0].value}}, ${args[3]?.value}, ${quoteValue(lang)}) || `;
+            expr += `$rule(${quoteValue(lang)}, ${args[0].value}, ${quoteValue(rule)}) && ${translateAlias}(${quoteValue(key)}, {${strParams}}, ${args[4]?.value}, ${quoteValue(lang)}) || `;
           }
         } else {
-          expr += `${translateAlias}(${quoteValue(key)}, { value: ${args[0].value}}, ${args[3]?.value}, ${quoteValue(lang)})`;
+          expr += `${translateAlias}(${quoteValue(key)}, {${strParams}}, ${args[4]?.value}, ${quoteValue(lang)})`;
         }
       }
     }
@@ -524,12 +537,16 @@ export function transpilePluralFn(
   }
 
   for (const lang of supportedLangs.filter(x => x !== defaultLang)) {
+    // Enclose in round brackets
+    if (!translation) translation += '(';
     translation += `$lang(${quoteValue(lang)}) && `;
     translation += transpileRules(lang);
     translation += ' || ';
   }
 
   translation += transpileRules(defaultLang);
+  // Enclose in round brackets
+  if (supportedLangs.filter(x => x !== defaultLang).length > 0) translation += ')';
   return translation;
 }
 

@@ -6,7 +6,8 @@ import { $translate } from './translate';
  * Get the plural by a number. 
  * The value is passed as a parameter to the translate function
  * @param value A number or a string
- * @param prefix Optional prefix for the key
+ * @param key Optional key
+ * @param params Optional parameters contained in the values
  * @param options Intl PluralRulesOptions object
  * @param ctx Optional Speak context to be provided outside the component$
  * @param lang Optional language if different from the current one
@@ -14,7 +15,8 @@ import { $translate } from './translate';
  */
 export const $plural = (
   value: number | string,
-  prefix?: string,
+  key?: string,
+  params?: any,
   options?: Intl.PluralRulesOptions,
   ctx?: SpeakState,
   lang?: string
@@ -27,7 +29,7 @@ export const $plural = (
   value = +value;
 
   const rule = new Intl.PluralRules(lang, options).select(value);
-  const key = prefix ? `${prefix}${config.keySeparator}${rule}` : rule;
+  key = key ? `${key}${config.keySeparator}${rule}` : rule;
 
-  return $translate(key, { value }, ctx, lang);
+  return $translate(key, { value, ...params }, ctx, lang);
 };

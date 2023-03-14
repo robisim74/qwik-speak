@@ -9,8 +9,8 @@ const translationData: Translation = {
       test: 'Test',
       array: ['Test1', 'Test2'],
     },
-    one: 'One software developer',
-    other: '{{value}} software developers',
+    one: 'One {{ role }} developer',
+    other: '{{value}} {{ role }} developers',
     arrayObjects: [
       { one: '1' },
       { two: '3' }
