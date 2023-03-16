@@ -1,40 +1,22 @@
-import type { Translation, SpeakState, LoadTranslationFn } from './types';
-
-const cache: Record<string, Promise<any>> = {};
-
-/**
- * In SPA mode, cache the results
- */
-export const memoize = (fn: LoadTranslationFn) => {
-  return (...args: [string, string, string | undefined]) => {
-    const stringArgs = JSON.stringify(args);
-
-    return stringArgs in cache ?
-      cache[stringArgs] :
-      cache[stringArgs] = fn(...args);
-  };
-};
+import type { Translation, SpeakState } from './types';
 
 /**
  * Load translations
  */
 export const loadTranslations = async (
   ctx: SpeakState,
-  origin?: string,
+  assets: string[],
   langs?: string[],
-  assets?: string[]
+  origin?: string,
 ): Promise<void> => {
-  const { locale, translation, config, translationFn } = ctx;
-
-  assets = assets ?? config.assets;
+  const { locale, translation, translationFn } = ctx;
 
   // Multilingual
   const resolvedLangs = new Set(langs || []);
   resolvedLangs.add(locale.lang);
 
   for (const lang of resolvedLangs) {
-    const memoized = memoize(translationFn.loadTranslation$);
-    const tasks = assets.map(asset => memoized(lang, asset, origin));
+    const tasks = assets.map(asset => translationFn.loadTranslation$(lang, asset, origin));
     const sources = await Promise.all(tasks);
 
     for (const data of sources) {

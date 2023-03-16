@@ -26,7 +26,7 @@ export interface QwikSpeakProps {
 }
 
 /**
- * Create and provide SpeakContext.
+ * Create and provide the Speak context
  */
 export const QwikSpeakProvider = component$((props: QwikSpeakProps) => {
   // Get URL object
@@ -69,16 +69,14 @@ export const QwikSpeakProvider = component$((props: QwikSpeakProps) => {
   // Create context
   useContextProvider(SpeakContext, state);
 
-  // Called the first time when the component mounts, and when lang changes
-  useTask$(async ({ track }) => {
-    track(() => locale.lang);
-
-    // Load translations
-    await loadTranslations(state, url?.origin, props.langs);
+  // Called the first time when the component mounts
+  useTask$(async () => {
+    await loadTranslations(state, config.assets, props.langs, url?.origin);
 
     // Prevent Qwik from creating subscriptions
     if (isServer) {
       // Shallow freeze: only applies to the immediate properties of object itself
+      Object.freeze(locale);
       Object.freeze(translation);
       Object.freeze(config);
       Object.freeze(translationFn)

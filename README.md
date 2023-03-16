@@ -85,6 +85,7 @@ stateDiagram-v2
         of translation data
     end note
 ```
+`SpeakState` is immutable: it cannot be updated after it is created and is not reactive.
 
 - `useSpeakContext()` Returns the Speak state
 - `useSpeakConfig()` Returns the configuration in Speak context
@@ -118,7 +119,7 @@ and optionally contains:
 ```mermaid
 C4Container
     Container_Boundary(a, "App") {
-        Component(a0, "QwikSpeakProvider", "", "Uses Speak context")
+        Component(a0, "QwikSpeakProvider", "", "Creates Speak context")
         Container_Boundary(b1, "Home") {
             Component(a10, "Speak", "", "Adds its own translation data to the context")        
         }  
@@ -136,7 +137,7 @@ C4Container
 
 #### Speak component (scoped translations)
 `Speak` component can be used for scoped translations. `Props`:
-  - `assets` Assets to load
+  - `assets` Assets to load (required)
   - `langs` Optional additional languages to preload data for (multilingual)
 
 ### Functions
@@ -144,19 +145,16 @@ C4Container
 Translates a key or an array of keys. The syntax of the string is `key@@[default value]`
 
 - `$plural(value: number | string, key?: string, params?: any, options?: Intl.PluralRulesOptions, ctx?: SpeakState, lang?: string)`
-Gets the plural by a number
+Gets the plural by a number using [Intl.PluralRules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/PluralRules) API
 
 - `formatDate(value: Date | number | string, options?: Intl.DateTimeFormatOptions, locale?: SpeakLocale, lang?: string, timeZone?: string)`
-Formats a date
+Formats a date using [Intl.DateTimeFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat) API
 
 - `relativeTime(value: number | string, unit: Intl.RelativeTimeFormatUnit, options?: Intl.RelativeTimeFormatOptions, locale?: SpeakLocale, lang?: string)`
-Formats a relative time
+Formats a relative time using [Intl.RelativeTimeFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/RelativeTimeFormat) API
 
 - `formatNumber(value: number | string, options?: Intl.NumberFormatOptions, locale?: SpeakLocale, lang?: string, currency?: string)`
-Formats a number
-
-- `changeLocale(newLocale: SpeakLocale, ctx: SpeakState)`
-Changes locale at runtime: loads translation data and rerenders components that uses translations
+Formats a number using [Intl.NumberFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat) API
 
 ## Development Builds
 ### Library & tools
