@@ -8,7 +8,7 @@
     "build.tools": "vite build --mode lib --config tools/vite.config.inline.ts && vite build --mode lib --config tools/vite.config.extract.ts && tsc --project tools/tsconfig.json",
     "build.extract": "vite build --mode lib --config tools/vite.config.extract.ts --watch",
     "lint": "eslint src/**/*.ts* tools/**/*.ts*",
-    "release": "np",
+    "release": "npm run build && np",
     "test": "vitest test --run",
     "test.watch": "vitest test"
   },
@@ -16,10 +16,10 @@
     "qwik-speak-extract": "./extract/cli.js"
   },
   "peerDependencies": {
-    "@builder.io/qwik": ">=0.21.0"
+    "@builder.io/qwik": ">=0.22.0"
   },
   "devDependencies": {
-    "@builder.io/qwik": "0.21.0",
+    "@builder.io/qwik": "0.22.0",
     "@microsoft/api-documenter": "^7.21.5",
     "@microsoft/api-extractor": "^7.34.4",
     "@types/eslint": "8.21.1",

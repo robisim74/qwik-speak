@@ -18,19 +18,9 @@ import Root from './root';
 import { config } from './speak-config';
 
 
-/* export function extractBase({ serverData }: RenderOptions): string {
+export function extractBase({ serverData }: RenderOptions): string {
   if (!isDev && serverData?.locale) {
     return '/build/' + serverData.locale;
-  } else {
-    return '/build';
-  }
-} */
-
-// Workaround for https://github.com/BuilderIO/qwik/issues/3228
-// Manually set Qwik locale
-export function extractBase({ serverData }: RenderOptions): string {
-  if (!isDev && serverData?.qwikcity?.params.lang) {
-    return '/build/' + serverData.qwikcity.params.lang;
   } else {
     return '/build';
   }
@@ -45,12 +35,6 @@ export default function (opts: RenderToStreamOptions) {
     containerAttributes: {
       lang: opts.serverData?.locale || config.defaultLocale.lang,
       ...opts.containerAttributes,
-    },
-    // Workaround for https://github.com/BuilderIO/qwik/issues/3228
-    // Manually set Qwik locale
-    serverData: {
-      ...opts.serverData,
-      locale: opts.serverData?.qwikcity?.params.lang || config.defaultLocale.lang
-    },
+    }
   });
 }

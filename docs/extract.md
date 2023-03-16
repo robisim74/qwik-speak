@@ -43,9 +43,9 @@ Add the command in `package.json`, and provide at least the supported languages:
 ```
 Available options:
 - `basePath` The base path. Default to `'./'`
-- `sourceFilesPath` Path to files to search for translations. Default to `'src'`
-- `assetsPath` Path to translation files: `[basePath]/[assetsPath]/[lang]/*.json`. Default to `'public/i18n'`
+- `sourceFilesPaths` Paths to files to search for translations. Default to `'src'`
 - `excludedPaths` Paths to exclude
+- `assetsPath` Path to translation files: `[basePath]/[assetsPath]/[lang]/*.json`. Default to `'public/i18n'`
 - `format` The format of the translation files. Default to `'json'`
 - `supportedLangs` Supported langs. Required
 - `keySeparator` Separator of nested keys. Default is `'.'`

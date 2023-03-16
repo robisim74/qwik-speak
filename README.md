@@ -143,7 +143,7 @@ C4Container
 - `$translate(keys: string | string[], params?: any, ctx?: SpeakState, lang?: string)`
 Translates a key or an array of keys. The syntax of the string is `key@@[default value]`
 
-- `$plural(value: number | string, prefix?: string, options?: Intl.PluralRulesOptions, ctx?: SpeakState, lang?: string)`
+- `$plural(value: number | string, key?: string, params?: any, options?: Intl.PluralRulesOptions, ctx?: SpeakState, lang?: string)`
 Gets the plural by a number
 
 - `formatDate(value: Date | number | string, options?: Intl.DateTimeFormatOptions, locale?: SpeakLocale, lang?: string, timeZone?: string)`
