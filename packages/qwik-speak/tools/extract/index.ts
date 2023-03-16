@@ -6,7 +6,7 @@ import type { QwikSpeakExtractOptions, Translation } from '../core/types';
 import { getPluralAlias, getTranslateAlias, parseJson, parseSequenceExpressions } from '../core/parser';
 import { deepClone, deepMerge, deepSet } from '../core/merge';
 import { minDepth, sortTarget, toJsonString } from '../core/format';
-import { getRules } from '../core/intl-parser';
+import { getOptions, getRules } from '../core/intl-parser';
 
 /**
  * Extract translations from source files
@@ -83,6 +83,7 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
               }
             }
           } else if (args?.[0]?.value) {
+            // Dynamic key
             if (args[0].type === 'Identifier') {
               stats.set('dynamic', (stats.get('dynamic') ?? 0) + 1);
               continue;
@@ -93,9 +94,8 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
                 continue;
               }
             }
-            if (args[1]?.type === 'Identifier' || args[1]?.type === 'CallExpression' ||
-              args[2]?.type === 'Identifier' || args[2]?.type === 'CallExpression' ||
-              args[3]?.type === 'Identifier' || args[3]?.type === 'CallExpression') {
+            // Dynamic argument (params)
+            if (args[1]?.type === 'Identifier' || args[1]?.type === 'CallExpression') {
               stats.set('dynamic', (stats.get('dynamic') ?? 0) + 1);
               continue;
             }
@@ -115,26 +115,27 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
         const args = expr.arguments;
 
         if (args?.length > 0) {
+          // Dynamic argument (key, params, options)
           if (args[1]?.type === 'Identifier' || args[1]?.type === 'CallExpression' ||
             args[2]?.type === 'Identifier' || args[2]?.type === 'CallExpression' ||
-            args[3]?.type === 'Identifier' || args[3]?.type === 'CallExpression' ||
-            args[4]?.type === 'Identifier' || args[4]?.type === 'CallExpression') {
+            args[3]?.type === 'Identifier' || args[3]?.type === 'CallExpression') {
             stats.set('dynamic plural', (stats.get('dynamic plural') ?? 0) + 1);
             continue;
           }
 
           // Map of rules
           const rules = new Set<string>();
+          const options = getOptions(args[3]?.properties);
           for (const lang of resolvedOptions.supportedLangs) {
-            const rulesBylang = getRules(lang);
-            for (const rule of rulesBylang) {
+            const rulesByLang = getRules(lang, options);
+            for (const rule of rulesByLang) {
               rules.add(rule);
             }
           }
 
           for (const rule of rules) {
-            const prefix = args?.[1]?.value;
-            const key = prefix ? `${prefix}${resolvedOptions.keySeparator}${rule}` : rule;
+            let key = args?.[1]?.value;
+            key = key ? `${key}${resolvedOptions.keySeparator}${rule}` : rule;
             keys.push(key);
           }
         }

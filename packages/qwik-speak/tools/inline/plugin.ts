@@ -8,7 +8,7 @@ import type { QwikSpeakInlineOptions, Translation } from '../core/types';
 import type { Argument, Property } from '../core/parser';
 import { getPluralAlias, getTranslateAlias, parseJson } from '../core/parser';
 import { parseSequenceExpressions } from '../core/parser';
-import { getRules } from '../core/intl-parser';
+import { getOptions, getRules } from '../core/intl-parser';
 
 // Logs
 const missingValues: string[] = [];
@@ -101,7 +101,7 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
         if (/\$plural/.test(code)) {
           const pluralAlias = getPluralAlias(code);
           const translateAlias = getTranslateAlias(code, false);
-          code = transformPlural(code, pluralAlias, translateAlias, resolvedOptions);
+          code = transformPlural(code, pluralAlias, translateAlias, resolvedOptions, target);
         }
         // Filter code: $translate
         if (/\$translate/.test(code)) {
@@ -151,7 +151,8 @@ export function transformPlural(
   code: string,
   pluralAlias: string,
   translateAlias: string,
-  opts: Required<QwikSpeakInlineOptions>
+  opts: Required<QwikSpeakInlineOptions>,
+  target: string
 ) {
   // Parse sequence
   const sequence = parseSequenceExpressions(code, pluralAlias);
@@ -172,13 +173,19 @@ export function transformPlural(
 
       // Map of rules
       const rules = new Map<string, string[]>();
+      const options = getOptions(args[3]?.properties);
       for (const lang of supportedLangs) {
-        const rulesByLang = getRules(lang);
+        const rulesByLang = getRules(lang, options);
         rules.set(lang, [...rulesByLang]);
       }
 
       // Transpile
-      const transpiled = transpilePluralFn(rules, supportedLangs, defaultLang, translateAlias, args, opts);
+      let transpiled: string;
+      if (target === 'client' && opts.splitChunks) {
+        transpiled = transpilePluralFn(rules, [defaultLang], defaultLang, translateAlias, args, opts);
+      } else {
+        transpiled = transpilePluralFn(rules, supportedLangs, defaultLang, translateAlias, args, opts);
+      }
 
       // Replace
       code = code.replace(originalFn, transpiled);
@@ -339,9 +346,8 @@ export function checkDynamic(args: Argument[], originalFn: string): boolean {
       }
     }
 
-    // Dynamic argument
+    // Dynamic argument (params, lang)
     if (args[1]?.type === 'Identifier' || args[1]?.type === 'CallExpression' ||
-      args[2]?.type === 'Identifier' || args[2]?.type === 'CallExpression' ||
       args[3]?.type === 'Identifier' || args[3]?.type === 'CallExpression') {
       dynamicParams.push(`dynamic params: ${originalFn.replace(/\s+/g, ' ')} - skip`);
       return true;
@@ -352,11 +358,11 @@ export function checkDynamic(args: Argument[], originalFn: string): boolean {
 
 export function checkDynamicPlural(args: Argument[], originalFn: string): boolean {
   if (args?.[0]?.value) {
-    // Dynamic argument
+    // Dynamic argument (key, params, options, lang)
     if (args[1]?.type === 'Identifier' || args[1]?.type === 'CallExpression' ||
       args[2]?.type === 'Identifier' || args[2]?.type === 'CallExpression' ||
       args[3]?.type === 'Identifier' || args[3]?.type === 'CallExpression' ||
-      args[4]?.type === 'Identifier' || args[4]?.type === 'CallExpression') {
+      args[5]?.type === 'Identifier' || args[5]?.type === 'CallExpression') {
       dynamicParams.push(`dynamic plural: ${originalFn.replace(/\s+/g, ' ')} - skip`);
       return true;
     }
@@ -503,33 +509,34 @@ export function transpilePluralFn(
 
   const transpileRules = (lang: string): string => {
     let expr = '(';
-    const rulesBylang = rules.get(lang);
-    if (rulesBylang) {
-      for (const rule of rulesBylang) {
-        let key = args[1]?.value;
-        key = key ? `${key}${opts.keySeparator}${rule}` : rule;
+    const rulesByLang = rules.get(lang)!;
+    for (const rule of rulesByLang) {
+      let key = args[1]?.value;
+      key = key ? `${key}${opts.keySeparator}${rule}` : rule;
 
-        // Params
-        const params: Property[] = [{
-          type: 'Property',
-          key: { type: 'Identifier', value: 'value' },
-          value: { type: 'Identifier', value: args[0].value! }
-        }];
-        if (args[2]?.properties) {
-          args[2].properties.forEach(p => params.push(p));
+      // Params
+      const params: Property[] = [{
+        type: 'Property',
+        key: { type: 'Identifier', value: 'value' },
+        value: { type: 'Identifier', value: args[0].value! }
+      }];
+      if (args[2]?.properties) {
+        for (const p of args[2].properties) {
+          params.push(p);
         }
-        const strParams = params.map(p => `${p.key.value}: ${strParam(p)}`).join(', ');
+      }
+      const strParams = params.map(p => `${p.key.value}: ${strParam(p)}`).join(', ');
 
-        if (rule !== rulesBylang[rulesBylang.length - 1]) {
-          if (args[3]?.properties) {
-            const strOptions = args[3].properties.map(p => `${p.key.value}: ${strParam(p)}`).join(', ');
-            expr += `$rule(${quoteValue(lang)}, ${args[0].value}, ${quoteValue(rule)}, {${strOptions}}) && ${translateAlias}(${quoteValue(key)}, {${strParams}}, ${args[4]?.value}, ${quoteValue(lang)}) || `;
-          } else {
-            expr += `$rule(${quoteValue(lang)}, ${args[0].value}, ${quoteValue(rule)}) && ${translateAlias}(${quoteValue(key)}, {${strParams}}, ${args[4]?.value}, ${quoteValue(lang)}) || `;
-          }
+      if (rule !== rulesByLang[rulesByLang.length - 1]) {
+        // Options
+        if (args[3]?.properties) {
+          const strOptions = args[3].properties.map(p => `${p.key.value}: ${strParam(p)}`).join(', ');
+          expr += `$rule(${quoteValue(lang)}, ${args[0].value}, ${quoteValue(rule)}, {${strOptions}}) && ${translateAlias}(${quoteValue(key)}, {${strParams}}, ${args[4]?.value}, ${quoteValue(lang)}) || `;
         } else {
-          expr += `${translateAlias}(${quoteValue(key)}, {${strParams}}, ${args[4]?.value}, ${quoteValue(lang)})`;
+          expr += `$rule(${quoteValue(lang)}, ${args[0].value}, ${quoteValue(rule)}) && ${translateAlias}(${quoteValue(key)}, {${strParams}}, ${args[4]?.value}, ${quoteValue(lang)}) || `;
         }
+      } else {
+        expr += `${translateAlias}(${quoteValue(key)}, {${strParams}}, ${args[4]?.value}, ${quoteValue(lang)})`;
       }
     }
     expr += ')';

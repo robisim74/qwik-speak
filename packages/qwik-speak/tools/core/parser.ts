@@ -342,7 +342,7 @@ export function parseSequenceExpressions(code: string, alias: string): CallExpre
  * Get $translate alias
  */
 export function getTranslateAlias(code: string, escape = true): string {
-  let translateAlias = code.match(/(?<=\$translate as).*?(?=,|\})/s)?.[0]?.trim() || '$translate';
+  let translateAlias = code.match(/(?<=\$translate\s+as).*?(?=,|\})/s)?.[0]?.trim() || '$translate';
   // Escape special characters / Assert position at a word boundary
   if (escape) translateAlias = translateAlias.startsWith('$') ? `\\${translateAlias}` : `\\b${translateAlias}`;
   return translateAlias;
@@ -352,7 +352,7 @@ export function getTranslateAlias(code: string, escape = true): string {
  * Get $plural alias
  */
 export function getPluralAlias(code: string): string {
-  let pluralAlias = code.match(/(?<=\$plural as).*?(?=,|\})/s)?.[0]?.trim() || '$plural';
+  let pluralAlias = code.match(/(?<=\$plural\s+as).*?(?=,|\})/s)?.[0]?.trim() || '$plural';
   // Escape special characters / Assert position at a word boundary
   pluralAlias = pluralAlias.startsWith('$') ? `\\${pluralAlias}` : `\\b${pluralAlias}`;
   return pluralAlias;

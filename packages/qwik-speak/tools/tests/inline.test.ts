@@ -141,7 +141,7 @@ describe('inline', () => {
     const supportedLangs = ['en-US'];
     const rules = new Map<string, string[]>();
     for (const lang of supportedLangs) {
-      const rulesByLang = getRules(lang);
+      const rulesByLang = getRules(lang, { type: 'cardinal' });
       rules.set(lang, [...rulesByLang]);
     }
     const line = transpilePluralFn(rules, supportedLangs, 'en-US', 't',
