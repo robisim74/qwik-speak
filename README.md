@@ -95,6 +95,7 @@ stateDiagram-v2
 - `defaultLocale` The default locale to use as fallback
 - `supportedLocales` List of locales supported by the app
 - `assets` An array of strings: each asset is passed to the `loadTranslation$` function to obtain data according to the language
+- `runtimeAssets` Assets to load and available at runtime
 - `keySeparator` Separator of nested keys. Default is `.`
 - `keyValueSeparator` Key-value separator. Default is `@@`. The default value of a key can be passed directly into the string: `t('app.title@@Qwik Speak')`
 

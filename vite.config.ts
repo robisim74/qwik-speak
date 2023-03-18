@@ -22,7 +22,7 @@ export default defineConfig(() => {
       qwikSpeakInline({
         supportedLangs: ['en-US', 'it-IT'],
         defaultLang: 'en-US',
-        //splitChunks: true
+        splitChunks: true
       }),
       tsconfigPaths()
     ],

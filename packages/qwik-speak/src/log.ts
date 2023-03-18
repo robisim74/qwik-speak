@@ -1,13 +1,7 @@
-import { isBrowser } from '@builder.io/qwik/build';
-
-const STYLE = isBrowser
-  ? `background-color: #0093ee; color: #fff; padding: 2px 3px; border-radius: 2px; font-size: 0.8em;`
-  : '';
-
 export const logWarn = (message: string) => {
-  console.warn('%cQwik Speak warn', STYLE, message);
+  console.warn('\x1b[33mQwik Speak warn\x1b[0m %s', message);
 };
 
 export const logDebug = (message: string) => {
-  console.debug('%cQwik Speak', STYLE, message);
+  console.debug('\x1b[36mQwik Speak\x1b[0m %s', message);
 };

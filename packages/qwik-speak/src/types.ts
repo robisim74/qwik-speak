@@ -60,6 +60,10 @@ export interface SpeakConfig {
    */
   assets: string[];
   /**
+   * Assets to load and available at runtime
+   */
+  runtimeAssets?: string[];
+  /**
    * Separator of nested keys. Default is '.'
    */
   keySeparator?: string;

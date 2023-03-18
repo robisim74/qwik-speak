@@ -59,6 +59,7 @@ export const QwikSpeakProvider = component$((props: QwikSpeakProps) => {
       defaultLocale: props.config.defaultLocale,
       supportedLocales: props.config.supportedLocales,
       assets: props.config.assets,
+      runtimeAssets: props.config.runtimeAssets,
       keySeparator: props.config.keySeparator || '.',
       keyValueSeparator: props.config.keyValueSeparator || '@@'
     },
@@ -71,7 +72,7 @@ export const QwikSpeakProvider = component$((props: QwikSpeakProps) => {
 
   // Called the first time when the component mounts
   useTask$(async () => {
-    await loadTranslations(state, config.assets, props.langs, url?.origin);
+    await loadTranslations(state, config.assets, config.runtimeAssets, url?.origin, props.langs);
 
     // Prevent Qwik from creating subscriptions
     if (isServer) {
@@ -79,7 +80,7 @@ export const QwikSpeakProvider = component$((props: QwikSpeakProps) => {
       Object.freeze(locale);
       Object.freeze(translation);
       Object.freeze(config);
-      Object.freeze(translationFn)
+      Object.freeze(translationFn);
     }
   });
 

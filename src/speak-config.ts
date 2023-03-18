@@ -16,17 +16,19 @@ export const config: SpeakConfig = {
     { lang: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles', units: { 'length': 'mile' } }
   ],
   assets: [
-    'app', // Translations shared by the pages
+    'app' // Translations shared by the pages
+  ],
+  runtimeAssets: [
     'runtime' // Translations with dynamic keys or parameters
   ]
 };
 
 /**
  * E.g. Fetch translation data from json files
- * In productions with inlined translations, only the runtime file is loaded
+ * In productions with inlined translations, only the runtime files are loaded
  */
 export const loadTranslation$: LoadTranslationFn = $(async (lang: string, asset: string, origin?: string) => {
-  if (isDev || asset === 'runtime') {
+  if (isDev || isServer || config.runtimeAssets?.includes(asset)) {
     let url = '';
     // Absolute urls on server
     if (isServer && origin) {

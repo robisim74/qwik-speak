@@ -10,6 +10,10 @@ export interface SpeakProps {
    */
   assets: string[];
   /**
+   * Assets to load and available at runtime
+   */
+  runtimeAssets?: string[];
+  /**
    * Optional additional languages to preload data for (multilingual)
    */
   langs?: string[];
@@ -27,7 +31,7 @@ export const Speak = component$((props: SpeakProps) => {
 
   // Called the first time when the component mounts
   useTask$(async () => {
-    await loadTranslations(ctx, props.assets, props.langs, url?.origin);
+    await loadTranslations(ctx, props.assets, props.runtimeAssets, url?.origin, props.langs);
   });
 
   return <Slot />;

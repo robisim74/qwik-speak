@@ -1,26 +1,62 @@
-import type { Translation, SpeakState } from './types';
+import { noSerialize } from '@builder.io/qwik';
+import { isDev, isServer } from '@builder.io/qwik/build';
+
+import type { Translation, SpeakState, LoadTranslationFn } from './types';
+
+const cache: Record<string, Promise<any>> = {};
 
 /**
- * Load translations
+ * In SPA mode, cache the results
+ */
+export const memoize = (fn: LoadTranslationFn) => {
+  return (...args: [string, string, string | undefined]) => {
+    const stringArgs = JSON.stringify(args);
+
+    return stringArgs in cache ?
+      cache[stringArgs] :
+      cache[stringArgs] = fn(...args);
+  };
+};
+
+/**
+ * Load translations on server
  */
 export const loadTranslations = async (
   ctx: SpeakState,
   assets: string[],
-  langs?: string[],
+  runtimeAssets?: string[],
   origin?: string,
+  langs?: string[]
 ): Promise<void> => {
   const { locale, translation, translationFn } = ctx;
+
+  const resolvedAssets = [...assets, ...runtimeAssets ?? []];
 
   // Multilingual
   const resolvedLangs = new Set(langs || []);
   resolvedLangs.add(locale.lang);
 
   for (const lang of resolvedLangs) {
-    const tasks = assets.map(asset => translationFn.loadTranslation$(lang, asset, origin));
+    const memoized = memoize(translationFn.loadTranslation$);
+    const tasks = resolvedAssets.map(asset => memoized(lang, asset, origin));
     const sources = await Promise.all(tasks);
+    const assetSources = sources.map((source, i) => ({
+      asset: resolvedAssets[i],
+      source: source
+    }));
 
-    for (const data of sources) {
-      if (data) Object.assign(translation[lang], data); // Shallow merge
+    for (const data of assetSources) {
+      if (data?.source) {
+        if (!isDev && isServer && assets.includes(data.asset)) {
+          // In prod mode, assets are not serialized
+          for (const [key, value] of Object.entries<Translation>(data.source)) {
+            translation[lang][key] = noSerialize(value);
+          }
+        } else {
+          // Serialize whether dev mode, or runtime assets
+          Object.assign(translation[lang], data.source);
+        }
+      }
     }
   }
 };
