@@ -32,7 +32,7 @@ public/i18n/
         app.json
         home.json
 ```
-But if you don't always use scoped translations, only one file for each language will be generated, called `app.json`
+Not scoped translations will be placed in a single file, called `app.json`
 
 #### Configuration
 Add the command in `package.json`, and provide at least the supported languages:
@@ -47,6 +47,7 @@ Available options:
 - `excludedPaths` Paths to exclude
 - `assetsPath` Path to translation files: `[basePath]/[assetsPath]/[lang]/*.json`. Default to `'public/i18n'`
 - `format` The format of the translation files. Default to `'json'`
+- `filename` Filename for not scoped translations. Default is `'app'`
 - `supportedLangs` Supported langs. Required
 - `keySeparator` Separator of nested keys. Default is `'.'`
 - `keyValueSeparator` Key-value separator. Default is `'@@'`

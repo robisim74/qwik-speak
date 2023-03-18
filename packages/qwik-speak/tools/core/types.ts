@@ -23,6 +23,10 @@ export interface QwikSpeakExtractOptions {
    */
   format?: 'json';
   /**
+   * Filename for not scoped translations. Default is 'app'
+   */
+  filename?: string;
+  /**
    * Supported langs. Required
    */
   supportedLangs: string[];
