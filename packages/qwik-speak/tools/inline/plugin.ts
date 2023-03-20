@@ -49,14 +49,14 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
     configResolved(resolvedConfig) {
       target = resolvedConfig.build?.ssr || resolvedConfig.mode === 'ssr' ? 'ssr' : 'client';
 
-      const inputOption = resolvedConfig.build.rollupOptions.input;
+      const inputOption = resolvedConfig.build?.rollupOptions?.input;
       if (inputOption) {
         if (Array.isArray(inputOption))
           input = inputOption[0];
         else if (typeof inputOption === 'string')
           input = inputOption
       }
-      input = input?.split('/').pop();
+      input = input?.split('/')?.pop();
     },
 
     /**
@@ -166,14 +166,13 @@ export async function writeChunks(
       // Inline
       let code = inlinePlural(chunk.code, `\\$rule`, inlinePlaceholder, lang, opts);
       code = inline(code, translation, inlinePlaceholder, lang, opts);
-
-      tasks.push(writeFile(filename, code || chunk.code));
+      tasks.push(writeFile(filename, code));
 
       // Original chunks to default lang
       if (lang === opts.defaultLang) {
         const defaultTargetDir = normalize(`${dir}/build`);
         const defaultFilename = normalize(`${defaultTargetDir}/${chunk.fileName.split('/')[1]}`);
-        tasks.push(writeFile(defaultFilename, code || chunk.code));
+        tasks.push(writeFile(defaultFilename, code));
       }
     }
   }
@@ -520,7 +519,7 @@ export function strParam(property: Property): string {
  */
 export function addRule(code: string): string {
   if (!/^import\s*\{.*\$rule.*}\s*from\s*/s.test(code)) {
-    code = code.replace(/^/, 'import { $rule } from \'qwik-speak\';\n');
+    code = code.replace(/^/, 'import { $rule } from "qwik-speak";\n');
   }
   return code;
 }
