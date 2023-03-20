@@ -26,6 +26,5 @@ export {
 } from './use-functions';
 // Inline functions
 export {
-  $lang,
   $rule,
 } from './inline-functions';

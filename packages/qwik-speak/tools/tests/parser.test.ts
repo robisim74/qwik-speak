@@ -439,8 +439,6 @@ describe('aliases', () => {
     expect(alias).toBe('\\bt');
     alias = getTranslateAlias("import { $translate as t } from 'qwik-speak';");
     expect(alias).toBe('\\bt');
-    alias = getTranslateAlias("import { $translate as t } from 'qwik-speak';", false);
-    expect(alias).toBe('t');
     alias = getTranslateAlias("import { $translate } from 'qwik-speak';");
     expect(alias).toBe('\\$translate');
   });

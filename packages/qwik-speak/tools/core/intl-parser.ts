@@ -3,7 +3,7 @@ import type { Property } from './parser';
 /**
  * Get unique rules for the language
  */
-export function getRules(lang: string, options?: Intl.PluralRulesOptions): Set<string> {
+export function getRules(lang: string, options?: Intl.PluralRulesOptions): string[] {
     const rules = new Set<string>();
 
     for (let i = 0; i < 20; i++) {
@@ -11,7 +11,7 @@ export function getRules(lang: string, options?: Intl.PluralRulesOptions): Set<s
         rules.add(rule);
     }
 
-    return rules;
+    return Array.from(rules);
 }
 
 export function getOptions(properties?: Property[]): Intl.PluralRulesOptions | undefined {

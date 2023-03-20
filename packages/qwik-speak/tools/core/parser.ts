@@ -341,10 +341,10 @@ export function parseSequenceExpressions(code: string, alias: string): CallExpre
 /**
  * Get $translate alias
  */
-export function getTranslateAlias(code: string, escape = true): string {
+export function getTranslateAlias(code: string): string {
   let translateAlias = code.match(/(?<=\$translate\s+as).*?(?=,|\})/s)?.[0]?.trim() || '$translate';
   // Escape special characters / Assert position at a word boundary
-  if (escape) translateAlias = translateAlias.startsWith('$') ? `\\${translateAlias}` : `\\b${translateAlias}`;
+  translateAlias = translateAlias.startsWith('$') ? `\\${translateAlias}` : `\\b${translateAlias}`;
   return translateAlias;
 }
 

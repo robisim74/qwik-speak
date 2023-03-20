@@ -19,7 +19,11 @@ export const memoize = (fn: LoadTranslationFn) => {
 };
 
 /**
- * Load translations on server
+ * Load translations when: 
+ * - dev mode
+ * - on server
+ * - or runtime assets
+ * In prod mode, assets are not serialized
  */
 export const loadTranslations = async (
   ctx: SpeakState,
@@ -28,33 +32,35 @@ export const loadTranslations = async (
   origin?: string,
   langs?: string[]
 ): Promise<void> => {
-  const { locale, translation, translationFn } = ctx;
+  if (isDev || isServer || runtimeAssets) {
+    const { locale, translation, translationFn } = ctx;
 
-  const resolvedAssets = [...assets, ...runtimeAssets ?? []];
+    const resolvedAssets = [...assets, ...runtimeAssets ?? []];
 
-  // Multilingual
-  const resolvedLangs = new Set(langs || []);
-  resolvedLangs.add(locale.lang);
+    // Multilingual
+    const resolvedLangs = new Set(langs || []);
+    resolvedLangs.add(locale.lang);
 
-  for (const lang of resolvedLangs) {
-    const memoized = memoize(translationFn.loadTranslation$);
-    const tasks = resolvedAssets.map(asset => memoized(lang, asset, origin));
-    const sources = await Promise.all(tasks);
-    const assetSources = sources.map((source, i) => ({
-      asset: resolvedAssets[i],
-      source: source
-    }));
+    for (const lang of resolvedLangs) {
+      const memoized = memoize(translationFn.loadTranslation$);
+      const tasks = resolvedAssets.map(asset => memoized(lang, asset, origin));
+      const sources = await Promise.all(tasks);
+      const assetSources = sources.map((source, i) => ({
+        asset: resolvedAssets[i],
+        source: source
+      }));
 
-    for (const data of assetSources) {
-      if (data?.source) {
-        if (!isDev && isServer && assets.includes(data.asset)) {
-          // In prod mode, assets are not serialized
-          for (const [key, value] of Object.entries<Translation>(data.source)) {
-            translation[lang][key] = noSerialize(value);
+      for (const data of assetSources) {
+        if (data?.source) {
+          if (!isDev && isServer && assets.includes(data.asset)) {
+            // In prod mode, assets are not serialized
+            for (const [key, value] of Object.entries<Translation>(data.source)) {
+              translation[lang][key] = noSerialize(value);
+            }
+          } else {
+            // Serialize whether dev mode, or runtime assets
+            Object.assign(translation[lang], data.source);
           }
-        } else {
-          // Serialize whether dev mode, or runtime assets
-          Object.assign(translation[lang], data.source);
         }
       }
     }
