@@ -54,8 +54,7 @@ export const s_dYGb4b0cyCA = ()=>{
     }, 1, "1L_0");
 };`;
 
-export const transformedCode = `import { $rule } from "qwik-speak";
-import { Fragment as _Fragment } from "@builder.io/qwik/jsx-runtime";
+export const transformedCode = `import { Fragment as _Fragment } from "@builder.io/qwik/jsx-runtime";
 import { _jsxC } from "@builder.io/qwik";
 import { _jsxQ } from "@builder.io/qwik";
 import { formatDate as fd } from "qwik-speak";
@@ -90,7 +89,7 @@ export const s_dYGb4b0cyCA = ()=>{
             }, __qsInline('home.increment'), 1, null),
             /*#__PURE__*/ _jsxQ("p", null, {
                 class: "counter"
-            }, $rule(count.value, 'home.devs'), 1, null),
+            }, __qsInlinePlural(count.value, 'home.devs'), 1, null),
             /*#__PURE__*/ _jsxQ("h3", null, null, __qsInline('home.dates'), 1, null),
             /*#__PURE__*/ _jsxQ("p", null, null, fd(Date.now(), {
                 dateStyle: 'full',
@@ -110,8 +109,7 @@ export const s_dYGb4b0cyCA = ()=>{
     }, 1, "1L_0");
 };`;
 
-export const mockChunkCode = `const $rule = (lang, value, rule, options) => new Intl.PluralRules(lang, options).select(+value) === rule;
-    const s_dYGb4b0cyCA = () => {
+export const mockChunkCode = `const s_dYGb4b0cyCA = () => {
     const units = useSpeakLocale().units;
     const count = il(0);
     return /* @__PURE__ */ mr(Sr, {
@@ -135,7 +133,7 @@ export const mockChunkCode = `const $rule = (lang, value, rule, options) => new 
         }, __qsInline('home.increment'), 1, null),
         /* @__PURE__ */ pr("p", null, {
           class: "counter"
-        }, $rule(count.value, 'home.devs'), 1, null),
+        }, __qsInlinePlural(count.value, 'home.devs'), 1, null),
         /* @__PURE__ */ pr("h3", null, null, __qsInline('home.dates'), 1, null),
         /* @__PURE__ */ pr("p", null, null, formatDate(Date.now(), {
           dateStyle: "full",
@@ -155,8 +153,7 @@ export const mockChunkCode = `const $rule = (lang, value, rule, options) => new 
     }, 1, "1L_0");
   };`;
 
-export const inlinedCode = `const $rule = (lang, value, rule, options) => new Intl.PluralRules(lang, options).select(+value) === rule;
-    const s_dYGb4b0cyCA = () => {
+export const inlinedCode = `const s_dYGb4b0cyCA = () => {
     const units = useSpeakLocale().units;
     const count = il(0);
     return /* @__PURE__ */ mr(Sr, {
@@ -178,7 +175,7 @@ export const inlinedCode = `const $rule = (lang, value, rule, options) => new In
         }, \`Increment\`, 1, null),
         /* @__PURE__ */ pr("p", null, {
           class: "counter"
-        }, ($rule(\`en-US\`, count.value, \`other\`) && \`\${count.value} software developers\` || \`\${count.value} software developer\`), 1, null),
+        }, (new Intl.PluralRules(\`en-US\`).select(+count.value) === \`other\` && \`\${count.value} software developers\` || \`\${count.value} software developer\`), 1, null),
         /* @__PURE__ */ pr("h3", null, null, \`Dates & relative time\`, 1, null),
         /* @__PURE__ */ pr("p", null, null, formatDate(Date.now(), {
           dateStyle: "full",
@@ -198,8 +195,7 @@ export const inlinedCode = `const $rule = (lang, value, rule, options) => new In
     }, 1, "1L_0");
   };`;
 
-export const inlinedCodeByLang = `const $rule = (lang, value, rule, options) => new Intl.PluralRules(lang, options).select(+value) === rule;
-    const s_dYGb4b0cyCA = () => {
+export const inlinedCodeByLang = `const s_dYGb4b0cyCA = () => {
     const units = useSpeakLocale().units;
     const count = il(0);
     return /* @__PURE__ */ mr(Sr, {
@@ -221,7 +217,7 @@ export const inlinedCodeByLang = `const $rule = (lang, value, rule, options) => 
         }, \`Incrementa\`, 1, null),
         /* @__PURE__ */ pr("p", null, {
           class: "counter"
-        }, ($rule(\`it-IT\`, count.value, \`other\`) && \`\${count.value} sviluppatori software\` || \`\${count.value} sviluppatore software\`), 1, null),
+        }, (new Intl.PluralRules(\`it-IT\`).select(+count.value) === \`other\` && \`\${count.value} sviluppatori software\` || \`\${count.value} sviluppatore software\`), 1, null),
         /* @__PURE__ */ pr("h3", null, null, \`Date e tempo relativo\`, 1, null),
         /* @__PURE__ */ pr("p", null, null, formatDate(Date.now(), {
           dateStyle: "full",

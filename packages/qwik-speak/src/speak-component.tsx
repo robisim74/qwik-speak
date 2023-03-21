@@ -10,7 +10,7 @@ export interface SpeakProps {
    */
   assets: string[];
   /**
-   * Assets to load and available at runtime
+   * Optional assets to load and available at runtime
    */
   runtimeAssets?: string[];
   /**

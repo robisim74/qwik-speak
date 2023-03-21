@@ -52,15 +52,15 @@ export interface SpeakConfig {
    */
   defaultLocale: SpeakLocale;
   /**
-   * Supported locales
+   * List of locales supported by the app
    */
   supportedLocales: SpeakLocale[];
   /**
-   * Assets to load
+   * An array of strings: each asset is passed to the loadTranslation$ function to obtain data according to the language
    */
   assets: string[];
   /**
-   * Assets to load and available at runtime
+   * Optional assets available at runtime
    */
   runtimeAssets?: string[];
   /**

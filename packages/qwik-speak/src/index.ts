@@ -24,7 +24,3 @@ export {
   useSpeakLocale,
   useSpeakConfig,
 } from './use-functions';
-// Inline functions
-export {
-  $rule,
-} from './inline-functions';
