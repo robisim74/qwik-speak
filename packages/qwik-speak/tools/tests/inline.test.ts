@@ -224,7 +224,7 @@ describe('inline', () => {
         assetsPath: 'public/i18n',
         outDir: 'dist'
       });
-    expect(inlined).toBe('import { $translate as t } from "qwik-speak";const value = \`Traduci le tue app Qwik in qualsiasi lingua\`');
+    expect(inlined).toBe('import { $translate as t } from "qwik-speak";const value = `Traduci le tue app Qwik in qualsiasi lingua`');
   });
   test('transform & inline with context', async () => {
     const code = `import { $translate as t } from "qwik-speak";const value = t('app.subtitle', undefined, ctx)`;
@@ -248,6 +248,6 @@ describe('inline', () => {
         assetsPath: 'public/i18n',
         outDir: 'dist'
       });
-    expect(inlined).toBe('import { $translate as t } from "qwik-speak";const value = \`Translate your Qwik apps into any language\`');
+    expect(inlined).toBe('import { $translate as t } from "qwik-speak";const value = `Translate your Qwik apps into any language`');
   });
 });

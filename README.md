@@ -50,10 +50,7 @@ To extract translations directly from the components, a command is available tha
 See [Qwik Speak Extract](./docs/extract.md) for more information on how to use it.
 
 ## Production
-You have three solutions:
-- **Build as is**  Translation happens _at runtime_: translations are loaded during SSR or on client, and the lookup also happens at runtime as in development mode
-- **Build using Qwik Speak Inline Vite plugin** Translation happens _at compile-time_: translations are loaded and inlined during the build (both in server file and in chunks sent to the browser)
-- **Build using Qwik Speak Inline Vite plugin & runtime** Translation happens _at compile-time_ or _at runtime_ as needed: static translations are loaded and inlined during the build, while dynamic translations occur at runtime
+Using _Qwik Speak Inline_ Vite plugin, translations are loaded and inlined during the build.
 
 See [Qwik Speak Inline Vite plugin](./docs/inline.md) for more information on how it works and how to use it.
 
@@ -95,9 +92,9 @@ stateDiagram-v2
 - `defaultLocale` The default locale to use as fallback
 - `supportedLocales` List of locales supported by the app
 - `assets` An array of strings: each asset is passed to the `loadTranslation$` function to obtain data according to the language
-- `runtimeAssets` Assets to load and available at runtime
+- `runtimeAssets` Optional assets available at runtime
 - `keySeparator` Separator of nested keys. Default is `.`
-- `keyValueSeparator` Key-value separator. Default is `@@`. The default value of a key can be passed directly into the string: `t('app.title@@Qwik Speak')`
+- `keyValueSeparator` Key-value separator. Default is `@@`
 
 ### SpeakLocale
 The `SpeakLocale` object contains the `lang`, in the format `language[-script][-region]`, where:
@@ -139,6 +136,7 @@ C4Container
 #### Speak component (scoped translations)
 `Speak` component can be used for scoped translations. `Props`:
   - `assets` Assets to load (required)
+  - `runtimeAssets` Optional assets to load and available at runtime
   - `langs` Optional additional languages to preload data for (multilingual)
 
 ### Functions
