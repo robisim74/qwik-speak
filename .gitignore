@@ -37,5 +37,6 @@ lerna-debug.log*
 .yarn/*
 !.yarn/releases
 
+/test-results/
 /playwright-report/
 salt

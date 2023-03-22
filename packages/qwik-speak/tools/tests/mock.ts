@@ -1,172 +1,245 @@
 /* eslint-disable */
 export const mockCode = `import { Fragment as _Fragment } from "@builder.io/qwik/jsx-runtime";
-import { jsx as _jsx } from "@builder.io/qwik/jsx-runtime";
-import { jsxs as _jsxs } from "@builder.io/qwik/jsx-runtime";
+import { _jsxC } from "@builder.io/qwik";
+import { _jsxQ } from "@builder.io/qwik";
 import { formatDate as fd } from "qwik-speak";
 import { formatNumber as fn } from "qwik-speak";
 import { $plural as p } from "qwik-speak";
 import { qrl } from "@builder.io/qwik";
 import { relativeTime as rt } from "qwik-speak";
 import { $translate as t } from "qwik-speak";
+import { useSignal } from "@builder.io/qwik";
 import { useSpeakLocale } from "qwik-speak";
-import { useStore } from "@builder.io/qwik";
-export const s_xJBzwgVGKaQ = ()=>{
+export const s_dYGb4b0cyCA = ()=>{
     const units = useSpeakLocale().units;
-    const state = useStore({
-        count: 0
-    });
-    return /*#__PURE__*/ _jsxs(_Fragment, {
+    const count = useSignal(0);
+    return /*#__PURE__*/ _jsxC(_Fragment, {
         children: [
-            /*#__PURE__*/ _jsx("h1", {
-                children: t('app.title')
-            }),
-            /*#__PURE__*/ _jsx("h2", {
-                children: t('app.subtitle')
-            }),
-            /*#__PURE__*/ _jsx("h3", {
-                children: t('home.params')
-            }),
-            /*#__PURE__*/ _jsx("p", {
-                children: t('home.greeting', {
-                    name: 'Qwik Speak'
-                })
-            }),
-            /*#__PURE__*/ _jsx("h3", {
-                children: t('home.tags')
-            }),
-            /*#__PURE__*/ _jsx("p", {
+            /*#__PURE__*/ _jsxQ("h1", null, null, t('app.title'), 1, null),
+            /*#__PURE__*/ _jsxQ("h2", null, null, t('app.subtitle'), 1, null),
+            /*#__PURE__*/ _jsxQ("h3", null, null, t('home.params'), 1, null),
+            /*#__PURE__*/ _jsxQ("p", null, null, t('home.greeting', {
+                name: 'Qwik Speak'
+            }), 1, null),
+            /*#__PURE__*/ _jsxQ("h3", null, null, t('home.tags'), 1, null),
+            /*#__PURE__*/ _jsxQ("p", {
                 dangerouslySetInnerHTML: t('home.text')
-            }),
-            /*#__PURE__*/ _jsx("h3", {
-                children: t('home.plural')
-            }),
-            /*#__PURE__*/ _jsx("button", {
-                onClick$: qrl(()=>import("./entry_Home.js"), "s_d7QwW4Vfl2A", [
-                    state
-                ]),
-                children: t('home.increment')
-            }),
-            /*#__PURE__*/ _jsx("p", {
-                children: p(state.count, 'home.devs')
-            }),
-            /*#__PURE__*/ _jsx("h3", {
-                children: t('home.dates')
-            }),
-            /*#__PURE__*/ _jsx("p", {
-                children: fd(Date.now(), {
-                    dateStyle: 'full',
-                    timeStyle: 'short'
-                })
-            }),
-            /*#__PURE__*/ _jsx("p", {
-                children: rt(-1, 'second')
-            }),
-            /*#__PURE__*/ _jsx("h3", {
-                children: t('home.numbers')
-            }),
-            /*#__PURE__*/ _jsx("p", {
-                children: fn(1000000)
-            }),
-            /*#__PURE__*/ _jsx("p", {
-                children: fn(1000000, {
-                    style: 'currency'
-                })
-            }),
-            /*#__PURE__*/ _jsx("p", {
-                children: fn(1, {
-                    style: 'unit',
-                    unit: units['length']
-                })
-            })
+            }, null, null, 3, null),
+            /*#__PURE__*/ _jsxQ("h3", null, null, t('home.plural'), 1, null),
+            /*#__PURE__*/ _jsxQ("button", null, {
+                class: "btn-counter",
+                onClick$: /*#__PURE__*/ qrl(()=>import("./entry_Home.js"), "s_wpNYQJTE9ZU", [
+                    count
+                ])
+            }, t('home.increment'), 1, null),
+            /*#__PURE__*/ _jsxQ("p", null, {
+                class: "counter"
+            }, p(count.value, 'home.devs'), 1, null),
+            /*#__PURE__*/ _jsxQ("h3", null, null, t('home.dates'), 1, null),
+            /*#__PURE__*/ _jsxQ("p", null, null, fd(Date.now(), {
+                dateStyle: 'full',
+                timeStyle: 'short'
+            }), 1, null),
+            /*#__PURE__*/ _jsxQ("p", null, null, rt(-1, 'second'), 1, null),
+            /*#__PURE__*/ _jsxQ("h3", null, null, t('home.numbers'), 1, null),
+            /*#__PURE__*/ _jsxQ("p", null, null, fn(1000000), 1, null),
+            /*#__PURE__*/ _jsxQ("p", null, null, fn(1000000, {
+                style: 'currency'
+            }), 1, null),
+            /*#__PURE__*/ _jsxQ("p", null, null, fn(1, {
+                style: 'unit',
+                unit: units['length']
+            }), 1, null)
         ]
-    });
+    }, 1, "1L_0");
 };`;
 
-export const inlinedCode = `import { $lang } from "qwik-speak";
-import { $rule } from "qwik-speak";
-import { Fragment as _Fragment } from "@builder.io/qwik/jsx-runtime";
-import { jsx as _jsx } from "@builder.io/qwik/jsx-runtime";
-import { jsxs as _jsxs } from "@builder.io/qwik/jsx-runtime";
+export const transformedCode = `import { Fragment as _Fragment } from "@builder.io/qwik/jsx-runtime";
+import { _jsxC } from "@builder.io/qwik";
+import { _jsxQ } from "@builder.io/qwik";
 import { formatDate as fd } from "qwik-speak";
 import { formatNumber as fn } from "qwik-speak";
 import { $plural as p } from "qwik-speak";
 import { qrl } from "@builder.io/qwik";
 import { relativeTime as rt } from "qwik-speak";
 import { $translate as t } from "qwik-speak";
+import { useSignal } from "@builder.io/qwik";
 import { useSpeakLocale } from "qwik-speak";
-import { useStore } from "@builder.io/qwik";
-export const s_xJBzwgVGKaQ = ()=>{
+export const s_dYGb4b0cyCA = ()=>{
     const units = useSpeakLocale().units;
-    const state = useStore({
-        count: 0
-    });
-    return /*#__PURE__*/ _jsxs(_Fragment, {
+    const count = useSignal(0);
+    return /*#__PURE__*/ _jsxC(_Fragment, {
         children: [
-            /*#__PURE__*/ _jsx("h1", {
-                children: ($lang(\`it-IT\`) && \`Qwik Speak\` || \`Qwik Speak\`)
-            }),
-            /*#__PURE__*/ _jsx("h2", {
-                children: ($lang(\`it-IT\`) && \`Traduci le tue app Qwik in qualsiasi lingua\` || \`Translate your Qwik apps into any language\`)
-            }),
-            /*#__PURE__*/ _jsx("h3", {
-                children: ($lang(\`it-IT\`) && \`Parametri\` || \`Parameters\`)
-            }),
-            /*#__PURE__*/ _jsx("p", {
-                children: ($lang(\`it-IT\`) && \`Ciao! Sono Qwik Speak\` || \`Hi! I am Qwik Speak\`)
-            }),
-            /*#__PURE__*/ _jsx("h3", {
-                children: ($lang(\`it-IT\`) && \`Tag Html\` || \`Html tags\`)
-            }),
-            /*#__PURE__*/ _jsx("p", {
-                dangerouslySetInnerHTML: ($lang(\`it-IT\`) && \`<em>Libreria di internazionalizzazione (i18n) per tradurre testi, date e numeri nelle app Qwik</em>\` || \`<em>Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps</em>\`)
-            }),
-            /*#__PURE__*/ _jsx("h3", {
-                children: ($lang(\`it-IT\`) && \`Plurale\` || \`Plural\`)
-            }),
-            /*#__PURE__*/ _jsx("button", {
-                onClick$: qrl(()=>import("./entry_Home.js"), "s_d7QwW4Vfl2A", [
-                    state
-                ]),
-                children: ($lang(\`it-IT\`) && \`Incrementa\` || \`Increment\`)
-            }),
-            /*#__PURE__*/ _jsx("p", {
-                children: ($lang(\`it-IT\`) && ($rule(\`it-IT\`, state.count, \`other\`) && \`\${state.count} sviluppatori software\` || \`\${state.count} sviluppatore software\`) || ($rule(\`en-US\`, state.count, \`other\`) && \`\${state.count} software developers\` || \`\${state.count} software developer\`))
-            }),
-            /*#__PURE__*/ _jsx("h3", {
-                children: ($lang(\`it-IT\`) && \`Date e tempo relativo\` || \`Dates & relative time\`)
-            }),
-            /*#__PURE__*/ _jsx("p", {
-                children: fd(Date.now(), {
-                    dateStyle: 'full',
-                    timeStyle: 'short'
-                })
-            }),
-            /*#__PURE__*/ _jsx("p", {
-                children: rt(-1, 'second')
-            }),
-            /*#__PURE__*/ _jsx("h3", {
-                children: ($lang(\`it-IT\`) && \`Numeri e valute\` || \`Numbers & currencies\`)
-            }),
-            /*#__PURE__*/ _jsx("p", {
-                children: fn(1000000)
-            }),
-            /*#__PURE__*/ _jsx("p", {
-                children: fn(1000000, {
-                    style: 'currency'
-                })
-            }),
-            /*#__PURE__*/ _jsx("p", {
-                children: fn(1, {
-                    style: 'unit',
-                    unit: units['length']
-                })
-            })
+            /*#__PURE__*/ _jsxQ("h1", null, null, __qsInline('app.title'), 1, null),
+            /*#__PURE__*/ _jsxQ("h2", null, null, __qsInline('app.subtitle'), 1, null),
+            /*#__PURE__*/ _jsxQ("h3", null, null, __qsInline('home.params'), 1, null),
+            /*#__PURE__*/ _jsxQ("p", null, null, __qsInline('home.greeting', {
+                name: 'Qwik Speak'
+            }), 1, null),
+            /*#__PURE__*/ _jsxQ("h3", null, null, __qsInline('home.tags'), 1, null),
+            /*#__PURE__*/ _jsxQ("p", {
+                dangerouslySetInnerHTML: __qsInline('home.text')
+            }, null, null, 3, null),
+            /*#__PURE__*/ _jsxQ("h3", null, null, __qsInline('home.plural'), 1, null),
+            /*#__PURE__*/ _jsxQ("button", null, {
+                class: "btn-counter",
+                onClick$: /*#__PURE__*/ qrl(()=>import("./entry_Home.js"), "s_wpNYQJTE9ZU", [
+                    count
+                ])
+            }, __qsInline('home.increment'), 1, null),
+            /*#__PURE__*/ _jsxQ("p", null, {
+                class: "counter"
+            }, __qsInlinePlural(count.value, 'home.devs'), 1, null),
+            /*#__PURE__*/ _jsxQ("h3", null, null, __qsInline('home.dates'), 1, null),
+            /*#__PURE__*/ _jsxQ("p", null, null, fd(Date.now(), {
+                dateStyle: 'full',
+                timeStyle: 'short'
+            }), 1, null),
+            /*#__PURE__*/ _jsxQ("p", null, null, rt(-1, 'second'), 1, null),
+            /*#__PURE__*/ _jsxQ("h3", null, null, __qsInline('home.numbers'), 1, null),
+            /*#__PURE__*/ _jsxQ("p", null, null, fn(1000000), 1, null),
+            /*#__PURE__*/ _jsxQ("p", null, null, fn(1000000, {
+                style: 'currency'
+            }), 1, null),
+            /*#__PURE__*/ _jsxQ("p", null, null, fn(1, {
+                style: 'unit',
+                unit: units['length']
+            }), 1, null)
         ]
-    });
+    }, 1, "1L_0");
 };`;
 
-export const mockSource = `import { component$, useStore } from '@builder.io/qwik';
-import { DocumentHead } from '@builder.io/qwik-city';
+export const mockChunkCode = `const s_dYGb4b0cyCA = () => {
+    const units = useSpeakLocale().units;
+    const count = il(0);
+    return /* @__PURE__ */ mr(Sr, {
+      children: [
+        /* @__PURE__ */ pr("h1", null, null, __qsInline('app.title'), 1, null),
+        /* @__PURE__ */ pr("h2", null, null, __qsInline('app.subtitle'), 1, null),
+        /* @__PURE__ */ pr("h3", null, null, __qsInline('home.params'), 1, null),
+        /* @__PURE__ */ pr("p", null, null, __qsInline('home.greeting', {
+            name: 'Qwik Speak'
+        }), 1, null),
+        /* @__PURE__ */ pr("h3", null, null, __qsInline('home.tags'), 1, null),
+        /* @__PURE__ */ pr("p", {
+          dangerouslySetInnerHTML: __qsInline('home.text')
+        }, null, null, 3, null),
+        /* @__PURE__ */ pr("h3", null, null, __qsInline('home.plural'), 1, null),
+        /* @__PURE__ */ pr("button", null, {
+          class: "btn-counter",
+          onClick$: /* @__PURE__ */ K(() => __vitePreload(() => Promise.resolve().then(() => entry_Home), true ? void 0 : void 0), "s_wpNYQJTE9ZU", [
+            count
+          ])
+        }, __qsInline('home.increment'), 1, null),
+        /* @__PURE__ */ pr("p", null, {
+          class: "counter"
+        }, __qsInlinePlural(count.value, 'home.devs'), 1, null),
+        /* @__PURE__ */ pr("h3", null, null, __qsInline('home.dates'), 1, null),
+        /* @__PURE__ */ pr("p", null, null, formatDate(Date.now(), {
+          dateStyle: "full",
+          timeStyle: "short"
+        }), 1, null),
+        /* @__PURE__ */ pr("p", null, null, relativeTime(-1, "second"), 1, null),
+        /* @__PURE__ */ pr("h3", null, null, __qsInline('home.numbers'), 1, null),
+        /* @__PURE__ */ pr("p", null, null, formatNumber(1e6), 1, null),
+        /* @__PURE__ */ pr("p", null, null, formatNumber(1e6, {
+          style: "currency"
+        }), 1, null),
+        /* @__PURE__ */ pr("p", null, null, formatNumber(1, {
+          style: "unit",
+          unit: units["length"]
+        }), 1, null)
+      ]
+    }, 1, "1L_0");
+  };`;
+
+export const inlinedCode = `const s_dYGb4b0cyCA = () => {
+    const units = useSpeakLocale().units;
+    const count = il(0);
+    return /* @__PURE__ */ mr(Sr, {
+      children: [
+        /* @__PURE__ */ pr("h1", null, null, \`Qwik Speak\`, 1, null),
+        /* @__PURE__ */ pr("h2", null, null, \`Translate your Qwik apps into any language\`, 1, null),
+        /* @__PURE__ */ pr("h3", null, null, \`Parameters\`, 1, null),
+        /* @__PURE__ */ pr("p", null, null, \`Hi! I am Qwik Speak\`, 1, null),
+        /* @__PURE__ */ pr("h3", null, null, \`Html tags\`, 1, null),
+        /* @__PURE__ */ pr("p", {
+          dangerouslySetInnerHTML: \`<em>Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps</em>\`
+        }, null, null, 3, null),
+        /* @__PURE__ */ pr("h3", null, null, \`Plural\`, 1, null),
+        /* @__PURE__ */ pr("button", null, {
+          class: "btn-counter",
+          onClick$: /* @__PURE__ */ K(() => __vitePreload(() => Promise.resolve().then(() => entry_Home), true ? void 0 : void 0), "s_wpNYQJTE9ZU", [
+            count
+          ])
+        }, \`Increment\`, 1, null),
+        /* @__PURE__ */ pr("p", null, {
+          class: "counter"
+        }, (new Intl.PluralRules(\`en-US\`).select(+count.value) === \`other\` && \`\${count.value} software developers\` || \`\${count.value} software developer\`), 1, null),
+        /* @__PURE__ */ pr("h3", null, null, \`Dates & relative time\`, 1, null),
+        /* @__PURE__ */ pr("p", null, null, formatDate(Date.now(), {
+          dateStyle: "full",
+          timeStyle: "short"
+        }), 1, null),
+        /* @__PURE__ */ pr("p", null, null, relativeTime(-1, "second"), 1, null),
+        /* @__PURE__ */ pr("h3", null, null, \`Numbers & currencies\`, 1, null),
+        /* @__PURE__ */ pr("p", null, null, formatNumber(1e6), 1, null),
+        /* @__PURE__ */ pr("p", null, null, formatNumber(1e6, {
+          style: "currency"
+        }), 1, null),
+        /* @__PURE__ */ pr("p", null, null, formatNumber(1, {
+          style: "unit",
+          unit: units["length"]
+        }), 1, null)
+      ]
+    }, 1, "1L_0");
+  };`;
+
+export const inlinedCodeByLang = `const s_dYGb4b0cyCA = () => {
+    const units = useSpeakLocale().units;
+    const count = il(0);
+    return /* @__PURE__ */ mr(Sr, {
+      children: [
+        /* @__PURE__ */ pr("h1", null, null, \`Qwik Speak\`, 1, null),
+        /* @__PURE__ */ pr("h2", null, null, \`Traduci le tue app Qwik in qualsiasi lingua\`, 1, null),
+        /* @__PURE__ */ pr("h3", null, null, \`Parametri\`, 1, null),
+        /* @__PURE__ */ pr("p", null, null, \`Ciao! Sono Qwik Speak\`, 1, null),
+        /* @__PURE__ */ pr("h3", null, null, \`Tag Html\`, 1, null),
+        /* @__PURE__ */ pr("p", {
+          dangerouslySetInnerHTML: \`<em>Libreria di internazionalizzazione (i18n) per tradurre testi, date e numeri nelle app Qwik</em>\`
+        }, null, null, 3, null),
+        /* @__PURE__ */ pr("h3", null, null, \`Plurale\`, 1, null),
+        /* @__PURE__ */ pr("button", null, {
+          class: "btn-counter",
+          onClick$: /* @__PURE__ */ K(() => __vitePreload(() => Promise.resolve().then(() => entry_Home), true ? void 0 : void 0), "s_wpNYQJTE9ZU", [
+            count
+          ])
+        }, \`Incrementa\`, 1, null),
+        /* @__PURE__ */ pr("p", null, {
+          class: "counter"
+        }, (new Intl.PluralRules(\`it-IT\`).select(+count.value) === \`other\` && \`\${count.value} sviluppatori software\` || \`\${count.value} sviluppatore software\`), 1, null),
+        /* @__PURE__ */ pr("h3", null, null, \`Date e tempo relativo\`, 1, null),
+        /* @__PURE__ */ pr("p", null, null, formatDate(Date.now(), {
+          dateStyle: "full",
+          timeStyle: "short"
+        }), 1, null),
+        /* @__PURE__ */ pr("p", null, null, relativeTime(-1, "second"), 1, null),
+        /* @__PURE__ */ pr("h3", null, null, \`Numeri e valute\`, 1, null),
+        /* @__PURE__ */ pr("p", null, null, formatNumber(1e6), 1, null),
+        /* @__PURE__ */ pr("p", null, null, formatNumber(1e6, {
+          style: "currency"
+        }), 1, null),
+        /* @__PURE__ */ pr("p", null, null, formatNumber(1, {
+          style: "unit",
+          unit: units["length"]
+        }), 1, null)
+      ]
+    }, 1, "1L_0");
+  };`;
+
+
+export const mockSource = `import { component$, useSignal } from '@builder.io/qwik';
+import type { DocumentHead } from '@builder.io/qwik-city';
 import {
   $translate as t,
   $plural as p,
@@ -180,13 +253,13 @@ import {
 export const Home = component$(() => {
   const units = useSpeakLocale().units!;
 
-  const state = useStore({ count: 0 });
+  const count = useSignal(0);
 
   const tArray = t<string[]>('home.array@@["one", "two"]');
   const item = t('home.array.2@@three');
   const tObject = t<Translation>('home.obj@@{"one": "1", "two": "2"}');
   const tArrayObjects = t<Translation[]>('home.arrayObjects@@[{"one": "1", "two": "2"}]');
-  
+
   return (
     <>
       <h1>{t('app.title@@Qwik Speak')}</h1>
@@ -199,8 +272,8 @@ export const Home = component$(() => {
       <p dangerouslySetInnerHTML={t('home.text')}></p>
 
       <h3>{t('home.plural')}</h3>
-      <button onClick$={() => state.count++}>{t('home.increment')}</button>
-      <p>{p(state.count, 'home.devs')}</p>
+      <button class="btn-counter" onClick$={() => count.value++}>{t('home.increment')}</button>
+      <p class="counter">{p(count.value, 'home.devs')}</p>
 
       <h3>{t('home.dates')}</h3>
       <p>{fd(Date.now(), { dateStyle: 'full', timeStyle: 'short' })}</p>
@@ -217,7 +290,7 @@ export const Home = component$(() => {
 export default component$(() => {
   return (
     /**
-     * Add Home translation (only available in child components)
+     * Add Home translations (only available in child components)
      */
     <Speak assets={['home']}>
       <Home />

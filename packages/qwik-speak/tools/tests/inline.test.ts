@@ -1,9 +1,30 @@
-import { test, describe, expect } from 'vitest';
+import { test, describe, expect, vi } from 'vitest';
 
-import type { Translation } from '../core/types';
+import { writeFile } from 'fs/promises';
+import { normalize } from 'path';
+
 import { getRules } from '../core/intl-parser';
-import { getKey, getValue, qwikSpeakInline, transpileFn, addLang, transpilePluralFn } from '../inline/plugin';
-import { inlinedCode, mockCode } from './mock';
+import { getKey, getValue, inline, qwikSpeakInline, transform, transpileFn, transpilePluralFn } from '../inline/plugin';
+import { inlinedCode, inlinedCodeByLang, mockChunkCode, mockCode, transformedCode } from './mock';
+
+// Mock part of 'fs' module
+vi.mock('fs', async () => {
+  /* eslint-disable-next-line */
+  const mod = await vi.importActual<typeof import('fs')>('fs');
+  return {
+    ...mod,
+    mkdirSync: vi.fn()
+  };
+});
+// Mock part of 'fs/promises' module
+vi.mock('fs/promises', async () => {
+  /* eslint-disable-next-line */
+  const mod = await vi.importActual<typeof import('fs/promises')>('fs/promises');
+  return {
+    ...mod,
+    writeFile: vi.fn()
+  };
+});
 
 describe('inline', () => {
   test('getKey', () => {
@@ -78,75 +99,39 @@ describe('inline', () => {
     expect(value).toBe('`Key1 Param1 ${variable}`');
   });
   test('transpileFn', () => {
-    let values = new Map<string, string>();
-    values.set('en-US', '`Value`');
-    values.set('it-IT', '`Valore`');
-    let line = transpileFn(values, ['en-US', 'it-IT'], 'en-US');
-    expect(line).toBe('($lang(`it-IT`) && `Valore` || `Value`)');
-    values = new Map<string, string>();
-    values.set('en-US', '`Value`');
-    line = transpileFn(values, ['en-US'], 'en-US');
+    const value = '`Value`';
+    const line = transpileFn(value);
     expect(line).toBe('`Value`');
   });
   test('transpileFn with array', () => {
-    let values = new Map<string, string[]>();
-    values.set('en-US', ['`Value1`', '`Value2`']);
-    values.set('it-IT', ['`Valore1`', '`Valore2`']);
-    let line = transpileFn(values, ['en-US', 'it-IT'], 'en-US');
-    expect(line).toBe('($lang(`it-IT`) && [`Valore1`,`Valore2`] || [`Value1`,`Value2`])');
-    values = new Map<string, string[]>();
-    values.set('en-US', ['Value1', 'Value2']);
-    values.set('it-IT', ['Valore1', 'Valore2']);
-    line = transpileFn(values, ['en-US', 'it-IT'], 'en-US');
-    expect(line).toBe('($lang(`it-IT`) && ["Valore1","Valore2"] || ["Value1","Value2"])');
+    let value = ['`Value1`', '`Value2`'];
+    let line = transpileFn(value);
+    expect(line).toBe('[`Value1`,`Value2`]');
+    value = ['Value1', 'Value2'];
+    line = transpileFn(value);
+    expect(line).toBe('["Value1","Value2"]');
   });
   test('transpileFn with objects', () => {
-    const values = new Map<string, Translation>();
-    values.set('en-US', { value1: 'Value1' });
-    values.set('it-IT', { value1: 'Valore1' });
-    const line = transpileFn(values, ['en-US', 'it-IT'], 'en-US');
-    expect(line).toBe('($lang(`it-IT`) && {"value1":"Valore1"} || {"value1":"Value1"})');
-  });
-  test('transpileFn with objects - multiple languages', () => {
-    const values = new Map<string, Translation>();
-    values.set('en-US', { value1: 'Value1' });
-    values.set('it-IT', { value1: 'Valore1' });
-    values.set('es-ES', { value1: 'Valor1' });
-    const line = transpileFn(values, ['en-US', 'it-IT', 'es-ES'], 'en-US');
-    expect(line).toBe('($lang(`it-IT`) && {"value1":"Valore1"} || $lang(`es-ES`) && {"value1":"Valor1"} || {"value1":"Value1"})');
-  });
-  test('transpileFn with objects - one language', () => {
-    const values = new Map<string, Translation>();
-    values.set('en-US', { value1: 'Value1' });
-    const line = transpileFn(values, ['en-US'], 'en-US');
+    const value = { value1: 'Value1' };
+    const line = transpileFn(value);
     expect(line).toBe('{"value1":"Value1"}');
   });
   test('transpilePluralFn', () => {
-    const supportedLangs = ['en-US'];
-    const rules = new Map<string, string[]>();
-    for (const lang of supportedLangs) {
-      const rulesByLang = getRules(lang);
-      rules.set(lang, [...rulesByLang]);
-    }
-    const line = transpilePluralFn(rules, supportedLangs, 'en-US', '$translate',
+    const rules = getRules('en-US');
+    const line = transpilePluralFn(rules, 'en-US', '__qsInline',
       [
-        { type: 'Identifier', value: 'state.count' },
+        { type: 'Identifier', value: 'count.value' },
         { type: 'Literal', value: 'home.devs' }
       ],
       { keySeparator: '.' } as any
     );
-    expect(line).toBe('($rule(`en-US`, state.count, `other`) && $translate(`home.devs.other`, {value: state.count}, undefined, `en-US`) || $translate(`home.devs.one`, {value: state.count}, undefined, `en-US`))');
+    expect(line).toBe('(new Intl.PluralRules(`en-US`).select(+count.value) === `other` && __qsInline(`home.devs.other`, {value: count.value}, undefined, `en-US`) || __qsInline(`home.devs.one`, {value: count.value}, undefined, `en-US`))');
   });
   test('transpilePluralFn with params and options', () => {
-    const supportedLangs = ['en-US'];
-    const rules = new Map<string, string[]>();
-    for (const lang of supportedLangs) {
-      const rulesByLang = getRules(lang, { type: 'cardinal' });
-      rules.set(lang, [...rulesByLang]);
-    }
-    const line = transpilePluralFn(rules, supportedLangs, 'en-US', 't',
+    const rules = getRules('en-US');
+    const line = transpilePluralFn(rules, 'en-US', '__qsInline',
       [
-        { type: 'Identifier', value: 'state.count' },
+        { type: 'Identifier', value: 'count.value' },
         { type: 'Literal', value: 'home.devs' },
         {
           type: 'ObjectExpression', properties: [{
@@ -165,40 +150,104 @@ describe('inline', () => {
       ],
       { keySeparator: '.' } as any
     );
-    expect(line).toBe('($rule(`en-US`, state.count, `other`, {type: `cardinal`}) && t(`home.devs.other`, {value: state.count, role: `software`}, undefined, `en-US`) || t(`home.devs.one`, {value: state.count, role: `software`}, undefined, `en-US`))');
+    expect(line).toBe('(new Intl.PluralRules(`en-US`, {type: `cardinal`}).select(+count.value) === `other` && __qsInline(`home.devs.other`, {value: count.value, role: `software`}, undefined, `en-US`) || __qsInline(`home.devs.one`, {value: count.value, role: `software`}, undefined, `en-US`))');
   });
-  test('addLang', () => {
-    const code = addLang(`import { useStore } from "@builder.io/qwik";
-export const s_xJBzwgVGKaQ = ()=>{
-    return /*#__PURE__*/ _jsxs(_Fragment, {
-    });
-};`);
-    expect(code).toBe(`import { $lang } from "qwik-speak";
-import { useStore } from "@builder.io/qwik";
-export const s_xJBzwgVGKaQ = ()=>{
-    return /*#__PURE__*/ _jsxs(_Fragment, {
-    });
-};`);
-  });
-  test('transform', async () => {
+  test('writeChunks', async () => {
     const plugin = qwikSpeakInline({
       supportedLangs: ['en-US', 'it-IT'],
       defaultLang: 'en-US',
       basePath: '../../'
     }) as any;
+    await plugin.configResolved?.({});
     await plugin.buildStart?.();
-    const inlined = await plugin.transform?.(mockCode, '/src/mock.code.js');
-    expect(inlined).toBe(inlinedCode);
+    const transformed = await plugin.transform?.(mockCode, '/src/mock.code.js');
+    expect(transformed).toBe(transformedCode);
+    await plugin.writeBundle?.({}, {
+      'mock.chunk.js': {
+        type: 'chunk',
+        code: mockChunkCode,
+        fileName: 'build/1.js'
+      }
+    });
+    expect(writeFile).toHaveBeenCalledTimes(3);
+    expect(writeFile).toHaveBeenNthCalledWith(1, normalize('../../dist/build/en-US/1.js'), inlinedCode);
+    expect(writeFile).toHaveBeenNthCalledWith(2, normalize('../../dist/build/1.js'), inlinedCode);
+    expect(writeFile).toHaveBeenNthCalledWith(3, normalize('../../dist/build/it-IT/1.js'), inlinedCodeByLang);
   });
-  test('transform arrays', async () => {
-    const plugin = qwikSpeakInline({
-      supportedLangs: ['en-US', 'it-IT'],
-      defaultLang: 'en-US',
-      basePath: '../../'
-    }) as any;
-    await plugin.buildStart?.();
-    const inlined = await plugin.transform?.(`const values = $translate(['app.title', 'app.subtitle'])`, '/src/mock.code.js');
-    expect(inlined).toBe(`import { $lang } from "qwik-speak";
-const values = ($lang(\`it-IT\`) && [\`Qwik Speak\`,\`Traduci le tue app Qwik in qualsiasi lingua\`] || [\`Qwik Speak\`,\`Translate your Qwik apps into any language\`])`);
+  test('inline arrays', async () => {
+    const inlined = inline(`const values = __qsInline(['app.title', 'app.subtitle'])`,
+      {
+        'en-US': {
+          'app': {
+            'subtitle': 'Translate your Qwik apps into any language',
+            'title': 'Qwik Speak'
+          }
+        }
+      },
+      '__qsInline',
+      'en-US',
+      {
+        supportedLangs: ['en-US', 'it-IT'],
+        defaultLang: 'en-US',
+        keySeparator: '.',
+        keyValueSeparator: '@@',
+        basePath: './',
+        assetsPath: 'public/i18n',
+        outDir: 'dist'
+      });
+    expect(inlined).toBe('const values = [`Qwik Speak`,`Translate your Qwik apps into any language`]');
+  });
+  test('transform & inline multilingual', async () => {
+    const code = `import { $translate as t } from "qwik-speak";const value = t('app.subtitle', undefined, undefined, 'it-IT')`;
+    const transformed = transform(code);
+    const inlined = inline(transformed,
+      {
+        'en-US': {
+          'app': {
+            'subtitle': 'Translate your Qwik apps into any language',
+          }
+        },
+        'it-IT': {
+          'app': {
+            'subtitle': 'Traduci le tue app Qwik in qualsiasi lingua',
+          }
+        }
+      },
+      '__qsInline',
+      'en-US',
+      {
+        supportedLangs: ['en-US', 'it-IT'],
+        defaultLang: 'en-US',
+        keySeparator: '.',
+        keyValueSeparator: '@@',
+        basePath: './',
+        assetsPath: 'public/i18n',
+        outDir: 'dist'
+      });
+    expect(inlined).toBe('import { $translate as t } from "qwik-speak";const value = `Traduci le tue app Qwik in qualsiasi lingua`');
+  });
+  test('transform & inline with context', async () => {
+    const code = `import { $translate as t } from "qwik-speak";const value = t('app.subtitle', undefined, ctx)`;
+    const transformed = transform(code);
+    const inlined = inline(transformed,
+      {
+        'en-US': {
+          'app': {
+            'subtitle': 'Translate your Qwik apps into any language',
+          }
+        }
+      },
+      '__qsInline',
+      'en-US',
+      {
+        supportedLangs: ['en-US', 'it-IT'],
+        defaultLang: 'en-US',
+        keySeparator: '.',
+        keyValueSeparator: '@@',
+        basePath: './',
+        assetsPath: 'public/i18n',
+        outDir: 'dist'
+      });
+    expect(inlined).toBe('import { $translate as t } from "qwik-speak";const value = `Translate your Qwik apps into any language`');
   });
 });

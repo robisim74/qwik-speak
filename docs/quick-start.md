@@ -50,9 +50,8 @@ export const translationFn: TranslationFn = {
   loadTranslation$: loadTranslation$
 };
 ```
-We have added the Speak config and the implementation of the `loadTranslation$` function. Loading of translations can take place both on server and on client (in case of SPA or language change) and the `loadTranslation$` function must support both.
+We have added the Speak config and the implementation of the `loadTranslation$` function. Loading of translations can take place both on server and on client (in case of SPA) and the `loadTranslation$` function must support both.
 
-> The `defaultLocale` and `supportedLocales` are required because the library uses the default locale if is set a locale at runtime that is not supported.
 
 ## Adding Qwik Speak
 Just wrap Qwik City provider with `QwikSpeakProvider` component in `root.tsx` and pass it the configuration and the translation functions:
@@ -151,21 +150,20 @@ export const onRequest: RequestHandler = ({ request, locale }) => {
 Internally, Qwik Speak will try to take the Qwik `locale`, before falling back to default locale if it is not in `supportedLocales`.
 
 ## Change locale
-Now we want to change locale without reloading the page, just rerendering components that use translations. Let's create a `ChangeLocale` component:
+Now we want to change locale. Let's create a `ChangeLocale` component:
 
-_src/components/header/change-locale.tsx_
+_src/components/change-locale.tsx_
 ```jsx
-import { changeLocale, $translate as t, useSpeakContext, useSpeakConfig } from 'qwik-speak';
+import { $translate as t, useSpeakConfig, SpeakLocale } from 'qwik-speak';
 
 export const ChangeLocale = component$(() => {
-  const ctx = useSpeakContext();
   const config = useSpeakConfig();
 
   const changeLocale$ = $(async (newLocale: SpeakLocale) => {
-    await changeLocale(newLocale, ctx);
-
     // Store locale in a cookie 
     document.cookie = `locale=${JSON.stringify(newLocale)};max-age=86400;path=/`;
+
+    location.reload();
   });
 
   return (
@@ -181,8 +179,6 @@ export const ChangeLocale = component$(() => {
 });
 ```
 and add the component in `header.tsx`:
-
-_src/components/header/header.tsx_
 ```jsx
 export default component$(() => {
   return (
@@ -192,7 +188,6 @@ export default component$(() => {
   );
 });
 ```
-`changeLocale` function by Qwik Speak is responsible for the language change, and it falls back to the default locale if the new locale is not in `supportedLocales`.
 
 ## Extraction: [Qwik Speak Extract](./extract.md)
 We can now extract the translations and generate the `assets` as json. In `package.json` add the following command to the scripts:
@@ -210,38 +205,17 @@ public/i18n/en-US/app.json
 public/i18n/en-US/home.json
 public/i18n/it-IT/app.json
 public/i18n/it-IT/home.json
+extracted keys: 4
 ```
 `app` asset and `home` asset for each language, initialized with the default values we provided.
 
-We can translate the `it-IT` files, and run the app.
+We can translate the `it-IT` files, and run the app:
+```Shell
+npm start
+```
 
 ## Inlining: [Qwik Speak Inline Vite plugin](./inline.md)
-Let's make sure that translation files are loaded only in dev mode. Update the `loadTranslation$` function:
-
-_src/speak-config.ts_
-```typescript
-import { isDev } from '@builder.io/qwik/build';
-
-export const loadTranslation$: LoadTranslationFn = $(async (lang: string, asset: string, origin?: string) => {
-  if (isDev) {
-    let url = '';
-    // Absolute urls on server
-    if (isServer && origin) {
-      url = origin;
-    }
-    url += `/i18n/${lang}/${asset}.json`;
-    const response = await fetch(url);
-
-    if (response.ok) {
-      return response.json();
-    }
-    else if (response.status === 404) {
-      console.warn(`loadTranslation$: ${url} not found`);
-    }
-  }
-});
-```
-and add `qwikSpeakInline` Vite plugin in `vite.config.ts`:
+Add `qwikSpeakInline` Vite plugin in `vite.config.ts`:
 ```typescript
 import { qwikSpeakInline } from 'qwik-speak/inline';
 
@@ -262,10 +236,29 @@ export default defineConfig(() => {
   };
 });
 ```
+Set the base URL for loading the chunks in the browser in `entry.ssr.tsx` file:
+```typescript
+export function extractBase({ serverData }: RenderOptions): string {
+  if (!isDev && serverData?.locale) {
+    return '/build/' + serverData.locale;
+  } else {
+    return '/build';
+  }
+}
+
+export default function (opts: RenderToStreamOptions) {
+  return renderToStream(<Root />, {
+    manifest,
+    ...opts,
+    // Determine the base URL for the client code
+    base: extractBase,
+  });
+}
+```
 
 Build the production app in preview mode:
-```typescript
+```Shell
 npm run preview
 ```
 
-> The app will have the same behavior as you saw in dev mode, but now the translations are inlined as you can verify by inspecting the production files, reducing resource usage at runtime.
+> The app will have the same behavior as you saw in dev mode, but now the translations are inlined as you can verify by inspecting the production files, reducing resource usage at runtime

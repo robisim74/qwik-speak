@@ -23,6 +23,10 @@ export interface QwikSpeakExtractOptions {
    */
   format?: 'json';
   /**
+   * Filename for not scoped translations. Default is 'app'
+   */
+  filename?: string;
+  /**
    * Supported langs. Required
    */
   supportedLangs: string[];
@@ -49,6 +53,10 @@ export interface QwikSpeakInlineOptions {
    */
   assetsPath?: string;
   /**
+   * The build output directory. Default to 'dist'
+   */
+  outDir?: string;
+  /**
    * Supported langs. Required
    */
   supportedLangs: string[];
@@ -64,10 +72,6 @@ export interface QwikSpeakInlineOptions {
    * Key-value separator. Default is '@@'
    */
   keyValueSeparator?: string;
-  /**
-   * If true, split chunks by lang
-   */
-  splitChunks?: boolean;
 }
 
 /**

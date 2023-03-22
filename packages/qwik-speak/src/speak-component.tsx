@@ -10,6 +10,10 @@ export interface SpeakProps {
    */
   assets: string[];
   /**
+   * Optional assets to load and available at runtime
+   */
+  runtimeAssets?: string[];
+  /**
    * Optional additional languages to preload data for (multilingual)
    */
   langs?: string[];
@@ -20,18 +24,14 @@ export interface SpeakProps {
  */
 export const Speak = component$((props: SpeakProps) => {
   const ctx = useSpeakContext();
-  const { locale } = ctx;
 
   // Get URL object
   const urlEnv = useServerData<string>('url');
   const url = isServer && urlEnv ? new URL(urlEnv) : null;
 
-  // Called the first time when the component mounts, and when lang changes
-  useTask$(async ({ track }) => {
-    track(() => locale.lang);
-
-    // Load translations
-    await loadTranslations(ctx, url?.origin, props.langs, props.assets);
+  // Called the first time when the component mounts
+  useTask$(async () => {
+    await loadTranslations(ctx, props.assets, props.runtimeAssets, url?.origin, props.langs);
   });
 
   return <Slot />;

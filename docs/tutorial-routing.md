@@ -44,14 +44,13 @@ export const translationFn: TranslationFn = {
   loadTranslation$: loadTranslation$
 };
 ```
-We have added the Speak config and the implementation of the `loadTranslation$` function. Loading of translations can take place both on server and on client (in case of SPA or language change) and the `loadTranslation$` function must support both.
+We have added the Speak config and the implementation of the `loadTranslation$` function. Loading of translations can take place both on server and on client (in case of SPA) and the `loadTranslation$` function must support both.
 
-> The `defaultLocale` and `supportedLocales` are required because the library uses the default locale if is set a locale at runtime that is not supported.
 
 ## Routing
 Let's assume that we want to create a navigation of this type:
-- default language (en-US): routes not localized `http://127.0.0.1:5173/`
-- other languages (it-IT): localized routes `http://127.0.0.1:5173/it-IT/`
+- default language (en-US): routes not localized `http://127.0.0.1:4173/`
+- other languages (it-IT): localized routes `http://127.0.0.1:4173/it-IT/`
 
 In `routes` root level add `[...lang]` directory to catch all routes:
 ```
@@ -163,7 +162,7 @@ export default function (opts: RenderToStreamOptions) {
   return renderToStream(<Root />, {
     manifest,
     ...opts,
-    // Use container attributes to set attributes on the html tag.
+    // Use container attributes to set attributes on the html tag
     containerAttributes: {
       lang: opts.serverData?.locale || config.defaultLocale.lang,
       ...opts.containerAttributes,
@@ -173,50 +172,36 @@ export default function (opts: RenderToStreamOptions) {
 ```
 
 ## Change locale
-Now we want to change locale without reloading the page, just rerendering components that use translations. Let's create a `ChangeLocale` component:
+Now we want to change locale. Let's create a `ChangeLocale` component:
 
-_src/components/header/change-locale.tsx_
+_src/components/change-locale.tsx_
 ```jsx
 export const ChangeLocale = component$(() => {
   const loc = useLocation();
-  const nav = useNavigate();
 
-  const ctx = useSpeakContext();
-  const locale = useSpeakLocale();
   const config = useSpeakConfig();
 
-  // Handle localized routing
-  useTask$(async ({ track }) => {
-    track(() => loc.params.lang);
-
-    const newLocale = config.supportedLocales.find(value => value.lang === loc.params.lang) || config.defaultLocale;
-    if (newLocale.lang !== locale.lang) {
-      await changeLocale(newLocale, ctx);
-    }
-  });
-
-  // Replace locale in URL
-  const localizeUrl$ = $(async (newLocale: SpeakLocale) => {
-    let pathname = loc.url.pathname;
+  // Replace the locale and navigate to the new URL
+  const navigateByLocale$ = $(async (newLocale: SpeakLocale) => {
+    const url = new URL(location.href);
     if (loc.params.lang) {
       if (newLocale.lang !== config.defaultLocale.lang) {
-        pathname = pathname.replace(loc.params.lang, newLocale.lang);
+        url.pathname = url.pathname.replace(loc.params.lang, newLocale.lang);
       } else {
-        pathname = pathname.replace(new RegExp(`(/${loc.params.lang}/)|(/${loc.params.lang}$)`), '/');
+        url.pathname = url.pathname.replace(new RegExp(`(/${loc.params.lang}/)|(/${loc.params.lang}$)`), '/');
       }
     } else if (newLocale.lang !== config.defaultLocale.lang) {
-      pathname = `/${newLocale.lang}${pathname}`;
+      url.pathname = `/${newLocale.lang}${url.pathname}`;
     }
 
-    // No full-page reload
-    nav(pathname);
+    location.href = url.toString();
   });
 
   return (
     <div>
       <div>{t('app.changeLocale@@Change locale')}</div>
       {config.supportedLocales.map(value => (
-        <button onClick$={async () => await localizeUrl$(value)}>
+        <button onClick$={async () => await navigateByLocale$(value)}>
           {value.lang}
         </button>
       ))}
@@ -225,8 +210,6 @@ export const ChangeLocale = component$(() => {
 });
 ```
 and add the component in `header.tsx`:
-
-_src/components/header/header.tsx_
 ```jsx
 export default component$(() => {
   return (
@@ -236,11 +219,7 @@ export default component$(() => {
   );
 });
 ```
-`changeLocale` function by Qwik Speak is responsible for the language change, and it falls back to the default locale if the new locale is not in `supportedLocales`. We use it in `useTask$` to handle also user actions, like page back/forward.
-
-In `localizeUrl$` we replace the language in the URL, using the Qwik City navigation API, therefore without reloading the page.
-
-> As an alternative you could avoid calling `changeLocale`, you could just navigate directly to the new localized URL. This may be necessary in production if you have different domains for each location.
+In `navigateByLocale$` we replace the language in the URL, before navigate to the new localized URL.
 
 ## Extraction: [Qwik Speak Extract](./extract.md)
 We can now extract the translations and generate the `assets` as json. In `package.json` add the following command to the scripts:
@@ -258,6 +237,8 @@ public/i18n/en-US/app.json
 public/i18n/en-US/home.json
 public/i18n/it-IT/app.json
 public/i18n/it-IT/home.json
+skipped keys due to dynamic params: 2
+extracted keys: 4
 ```
 `app` asset and `home` asset for each language, initialized with the default values we provided.
 
@@ -276,48 +257,30 @@ _public/i18n/[lang]/runtime.json_
   }
 }
 ```
-Don't forget to update the keys in `DocumentHead` of `index.tsx`:
+Update the keys in `DocumentHead` of `index.tsx`:
 ```jsx
 export const head: DocumentHead = {
   title: 'runtime.home.head.title@@Qwik Speak',
   meta: [{ name: 'description', content: 'runtime.home.head.description@@Qwik Speak with localized routing' }]
 };
 ```
-and to add `runtime` asset in Speak config:
+and add `runtime` asset in Speak config:
 ```typescript
 assets: [
-  'app', // Translations shared by the pages
+  'app' // Translations shared by the pages
+],
+runtimeAssets: [
   'runtime' // Translations with dynamic keys or parameters
 ]
 ```
 
-We can translate the `it-IT` files, and run the app.
+We can translate the `it-IT` files, and run the app:
+```Shell
+npm start
+```
 
 ## Inlining: [Qwik Speak Inline Vite plugin](./inline.md)
-Let's make sure that the `runtime` file is always loaded, while the others assets only in dev mode. Update the `loadTranslation$` function:
-
-_src/speak-config.ts_
-```typescript
-export const loadTranslation$: LoadTranslationFn = $(async (lang: string, asset: string, origin?: string) => {
-  if (isDev || asset === 'runtime') {
-    let url = '';
-    // Absolute urls on server
-    if (isServer && origin) {
-      url = origin;
-    }
-    url += `/i18n/${lang}/${asset}.json`;
-    const response = await fetch(url);
-
-    if (response.ok) {
-      return response.json();
-    }
-    else if (response.status === 404) {
-      console.warn(`loadTranslation$: ${url} not found`);
-    }
-  }
-});
-```
-and add `qwikSpeakInline` Vite plugin in `vite.config.ts`:
+Add `qwikSpeakInline` Vite plugin in `vite.config.ts`:
 ```typescript
 import { qwikSpeakInline } from 'qwik-speak/inline';
 
@@ -338,10 +301,43 @@ export default defineConfig(() => {
   };
 });
 ```
+Set the base URL for loading the chunks in the browser in `entry.ssr.tsx` file:
+```typescript
+export function extractBase({ serverData }: RenderOptions): string {
+  if (!isDev && serverData?.locale) {
+    return '/build/' + serverData.locale;
+  } else {
+    return '/build';
+  }
+}
+
+export default function (opts: RenderToStreamOptions) {
+  return renderToStream(<Root />, {
+    manifest,
+    ...opts,
+    // Determine the base URL for the client code
+    base: extractBase,
+    // Use container attributes to set attributes on the html tag
+    containerAttributes: {
+      lang: opts.serverData?.locale || config.defaultLocale.lang,
+      ...opts.containerAttributes,
+    },
+  });
+}
+```
 
 Build the production app in preview mode:
-```typescript
+```Shell
 npm run preview
 ```
 
-> The app will have the same behavior as you saw in dev mode, but now the translations are inlined as you can verify by inspecting the production files, reducing resource usage at runtime.
+Inspect the `qwik-speak-inline.log` file in root folder:
+
+```
+client: root.tsx
+dynamic key: t(head.title) - skip
+dynamic key: t(m.content) - skip
+```
+It contains the non-inlined dynamic keys that we added in the `runtime.json` file.
+
+> The app will have the same behavior as you saw in dev mode, but now the translations are inlined as you can verify by inspecting the production files, reducing resource usage at runtime

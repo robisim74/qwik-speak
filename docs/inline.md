@@ -3,17 +3,47 @@
 > Inline Qwik Speak `$translate` function at compile time
 
 ## Usage
-### Build using Qwik Speak Inline Vite plugin
-#### Get the code ready
-Make sure that the translation files are only loaded in dev mode, for example:
-```typescript
-import { isDev } from '@builder.io/qwik/build';
+In development mode, translation happens _at runtime_: translations are loaded during SSR or on client, and the lookup also happens at runtime.
 
-export const loadTranslation$: LoadTranslationFn = $(async (lang: string, asset: string, origin?: string) => {
-  if (isDev) {
-    // Load translations
+Using _Qwik Speak Inline_ Vite plugin, translation happens _at compile-time_: translations are loaded and inlined during the build.
+
+> Note. If you want to avoid using the Qwik Speak Inline Vite plugin in production, you need to move all `assets` into `runtimeAssets` (both in configuration and in `Speak` components). All files will be loaded at runtime and serialized, and translation will also take place at runtime during SSR and on client
+
+### Build using Qwik Speak Inline Vite plugin
+Translations are loaded only during SSR and inlined in chunks sent to the browser during the build.
+
+```mermaid
+sequenceDiagram
+    participant Server
+    participant assets
+    participant Client
+    Note over Client: inlined data
+    Server->>assets: loadTranslation$
+    activate assets
+    assets-->>Server: data
+    deactivate assets
+    Server->>Client: SSR: no serialize data
+
+```
+#### Get the code ready
+Qwik uses the `q:base` attribute to determine the base URL for loading the chunks in the browser, so you have to set it in `entry.ssr.tsx` file:
+```typescript
+export function extractBase({ serverData }: RenderOptions): string {
+  if (!isDev && serverData?.locale) {
+    return '/build/' + serverData.locale;
+  } else {
+    return '/build';
   }
-});
+}
+
+export default function (opts: RenderToStreamOptions) {
+  return renderToStream(<Root />, {
+    manifest,
+    ...opts,
+    // Determine the base URL for the client code
+    base: extractBase,
+  });
+}
 ```
 #### Configure
 Add `qwikSpeakInline` Vite plugin in `vite.config.ts`:
@@ -35,65 +65,11 @@ export default defineConfig(() => {
   };
 });
 ```
-and build the app.
-
-At the end of the build, in root folder a `qwik-speak-inline.log` file is generated which contains:
-- Missing values
-- Translations with dynamic keys
-- Translations with dynamic params
-
-> Note. Currently, only `json` files are supported as assets
-
-### Build using Qwik Speak Inline Vite plugin & runtime
-When there are translations with dynamic keys or params, you can manage them at runtime as follows:
-- Insert dynamic translations into separate files, such as `runtime.json`
-- Handle these files when they are loaded:
-  
-  ```typescript
-  export const config: SpeakConfig = {
-    /* ... */
-    assets: [
-      'app', // Translations shared by the pages
-      'runtime' // Translations with dynamic keys or parameters
-    ]
-  };
-  ```
-  ```typescript
-  export const loadTranslation$: LoadTranslationFn = $(async (lang: string, asset: string, origin?: string) => {
-    if (isDev || asset === 'runtime') {
-      // Load translations
-    }
-  });
-  ```
-Likewise, you can also create scoped runtime files for different pages.
-
-## How it works
-During the transformation of the modules, and before tree shaking and bundling, the `$translate` function (or its alias) is replaced with the translation values for the languages provided, both in server files and in chunks sent to the browser. For example from:
-```javascript
-/*#__PURE__*/ _jsx("h2", {
-    children: t('app.subtitle')
-}),
+and build the app:
+```Shell
+npm run preview
 ```
-to:
-```javascript
-/*#__PURE__*/ _jsx("h2", {
-    children: $lang(`it-IT`) && `Traduci le tue app Qwik in qualsiasi lingua` || `Translate your Qwik apps into any language`
-}),
-```
-`$lang` is imported and added during compilation, and you can still change locales at runtime without redirecting or reloading the page.
-
-## Advanced inlining
-If you have many languages, or long texts, you can further optimize the chunks sent to the browser by enabling the `splitChunks` option :
-```typescript
-qwikSpeakInline({
-  basePath: './',
-  assetsPath: 'public/i18n',
-  supportedLangs: ['en-US', 'it-IT'],
-  defaultLang: 'en-US',
-  splitChunks: true
-})
-```
-In this way the browser chunks are generated one for each language:
+The browser chunks are generated one for each language:
 ```
 dist/build/
 │   
@@ -104,33 +80,56 @@ dist/build/
 ```
 Each contains only its own translation:
 ```javascript
-/* @__PURE__ */ Ut("h2", {
-  children: `Translate your Qwik apps into any language`
-}),
+/* @__PURE__ */ pr("h2", null, null, `Translate your Qwik apps into any language`, 1, null)
 ```
 ```javascript
-/* @__PURE__ */ Ut("h2", {
-  children: `Traduci le tue app Qwik in qualsiasi lingua`
-}),
+/* @__PURE__ */ pr("h2", null, null, `Traduci le tue app Qwik in qualsiasi lingua`, 1, null)
 ```
 
-Qwik uses the `q:base` attribute to determine the base URL for loading the chunks in the browser, so you have to set it in `entry.ssr.tsx` file. For example, if you have a localized router:
+At the end of the build, in root folder a `qwik-speak-inline.log` file is generated which contains:
+- Missing values
+- Translations with dynamic keys
+- Translations with dynamic params
+
+> Note. Currently, only `json` files are supported as assets
+
+### Build using Qwik Speak Inline Vite plugin & runtime
+When there are translations with dynamic keys or params, you can manage them in separate files, and add them to `runtimeAssets`:
+  
 ```typescript
-export function extractBase({ serverData }: RenderOptions): string {
-  if (!isDev && serverData?.locale) {
-    return '/build/' + serverData.locale;
-  } else {
-    return '/build';
-  }
-}
+export const config: SpeakConfig = {
+  /* ... */
+  assets: [
+    'app' // Translations shared by the pages
+  ],
+  runtimeAssets: [
+    'runtime' // Translations with dynamic keys or parameters
+  ]
+};
+  ```
 
-export default function (opts: RenderToStreamOptions) {
-  return renderToStream(<Root />, {
-    manifest,
-    ...opts,
-    base: extractBase,
-  });
-}
+```mermaid
+sequenceDiagram
+    participant Server
+    participant assets
+    participant runtimeAssets
+    participant Client
+    Note over Client: inlined data 
+    Note over Client: A $translate function<br/> for each key-value pair<br/> in runtime data
+    Server->>assets: loadTranslation$
+    activate assets
+    assets-->>Server: data
+    deactivate assets
+    Server->>runtimeAssets: loadTranslation$
+    activate runtimeAssets
+    runtimeAssets-->>Server: runtime data
+    deactivate runtimeAssets
+    Server->>Client: SSR: serialize runtime data
+    Client->>runtimeAssets: loadTranslation$ in SPA mode
+    activate runtimeAssets
+    runtimeAssets-->>Client: runtime data
+    deactivate runtimeAssets
 ```
 
-> Note. To update the `q:base` when language changes, you need to navigate to the new localized URL or reload the page. Therefore, it is not possible to use the `changeLocale` function
+Likewise, you can also create scoped runtime files for different pages and pass them to `Speak` components.
+

@@ -18,15 +18,9 @@ export { $plural } from './plural';
 export { formatNumber } from './format-number';
 export { formatDate } from './format-date';
 export { relativeTime } from './relative-time';
-export { changeLocale } from './change-locale';
 // Use functions
 export {
   useSpeakContext,
   useSpeakLocale,
   useSpeakConfig,
 } from './use-functions';
-// Inline functions
-export {
-  $lang,
-  $rule,
-} from './inline-functions';

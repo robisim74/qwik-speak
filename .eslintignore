@@ -31,7 +31,6 @@ tsconfig.tsbuildinfo
 vite.config.ts
 *.spec.tsx
 *.spec.ts
-*.js
 .netlify
 pnpm-lock.yaml
 package-lock.json

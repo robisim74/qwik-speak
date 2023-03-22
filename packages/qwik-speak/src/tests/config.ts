@@ -15,16 +15,12 @@ const translationData: Translation = {
       { one: '1' },
       { two: '3' }
     ]
-  },
-  'it-IT': {
-    test: 'Prova'
   }
 };
 
 const config: SpeakConfig = {
   defaultLocale: { lang: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles', units: { 'length': 'mile' } },
   supportedLocales: [
-    { lang: 'it-IT', currency: 'EUR', timeZone: 'Europe/Rome', units: { 'length': 'kilometer' } },
     { lang: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles', units: { 'length': 'mile' } }
   ],
   assets: [],

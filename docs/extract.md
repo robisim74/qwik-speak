@@ -13,7 +13,7 @@ Optionally, you can use a default value for the keys. The syntax is `key@@[defau
 ```
 When you use a default value, it will be used as initial value for the key in every translation.
 
-> Note. A key will not be extracted when a function argument is a variable (dynamic)
+> Note. A key will not be extracted when a function argument is a variable or a function (dynamic)
 
 #### Naming conventions
 If you use scoped translations, the first property will be used as filename:
@@ -32,7 +32,7 @@ public/i18n/
         app.json
         home.json
 ```
-But if you don't always use scoped translations, only one file for each language will be generated, called `app.json`
+Not scoped translations will be placed in a single file, called `app.json`
 
 #### Configuration
 Add the command in `package.json`, and provide at least the supported languages:
@@ -42,12 +42,13 @@ Add the command in `package.json`, and provide at least the supported languages:
 }
 ```
 Available options:
+- `supportedLangs` Supported langs. Required
 - `basePath` The base path. Default to `'./'`
 - `sourceFilesPaths` Paths to files to search for translations. Default to `'src'`
 - `excludedPaths` Paths to exclude
 - `assetsPath` Path to translation files: `[basePath]/[assetsPath]/[lang]/*.json`. Default to `'public/i18n'`
 - `format` The format of the translation files. Default to `'json'`
-- `supportedLangs` Supported langs. Required
+- `filename` Filename for not scoped translations. Default is `'app'`
 - `keySeparator` Separator of nested keys. Default is `'.'`
 - `keyValueSeparator` Key-value separator. Default is `'@@'`
 

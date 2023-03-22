@@ -50,10 +50,7 @@ To extract translations directly from the components, a command is available tha
 See [Qwik Speak Extract](./docs/extract.md) for more information on how to use it.
 
 ## Production
-You have three solutions:
-- **Build as is**  Translation happens _at runtime_: translations are loaded during SSR or on client, and the lookup also happens at runtime as in development mode
-- **Build using Qwik Speak Inline Vite plugin** Translation happens _at compile-time_: translations are loaded and inlined during the build (both in server file and in chunks sent to the browser)
-- **Build using Qwik Speak Inline Vite plugin & runtime** Translation happens _at compile-time_ or _at runtime_ as needed: static translations are loaded and inlined during the build, while dynamic translations occur at runtime
+Using _Qwik Speak Inline_ Vite plugin, translations are loaded and inlined during the build.
 
 See [Qwik Speak Inline Vite plugin](./docs/inline.md) for more information on how it works and how to use it.
 
@@ -85,6 +82,7 @@ stateDiagram-v2
         of translation data
     end note
 ```
+`SpeakState` is immutable: it cannot be updated after it is created and is not reactive.
 
 - `useSpeakContext()` Returns the Speak state
 - `useSpeakConfig()` Returns the configuration in Speak context
@@ -94,8 +92,9 @@ stateDiagram-v2
 - `defaultLocale` The default locale to use as fallback
 - `supportedLocales` List of locales supported by the app
 - `assets` An array of strings: each asset is passed to the `loadTranslation$` function to obtain data according to the language
+- `runtimeAssets` Optional assets available at runtime
 - `keySeparator` Separator of nested keys. Default is `.`
-- `keyValueSeparator` Key-value separator. Default is `@@`. The default value of a key can be passed directly into the string: `t('app.title@@Qwik Speak')`
+- `keyValueSeparator` Key-value separator. Default is `@@`
 
 ### SpeakLocale
 The `SpeakLocale` object contains the `lang`, in the format `language[-script][-region]`, where:
@@ -118,7 +117,7 @@ and optionally contains:
 ```mermaid
 C4Container
     Container_Boundary(a, "App") {
-        Component(a0, "QwikSpeakProvider", "", "Uses Speak context")
+        Component(a0, "QwikSpeakProvider", "", "Creates Speak context")
         Container_Boundary(b1, "Home") {
             Component(a10, "Speak", "", "Adds its own translation data to the context")        
         }  
@@ -136,7 +135,8 @@ C4Container
 
 #### Speak component (scoped translations)
 `Speak` component can be used for scoped translations. `Props`:
-  - `assets` Assets to load
+  - `assets` Assets to load (required)
+  - `runtimeAssets` Optional assets to load and available at runtime
   - `langs` Optional additional languages to preload data for (multilingual)
 
 ### Functions
@@ -144,19 +144,16 @@ C4Container
 Translates a key or an array of keys. The syntax of the string is `key@@[default value]`
 
 - `$plural(value: number | string, key?: string, params?: any, options?: Intl.PluralRulesOptions, ctx?: SpeakState, lang?: string)`
-Gets the plural by a number
+Gets the plural by a number using [Intl.PluralRules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/PluralRules) API
 
 - `formatDate(value: Date | number | string, options?: Intl.DateTimeFormatOptions, locale?: SpeakLocale, lang?: string, timeZone?: string)`
-Formats a date
+Formats a date using [Intl.DateTimeFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat) API
 
 - `relativeTime(value: number | string, unit: Intl.RelativeTimeFormatUnit, options?: Intl.RelativeTimeFormatOptions, locale?: SpeakLocale, lang?: string)`
-Formats a relative time
+Formats a relative time using [Intl.RelativeTimeFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/RelativeTimeFormat) API
 
 - `formatNumber(value: number | string, options?: Intl.NumberFormatOptions, locale?: SpeakLocale, lang?: string, currency?: string)`
-Formats a number
-
-- `changeLocale(newLocale: SpeakLocale, ctx: SpeakState)`
-Changes locale at runtime: loads translation data and rerenders components that uses translations
+Formats a number using [Intl.NumberFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat) API
 
 ## Development Builds
 ### Library & tools

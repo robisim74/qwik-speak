@@ -20,6 +20,7 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
     excludedPaths: options.excludedPaths ?? [],
     assetsPath: options.assetsPath ?? 'public/i18n',
     format: options.format ?? 'json',
+    filename: options.filename ?? 'app',
     keySeparator: options.keySeparator ?? '.',
     keyValueSeparator: options.keyValueSeparator ?? '@@',
   }
@@ -185,8 +186,8 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
    * Write translation data
    * 
    * Naming convention of keys:
-   * min depth > 1: filenames = each top-level property name
-   * min depth = 1: filename = 'app'
+   * min depth > 0: filenames = each top-level property name
+   * min depth = 0: filename = 'app'
    */
   const writeAssets = async () => {
     for (const lang of resolvedOptions.supportedLangs) {
@@ -196,32 +197,37 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
         mkdirSync(baseAssets, { recursive: true });
       }
 
-      if (minDepth(translation[lang]) > 1) {
-        for (const topLevelProperty of Object.keys(translation[lang])) {
-          let data: string;
-          switch (resolvedOptions.format) {
-            case 'json':
-              // Computed property name
-              data = toJsonString({ [topLevelProperty]: translation[lang][topLevelProperty] });
-              break;
-          }
-          const file = normalize(`${baseAssets}/${topLevelProperty}.${resolvedOptions.format}`);
-          await writeFile(file, data);
-          console.log(file);
-        }
-      } else {
-        let data: string;
-        switch (resolvedOptions.format) {
-          case 'json':
-            data = toJsonString(translation[lang]);
-            break;
-        }
+      const topLevelKeys = Object.keys(translation[lang]).filter(key => minDepth(translation[lang][key]) > 0);
+      const bottomLevelKeys = Object.keys(translation[lang]).filter(key => minDepth(translation[lang][key]) === 0);
 
-        const file = normalize(`${baseAssets}/app.${resolvedOptions.format}`);
-        await writeFile(file, data);
-        console.log(file);
+      const bottomTranslation: Translation = {};
+      if (translation[lang][resolvedOptions.filename]) {
+        bottomTranslation[resolvedOptions.filename] = translation[lang][resolvedOptions.filename];
+      }
+      for (const bottomLevelKey of bottomLevelKeys) {
+        bottomTranslation[bottomLevelKey] = translation[lang][bottomLevelKey];
+      }
+      if (Object.keys(bottomTranslation).length > 0) {
+        await writeAsset(bottomTranslation, resolvedOptions.filename, baseAssets);
+      }
+
+      for (const topLevelKey of topLevelKeys.filter(key => key !== resolvedOptions.filename)) {
+        await writeAsset({ [topLevelKey]: translation[lang][topLevelKey] }, topLevelKey, baseAssets);
       }
     }
+  };
+
+  const writeAsset = async (translation: Translation, filename: string, baseAssets: string) => {
+    let data: string;
+    switch (resolvedOptions.format) {
+      case 'json':
+        // Computed property name
+        data = toJsonString(translation);
+        break;
+    }
+    const file = normalize(`${baseAssets}/${filename}.${resolvedOptions.format}`);
+    await writeFile(file, data);
+    console.log(file);
   };
 
   /**

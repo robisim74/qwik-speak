@@ -1,6 +1,5 @@
 import { test, describe, expect } from 'vitest';
 
-import { changeLocale } from '../change-locale';
 import { $translate as t } from '../translate';
 import { ctx } from './config';
 
@@ -55,17 +54,5 @@ describe('translate function', () => {
       { one: '1' },
       { two: '3' }
     ]);
-  });
-  test('translate when locale changes', async () => {
-    await changeLocale({
-      lang: 'it-IT',
-      currency: 'EUR',
-      timeZone: 'Europe/Rome',
-      units: {
-        'length': 'kilometer'
-      }
-    }, ctx);
-    const value = t('test', {}, ctx);
-    expect(value).toBe('Prova');
   });
 });

@@ -1,5 +1,5 @@
 import { $, component$, Slot, useContextProvider, useServerData, useStore, useTask$ } from '@builder.io/qwik';
-import { isDev, isServer } from '@builder.io/qwik/build';
+import { isServer } from '@builder.io/qwik/build';
 
 import type { SpeakConfig, SpeakLocale, SpeakState, TranslationFn } from './types';
 import { SpeakContext } from './context';
@@ -26,7 +26,7 @@ export interface QwikSpeakProps {
 }
 
 /**
- * Create and provide SpeakContext.
+ * Create and provide the Speak context
  */
 export const QwikSpeakProvider = component$((props: QwikSpeakProps) => {
   // Get URL object
@@ -46,8 +46,8 @@ export const QwikSpeakProvider = component$((props: QwikSpeakProps) => {
   if (!resolvedLocale) {
     resolvedLocale = props.config.defaultLocale;
 
-    if (isDev) logWarn(`Locale not resolved. Fallback to default locale ${props.config.defaultLocale.lang}`);
-  } else if (isDev) {
+    if ((globalThis as any)['qDev']) logWarn(`Locale not resolved. Fallback to default locale ${props.config.defaultLocale.lang}`);
+  } else if ((globalThis as any)['qDev']) {
     logDebug(`Resolved locale: ${resolvedLocale.lang}`);
   }
 
@@ -59,6 +59,7 @@ export const QwikSpeakProvider = component$((props: QwikSpeakProps) => {
       defaultLocale: props.config.defaultLocale,
       supportedLocales: props.config.supportedLocales,
       assets: props.config.assets,
+      runtimeAssets: props.config.runtimeAssets,
       keySeparator: props.config.keySeparator || '.',
       keyValueSeparator: props.config.keyValueSeparator || '@@'
     },
@@ -69,19 +70,17 @@ export const QwikSpeakProvider = component$((props: QwikSpeakProps) => {
   // Create context
   useContextProvider(SpeakContext, state);
 
-  // Called the first time when the component mounts, and when lang changes
-  useTask$(async ({ track }) => {
-    track(() => locale.lang);
-
-    // Load translations
-    await loadTranslations(state, url?.origin, props.langs);
+  // Called the first time when the component mounts
+  useTask$(async () => {
+    await loadTranslations(state, config.assets, config.runtimeAssets, url?.origin, props.langs);
 
     // Prevent Qwik from creating subscriptions
     if (isServer) {
       // Shallow freeze: only applies to the immediate properties of object itself
+      Object.freeze(locale);
       Object.freeze(translation);
       Object.freeze(config);
-      Object.freeze(translationFn)
+      Object.freeze(translationFn);
     }
   });
 
