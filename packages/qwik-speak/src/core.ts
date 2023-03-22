@@ -1,5 +1,5 @@
 import { noSerialize } from '@builder.io/qwik';
-import { isDev, isServer } from '@builder.io/qwik/build';
+import { isServer } from '@builder.io/qwik/build';
 
 import type { Translation, SpeakState, LoadTranslationFn } from './types';
 
@@ -32,7 +32,7 @@ export const loadTranslations = async (
   origin?: string,
   langs?: string[]
 ): Promise<void> => {
-  if (isDev || isServer || runtimeAssets) {
+  if ((globalThis as any)['qDev'] === true || isServer || runtimeAssets) {
     const { locale, translation, translationFn } = ctx;
 
     const resolvedAssets = [...assets, ...runtimeAssets ?? []];
@@ -52,7 +52,7 @@ export const loadTranslations = async (
 
       for (const data of assetSources) {
         if (data?.source) {
-          if (!isDev && isServer && assets.includes(data.asset)) {
+          if (!(globalThis as any)['qDev'] && isServer && assets.includes(data.asset)) {
             // In prod mode, assets are not serialized
             for (const [key, value] of Object.entries<Translation>(data.source)) {
               translation[lang][key] = noSerialize(value);

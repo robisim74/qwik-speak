@@ -46,7 +46,6 @@ export const translationFn: TranslationFn = {
 ```
 We have added the Speak config and the implementation of the `loadTranslation$` function. Loading of translations can take place both on server and on client (in case of SPA) and the `loadTranslation$` function must support both.
 
-> The `defaultLocale` and `supportedLocales` are required because the library uses the default locale if is set a locale at runtime that is not supported.
 
 ## Routing
 Let's assume that we want to create a navigation of this type:
@@ -258,7 +257,7 @@ _public/i18n/[lang]/runtime.json_
   }
 }
 ```
-Don't forget to update the keys in `DocumentHead` of `index.tsx`:
+Update the keys in `DocumentHead` of `index.tsx`:
 ```jsx
 export const head: DocumentHead = {
   title: 'runtime.home.head.title@@Qwik Speak',
@@ -275,7 +274,10 @@ runtimeAssets: [
 ]
 ```
 
-We can translate the `it-IT` files, and run the app.
+We can translate the `it-IT` files, and run the app:
+```Shell
+npm start
+```
 
 ## Inlining: [Qwik Speak Inline Vite plugin](./inline.md)
 Add `qwikSpeakInline` Vite plugin in `vite.config.ts`:
@@ -325,7 +327,7 @@ export default function (opts: RenderToStreamOptions) {
 ```
 
 Build the production app in preview mode:
-```typescript
+```Shell
 npm run preview
 ```
 
@@ -338,4 +340,4 @@ dynamic key: t(m.content) - skip
 ```
 It contains the non-inlined dynamic keys that we added in the `runtime.json` file.
 
-> The app will have the same behavior as you saw in dev mode, but now the translations are inlined as you can verify by inspecting the production files, reducing resource usage at runtime.
+> The app will have the same behavior as you saw in dev mode, but now the translations are inlined as you can verify by inspecting the production files, reducing resource usage at runtime
