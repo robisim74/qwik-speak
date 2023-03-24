@@ -35,8 +35,8 @@ export const loadTranslation$: LoadTranslationFn = $(async (lang: string, asset:
   if (response.ok) {
     return response.json();
   }
-  else if (response.status === 404) {
-    console.warn(`loadTranslation$: ${url} not found`);
+  else {
+    console.error(`loadTranslation$: ${url}`, response);
   }
 });
 
@@ -182,7 +182,7 @@ export const ChangeLocale = component$(() => {
   const config = useSpeakConfig();
 
   // Replace the locale and navigate to the new URL
-  const navigateByLocale$ = $(async (newLocale: SpeakLocale) => {
+  const navigateByLocale$ = $((newLocale: SpeakLocale) => {
     const url = new URL(location.href);
     if (loc.params.lang) {
       if (newLocale.lang !== config.defaultLocale.lang) {
@@ -275,7 +275,7 @@ runtimeAssets: [
 ```
 
 We can translate the `it-IT` files, and run the app:
-```Shell
+```shell
 npm start
 ```
 
@@ -327,7 +327,7 @@ export default function (opts: RenderToStreamOptions) {
 ```
 
 Build the production app in preview mode:
-```Shell
+```shell
 npm run preview
 ```
 
@@ -341,3 +341,6 @@ dynamic key: t(m.content) - skip
 It contains the non-inlined dynamic keys that we added in the `runtime.json` file.
 
 > The app will have the same behavior as you saw in dev mode, but now the translations are inlined as you can verify by inspecting the production files, reducing resource usage at runtime
+
+## Production
+See [Qwik Speak and Adapters](./adapters.md)

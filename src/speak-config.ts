@@ -1,5 +1,5 @@
-import { $ } from '@builder.io/qwik';
-import { isServer } from '@builder.io/qwik/build';
+import { server$ } from '@builder.io/qwik-city';
+
 import type {
   LoadTranslationFn,
   SpeakConfig,
@@ -24,25 +24,16 @@ export const config: SpeakConfig = {
 };
 
 /**
- * E.g. Fetch translation data from json files
- * In productions with inlined translations, only the runtime files are loaded
+ * Translation files are imported directly as string
  */
-export const loadTranslation$: LoadTranslationFn = $(async (lang: string, asset: string, origin?: string) => {
-  let url = '';
-  // Absolute urls on server
-  if (isServer && origin) {
-    url = origin;
-  }
-  url += `/i18n/${lang}/${asset}.json`;
-  const response = await fetch(url);
+const translationData = import.meta.glob('/public/i18n/**/*.json', { as: 'raw', eager: true });
 
-  if (response.ok) {
-    return response.json();
-  }
-  else if (response.status === 404) {
-    console.warn(`loadTranslation$: ${url} not found`);
-  }
-});
+/**
+ * Using server$, translation data is always accessed on the server
+ */
+const loadTranslation$: LoadTranslationFn = server$((lang: string, asset: string) =>
+  JSON.parse(translationData[`/public/i18n/${lang}/${asset}.json`])
+);
 
 /**
  * Translation functions

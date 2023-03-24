@@ -66,7 +66,7 @@ export default defineConfig(() => {
 });
 ```
 and build the app:
-```Shell
+```shell
 npm run preview
 ```
 The browser chunks are generated one for each language:

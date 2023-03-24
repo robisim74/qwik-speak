@@ -10,7 +10,7 @@ export const ChangeLocale = component$(() => {
   const config = useSpeakConfig();
 
   // Replace the locale and navigate to the new URL
-  const navigateByLocale$ = $(async (newLocale: SpeakLocale) => {
+  const navigateByLocale$ = $((newLocale: SpeakLocale) => {
     const url = new URL(location.href);
     if (loc.params.lang) {
       if (newLocale.lang !== config.defaultLocale.lang) {

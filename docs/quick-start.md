@@ -41,8 +41,8 @@ export const loadTranslation$: LoadTranslationFn = $(async (lang: string, asset:
   if (response.ok) {
     return response.json();
   }
-  else if (response.status === 404) {
-    console.warn(`loadTranslation$: ${url} not found`);
+  else {
+    console.error(`loadTranslation$: ${url}`, response);
   }
 });
 
@@ -159,7 +159,7 @@ import { $translate as t, useSpeakConfig, SpeakLocale } from 'qwik-speak';
 export const ChangeLocale = component$(() => {
   const config = useSpeakConfig();
 
-  const changeLocale$ = $(async (newLocale: SpeakLocale) => {
+  const changeLocale$ = $((newLocale: SpeakLocale) => {
     // Store locale in a cookie 
     document.cookie = `locale=${JSON.stringify(newLocale)};max-age=86400;path=/`;
 
@@ -210,7 +210,7 @@ extracted keys: 4
 `app` asset and `home` asset for each language, initialized with the default values we provided.
 
 We can translate the `it-IT` files, and run the app:
-```Shell
+```shell
 npm start
 ```
 
@@ -257,8 +257,11 @@ export default function (opts: RenderToStreamOptions) {
 ```
 
 Build the production app in preview mode:
-```Shell
+```shell
 npm run preview
 ```
 
 > The app will have the same behavior as you saw in dev mode, but now the translations are inlined as you can verify by inspecting the production files, reducing resource usage at runtime
+
+## Production
+See [Qwik Speak and Adapters](./adapters.md)

@@ -5,6 +5,7 @@
 * [Quick Start](docs/quick-start.md)    
 * [Tutorial: localized routing](docs/tutorial-routing.md)    
 * [Translate](docs/translate.md)    
+* [Qwik Speak and Adapters](docs/adapters.md)
 * [Testing](docs/testing.md)   
 
 ## Tools​

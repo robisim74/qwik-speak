@@ -1,5 +1,5 @@
 # Qwik Speak ⚡️
-[![Node.js CI](https://github.com/robisim74/qwik-speak/actions/workflows/node.js.yml/badge.svg)](https://github.com/robisim74/qwik-speak/actions/workflows/node.js.yml) [![Playwright](https://github.com/robisim74/qwik-speak/actions/workflows/playwright.yml/badge.svg)](https://github.com/robisim74/qwik-speak/actions/workflows/playwright.yml)
+[![Node.js CI](https://github.com/robisim74/qwik-speak/actions/workflows/node.js.yml/badge.svg)](https://github.com/robisim74/qwik-speak/actions/workflows/node.js.yml) [![Playwright](https://github.com/robisim74/qwik-speak/actions/workflows/playwright.yml/badge.svg)](https://github.com/robisim74/qwik-speak/actions/workflows/playwright.yml) [![Netlify Status](https://api.netlify.com/api/v1/badges/9d8662fe-0377-4bbc-a7d7-6326e7a4d851/deploy-status)](https://app.netlify.com/sites/qwik-speak/deploys)
 
 > Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps
 
@@ -11,9 +11,10 @@ npm install qwik-speak --save-dev
 - [Quick Start](./docs/quick-start.md)
 - [Tutorial: localized routing](./docs/tutorial-routing.md)
 - [Translate](./docs/translate.md)
+- [Qwik Speak and Adapters](./docs/translate.md)
 - [Testing](./docs/testing.md)
 
-Live example on [StackBlitz](https://stackblitz.com/edit/qwik-speak)
+Live example on [Nettlify](https://qwik-speak.netlify.app) and playground on [StackBlitz](https://stackblitz.com/edit/qwik-speak)
 
 ## Overview
 ### Getting the translation
@@ -158,25 +159,25 @@ Formats a number using [Intl.NumberFormat](https://developer.mozilla.org/en-US/d
 ## Development Builds
 ### Library & tools
 #### Build
-```Shell
+```shell
 cd packages/qwik-speak
 npm run build
 ```
 #### Test
-```Shell
+```shell
 npm test
 ```
 ### Sample app
 #### Run
-```Shell
+```shell
 npm start
 ```
 #### Preview
-```Shell
+```shell
 npm run preview
 ```
 #### Test
-```Shell
+```shell
 npm test
 npm run test.e2e
 ```

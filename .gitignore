@@ -40,3 +40,6 @@ lerna-debug.log*
 /test-results/
 /playwright-report/
 salt
+
+# Netlify
+.netlify
