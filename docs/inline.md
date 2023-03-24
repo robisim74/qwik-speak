@@ -129,7 +129,7 @@ sequenceDiagram
     activate runtimeAssets
     runtimeAssets-->>Client: runtime data
     deactivate runtimeAssets
+
 ```
 
 Likewise, you can also create scoped runtime files for different pages and pass them to `Speak` components.
-

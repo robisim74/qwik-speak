@@ -11,10 +11,10 @@ npm install qwik-speak --save-dev
 - [Quick Start](./docs/quick-start.md)
 - [Tutorial: localized routing](./docs/tutorial-routing.md)
 - [Translate](./docs/translate.md)
-- [Qwik Speak and Adapters](./docs/translate.md)
+- [Qwik Speak and Adapters](./docs/adapters.md)
 - [Testing](./docs/testing.md)
 
-Live example on [Nettlify](https://qwik-speak.netlify.app) and playground on [StackBlitz](https://stackblitz.com/edit/qwik-speak)
+Live example on [Netlify](https://qwik-speak.netlify.app) and playground on [StackBlitz](https://stackblitz.com/edit/qwik-speak)
 
 ## Overview
 ### Getting the translation
