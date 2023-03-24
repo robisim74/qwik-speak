@@ -16,10 +16,10 @@
     "qwik-speak-extract": "./extract/cli.js"
   },
   "peerDependencies": {
-    "@builder.io/qwik": ">=0.23.0"
+    "@builder.io/qwik": ">=0.24.0"
   },
   "devDependencies": {
-    "@builder.io/qwik": "0.23.0",
+    "@builder.io/qwik": "0.24.0",
     "@microsoft/api-documenter": "^7.21.5",
     "@microsoft/api-extractor": "^7.34.4",
     "@types/eslint": "8.21.2",
@@ -27,7 +27,7 @@
     "@typescript-eslint/eslint-plugin": "5.55.0",
     "@typescript-eslint/parser": "5.55.0",
     "eslint": "8.36.0",
-    "eslint-plugin-qwik": "0.23.0",
+    "eslint-plugin-qwik": "0.24.0",
     "np": "^7.6.3",
     "rollup-plugin-add-shebang": "^0.3.1",
     "typescript": "5.0.2",

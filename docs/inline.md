@@ -115,7 +115,7 @@ sequenceDiagram
     participant runtimeAssets
     participant Client
     Note over Client: inlined data 
-    Note over Client: A $translate function<br/> for each key-value pair<br/> in runtime data
+    Note over Client: runtime data
     Server->>assets: loadTranslation$
     activate assets
     assets-->>Server: data
