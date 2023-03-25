@@ -15,7 +15,7 @@ export interface QwikSpeakExtractOptions {
    */
   excludedPaths?: string[];
   /**
-   * Path to translation files: [basePath]/[assetsPath]/[lang]/*.json. Default to 'public/i18n'
+   * Path to translation files: [basePath]/[assetsPath]/[lang]/*.json. Default to 'i18n'
    */
   assetsPath?: string;
   /**
@@ -49,7 +49,7 @@ export interface QwikSpeakInlineOptions {
    */
   basePath?: string;
   /**
-   * Path to translation files: [basePath]/[assetsPath]/[lang]/*.json. Default to 'public/i18n'
+   * Path to translation files: [basePath]/[assetsPath]/[lang]/*.json. Default to 'i18n'
    */
   assetsPath?: string;
   /**

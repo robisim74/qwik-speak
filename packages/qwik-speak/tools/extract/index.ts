@@ -18,7 +18,7 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
     basePath: options.basePath ?? './',
     sourceFilesPaths: options.sourceFilesPaths ?? ['src'],
     excludedPaths: options.excludedPaths ?? [],
-    assetsPath: options.assetsPath ?? 'public/i18n',
+    assetsPath: options.assetsPath ?? 'i18n',
     format: options.format ?? 'json',
     filename: options.filename ?? 'app',
     keySeparator: options.keySeparator ?? '.',

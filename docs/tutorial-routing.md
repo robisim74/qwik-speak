@@ -23,29 +23,23 @@ export const config: SpeakConfig = {
   ]
 };
 
-export const loadTranslation$: LoadTranslationFn = $(async (lang: string, asset: string, origin?: string) => {
-  let url = '';
-  // Absolute urls on server
-  if (isServer && origin) {
-    url = origin;
-  }
-  url += `/i18n/${lang}/${asset}.json`;
-  const response = await fetch(url);
+/**
+ * Translation files are lazy-loaded via dynamic import and will be split into separate chunks during build
+ */
+const translationData = import.meta.glob('/i18n/**/*.json');
 
-  if (response.ok) {
-    return response.json();
-  }
-  else {
-    console.error(`loadTranslation$: ${url}`, response);
-  }
-});
+/**
+ * Using server$, translation data is always accessed on the server
+ */
+const loadTranslation$: LoadTranslationFn = server$(async (lang: string, asset: string) =>
+  await translationData[`/i18n/${lang}/${asset}.json`]()
+);
 
 export const translationFn: TranslationFn = {
   loadTranslation$: loadTranslation$
 };
 ```
-We have added the Speak config and the implementation of the `loadTranslation$` function. Loading of translations can take place both on server and on client (in case of SPA) and the `loadTranslation$` function must support both.
-
+We have added the Speak config and the implementation of the `loadTranslation$` function.
 
 ## Routing
 Let's assume that we want to create a navigation of this type:
@@ -224,7 +218,7 @@ In `navigateByLocale$` we replace the language in the URL, before navigate to th
 ## Extraction: [Qwik Speak Extract](./extract.md)
 We can now extract the translations and generate the `assets` as json. In `package.json` add the following command to the scripts:
 ```json
-"qwik-speak-extract": "qwik-speak-extract --supportedLangs=en-US,it-IT"
+"qwik-speak-extract": "qwik-speak-extract --supportedLangs=en-US,it-IT --assetsPath=i18n"
 ```
 
 ```shell
@@ -233,10 +227,10 @@ npm run qwik-speak-extract
 
 The following files are generated:
 ```
-public/i18n/en-US/app.json
-public/i18n/en-US/home.json
-public/i18n/it-IT/app.json
-public/i18n/it-IT/home.json
+i18n/en-US/app.json
+i18n/en-US/home.json
+i18n/it-IT/app.json
+i18n/it-IT/home.json
 skipped keys due to dynamic params: 2
 extracted keys: 4
 ```
@@ -295,6 +289,7 @@ export default defineConfig(() => {
       qwikSpeakInline({
         supportedLangs: ['en-US', 'it-IT'],
         defaultLang: 'en-US',
+        assetsPath: 'i18n'
       }),
       tsconfigPaths(),
     ],

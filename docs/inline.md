@@ -57,7 +57,7 @@ export default defineConfig(() => {
       qwikVite(),
       qwikSpeakInline({
         basePath: './',
-        assetsPath: 'public/i18n',
+        assetsPath: 'i18n',
         supportedLangs: ['en-US', 'it-IT'],
         defaultLang: 'en-US'
       }),

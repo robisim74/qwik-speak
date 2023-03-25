@@ -192,7 +192,7 @@ describe('inline', () => {
         keySeparator: '.',
         keyValueSeparator: '@@',
         basePath: './',
-        assetsPath: 'public/i18n',
+        assetsPath: 'i18n',
         outDir: 'dist'
       });
     expect(inlined).toBe('const values = [`Qwik Speak`,`Translate your Qwik apps into any language`]');
@@ -221,7 +221,7 @@ describe('inline', () => {
         keySeparator: '.',
         keyValueSeparator: '@@',
         basePath: './',
-        assetsPath: 'public/i18n',
+        assetsPath: 'i18n',
         outDir: 'dist'
       });
     expect(inlined).toBe('import { $translate as t } from "qwik-speak";const value = `Traduci le tue app Qwik in qualsiasi lingua`');
@@ -245,7 +245,7 @@ describe('inline', () => {
         keySeparator: '.',
         keyValueSeparator: '@@',
         basePath: './',
-        assetsPath: 'public/i18n',
+        assetsPath: 'i18n',
         outDir: 'dist'
       });
     expect(inlined).toBe('import { $translate as t } from "qwik-speak";const value = `Translate your Qwik apps into any language`');

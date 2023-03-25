@@ -33,13 +33,13 @@ describe('extract', () => {
     expect(readFile).toHaveBeenCalledTimes(2);
 
     expect(writeFile).toHaveBeenCalledTimes(2);
-    expect(writeFile).toHaveBeenNthCalledWith(1, normalize('../../public/i18n/en-US/app.json'), `{
+    expect(writeFile).toHaveBeenNthCalledWith(1, normalize('../../i18n/en-US/app.json'), `{
   "app": {
     "subtitle": "Translate your Qwik apps into any language",
     "title": "Qwik Speak"
   }
 }`);
-    expect(writeFile).toHaveBeenNthCalledWith(2, normalize('../../public/i18n/en-US/home.json'), `{
+    expect(writeFile).toHaveBeenNthCalledWith(2, normalize('../../i18n/en-US/home.json'), `{
   "home": {
     "array": [
       "one",

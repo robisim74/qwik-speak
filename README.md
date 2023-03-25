@@ -14,7 +14,7 @@ npm install qwik-speak --save-dev
 - [Qwik Speak and Adapters](./docs/adapters.md)
 - [Testing](./docs/testing.md)
 
-Live example on [Netlify](https://qwik-speak.netlify.app) and playground on [StackBlitz](https://stackblitz.com/edit/qwik-speak)
+Live example on [Cloudflare pages](https://qwik-speak.pages.dev/) and playground on [StackBlitz](https://stackblitz.com/edit/qwik-speak)
 
 ## Overview
 ### Getting the translation
