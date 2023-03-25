@@ -28,7 +28,7 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
   const resolvedOptions: Required<QwikSpeakInlineOptions> = {
     ...options,
     basePath: options.basePath ?? './',
-    assetsPath: options.assetsPath ?? 'public/i18n',
+    assetsPath: options.assetsPath ?? 'i18n',
     outDir: options.outDir ?? 'dist',
     keySeparator: options.keySeparator ?? '.',
     keyValueSeparator: options.keyValueSeparator ?? '@@'

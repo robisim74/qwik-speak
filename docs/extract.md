@@ -23,7 +23,7 @@ If you use scoped translations, the first property will be used as filename:
 ```
 will generate two files for each language:
 ```
-public/i18n/
+i18n/
 │   
 └───en-US/
 │       app.json
@@ -38,7 +38,7 @@ Not scoped translations will be placed in a single file, called `app.json`
 Add the command in `package.json`, and provide at least the supported languages:
 ```json
 "scripts": {
-  "qwik-speak-extract": "qwik-speak-extract --supportedLangs=en-US,it-IT"
+  "qwik-speak-extract": "qwik-speak-extract --supportedLangs=en-US,it-IT --assetsPath=i18n"
 }
 ```
 Available options:
@@ -46,7 +46,7 @@ Available options:
 - `basePath` The base path. Default to `'./'`
 - `sourceFilesPaths` Paths to files to search for translations. Default to `'src'`
 - `excludedPaths` Paths to exclude
-- `assetsPath` Path to translation files: `[basePath]/[assetsPath]/[lang]/*.json`. Default to `'public/i18n'`
+- `assetsPath` Path to translation files: `[basePath]/[assetsPath]/[lang]/*.json`. Default to `'i18n'`
 - `format` The format of the translation files. Default to `'json'`
 - `filename` Filename for not scoped translations. Default is `'app'`
 - `keySeparator` Separator of nested keys. Default is `'.'`

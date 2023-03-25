@@ -21,7 +21,8 @@ export default defineConfig(() => {
       }),
       qwikSpeakInline({
         supportedLangs: ['en-US', 'it-IT'],
-        defaultLang: 'en-US'
+        defaultLang: 'en-US',
+        assetsPath: 'i18n'
       }),
       tsconfigPaths()
     ],
