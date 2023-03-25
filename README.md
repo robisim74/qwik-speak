@@ -1,5 +1,5 @@
 # Qwik Speak ⚡️
-[![Node.js CI](https://github.com/robisim74/qwik-speak/actions/workflows/node.js.yml/badge.svg)](https://github.com/robisim74/qwik-speak/actions/workflows/node.js.yml) [![Playwright](https://github.com/robisim74/qwik-speak/actions/workflows/playwright.yml/badge.svg)](https://github.com/robisim74/qwik-speak/actions/workflows/playwright.yml) [![Netlify Status](https://api.netlify.com/api/v1/badges/9d8662fe-0377-4bbc-a7d7-6326e7a4d851/deploy-status)](https://app.netlify.com/sites/qwik-speak/deploys)
+[![Node.js CI](https://github.com/robisim74/qwik-speak/actions/workflows/node.js.yml/badge.svg)](https://github.com/robisim74/qwik-speak/actions/workflows/node.js.yml) [![Playwright](https://github.com/robisim74/qwik-speak/actions/workflows/playwright.yml/badge.svg)](https://github.com/robisim74/qwik-speak/actions/workflows/playwright.yml)
 
 > Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps
 
