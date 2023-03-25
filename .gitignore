@@ -41,5 +41,5 @@ lerna-debug.log*
 /playwright-report/
 salt
 
-# Netlify
-.netlify
+# Cloudflare
+functions/**/*.js
