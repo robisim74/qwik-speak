@@ -30,8 +30,8 @@ If you use Qwik-provided adapters for publishing your app, especially with _edge
  */
 const translationData = import.meta.glob('/i18n/**/*.json');
 
-const loadTranslation$: LoadTranslationFn = server$(async (lang: string, asset: string) =>
-  await translationData[`/i18n/${lang}/${asset}.json`]()
+const loadTranslation$: LoadTranslationFn = server$((lang: string, asset: string) =>
+  translationData[`/i18n/${lang}/${asset}.json`]?.(),
 );
 ```
 > Using `server$`, translation data is always accessed on the server
@@ -44,7 +44,7 @@ If your production environment doesn't support _dynamic import_, you might prefe
 const translationData = import.meta.glob('/i18n/**/*.json', { as: 'raw', eager: true });
 
 const loadTranslation$: LoadTranslationFn = server$((lang: string, asset: string) =>
-  JSON.parse(translationData[`/i18n/${lang}/${asset}.json`])
+  JSON.parse(translationData[`/i18n/${lang}/${asset}.json`]),
 );
 ```
 
