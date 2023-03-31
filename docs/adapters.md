@@ -1,6 +1,6 @@
 # Qwik Speak and Adapters
 
-`loadTranslation$` is the key function of the library. It is a customizable function, with which you can load the translation files in the way you prefer. A simple implementation is to put the files in the public folder and fetch them:
+`loadTranslation$` is the core function of the library. It is a customizable function, with which you can load the translation files in the way you prefer. A simple implementation is to fetch files from the public folder:
 
 ```typescript
 export const loadTranslation$: LoadTranslationFn = $(async (lang: string, asset: string, origin?: string) => {
@@ -31,7 +31,7 @@ If you use Qwik-provided adapters for publishing your app, especially with _edge
 const translationData = import.meta.glob('/i18n/**/*.json');
 
 const loadTranslation$: LoadTranslationFn = server$((lang: string, asset: string) =>
-  translationData[`/i18n/${lang}/${asset}.json`]?.(),
+  translationData[`/i18n/${lang}/${asset}.json`]?.()
 );
 ```
 > Using `server$`, translation data is always accessed on the server
@@ -44,9 +44,11 @@ If your production environment doesn't support _dynamic import_, you might prefe
 const translationData = import.meta.glob('/i18n/**/*.json', { as: 'raw', eager: true });
 
 const loadTranslation$: LoadTranslationFn = server$((lang: string, asset: string) =>
-  JSON.parse(translationData[`/i18n/${lang}/${asset}.json`]),
+  JSON.parse(translationData[`/i18n/${lang}/${asset}.json`])
 );
 ```
+
+> Note. It is recommended to put this function in a separate file from the configuration, to allow the Qwik compiler to respect the initialization order of the functions
 
 ## Static Site Generation (SSG)
 If you want to use Static Site Generation with the localized router, it is necessary to manage the dynamic language parameter, and you need to add the values it can take to the pages:

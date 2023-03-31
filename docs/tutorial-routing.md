@@ -22,7 +22,9 @@ export const config: SpeakConfig = {
     'app' // Translations shared by the pages
   ]
 };
-
+```
+_src/speak-functions.ts_
+```typescript
 /**
  * Translation files are lazy-loaded via dynamic import and will be split into separate chunks during build
  */
@@ -39,7 +41,7 @@ export const translationFn: TranslationFn = {
   loadTranslation$: loadTranslation$
 };
 ```
-We have added the Speak config and the implementation of the `loadTranslation$` function.
+We have added the Speak config and the implementation of the `loadTranslation$` function. `loadTranslation$` is a customizable function, with which you can load the translation files in the way you prefer.
 
 ## Routing
 Let's assume that we want to create a navigation of this type:

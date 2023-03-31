@@ -10,13 +10,7 @@ Let's create a `speak-config.ts` file in `src`:
 
 _src/speak-config.ts_
 ```typescript
-import { $ } from '@builder.io/qwik';
-import { isServer } from '@builder.io/qwik/build';
-import type {
-  LoadTranslationFn,
-  SpeakConfig,
-  TranslationFn
-} from 'qwik-speak';
+import type { SpeakConfig } from 'qwik-speak';
 
 export const config: SpeakConfig = {
   defaultLocale: { lang: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles' },
@@ -28,6 +22,11 @@ export const config: SpeakConfig = {
     'app' // Translations shared by the pages
   ]
 };
+```
+_src/speak-functions.ts_
+```typescript
+import { server$ } from '@builder.io/qwik-city';
+import type { LoadTranslationFn, TranslationFn } from 'qwik-speak';
 
 /**
  * Translation files are lazy-loaded via dynamic import and will be split into separate chunks during build
@@ -45,7 +44,7 @@ export const translationFn: TranslationFn = {
   loadTranslation$: loadTranslation$
 };
 ```
-We have added the Speak config and the implementation of the `loadTranslation$` function.
+We have added the Speak config and the implementation of the `loadTranslation$` function. `loadTranslation$` is a customizable function, with which you can load the translation files in the way you prefer.
 
 ## Adding Qwik Speak
 Just wrap Qwik City provider with `QwikSpeakProvider` component in `root.tsx` and pass it the configuration and the translation functions:

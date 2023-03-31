@@ -46,7 +46,7 @@ export const QwikSpeakProvider = component$((props: QwikSpeakProps) => {
   if (!resolvedLocale) {
     resolvedLocale = props.config.defaultLocale;
 
-    if (isDev) logWarn(`Locale not resolved. Fallback to default locale ${props.config.defaultLocale.lang}`);
+    if (isDev) logWarn(`Locale not resolved. Fallback to default locale: ${props.config.defaultLocale.lang}`);
   } else if (isDev) {
     logDebug(`Resolved locale: ${resolvedLocale.lang}`);
   }
