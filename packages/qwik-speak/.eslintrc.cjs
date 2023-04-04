@@ -39,5 +39,8 @@ module.exports = {
     '@typescript-eslint/consistent-type-imports': 'warn',
     'max-len': ["error", { "code": 120, "tabWidth": 2, "ignoreRegExpLiterals": true, "ignoreStrings": true, "ignoreTemplateLiterals": true }],
     'quotes': ["error", "single", { "avoidEscape": true, "allowTemplateLiterals": true }],
+    "prefer-const": ["error", {
+      "destructuring": "all"
+    }],
   },
 };

@@ -34,7 +34,7 @@ const loadTranslation$: LoadTranslationFn = server$((lang: string, asset: string
   translationData[`/i18n/${lang}/${asset}.json`]?.()
 );
 ```
-> Using `server$`, translation data is always accessed on the server
+> Using `server$` instead of `$`, translation data is always accessed on the server
 
 If your production environment doesn't support _dynamic import_, you might prefer this way:
 ```typescript

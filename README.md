@@ -111,7 +111,7 @@ and optionally contains:
 
 ### Translation functions
 `TranslationFn` interface can be implemented to change the behavior of the library:
-- `loadTranslation$?` Function to load translation data
+- `loadTranslation$` Function to load translation data
 
 ## APIs
 ### Components

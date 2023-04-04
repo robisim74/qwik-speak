@@ -54,7 +54,11 @@ export const loadTranslations = async (
         if (data?.source) {
           if (!isDev && isServer && assets.includes(data.asset)) {
             // In prod mode, assets are not serialized
-            for (const [key, value] of Object.entries<Translation>(data.source)) {
+            for (let [key, value] of Object.entries<Translation>(data.source)) {
+              // Depth 0: convert string to String object
+              if (typeof value === 'string') {
+                value = new String(value);
+              }
               translation[lang][key] = noSerialize(value);
             }
           } else {
@@ -87,7 +91,8 @@ export const getValue = (
       undefined, data);
 
   if (value) {
-    if (typeof value === 'string') return params ? transpileParams(value, params) : value;
+    if (typeof value === 'string' || value instanceof String)
+      return params ? transpileParams(value.toString(), params) : value.toString();
     if (typeof value === 'object') return value;
   }
 
