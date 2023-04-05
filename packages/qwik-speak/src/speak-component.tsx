@@ -31,7 +31,7 @@ export const Speak = component$((props: SpeakProps) => {
 
   // Called the first time when the component mounts
   useTask$(async () => {
-    await loadTranslations(ctx, props.assets, props.runtimeAssets, url?.origin, props.langs);
+    await loadTranslations(ctx, props.assets, props.runtimeAssets, props.langs, url?.origin);
   });
 
   return <Slot />;

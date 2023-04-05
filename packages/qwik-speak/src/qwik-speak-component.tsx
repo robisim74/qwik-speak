@@ -72,7 +72,7 @@ export const QwikSpeakProvider = component$((props: QwikSpeakProps) => {
 
   // Called the first time when the component mounts
   useTask$(async () => {
-    await loadTranslations(state, config.assets, config.runtimeAssets, url?.origin, props.langs);
+    await loadTranslations(state, config.assets, config.runtimeAssets, props.langs, url?.origin);
 
     // Prevent Qwik from creating subscriptions
     if (isServer) {

@@ -6,7 +6,7 @@ npm install qwik-speak --save-dev
 ```
 
 ## Configuration
-Let's create a `speak-config.ts` file in `src`:
+Let's create `speak-config.ts` and `speak-functions.ts` files in `src`:
 
 _src/speak-config.ts_
 ```typescript
@@ -37,14 +37,27 @@ const translationData = import.meta.glob('/i18n/**/*.json');
  * Using server$, translation data is always accessed on the server
  */
 const loadTranslation$: LoadTranslationFn = server$(async (lang: string, asset: string) =>
-  await translationData[`/i18n/${lang}/${asset}.json`]()
+  await translationData[`/i18n/${lang}/${asset}.json`]?.()
 );
 
 export const translationFn: TranslationFn = {
   loadTranslation$: loadTranslation$
 };
 ```
-We have added the Speak config and the implementation of the `loadTranslation$` function. `loadTranslation$` is a customizable function, with which you can load the translation files in the way you prefer.
+We have added the Speak config and the implementation of the `loadTranslation$` function. We could also catch errors during development:
+```typescript
+const loadTranslation$: LoadTranslationFn = server$((lang: string, asset: string) => {
+  const langAsset = `/i18n/${lang}/${asset}.json`;
+  if (langAsset in translationData) {
+    return translationData[langAsset]();
+  }
+  if (isDev) {
+    console.warn(`loadTranslation$: ${langAsset} not found`);
+  }
+  return null;
+});
+```
+`loadTranslation$` is a customizable function, with which you can load the translation files in the way you prefer.
 
 ## Adding Qwik Speak
 Just wrap Qwik City provider with `QwikSpeakProvider` component in `root.tsx` and pass it the configuration and the translation functions:

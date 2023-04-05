@@ -29,8 +29,8 @@ export const loadTranslations = async (
   ctx: SpeakState,
   assets: string[],
   runtimeAssets?: string[],
-  origin?: string,
-  langs?: string[]
+  langs?: string[],
+  origin?: string
 ): Promise<void> => {
   if (isDev === true || isServer || runtimeAssets) {
     const { locale, translation, translationFn } = ctx;
