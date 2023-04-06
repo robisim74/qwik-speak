@@ -125,6 +125,9 @@ Here we have used the `Speak` component to add scoped translations to the home p
 
 We are also providing default values for each translation: `key@@[default value]`.
 
+> `Speak` component is a `Slot` component: because Qwik renders `Slot` components and direct children in isolation, translations are not immediately available in direct children, and we need to use a component for the `Home` page. It is generally not necessary to use more than one `Speak` component per page
+
+
 ## Resolve locale
 We can resolve the locale to use in two ways: passing the `locale` parameter to the `QwikSpeakProvider` component, or assigning it to the `locale` handled by Qwik. In `layout.tsx`, after the default `component$`, we add:
 

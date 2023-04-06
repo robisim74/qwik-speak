@@ -137,8 +137,10 @@ C4Container
 #### Speak component (scoped translations)
 `Speak` component can be used for scoped translations. `Props`:
   - `assets` Assets to load (required)
-  - `runtimeAssets` Optional assets to load and available at runtime
+  - `runtimeAssets` Optional assets to load available at runtime
   - `langs` Optional additional languages to preload data for (multilingual)
+
+> `QwikSpeakProvider` and `Speak` components are `Slot` components: because Qwik renders `Slot` components and direct children in isolation, translations are not immediately available in direct children
 
 ### Functions
 - `$translate(keys: string | string[], params?: any, ctx?: SpeakState, lang?: string)`

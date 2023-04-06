@@ -151,6 +151,8 @@ Here we have used the `Speak` component to add scoped translations to the home p
 
 We are also providing default values for each translation: `key@@[default value]`.
 
+> `Speak` component is a `Slot` component: because Qwik renders `Slot` components and direct children in isolation, translations are not immediately available in direct children, and we need to use a component for the `Home` page. It is generally not necessary to use more than one `Speak` component per page
+
 ## Head metas
 You may have noticed, that in `index.tsx` we have provided the meta title and description with only the keys. Since the Qwik City `DocumentHead` is out of context, we need to do the translations directly in `router-head.tsx`:
 
