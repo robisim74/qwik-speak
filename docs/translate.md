@@ -155,7 +155,7 @@ It uses the currency code set in `currency` property of the `SpeakLocale`.
 ### Unit
 To format as unit, you have to set the `style` and `unit` properties of the second param:
 ```jsx
-const units = useSpeakLocale().units!;
+const units = useSpeakLocale().units!
 
 formatNumber(1, { style: 'unit', unit: units['length'] })
 ```
@@ -167,7 +167,16 @@ It uses the unit set in `units` property of the `SpeakLocale`:
 units: { 'length': 'mile' }
 ```
 
-> The locale used by `formatDate`, `relativeTime` and `formatNumber`  is primarily the `extension` property of the `SpeakLocale` if provided, otherwise the `lang` property. `extension` is the language with Intl extensions, in the format `language[-script][-region][-extensions]` like `en-US-u-ca-gregory-nu-latn`
+## displayName
+The `displayName` function uses the [Intl.DisplayNames](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DisplayNames) API:
+```jsx
+displayName('en-US', { type: 'language' })
+```
+```text
+American English
+```
+
+> The locale used by `formatDate`, `relativeTime`, `formatNumber` and `displayName` is primarily the `extension` property of the `SpeakLocale` if provided, otherwise the `lang` property. `extension` is the language with Intl extensions, in the format `language[-script][-region][-extensions]` like `en-US-u-ca-gregory-nu-latn`
 
 
 ## Multilingual
