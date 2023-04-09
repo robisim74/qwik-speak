@@ -1,4 +1,4 @@
-# Qwik Speak ![logo](https://user-images.githubusercontent.com/14012361/230638591-98477fff-2c07-47fd-ac2a-cc5c81098f60.png)
+# Qwik Speak
 [![Node.js CI](https://github.com/robisim74/qwik-speak/actions/workflows/node.js.yml/badge.svg)](https://github.com/robisim74/qwik-speak/actions/workflows/node.js.yml) [![Playwright](https://github.com/robisim74/qwik-speak/actions/workflows/playwright.yml/badge.svg)](https://github.com/robisim74/qwik-speak/actions/workflows/playwright.yml)
 
 > Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps
