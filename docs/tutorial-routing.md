@@ -26,7 +26,8 @@ export const config: SpeakConfig = {
 _src/speak-functions.ts_
 ```typescript
 /**
- * Translation files are lazy-loaded via dynamic import and will be split into separate chunks during build
+ * Translation files are lazy-loaded via dynamic import and will be split into separate chunks during build.
+ * Json files are converted to objects: keys must be valid variable names
  */
 const translationData = import.meta.glob('/i18n/**/*.json');
 

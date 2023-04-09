@@ -35,7 +35,12 @@ export const loadTranslations = async (
   if (isDev === true || isServer || runtimeAssets) {
     const { locale, translation, translationFn } = ctx;
 
-    const resolvedAssets = [...assets, ...runtimeAssets ?? []];
+    let resolvedAssets: string[];
+    if (isDev === true || isServer) {
+      resolvedAssets = [...assets, ...runtimeAssets ?? []];
+    } else {
+      resolvedAssets = [...runtimeAssets ?? []];
+    }
 
     // Multilingual
     const resolvedLangs = new Set(langs || []);

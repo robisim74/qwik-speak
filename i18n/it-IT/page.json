@@ -1,5 +1,6 @@
 {
   "page": {
-    "text": "I'm a default value"
+    "default": "I'm a default value",
+    "text": "Io sono un'altra pagina"
   }
 }

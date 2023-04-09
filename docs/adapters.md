@@ -26,7 +26,8 @@ export const loadTranslation$: LoadTranslationFn = $(async (lang: string, asset:
 If you use Qwik-provided adapters for publishing your app, especially with _edge functions_ or _static generation_, it is recommended to bundle the translation files:
 ```typescript
 /**
- * Translation files are lazy-loaded via dynamic import and will be split into separate chunks during build
+ * Translation files are lazy-loaded via dynamic import and will be split into separate chunks during build.
+ * Json files are converted to objects: keys must be valid variable names
  */
 const translationData = import.meta.glob('/i18n/**/*.json');
 
@@ -49,6 +50,8 @@ const loadTranslation$: LoadTranslationFn = server$((lang: string, asset: string
 ```
 
 > Note. It is recommended to put this function in a separate file from the configuration, to allow the Qwik compiler to respect the initialization order of the functions
+
+Refer to _Vite_ documentation for more information on [Glob import](https://vitejs.dev/guide/features.html#glob-import)
 
 ## Static Site Generation (SSG)
 If you want to use Static Site Generation with the localized router, it is necessary to manage the dynamic language parameter, and you need to add the values it can take to the pages:
