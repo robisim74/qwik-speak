@@ -16,7 +16,7 @@ export const Home = component$(() => {
   const count = useSignal(0);
 
   return (
-    <>
+    <div class="content">
       <h1>{t('app.title')}</h1>
       <h2>{t('app.subtitle')}</h2>
 
@@ -27,8 +27,8 @@ export const Home = component$(() => {
       <p dangerouslySetInnerHTML={t('home.text')}></p>
 
       <h3>{t('home.plural')}</h3>
-      <button class="btn-counter" onClick$={() => count.value++}>{t('home.increment')}</button>
       <p class="counter">{p(count.value, 'home.devs')}</p>
+      <button class="btn-counter" onClick$={() => count.value++}>{t('home.increment')}</button>
 
       <h3>{t('home.dates')}</h3>
       <p>{fd(Date.now(), { dateStyle: 'full', timeStyle: 'short' })}</p>
@@ -38,7 +38,7 @@ export const Home = component$(() => {
       <p>{fn(1000000)}</p>
       <p>{fn(1000000, { style: 'currency' })}</p>
       <p>{fn(1, { style: 'unit', unit: units['length'] })}</p>
-    </>
+    </div>
   );
 });
 

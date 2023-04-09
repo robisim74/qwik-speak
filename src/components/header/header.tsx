@@ -2,7 +2,8 @@ import { component$, useStyles$ } from '@builder.io/qwik';
 import { Link, useLocation } from '@builder.io/qwik-city';
 import { $translate as t, useSpeakConfig, useSpeakLocale } from 'qwik-speak';
 
-import { ChangeLocale } from './change-locale';
+import { ChangeLocale } from '../change-locale/change-locale';
+import { SpeakLogo } from '../icons/speak';
 
 import styles from './header.css?inline';
 
@@ -18,23 +19,29 @@ export const Header = component$(() => {
   };
 
   return (
-    <header>
-      <div class="header-inner">
-        <section class="logo">
-          <Link href={getHref('/')}>Qwik Speak ⚡️</Link>
-        </section>
-        <nav>
-          <Link href={getHref('/')}
-            class={{ active: pathname === '/' || config.supportedLocales.some(x => pathname.endsWith(`${x.lang}/`)) }}>
-            {t('app.nav.home')}
+    <>
+      <header class="header">
+        <div class="logo">
+          <Link href={getHref('/')} title={t('app.nav.home')}>
+            <SpeakLogo />
           </Link>
-          <Link href={getHref('/page')}
-            class={{ active: pathname.endsWith('/page/') }}>
-            {t('app.nav.page')}
-          </Link>
-        </nav>
-        <ChangeLocale />
-      </div>
-    </header>
+        </div>
+        <ul>
+          <li>
+            <Link href={getHref('/')}
+              class={{ active: pathname === '/' || config.supportedLocales.some(x => pathname.endsWith(`${x.lang}/`)) }}>
+              {t('app.nav.home')}
+            </Link>
+          </li>
+          <li>
+            <Link href={getHref('/page')}
+              class={{ active: pathname.endsWith('/page/') }}>
+              {t('app.nav.page')}
+            </Link>
+          </li>
+        </ul>
+      </header>
+      <ChangeLocale />
+    </>
   );
 });

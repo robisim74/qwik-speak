@@ -1,52 +1,52 @@
-header {
-  background-color: #006fb3;
-}
-
-header .header-inner {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  padding: 10px;
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-header a {
-  color: white;
-  text-decoration: none;
-  padding: 4px 8px;
-  margin-right: 5px;
-  border-radius: 4px;
-}
-
-header a:hover {
-  background-color: #ffffff30;
-}
-
-header .active {
-  background-color: #ffffff15;
-}
-
-.change-locale {
-  padding: 8px;
-  color: white;
+.header {
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: space-between;
+  padding: 10px;
 }
 
-.change-locale .button {
-  color: white;
+.logo {
+  width: 160px;
+}
+
+.header ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.header li {
+  margin: 0;
+  padding: 0;
+  display: inline-block;
+}
+
+.header li a {
+  font-weight: 700;
+  color: #000000;
+  display: inline-block;
+  padding: 0 0.5em;
   text-decoration: none;
-  padding: 4px 8px;
-  margin-right: 5px;
-  border-radius: 4px;
-  cursor: pointer;
 }
 
-.change-locale .button:hover {
-  background-color: #ffffff30;
+.header li a:hover {
+  color: #3e8e41;
 }
 
-.change-locale .active {
-  background-color: #ffffff15;
+.header li a.active {
+  color: #327335;
+}
+
+@media (min-width: 768px) {
+  .header {
+    padding: 20px 70px;
+  }
+
+  .logo {
+    width: 200px;
+  }
+
+  .header li a {
+    padding: 0 1em;
+  }
 }

@@ -1,4 +1,4 @@
-# Qwik Speak ⚡️
+# Qwik Speak ![logo](https://user-images.githubusercontent.com/14012361/230638591-98477fff-2c07-47fd-ac2a-cc5c81098f60.png)
 [![Node.js CI](https://github.com/robisim74/qwik-speak/actions/workflows/node.js.yml/badge.svg)](https://github.com/robisim74/qwik-speak/actions/workflows/node.js.yml) [![Playwright](https://github.com/robisim74/qwik-speak/actions/workflows/playwright.yml/badge.svg)](https://github.com/robisim74/qwik-speak/actions/workflows/playwright.yml)
 
 > Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps
@@ -157,6 +157,9 @@ Formats a relative time using [Intl.RelativeTimeFormat](https://developer.mozill
 
 - `formatNumber(value: number | string, options?: Intl.NumberFormatOptions, locale?: SpeakLocale, lang?: string, currency?: string)`
 Formats a number using [Intl.NumberFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat) API
+
+- `displayName(code: string, options: Intl.DisplayNamesOptions, locale?: SpeakLocale, lang?: string)`
+Returns the translation of language, region, script or currency display names using [Intl.DisplayNames](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DisplayNames) API
 
 ## Development Builds
 ### Library & tools

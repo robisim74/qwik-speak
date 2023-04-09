@@ -1,0 +1,27 @@
+.change-locale {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
+  border-radius: 6px;
+}
+
+.change-locale h2 {
+  margin-bottom: 20px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.change-locale .names {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.change-locale .names button.active {
+  background-color: #327335;
+  color: #fff;
+}
