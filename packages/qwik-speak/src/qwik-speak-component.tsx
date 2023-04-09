@@ -1,4 +1,4 @@
-import { $, component$, Slot, useContextProvider, useServerData, useStore, useTask$ } from '@builder.io/qwik';
+import { $, component$, Slot, useContextProvider, useServerData, useTask$ } from '@builder.io/qwik';
 import { isDev, isServer } from '@builder.io/qwik/build';
 
 import type { SpeakConfig, SpeakLocale, SpeakState, TranslationFn } from './types';
@@ -46,13 +46,13 @@ export const QwikSpeakProvider = component$((props: QwikSpeakProps) => {
   if (!resolvedLocale) {
     resolvedLocale = props.config.defaultLocale;
 
-    if (isDev) logWarn(`Locale not resolved. Fallback to default locale ${props.config.defaultLocale.lang}`);
+    if (isDev) logWarn(`Locale not resolved. Fallback to default locale: ${props.config.defaultLocale.lang}`);
   } else if (isDev) {
     logDebug(`Resolved locale: ${resolvedLocale.lang}`);
   }
 
-  // Set initial state
-  const state = useStore<SpeakState>({
+  // Set initial state as object (no reactive)
+  const state: SpeakState = {
     locale: Object.assign({}, resolvedLocale),
     translation: Object.fromEntries(props.config.supportedLocales.map(value => [value.lang, {}])),
     config: {
@@ -64,24 +64,15 @@ export const QwikSpeakProvider = component$((props: QwikSpeakProps) => {
       keyValueSeparator: props.config.keyValueSeparator || '@@'
     },
     translationFn: resolvedTranslationFn
-  }, { deep: true });
-  const { locale, translation, config, translationFn } = state;
+  };
+  const { config } = state;
 
   // Create context
   useContextProvider(SpeakContext, state);
 
   // Called the first time when the component mounts
   useTask$(async () => {
-    await loadTranslations(state, config.assets, config.runtimeAssets, url?.origin, props.langs);
-
-    // Prevent Qwik from creating subscriptions
-    if (isServer) {
-      // Shallow freeze: only applies to the immediate properties of object itself
-      Object.freeze(locale);
-      Object.freeze(translation);
-      Object.freeze(config);
-      Object.freeze(translationFn);
-    }
+    await loadTranslations(state, config.assets, config.runtimeAssets, props.langs, url?.origin);
   });
 
   return <Slot />;

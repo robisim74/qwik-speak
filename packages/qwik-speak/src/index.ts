@@ -18,6 +18,7 @@ export { $plural } from './plural';
 export { formatNumber } from './format-number';
 export { formatDate } from './format-date';
 export { relativeTime } from './relative-time';
+export { displayName } from './display-name';
 // Use functions
 export {
   useSpeakContext,

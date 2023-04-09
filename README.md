@@ -1,4 +1,4 @@
-# Qwik Speak ⚡️
+# Qwik Speak ![logo](https://user-images.githubusercontent.com/14012361/230638591-98477fff-2c07-47fd-ac2a-cc5c81098f60.png)
 [![Node.js CI](https://github.com/robisim74/qwik-speak/actions/workflows/node.js.yml/badge.svg)](https://github.com/robisim74/qwik-speak/actions/workflows/node.js.yml) [![Playwright](https://github.com/robisim74/qwik-speak/actions/workflows/playwright.yml/badge.svg)](https://github.com/robisim74/qwik-speak/actions/workflows/playwright.yml)
 
 > Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps
@@ -111,7 +111,7 @@ and optionally contains:
 
 ### Translation functions
 `TranslationFn` interface can be implemented to change the behavior of the library:
-- `loadTranslation$?` Function to load translation data
+- `loadTranslation$` Function to load translation data
 
 ## APIs
 ### Components
@@ -137,8 +137,10 @@ C4Container
 #### Speak component (scoped translations)
 `Speak` component can be used for scoped translations. `Props`:
   - `assets` Assets to load (required)
-  - `runtimeAssets` Optional assets to load and available at runtime
+  - `runtimeAssets` Optional assets to load available at runtime
   - `langs` Optional additional languages to preload data for (multilingual)
+
+> `QwikSpeakProvider` and `Speak` components are `Slot` components: because Qwik renders `Slot` components and direct children in isolation, translations are not immediately available in direct children
 
 ### Functions
 - `$translate(keys: string | string[], params?: any, ctx?: SpeakState, lang?: string)`
@@ -155,6 +157,9 @@ Formats a relative time using [Intl.RelativeTimeFormat](https://developer.mozill
 
 - `formatNumber(value: number | string, options?: Intl.NumberFormatOptions, locale?: SpeakLocale, lang?: string, currency?: string)`
 Formats a number using [Intl.NumberFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat) API
+
+- `displayName(code: string, options: Intl.DisplayNamesOptions, locale?: SpeakLocale, lang?: string)`
+Returns the translation of language, region, script or currency display names using [Intl.DisplayNames](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DisplayNames) API
 
 ## Development Builds
 ### Library & tools

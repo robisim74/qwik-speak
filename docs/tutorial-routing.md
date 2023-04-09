@@ -8,7 +8,7 @@ npm install qwik-speak --save-dev
 ```
 
 ## Configuration
-Let's create a `speak-config.ts` file in `src`:
+Let's create `speak-config.ts` and `speak-functions.ts` files in `src`:
 
 _src/speak-config.ts_
 ```typescript
@@ -22,9 +22,12 @@ export const config: SpeakConfig = {
     'app' // Translations shared by the pages
   ]
 };
-
+```
+_src/speak-functions.ts_
+```typescript
 /**
- * Translation files are lazy-loaded via dynamic import and will be split into separate chunks during build
+ * Translation files are lazy-loaded via dynamic import and will be split into separate chunks during build.
+ * Json files are converted to objects: keys must be valid variable names
  */
 const translationData = import.meta.glob('/i18n/**/*.json');
 
@@ -32,14 +35,27 @@ const translationData = import.meta.glob('/i18n/**/*.json');
  * Using server$, translation data is always accessed on the server
  */
 const loadTranslation$: LoadTranslationFn = server$(async (lang: string, asset: string) =>
-  await translationData[`/i18n/${lang}/${asset}.json`]()
+  await translationData[`/i18n/${lang}/${asset}.json`]?.()
 );
 
 export const translationFn: TranslationFn = {
   loadTranslation$: loadTranslation$
 };
 ```
-We have added the Speak config and the implementation of the `loadTranslation$` function.
+We have added the Speak config and the implementation of the `loadTranslation$` function. We could also catch errors during development:
+```typescript
+const loadTranslation$: LoadTranslationFn = server$((lang: string, asset: string) => {
+  const langAsset = `/i18n/${lang}/${asset}.json`;
+  if (langAsset in translationData) {
+    return translationData[langAsset]();
+  }
+  if (isDev) {
+    console.warn(`loadTranslation$: ${langAsset} not found`);
+  }
+  return null;
+});
+```
+`loadTranslation$` is a customizable function, with which you can load the translation files in the way you prefer.
 
 ## Routing
 Let's assume that we want to create a navigation of this type:
@@ -135,6 +151,8 @@ export const head: DocumentHead = {
 Here we have used the `Speak` component to add scoped translations to the home page. This means that in addition to the `app` asset that comes with the configuration, the home page will also use the `home` asset. To distinguish them, `app` asset keys start with `app` and home asset keys start with `home`.
 
 We are also providing default values for each translation: `key@@[default value]`.
+
+> `Speak` component is a `Slot` component: because Qwik renders `Slot` components and direct children in isolation, translations are not immediately available in direct children, and we need to use a component for the `Home` page. It is generally not necessary to use more than one `Speak` component per page
 
 ## Head metas
 You may have noticed, that in `index.tsx` we have provided the meta title and description with only the keys. Since the Qwik City `DocumentHead` is out of context, we need to do the translations directly in `router-head.tsx`:

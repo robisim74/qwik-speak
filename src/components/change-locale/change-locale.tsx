@@ -1,9 +1,13 @@
-import { $, component$ } from '@builder.io/qwik';
+import { $, component$, useStyles$ } from '@builder.io/qwik';
 import { useLocation } from '@builder.io/qwik-city';
 import type { SpeakLocale } from 'qwik-speak';
-import { $translate as t, useSpeakLocale, useSpeakConfig } from 'qwik-speak';
+import { $translate as t, displayName as dn, useSpeakLocale, useSpeakConfig } from 'qwik-speak';
+
+import styles from './change-locale.css?inline';
 
 export const ChangeLocale = component$(() => {
+  useStyles$(styles);
+
   const loc = useLocation();
 
   const locale = useSpeakLocale();
@@ -27,13 +31,15 @@ export const ChangeLocale = component$(() => {
 
   return (
     <div class="change-locale">
-      <span>{t('app.changeLocale')}</span>
-      {config.supportedLocales.map(value => (
-        <div class={{ active: value.lang == locale.lang, button: true }}
-          onClick$={async () => await navigateByLocale$(value)}>
-          {value.lang}
-        </div>
-      ))}
+      <h2>{t('app.changeLocale')}</h2>
+      <div class="names">
+        {config.supportedLocales.map(value => (
+          <button class={{ active: value.lang == locale.lang }}
+            onClick$={async () => await navigateByLocale$(value)}>
+            {dn(value.lang, { type: 'language' })}
+          </button>
+        ))}
+      </div>
     </div>
   );
 });

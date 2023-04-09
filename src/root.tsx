@@ -3,7 +3,8 @@ import { QwikCityProvider, RouterOutlet, ServiceWorkerRegister } from '@builder.
 import { QwikSpeakProvider } from 'qwik-speak';
 
 import { RouterHead } from './components/router-head/router-head';
-import { config, translationFn } from './speak-config';
+import { config } from './speak-config';
+import { translationFn } from './speak-functions';
 
 import './global.css';
 

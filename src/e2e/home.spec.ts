@@ -19,7 +19,7 @@ test.describe('Home', () => {
   });
 
   test('change language', async ({ page }) => {
-    await page.locator('text=it-IT').click();
+    await page.locator('text=Italian (Italy)').click();
 
     await expect(page.locator('main')).toContainText('Qwik Speak');
     await expect(page.locator('main')).toContainText('Traduci le tue app Qwik in qualsiasi lingua');
@@ -32,12 +32,9 @@ test.describe('Home', () => {
         'Libreria di internazionalizzazione (i18n) per tradurre testi, date e numeri nelle app Qwik'
       );
 
-    await Promise.all([
-      page.waitForNavigation(),
-      page.locator('text=Pagina').click()
-    ]);
+    await page.locator('text=Pagina').click();
 
-    await expect(page.locator('main')).toContainText('Qwik Speak');
-    await expect(page.locator('main')).toContainText('Traduci le tue app Qwik in qualsiasi lingua');
+    await expect(page.locator('main')).toContainText("Io sono un'altra pagina");
+    await expect(page.locator('main')).toContainText("Io sono un valore dinamico");
   });
 });

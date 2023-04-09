@@ -3,7 +3,8 @@ import { test, expect } from 'vitest';
 import { QwikSpeakProvider } from 'qwik-speak';
 
 import Home from './index';
-import { config, translationFn } from '../../speak-config';
+import { config } from '../../speak-config';
+import { translationFn } from '../../speak-functions';
 
 test(`[Home Component]: Should render translated texts`, async () => {
   const { screen, render, userEvent } = await createDOM();
