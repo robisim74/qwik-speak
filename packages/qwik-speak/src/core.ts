@@ -27,7 +27,7 @@ export const memoize = (fn: LoadTranslationFn) => {
  */
 export const loadTranslations = async (
   ctx: SpeakState,
-  assets: string[],
+  assets?: string[],
   runtimeAssets?: string[],
   langs?: string[],
   origin?: string
@@ -37,10 +37,11 @@ export const loadTranslations = async (
 
     let resolvedAssets: string[];
     if (isDev === true || isServer) {
-      resolvedAssets = [...assets, ...runtimeAssets ?? []];
+      resolvedAssets = [...assets ?? [], ...runtimeAssets ?? []];
     } else {
       resolvedAssets = [...runtimeAssets ?? []];
     }
+    if (resolvedAssets.length === 0) return;
 
     // Multilingual
     const resolvedLangs = new Set(langs || []);
@@ -57,7 +58,7 @@ export const loadTranslations = async (
 
       for (const data of assetSources) {
         if (data?.source) {
-          if (!isDev && isServer && assets.includes(data.asset)) {
+          if (!isDev && isServer && assets?.includes(data.asset)) {
             // In prod mode, assets are not serialized
             for (let [key, value] of Object.entries<Translation>(data.source)) {
               // Depth 0: convert string to String object

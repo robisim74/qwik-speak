@@ -58,9 +58,9 @@ export interface SpeakConfig {
   /**
    * An array of strings: each asset is passed to the loadTranslation$ function to obtain data according to the language
    */
-  assets: string[];
+  assets?: string[];
   /**
-   * Optional assets available at runtime
+   * Assets available at runtime
    */
   runtimeAssets?: string[];
   /**

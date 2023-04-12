@@ -93,7 +93,7 @@ stateDiagram-v2
 - `defaultLocale` The default locale to use as fallback
 - `supportedLocales` List of locales supported by the app
 - `assets` An array of strings: each asset is passed to the `loadTranslation$` function to obtain data according to the language
-- `runtimeAssets` Optional assets available at runtime
+- `runtimeAssets` Assets available at runtime
 - `keySeparator` Separator of nested keys. Default is `.`
 - `keyValueSeparator` Key-value separator. Default is `@@`
 
@@ -115,32 +115,18 @@ and optionally contains:
 
 ## APIs
 ### Components
-```mermaid
-C4Container
-    Container_Boundary(a, "App") {
-        Component(a0, "QwikSpeakProvider", "", "Creates Speak context")
-        Container_Boundary(b1, "Home") {
-            Component(a10, "Speak", "", "Adds its own translation data to the context")        
-        }  
-        Container_Boundary(b2, "Page") {
-            Component(a20, "Speak", "", "Adds its own translation data to the context")        
-        }       
-    }
-```
 #### QwikSpeakProvider component
 `QwikSpeakProvider` component provides the Speak context to the app. `Props`:
-  - `config` Speak config (required)
+  - `config` Speak config
   - `translationFn` Optional functions to use
   - `locale` Optional locale to use
   - `langs` Optional additional languages to preload data for (multilingual)
 
 #### Speak component (scoped translations)
 `Speak` component can be used for scoped translations. `Props`:
-  - `assets` Assets to load (required)
-  - `runtimeAssets` Optional assets to load available at runtime
+  - `assets` Assets to load
+  - `runtimeAssets` Assets to load available at runtime
   - `langs` Optional additional languages to preload data for (multilingual)
-
-> `QwikSpeakProvider` and `Speak` components are `Slot` components: because Qwik renders `Slot` components and direct children in isolation, translations are not immediately available in direct children
 
 ### Functions
 - `$translate(keys: string | string[], params?: any, ctx?: SpeakState, lang?: string)`
