@@ -30,7 +30,7 @@ import type { LoadTranslationFn, TranslationFn } from 'qwik-speak';
 
 /**
  * Translation files are lazy-loaded via dynamic import and will be split into separate chunks during build.
- * Json files are converted to objects: keys must be valid variable names
+ * Keys must be valid variable names
  */
 const translationData = import.meta.glob('/i18n/**/*.json');
 
@@ -45,20 +45,7 @@ export const translationFn: TranslationFn = {
   loadTranslation$: loadTranslation$
 };
 ```
-We have added the Speak config and the implementation of the `loadTranslation$` function. We could also catch errors during development:
-```typescript
-const loadTranslation$: LoadTranslationFn = server$((lang: string, asset: string) => {
-  const langAsset = `/i18n/${lang}/${asset}.json`;
-  if (langAsset in translationData) {
-    return translationData[langAsset]();
-  }
-  if (isDev) {
-    console.warn(`loadTranslation$: ${langAsset} not found`);
-  }
-  return null;
-});
-```
-`loadTranslation$` is a customizable function, with which you can load the translation files in the way you prefer.
+We have added the Speak config and the implementation of the `loadTranslation$` function. `loadTranslation$` is a customizable function, with which you can load the translation files in the way you prefer.
 
 ## Adding Qwik Speak
 Just wrap Qwik City provider with `QwikSpeakProvider` component in `root.tsx` and pass it the configuration and the translation functions:
@@ -178,7 +165,7 @@ export const ChangeLocale = component$(() => {
 
   return (
     <div>
-      <div>{t('app.changeLocale@@Change locale')}</div>
+      <h2>{t('app.changeLocale@@Change locale')}</h2>
       {config.supportedLocales.map(value => (
         <button onClick$={async () => await changeLocale$(value)}>
           {value.lang}
@@ -198,6 +185,7 @@ export default component$(() => {
   );
 });
 ```
+In `changeLocale$` we set the locale in a cookie, before reloading the page.
 
 ## Extraction: [Qwik Speak Extract](./extract.md)
 We can now extract the translations and generate the `assets` as json. In `package.json` add the following command to the scripts:
@@ -273,6 +261,3 @@ npm run preview
 ```
 
 > The app will have the same behavior as you saw in dev mode, but now the translations are inlined as you can verify by inspecting the production files, reducing resource usage at runtime
-
-## Production
-See [Qwik Speak and Adapters](./adapters.md)
