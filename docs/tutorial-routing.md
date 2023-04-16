@@ -29,7 +29,7 @@ _src/speak-functions.ts_
  * Translation files are lazy-loaded via dynamic import and will be split into separate chunks during build.
  * Keys must be valid variable names
  */
-const translationData = import.meta.glob('/i18n/**/*.json');
+const translationData = import.meta.glob<Translation>('/i18n/**/*.json');
 
 /**
  * Using server$, translation data is always accessed on the server
@@ -149,7 +149,7 @@ _src/components/router-head/router-head.tsx_
 <title>{t(head.title)}</title>
 
 {head.meta.map((m) => (
-  <meta name={m.name} content={m.name === 'description' ? t(m.content!) : m.content} />
+  <meta key={m.key} name={m.name} content={m.name === 'description' ? t(m.content!) : m.content} />
 ))}
 ```
 
@@ -200,7 +200,7 @@ export const ChangeLocale = component$(() => {
     <div>
       <h2>{t('app.changeLocale@@Change locale')}</h2>
       {config.supportedLocales.map(value => (
-        <button onClick$={async () => await navigateByLocale$(value)}>
+        <button key={value.lang} onClick$={async () => await navigateByLocale$(value)}>
           {value.lang}
         </button>
       ))}

@@ -26,13 +26,13 @@ export const config: SpeakConfig = {
 _src/speak-functions.ts_
 ```typescript
 import { server$ } from '@builder.io/qwik-city';
-import type { LoadTranslationFn, TranslationFn } from 'qwik-speak';
+import type { LoadTranslationFn, Translation, TranslationFn } from 'qwik-speak';
 
 /**
  * Translation files are lazy-loaded via dynamic import and will be split into separate chunks during build.
  * Keys must be valid variable names
  */
-const translationData = import.meta.glob('/i18n/**/*.json');
+const translationData = import.meta.glob<Translation>('/i18n/**/*.json');
 
 /**
  * Using server$, translation data is always accessed on the server
@@ -167,7 +167,7 @@ export const ChangeLocale = component$(() => {
     <div>
       <h2>{t('app.changeLocale@@Change locale')}</h2>
       {config.supportedLocales.map(value => (
-        <button onClick$={async () => await changeLocale$(value)}>
+        <button key={value.lang} onClick$={async () => await changeLocale$(value)}>
           {value.lang}
         </button>
       ))}

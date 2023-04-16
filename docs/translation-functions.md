@@ -37,7 +37,7 @@ To improve performance, it is recommended to bundle translation files instead of
  * Translation files are lazy-loaded via dynamic import and will be split into separate chunks during build.
  * Keys must be valid variable names
  */
-const translationData = import.meta.glob('/i18n/**/*.json');
+const translationData = import.meta.glob<Translation>('/i18n/**/*.json');
 
 const loadTranslation$: LoadTranslationFn = server$((lang: string, asset: string) =>
   translationData[`/i18n/${lang}/${asset}.json`]?.()
