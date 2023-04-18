@@ -305,7 +305,7 @@ export function inlinePlural(
   placeholder: string,
   lang: string,
   opts: Required<QwikSpeakInlineOptions>
-) {
+): string {
   // Parse sequence
   const sequence = parseSequenceExpressions(code, pluralPlaceholder);
 
@@ -432,7 +432,7 @@ export function checkDynamicPlural(args: Argument[], originalFn: string): boolea
   return false;
 }
 
-export function withLang(lang: string, arg: Argument, opts: Required<QwikSpeakInlineOptions>) {
+export function withLang(lang: string, arg: Argument, opts: Required<QwikSpeakInlineOptions>): string {
   let optionalLang: string | undefined;
 
   // Check multilingual
@@ -526,7 +526,7 @@ export function stringifyObject(value: Translation): string {
 /**
  * Replace quoted values with a placeholder
  */
-function replacer(key: string, value: string | Translation) {
+function replacer(key: string, value: string | Translation): string | Translation {
   if (typeof value === 'string' && /^`.*`$/.test(value)) return value.replace(/^`/, '__qsOpenBt').replace(/`$/, '__qsCloseBt');
   return value;
 }

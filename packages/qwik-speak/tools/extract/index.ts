@@ -147,39 +147,41 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
   };
 
   /**
-   * Read, deep merge & sort translation data
+   * Read assets
    */
-  const readAssets = async () => {
+  const readAssets = async (): Promise<Map<string, Translation>> => {
+    const assetsData = new Map<string, Translation>();
+
     for (const lang of resolvedOptions.supportedLangs) {
       const baseAssets = normalize(`${resolvedOptions.basePath}/${resolvedOptions.assetsPath}/${lang}`);
 
-      if (!existsSync(baseAssets)) return;
+      if (existsSync(baseAssets)) {
 
-      const files = await readdir(baseAssets);
+        const files = await readdir(baseAssets);
 
-      if (files.length > 0) {
-        const ext = extname(files[0]);
-        let data: Translation = {};
+        if (files.length > 0) {
+          const ext = extname(files[0]);
+          let data: Translation = {};
 
-        const tasks = files.map(filename => readFile(`${baseAssets}/${filename}`, 'utf8'));
-        const sources = await Promise.all(tasks);
+          const tasks = files.map(filename => readFile(`${baseAssets}/${filename}`, 'utf8'));
+          const sources = await Promise.all(tasks);
 
-        for (const source of sources) {
-          if (source) {
-            switch (ext) {
-              case '.json':
-                data = parseJson(data, source);
-                break;
+          for (const source of sources) {
+            if (source) {
+              switch (ext) {
+                case '.json':
+                  data = parseJson(data, source);
+                  break;
+              }
             }
           }
+
+          assetsData.set(lang, data);
         }
-
-        deepMerge(translation[lang], data);
-
-        // Sort by key
-        translation[lang] = sortTarget(translation[lang]);
       }
     }
+
+    return assetsData;
   };
 
   /**
@@ -231,12 +233,15 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
   };
 
   /**
-   * Start pipeline
+   * START PIPELINE
    */
+
+  /* Read sources files */
   for (const baseSource of baseSources) {
     await readSourceFiles(baseSource, excludedPaths);
   }
 
+  /* Parse sources */
   const tasks = sourceFiles.map(file => parseSourceFile(file));
   const sources = await Promise.all(tasks);
 
@@ -245,11 +250,11 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
     keys = keys.concat(source);
   }
 
-  // Unique
+  /* Unique keys */
   keys = [...new Set<string>(keys)];
   stats.set('unique keys', (stats.get('unique keys') ?? 0) + keys.length);
 
-  // Deep set
+  /* Deep set in translation data */
   for (let key of keys) {
     let defaultValue: string | Translation | undefined = undefined;
 
@@ -265,13 +270,25 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
     }
   }
 
-  // Read, deep merge & sort
-  await readAssets();
+  /* Read assets */
+  const assetsData = await readAssets();
 
-  // Write
+  /* Deep merge translation data */
+  if (assetsData.size > 0) {
+    for (const [lang, data] of assetsData) {
+      deepMerge(translation[lang], data);
+    }
+  }
+
+  /* Sort by key */
+  for (const lang of resolvedOptions.supportedLangs) {
+    translation[lang] = sortTarget(translation[lang]);
+  }
+
+  /* Write translation data */
   await writeAssets();
 
-  // Log
+  /* Log */
   for (const [key, value] of stats) {
     switch (key) {
       case 'unique keys':
