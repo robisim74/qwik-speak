@@ -11,7 +11,8 @@ import {
 } from 'qwik-speak';
 
 export const Home = component$(() => {
-  const units = useSpeakLocale().units!;
+  const locale = useSpeakLocale();
+  const units = locale.units!;
 
   const count = useSignal(0);
 

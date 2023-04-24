@@ -155,14 +155,15 @@ It uses the currency code set in `currency` property of the `SpeakLocale`.
 ### Unit
 To format as unit, you have to set the `style` and `unit` properties of the second param:
 ```jsx
-const units = useSpeakLocale().units!
+const locale = useSpeakLocale();
+const units = locale.units!;
 
 formatNumber(1, { style: 'unit', unit: units['length'] })
 ```
 ```text
 1 mi
 ```
-It uses the unit set in `units` property of the `SpeakLocale`:
+It uses the unit set in optional `units` property of the `SpeakLocale`:
 ```tsx
 units: { 'length': 'mile' }
 ```

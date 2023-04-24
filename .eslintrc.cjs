@@ -37,6 +37,5 @@ module.exports = {
     'no-console': 'off',
     '@typescript-eslint/no-unused-vars': ['error'],
     '@typescript-eslint/consistent-type-imports': 'warn',
-    'qwik/use-method-usage': 'off' 
   },
 };
