@@ -58,9 +58,9 @@ src/routes/
     layout.tsx
 ```
 
-Now let's handle it in `layout.tsx`. After the default `component$`, we add:
+Now let's handle it. Create `plugin.ts` in the root of the `src/routes` directory::
 
-_src/routes/layout.tsx_
+_src/routes/plugin.ts_
 ```typescript
 export const onRequest: RequestHandler = ({ params, locale }) => {
   const lang = params.lang;

@@ -117,9 +117,9 @@ We are also providing default values for each translation: `key@@[default value]
 
 
 ## Resolve locale
-We can resolve the locale to use in two ways: passing the `locale` parameter to the `QwikSpeakProvider` component, or assigning it to the `locale` handled by Qwik. In `layout.tsx`, after the default `component$`, we add:
+We can resolve the locale to use in two ways: passing the `locale` parameter to the `QwikSpeakProvider` component, or assigning it to the `locale` handled by Qwik. Create `plugin.ts` in the root of the `src/routes` directory:
 
-_src/routes/layout.tsx_
+_src/routes/plugin.ts_
 ```typescript
 export const onRequest: RequestHandler = ({ request, locale }) => {
   const cookie = request.headers?.get('cookie');

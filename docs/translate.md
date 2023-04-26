@@ -194,7 +194,7 @@ For the translation to occur in the language passed as an argument, you need to 
 
 
 ## Translation outside of Qwik components
-The `SpeakContext`is not available outside of `component$`. If you can't wrap other components with `QwikSpeakProvider`, you can pass the context directly to the translation functions:
+The `SpeakContext` is not available outside of `component$`. If you can't wrap other components with `QwikSpeakProvider`, you can pass the context directly to the translation functions:
 ```jsx
 export const MyComponent = (props: { ctx: SpeakState }) => {
   return <h1>{t('home.title@@Qwik Speak', undefined, props.ctx)}</h1>;
