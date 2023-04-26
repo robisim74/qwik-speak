@@ -57,14 +57,28 @@ test(`[Home Component]: Should render the component`, async () => {
 });
 ```
 
-Optionally, if you need to test the translated texts in different languages, you have to provide a `loadTranslation$` to ensure translations are loaded in test environment, and pass it with the language you want to `QwikSpeakProvider`:
+Optionally, if you need to test the translated texts in different languages, you have to provide a stub `loadTranslation$` to ensure translations are loaded in test environment. For example you could load the json files of translations as follows:
+```typescript
+const loadTranslationStub$: LoadTranslationFn = $((lang: string, asset: string) =>
+  JSON.parse(
+    import.meta.glob('/public/i18n/**/*.json', { as: 'raw', eager: true })[
+    `/public/i18n/${lang}/${asset}.json`
+    ]
+  )
+);
+
+const translationFnStub: TranslationFn = {
+  loadTranslation$: loadTranslationStub$
+};
+```
+and pass it with the language you want to `QwikSpeakProvider`:
 
 ```jsx
 test(`[Home Component]: Should render translated texts in Italian`, async () => {
   const { screen, render } = await createDOM();
 
   await render(
-    <QwikSpeakProvider config={config} translationFn={translationFn} locale={{ lang: 'it-IT', currency: 'EUR', timeZone: 'Europe/Rome' }}>
+    <QwikSpeakProvider config={config} translationFn={translationFnStub} locale={{ lang: 'it-IT', currency: 'EUR', timeZone: 'Europe/Rome' }}>
       <Home />
     </QwikSpeakProvider>
   );
