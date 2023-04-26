@@ -130,7 +130,7 @@ export function tokenize(code: string, start = 0): Token[] {
       identifierBuffer = ch;
       token = createToken('Identifier');
       tokens.push(token);
-    } else if (!/[0-9a-zA-Z_$.]/.test(ch)) {
+    } else if (!/[0-9a-zA-Z_$. ]/.test(ch)) {
       // No Identifier
       return scan(ch);
     } else {
@@ -138,7 +138,8 @@ export function tokenize(code: string, start = 0): Token[] {
       if (identifierBuffer == 'null' ||
         identifierBuffer == 'undefined' ||
         identifierBuffer == 'true' ||
-        identifierBuffer == 'false') {
+        identifierBuffer == 'false' ||
+        identifierBuffer == 'void 0') {
         token.type = 'Literal';
         updateToken(token);
       }

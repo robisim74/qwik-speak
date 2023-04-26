@@ -261,7 +261,7 @@ export function inline(
     if (args?.length > 0) {
       const resolvedLang = withLang(lang, args[3], opts);
 
-      let resolvedValue: string | Translation = '';
+      let resolvedValue: string | Translation = quoteValue('');
 
       // Get array of keys or key
       if (args[0].type === 'ArrayExpression') {
@@ -272,6 +272,7 @@ export function inline(
           const value = getValue(key, translation[resolvedLang], args[1], opts.keySeparator);
           if (!value) {
             missingValues.push(`${resolvedLang} - missing value for key: ${key}`);
+            keyValues.push(quoteValue(''));
           } else {
             keyValues.push(value);
           }

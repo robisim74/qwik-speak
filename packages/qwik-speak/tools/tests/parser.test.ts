@@ -213,6 +213,34 @@ describe('parser: tokenize', () => {
       ]
     );
   });
+  test('tokenize with void 0 arguments', () => {
+    const code = "t('home.greeting', void 0, ctx)";
+    const tokens = tokenize(code);
+    expect(tokens).toEqual(
+      [
+        { type: 'Identifier', value: 't', position: { start: 0, end: 0 } },
+        { type: 'Punctuator', value: '(', position: { start: 1, end: 1 } },
+        {
+          type: 'Literal',
+          value: "'home.greeting'",
+          position: { start: 2, end: 16 }
+        },
+        { type: 'Punctuator', value: ',', position: { start: 17, end: 17 } },
+        {
+          type: 'Literal',
+          value: 'void 0',
+          position: { start: 19, end: 24 }
+        },
+        { type: 'Punctuator', value: ',', position: { start: 25, end: 25 } },
+        {
+          type: 'Identifier',
+          value: 'ctx',
+          position: { start: 27, end: 29 }
+        },
+        { type: 'Punctuator', value: ')', position: { start: 30, end: 30 } }
+      ]
+    );
+  });
   test('tokenize with numbers', () => {
     const code = "t('count', { value: +1.2 })";
     const tokens = tokenize(code);
