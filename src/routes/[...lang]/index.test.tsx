@@ -1,7 +1,8 @@
 import { createDOM } from '@builder.io/qwik/testing';
 import { $ } from '@builder.io/qwik';
 import { test, expect } from 'vitest';
-import { LoadTranslationFn, QwikSpeakProvider, TranslationFn } from 'qwik-speak';
+import type { LoadTranslationFn, TranslationFn } from 'qwik-speak';
+import { QwikSpeakProvider } from 'qwik-speak';
 
 import Home from './index';
 import { config } from '../../speak-config';

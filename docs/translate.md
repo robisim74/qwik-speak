@@ -1,5 +1,7 @@
 # Translate
 
+> The `$translate` function uses the Speak context internally and can therefore be considered a hook: it must be used within the Qwik components or else the context must be passed to it
+
 ## $translate
 The `$translate` function is responsible for translating, extracting to external files, and inlining during the build, using key-value pairs:
 ```jsx
@@ -194,7 +196,7 @@ For the translation to occur in the language passed as an argument, you need to 
 
 
 ## Translation outside of Qwik components
-The `SpeakContext` is not available outside of `component$`. If you can't wrap other components with `QwikSpeakProvider`, you can pass the context directly to the translation functions:
+The `SpeakContext` is not available outside of `component$`. You have to pass the context directly to the translation functions:
 ```jsx
 export const MyComponent = (props: { ctx: SpeakState }) => {
   return <h1>{t('home.title@@Qwik Speak', undefined, props.ctx)}</h1>;
