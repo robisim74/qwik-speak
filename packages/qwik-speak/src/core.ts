@@ -78,15 +78,19 @@ export const loadTranslations = async (
 };
 
 /**
- * Get the value of a key
+ * Make translation
  */
-export const getValue = (
-  key: string,
+export const translate = (
+  key: string | string[],
   data: Translation,
   params?: any,
   keySeparator = '.',
-  keyValueSeparator = '@@'
-): string | Translation | undefined => {
+  keyValueSeparator = '@@',
+): any => {
+  if (Array.isArray(key)) {
+    return key.map(k => translate(k, data, params, keySeparator, keyValueSeparator));
+  }
+
   let defaultValue: string | undefined = undefined;
 
   [key, defaultValue] = separateKeyValue(key, keyValueSeparator);
@@ -109,8 +113,8 @@ export const getValue = (
     return JSON.parse(defaultValue);
   }
 
-  return undefined;
-};
+  return key;
+}
 
 /**
  * Separate key & value

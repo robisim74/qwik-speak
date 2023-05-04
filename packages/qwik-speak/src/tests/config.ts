@@ -1,8 +1,18 @@
-import { inlinedQrl } from '@builder.io/qwik';
-import type { SpeakLocale, SpeakConfig, Translation, SpeakState } from '../types';
+import { $ } from '@builder.io/qwik';
+import type { SpeakConfig, LoadTranslationFn, TranslationFn } from '../types';
 
-const translationData: Translation = {
-  'en-US': {
+export const config: SpeakConfig = {
+  defaultLocale: { lang: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles', units: { 'length': 'mile' } },
+  supportedLocales: [
+    { lang: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles', units: { 'length': 'mile' } }
+  ],
+  assets: ['test'],
+  keySeparator: '.',
+  keyValueSeparator: '@@'
+};
+
+export const loadTranslationStub$: LoadTranslationFn = $(() => {
+  return {
     test: 'Test',
     testParams: 'Test {{param}}',
     nested: {
@@ -12,34 +22,12 @@ const translationData: Translation = {
     one: 'One {{ role }} developer',
     other: '{{value}} {{ role }} developers',
     arrayObjects: [
-      { one: '1' },
-      { two: '3' }
+      { num: '1' },
+      { num: '3' }
     ]
-  }
-};
+  };
+});
 
-const config: SpeakConfig = {
-  defaultLocale: { lang: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles', units: { 'length': 'mile' } },
-  supportedLocales: [
-    { lang: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles', units: { 'length': 'mile' } }
-  ],
-  assets: [],
-  keySeparator: '.',
-  keyValueSeparator: '@@'
+export const translationFnStub: TranslationFn = {
+  loadTranslation$: loadTranslationStub$
 };
-
-const locale: SpeakLocale = {
-  lang: 'en-US',
-  currency: 'USD',
-  timeZone: 'America/Los_Angeles',
-  units: { 'length': 'mile' }
-};
-
-export const ctx: SpeakState = new Proxy({
-  locale: locale,
-  translation: translationData,
-  config: config,
-  translationFn: {
-    loadTranslation$: inlinedQrl(() => { return null; }, 'loadTranslation')
-  }
-}, {});

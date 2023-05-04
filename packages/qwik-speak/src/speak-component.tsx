@@ -1,7 +1,7 @@
 import { component$, Slot, useServerData, useTask$ } from '@builder.io/qwik';
 import { isDev, isServer } from '@builder.io/qwik/build';
 
-import { useSpeakContext } from './use-functions';
+import { useSpeakContext } from './use-speak';
 import { loadTranslations } from './core';
 import { logWarn } from './log';
 
