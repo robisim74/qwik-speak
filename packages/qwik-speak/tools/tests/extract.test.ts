@@ -4,7 +4,7 @@ import { readdir, readFile, writeFile } from 'fs/promises';
 import { normalize } from 'path';
 
 import { qwikSpeakExtract } from '../extract/index';
-import { mockAsset, mockSource } from './mock';
+import { mockAsset, mockExtractedAsset, mockSource } from './mock';
 
 // Mock part of 'fs/promises' module
 vi.mock('fs/promises', async () => {
@@ -32,42 +32,17 @@ describe('extract', () => {
     expect(readdir).toHaveBeenCalledTimes(2);
     expect(readFile).toHaveBeenCalledTimes(2);
 
-    expect(writeFile).toHaveBeenCalledTimes(2);
+    expect(writeFile).toHaveBeenCalledTimes(3);
     expect(writeFile).toHaveBeenNthCalledWith(1, normalize('../../i18n/en-US/app.json'), `{
   "app": {
-    "subtitle": "Translate your Qwik apps into any language",
-    "title": "Qwik Speak"
+    "subtitle": "",
+    "title": ""
   }
 }`);
-    expect(writeFile).toHaveBeenNthCalledWith(2, normalize('../../i18n/en-US/home.json'), `{
-  "home": {
-    "array": [
-      "one",
-      "two",
-      "three"
-    ],
-    "arrayObjects": [
-      {
-        "one": "1",
-        "two": "2"
-      }
-    ],
-    "dates": "Dates & relative time",
-    "devs": {
-      "one": "",
-      "other": ""
-    },
-    "greeting": "Hi! I am {{name}}",
-    "increment": "Increment",
-    "numbers": "Numbers & currencies",
-    "obj": {
-      "one": "1",
-      "two": "2"
-    },
-    "params": "",
-    "plural": "Plural",
-    "tags": "Html tags",
-    "text": "<em>Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps</em>"
+    expect(writeFile).toHaveBeenNthCalledWith(2, normalize('../../i18n/en-US/home.json'), mockExtractedAsset);
+    expect(writeFile).toHaveBeenNthCalledWith(3, normalize('../../i18n/en-US/runtime.json'), `{
+  "runtime": {
+    "test": ""
   }
 }`);
   });

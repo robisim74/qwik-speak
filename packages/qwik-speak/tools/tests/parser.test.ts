@@ -1,6 +1,6 @@
 import { test, describe, expect } from 'vitest';
 
-import { getPluralAlias, getTranslateAlias, parse, parseSequenceExpressions, tokenize } from '../core/parser';
+import { getInlineTranslateAlias, getPluralAlias, getTranslateAlias, getUseTranslateAlias, parse, parseSequenceExpressions, tokenize } from '../core/parser';
 
 describe('parser: tokenize', () => {
   test('tokenize', () => {
@@ -73,8 +73,8 @@ describe('parser: tokenize', () => {
   });
   test('tokenize with params', () => {
     const code = `t('home.greeting', {
-      name: 'Qwik Speak'
-  })`;
+  name: 'Qwik Speak'
+})`;
     const tokens = tokenize(code);
     expect(tokens).toEqual(
       [
@@ -90,23 +90,23 @@ describe('parser: tokenize', () => {
         {
           type: 'Identifier',
           value: 'name',
-          position: { start: 27, end: 30 }
+          position: { start: 23, end: 26 }
         },
-        { type: 'Punctuator', value: ':', position: { start: 31, end: 31 } },
+        { type: 'Punctuator', value: ':', position: { start: 27, end: 27 } },
         {
           type: 'Literal',
           value: "'Qwik Speak'",
-          position: { start: 33, end: 44 }
+          position: { start: 29, end: 40 }
         },
-        { type: 'Punctuator', value: '}', position: { start: 48, end: 48 } },
-        { type: 'Punctuator', value: ')', position: { start: 49, end: 49 } }
+        { type: 'Punctuator', value: '}', position: { start: 42, end: 42 } },
+        { type: 'Punctuator', value: ')', position: { start: 43, end: 43 } }
       ]
     );
   });
   test('tokenize with dynamic params', () => {
     const code = `t('home.greeting', {
-      name: name
-  })`;
+  name: name
+})`;
     const tokens = tokenize(code);
     expect(tokens).toEqual(
       [
@@ -122,23 +122,23 @@ describe('parser: tokenize', () => {
         {
           type: 'Identifier',
           value: 'name',
-          position: { start: 27, end: 30 }
+          position: { start: 23, end: 26 }
         },
-        { type: 'Punctuator', value: ':', position: { start: 31, end: 31 } },
+        { type: 'Punctuator', value: ':', position: { start: 27, end: 27 } },
         {
           type: 'Identifier',
           value: 'name',
-          position: { start: 33, end: 36 }
+          position: { start: 29, end: 32 }
         },
-        { type: 'Punctuator', value: '}', position: { start: 40, end: 40 } },
-        { type: 'Punctuator', value: ')', position: { start: 41, end: 41 } }
+        { type: 'Punctuator', value: '}', position: { start: 34, end: 34 } },
+        { type: 'Punctuator', value: ')', position: { start: 35, end: 35 } }
       ]
     );
   });
   test('tokenize with arguments', () => {
     const code = `t('home.greeting', {
-      name: name
-  }, ctx, 'en-US')`;
+  name: name
+}, 'en-US')`;
     const tokens = tokenize(code);
     expect(tokens).toEqual(
       [
@@ -154,33 +154,27 @@ describe('parser: tokenize', () => {
         {
           type: 'Identifier',
           value: 'name',
-          position: { start: 27, end: 30 }
+          position: { start: 23, end: 26 }
         },
-        { type: 'Punctuator', value: ':', position: { start: 31, end: 31 } },
+        { type: 'Punctuator', value: ':', position: { start: 27, end: 27 } },
         {
           type: 'Identifier',
           value: 'name',
-          position: { start: 33, end: 36 }
+          position: { start: 29, end: 32 }
         },
-        { type: 'Punctuator', value: '}', position: { start: 40, end: 40 } },
-        { type: 'Punctuator', value: ',', position: { start: 41, end: 41 } },
-        {
-          type: 'Identifier',
-          value: 'ctx',
-          position: { start: 43, end: 45 }
-        },
-        { type: 'Punctuator', value: ',', position: { start: 46, end: 46 } },
+        { type: 'Punctuator', value: '}', position: { start: 34, end: 34 } },
+        { type: 'Punctuator', value: ',', position: { start: 35, end: 35 } },
         {
           type: 'Literal',
           value: "'en-US'",
-          position: { start: 48, end: 54 }
+          position: { start: 37, end: 43 }
         },
-        { type: 'Punctuator', value: ')', position: { start: 55, end: 55 } }
+        { type: 'Punctuator', value: ')', position: { start: 44, end: 44 } }
       ]
     );
   });
   test('tokenize with undefined arguments', () => {
-    const code = "t('home.greeting', undefined, undefined, 'en-US')";
+    const code = "t('home.greeting', undefined, 'en-US')";
     const tokens = tokenize(code);
     expect(tokens).toEqual(
       [
@@ -200,21 +194,15 @@ describe('parser: tokenize', () => {
         { type: 'Punctuator', value: ',', position: { start: 28, end: 28 } },
         {
           type: 'Literal',
-          value: 'undefined',
-          position: { start: 30, end: 38 }
-        },
-        { type: 'Punctuator', value: ',', position: { start: 39, end: 39 } },
-        {
-          type: 'Literal',
           value: "'en-US'",
-          position: { start: 41, end: 47 }
+          position: { start: 30, end: 36 }
         },
-        { type: 'Punctuator', value: ')', position: { start: 48, end: 48 } }
+        { type: 'Punctuator', value: ')', position: { start: 37, end: 37 } }
       ]
     );
   });
   test('tokenize with void 0 arguments', () => {
-    const code = "t('home.greeting', void 0, ctx)";
+    const code = "t('home.greeting', void 0, 'en-US')";
     const tokens = tokenize(code);
     expect(tokens).toEqual(
       [
@@ -233,11 +221,11 @@ describe('parser: tokenize', () => {
         },
         { type: 'Punctuator', value: ',', position: { start: 25, end: 25 } },
         {
-          type: 'Identifier',
-          value: 'ctx',
-          position: { start: 27, end: 29 }
+          type: 'Literal',
+          value: "'en-US'",
+          position: { start: 27, end: 33 }
         },
-        { type: 'Punctuator', value: ')', position: { start: 30, end: 30 } }
+        { type: 'Punctuator', value: ')', position: { start: 34, end: 34 } }
       ]
     );
   });
@@ -300,14 +288,14 @@ describe('parser: parse', () => {
   });
   test('parse with params', () => {
     const code = `t('home.greeting', {
-      name: 'Qwik Speak'
-  })`;
+  name: 'Qwik Speak'
+})`;
     const tokens = tokenize(code);
     const callExpression = parse(tokens, code, '\\bt');
     expect(callExpression).toEqual(
       {
         type: 'CallExpression',
-        value: "t('home.greeting', {\n      name: 'Qwik Speak'\n  })",
+        value: "t('home.greeting', {\n  name: 'Qwik Speak'\n})",
         arguments: [
           { type: 'Literal', value: 'home.greeting' },
           {
@@ -325,16 +313,16 @@ describe('parser: parse', () => {
   });
   test('parse with dynamic params', () => {
     const code = `t('home.greeting', {
-      name: obj.name, greeting: getGreeting()
-  }, ctx, 'en-US')`;
+  name: obj.name, greeting: getGreeting()
+}, 'en-US')`;
     const tokens = tokenize(code);
     const callExpression = parse(tokens, code, '\\bt');
     expect(callExpression).toEqual(
       {
         type: 'CallExpression',
         value: "t('home.greeting', {\n" +
-          '      name: obj.name, greeting: getGreeting()\n' +
-          "  }, ctx, 'en-US')",
+          '  name: obj.name, greeting: getGreeting()\n' +
+          "}, 'en-US')",
         arguments: [
           { type: 'Literal', value: 'home.greeting' },
           {
@@ -351,7 +339,6 @@ describe('parser: parse', () => {
               }
             ]
           },
-          { type: 'Identifier', value: 'ctx' },
           { type: 'Literal', value: 'en-US' }
         ]
       }
@@ -412,29 +399,50 @@ describe('parser: parse', () => {
       }
     );
   });
+  test('parse with array of keys/identifiers', () => {
+    const code = `t(['key1', key])`;
+    const tokens = tokenize(code);
+    const callExpression = parse(tokens, code, '\\bt');
+    expect(callExpression).toEqual(
+      {
+        type: 'CallExpression',
+        value: "t(['key1', key])",
+        arguments: [
+          {
+            type: 'ArrayExpression', elements: [
+              {
+                type: 'Literal',
+                value: 'key1'
+              },
+              {
+                type: 'Identifier',
+                value: 'key'
+              }
+            ]
+          }
+        ]
+      }
+    );
+  });
 });
 
 describe('parser: parseSequenceExpressions', () => {
   test('parseSequenceExpressions', () => {
-    const code = `/*#__PURE__*/ _jsx("h1", {
-      children: t('app.title')
-  }),
-  /*#__PURE__*/ _jsx("p", {
-      children: t('home.greeting', {
-          name: 'Qwik Speak'
-      })
-  }),`;
+    const code = `/*#__PURE__*/ _jsxQ("h2", null, null, t('app.subtitle'), 1, null),
+/*#__PURE__*/ _jsxQ("p", null, null, t('home.greeting', {
+    name: 'Qwik Speak'
+}), 1, null),`;
     const sequence = parseSequenceExpressions(code, '\\bt');
     expect(sequence).toEqual(
       [
         {
           type: 'CallExpression',
-          value: "t('app.title')",
-          arguments: [{ type: 'Literal', value: 'app.title' }]
+          value: "t('app.subtitle')",
+          arguments: [{ type: 'Literal', value: 'app.subtitle' }]
         },
         {
           type: 'CallExpression',
-          value: "t('home.greeting', {\n          name: 'Qwik Speak'\n      })",
+          value: "t('home.greeting', {\n    name: 'Qwik Speak'\n})",
           arguments: [
             { type: 'Literal', value: 'home.greeting' },
             {
@@ -456,34 +464,51 @@ describe('parser: parseSequenceExpressions', () => {
 describe('aliases', () => {
   test('getTranslateAlias', () => {
     let alias = getTranslateAlias(`import {
-      $translate as t,
-      $plural as p,
-      formatDate as fd,
-      formatNumber as fn,
-      relativeTime as rt,
-      Speak,
-      useSpeakLocale
-    } from 'qwik-speak';`);
+  $translate as t,
+  $plural as p,
+  formatDate as fd,
+  formatNumber as fn,
+  relativeTime as rt,
+  Speak,
+  useSpeakLocale
+} from 'qwik-speak';`);
     expect(alias).toBe('\\bt');
     alias = getTranslateAlias("import { $translate as t } from 'qwik-speak';");
     expect(alias).toBe('\\bt');
     alias = getTranslateAlias("import { $translate } from 'qwik-speak';");
     expect(alias).toBe('\\$translate');
   });
+  test('getInlineTranslateAlias', () => {
+    let alias = getInlineTranslateAlias(`import {
+  $inlineTranslate as t,
+  useSpeakLocale
+} from 'qwik-speak';`);
+    expect(alias).toBe('\\bt');
+    alias = getInlineTranslateAlias("import { $inlineTranslate as $translate } from 'qwik-speak';");
+    expect(alias).toBe('\\$translate');
+    alias = getInlineTranslateAlias("import { $inlineTranslate } from 'qwik-speak';");
+    expect(alias).toBe('\\$inlineTranslate');
+  });
   test('getPluralAlias', () => {
     let alias = getPluralAlias(`import {
-      $translate as t,
-      $plural as p,
-      formatDate as fd,
-      formatNumber as fn,
-      relativeTime as rt,
-      Speak,
-      useSpeakLocale
-    } from 'qwik-speak';`);
+  $translate as t,
+  $plural as p,
+  formatDate as fd,
+  formatNumber as fn,
+  relativeTime as rt,
+  Speak,
+  useSpeakLocale
+} from 'qwik-speak';`);
     expect(alias).toBe('\\bp');
     alias = getPluralAlias("import { $plural as p} from 'qwik-speak';");
     expect(alias).toBe('\\bp');
     alias = getPluralAlias("import { $plural } from 'qwik-speak';");
     expect(alias).toBe('\\$plural');
+  });
+  test('getUseTranslateAlias', () => {
+    let alias = getUseTranslateAlias(`const t = useTranslate$();`);
+    expect(alias).toBe('\\bt');
+    alias = getUseTranslateAlias('const t$ = useTranslate$();');
+    expect(alias).toBe('\\bt\\$');
   });
 });

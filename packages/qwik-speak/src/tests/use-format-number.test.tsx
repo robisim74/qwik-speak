@@ -11,14 +11,12 @@ const TestComponent = component$(() => {
   const locale = useSpeakLocale();
   const units = locale.units!;
 
-  const value = 1234.5;
-
   return (
     <div>
-      <div id="A">{fn(value)}</div>
-      <div id="A1">{fn(value, { minimumIntegerDigits: 1, minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-      <div id="A2">{fn(value, { style: 'currency' })}</div>
-      <div id="A3">{fn(value, { style: 'unit', unit: units['length'] })}</div>
+      <div id="A">{fn(1234.5)}</div>
+      <div id="A1">{fn(1234.5, { minimumIntegerDigits: 1, minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+      <div id="A2">{fn(1000, { style: 'currency' })}</div>
+      <div id="A3">{fn(1, { style: 'unit', unit: units['length'] })}</div>
     </div>
   );
 });
@@ -35,7 +33,7 @@ describe('formatNumber function', async () => {
   test('format', () => {
     expect((screen.querySelector('#A') as HTMLDivElement).innerHTML).toContain('1,234.5');
     expect((screen.querySelector('#A1') as HTMLDivElement).innerHTML).toContain('1,234.50');
-    expect((screen.querySelector('#A2') as HTMLDivElement).innerHTML).toContain('$1,234.50');
-    expect((screen.querySelector('#A3') as HTMLDivElement).innerHTML).toContain('1,234.5 mi');
+    expect((screen.querySelector('#A2') as HTMLDivElement).innerHTML).toContain('$1,000.00');
+    expect((screen.querySelector('#A3') as HTMLDivElement).innerHTML).toContain('1 mi');
   });
 });

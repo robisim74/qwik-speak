@@ -7,13 +7,11 @@ import { QwikSpeakProvider } from '../qwik-speak-component';
 import { config } from './config';
 
 const TestComponent = component$(() => {
-  const value = '2022-07-19T16:30:00Z';
-
   return (
     <div>
-      <div id="A">{fd(value)}</div>
-      <div id="A1">{fd(value, { dateStyle: 'full' })}</div>
-      <div id="A2">{fd(value, { dateStyle: 'full', timeStyle: 'short' })}</div>
+      <div id="A">{fd(new Date('2022-07-19T16:30:00Z'))}</div>
+      <div id="A1">{fd(new Date('2022-07-19T16:30:00Z').getTime(), { dateStyle: 'full' })}</div>
+      <div id="A2">{fd('2022-07-19T16:30:00Z', { dateStyle: 'full', timeStyle: 'short' })}</div>
     </div>
   );
 });

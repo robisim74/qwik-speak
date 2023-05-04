@@ -15,14 +15,14 @@ export const Header = component$(() => {
   const config = useSpeakConfig();
 
   const getHref = (name: string) => {
-    return lang === config.defaultLocale.lang ? name : `/${lang}${name}`
+    return lang === config.defaultLocale.lang ? name : `/${lang}${name}`;
   };
 
   return (
     <>
       <header class="header">
         <div class="logo">
-          <Link href={getHref('/')} title={t('app.nav.home')}>
+          <Link href={getHref('/')}>
             <SpeakLogo />
           </Link>
         </div>

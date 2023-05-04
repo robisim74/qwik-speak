@@ -13,7 +13,7 @@ export interface Property {
 }
 
 export interface Element {
-  type: 'Literal';
+  type: 'Literal' | 'Identifier';
   value: string;
 }
 
@@ -277,6 +277,9 @@ export function parse(tokens: Token[], code: string, alias: string): CallExpress
     if (token.type === 'Literal') {
       elements.push({ type: 'Literal', value: trimQuotes(token.value) });
     }
+    if (token.type === 'Identifier') {
+      elements.push({ type: 'Identifier', value: token.value });
+    }
 
     return parseArrayExpr(next(), elements);
   };
@@ -344,8 +347,22 @@ export function parseSequenceExpressions(code: string, alias: string): CallExpre
  */
 export function getTranslateAlias(code: string): string {
   let translateAlias = code.match(/(?<=\$translate\s+as).*?(?=,|\})/s)?.[0]?.trim() || '$translate';
-  // Escape special characters / Assert position at a word boundary
-  translateAlias = translateAlias.startsWith('$') ? `\\${translateAlias}` : `\\b${translateAlias}`;
+  // Assert position at a word boundary
+  if (!translateAlias.startsWith('$')) translateAlias = `\\b${translateAlias}`;
+  // Escape special characters 
+  translateAlias = translateAlias.replace(/\$/g, '\\$');
+  return translateAlias;
+}
+
+/**
+ * Get $inlineTranslate alias
+ */
+export function getInlineTranslateAlias(code: string): string {
+  let translateAlias = code.match(/(?<=\$inlineTranslate\s+as).*?(?=,|\})/s)?.[0]?.trim() || '$inlineTranslate';
+  // Assert position at a word boundary
+  if (!translateAlias.startsWith('$')) translateAlias = `\\b${translateAlias}`;
+  // Escape special characters 
+  translateAlias = translateAlias.replace(/\$/g, '\\$');
   return translateAlias;
 }
 
@@ -354,9 +371,24 @@ export function getTranslateAlias(code: string): string {
  */
 export function getPluralAlias(code: string): string {
   let pluralAlias = code.match(/(?<=\$plural\s+as).*?(?=,|\})/s)?.[0]?.trim() || '$plural';
-  // Escape special characters / Assert position at a word boundary
-  pluralAlias = pluralAlias.startsWith('$') ? `\\${pluralAlias}` : `\\b${pluralAlias}`;
+  // Assert position at a word boundary
+  if (!pluralAlias.startsWith('$')) pluralAlias = `\\b${pluralAlias}`;
+  // Escape special characters 
+  pluralAlias = pluralAlias.replace(/\$/g, '\\$');
   return pluralAlias;
+}
+
+/**
+ * Get useTranslate$ alias
+ */
+export function getUseTranslateAlias(code: string): string | null {
+  let translateAlias = code.match(/(?<=\bconst\s).*?(?=\s?=\s?useTranslate(\$|Qrl)\(\);?)/)?.[0]?.trim();
+  if (!translateAlias) return null;
+  // Assert position at a word boundary
+  if (!translateAlias.startsWith('$')) translateAlias = `\\b${translateAlias}`;
+  // Escape special characters 
+  translateAlias = translateAlias.replace(/\$/g, '\\$');
+  return translateAlias;
 }
 
 export function parseJson(target: Translation, source: string): Translation {

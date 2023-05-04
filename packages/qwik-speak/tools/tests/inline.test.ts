@@ -4,8 +4,8 @@ import { writeFile } from 'fs/promises';
 import { normalize } from 'path';
 
 import { getRules } from '../core/intl-parser';
-import { getKey, getValue, inline, qwikSpeakInline, transform, transpileFn, transpilePluralFn } from '../inline/plugin';
-import { inlinedCode, inlinedCodeByLang, mockChunkCode, mockCode, transformedCode } from './mock';
+import { getKey, getValue, inline, qwikSpeakInline, transform, transformInline, transpileFn, transpilePluralFn } from '../inline/plugin';
+import { mockChunkCode, mockCode, mockInlinedCode, mockInlinedCodeByLang, mockTransformedCode, mockTranslatedAsset, mockTranslatedAssetByLang } from './mock';
 
 // Mock part of 'fs' module
 vi.mock('fs', async () => {
@@ -22,6 +22,12 @@ vi.mock('fs/promises', async () => {
   const mod = await vi.importActual<typeof import('fs/promises')>('fs/promises');
   return {
     ...mod,
+    readdir: vi.fn()
+      .mockImplementationOnce(() => ['home.json'])
+      .mockImplementationOnce(() => ['home.json']),
+    readFile: vi.fn()
+      .mockImplementationOnce(() => mockTranslatedAsset)
+      .mockImplementationOnce(() => mockTranslatedAssetByLang),
     writeFile: vi.fn()
   };
 });
@@ -125,7 +131,7 @@ describe('inline', () => {
       ],
       { keySeparator: '.' } as any
     );
-    expect(line).toBe('(new Intl.PluralRules(`en-US`).select(+count.value) === `other` && __qsInline(`home.devs.other`, {value: count.value}, undefined, `en-US`) || __qsInline(`home.devs.one`, {value: count.value}, undefined, `en-US`))');
+    expect(line).toBe('(new Intl.PluralRules(`en-US`).select(+count.value) === `other` && __qsInline(`home.devs.other`, {value: count.value}, `en-US`) || __qsInline(`home.devs.one`, {value: count.value}, `en-US`))');
   });
   test('transpilePluralFn with params and options', () => {
     const rules = getRules('en-US');
@@ -150,29 +156,7 @@ describe('inline', () => {
       ],
       { keySeparator: '.' } as any
     );
-    expect(line).toBe('(new Intl.PluralRules(`en-US`, {type: `cardinal`}).select(+count.value) === `other` && __qsInline(`home.devs.other`, {value: count.value, role: `software`}, undefined, `en-US`) || __qsInline(`home.devs.one`, {value: count.value, role: `software`}, undefined, `en-US`))');
-  });
-  test('writeChunks', async () => {
-    const plugin = qwikSpeakInline({
-      supportedLangs: ['en-US', 'it-IT'],
-      defaultLang: 'en-US',
-      basePath: '../../'
-    }) as any;
-    await plugin.configResolved?.({});
-    await plugin.buildStart?.();
-    const transformed = await plugin.transform?.(mockCode, '/src/mock.code.js');
-    expect(transformed).toBe(transformedCode);
-    await plugin.writeBundle?.({}, {
-      'mock.chunk.js': {
-        type: 'chunk',
-        code: mockChunkCode,
-        fileName: 'build/1.js'
-      }
-    });
-    expect(writeFile).toHaveBeenCalledTimes(3);
-    expect(writeFile).toHaveBeenNthCalledWith(1, normalize('../../dist/build/en-US/1.js'), inlinedCode);
-    expect(writeFile).toHaveBeenNthCalledWith(2, normalize('../../dist/build/1.js'), inlinedCode);
-    expect(writeFile).toHaveBeenNthCalledWith(3, normalize('../../dist/build/it-IT/1.js'), inlinedCodeByLang);
+    expect(line).toBe('(new Intl.PluralRules(`en-US`, {type: `cardinal`}).select(+count.value) === `other` && __qsInline(`home.devs.other`, {value: count.value, role: `software`}, `en-US`) || __qsInline(`home.devs.one`, {value: count.value, role: `software`}, `en-US`))');
   });
   test('inline arrays', async () => {
     const inlined = inline(`const values = __qsInline(['app.title', 'app.subtitle'])`,
@@ -198,7 +182,7 @@ describe('inline', () => {
     expect(inlined).toBe('const values = [`Qwik Speak`,`Translate your Qwik apps into any language`]');
   });
   test('transform & inline multilingual', async () => {
-    const code = `import { $translate as t } from "qwik-speak";const value = t('app.subtitle', undefined, undefined, 'it-IT')`;
+    const code = `import { $translate as t } from "qwik-speak";const value = t('app.subtitle', undefined, 'it-IT')`;
     const transformed = transform(code);
     const inlined = inline(transformed,
       {
@@ -226,9 +210,9 @@ describe('inline', () => {
       });
     expect(inlined).toBe('import { $translate as t } from "qwik-speak";const value = `Traduci le tue app Qwik in qualsiasi lingua`');
   });
-  test('transform & inline with context', async () => {
-    const code = `import { $translate as t } from "qwik-speak";const value = t('app.subtitle', undefined, ctx)`;
-    const transformed = transform(code);
+  test('transform & inlineTranslate', async () => {
+    const code = `import { $inlineTranslate as t } from "qwik-speak";const value = t('app.subtitle', ctx)`;
+    const transformed = transformInline(code);
     const inlined = inline(transformed,
       {
         'en-US': {
@@ -248,6 +232,28 @@ describe('inline', () => {
         assetsPath: 'i18n',
         outDir: 'dist'
       });
-    expect(inlined).toBe('import { $translate as t } from "qwik-speak";const value = `Translate your Qwik apps into any language`');
+    expect(inlined).toBe('import { $inlineTranslate as t } from "qwik-speak";const value = `Translate your Qwik apps into any language`');
+  });
+  test('writeChunks', async () => {
+    const plugin = qwikSpeakInline({
+      supportedLangs: ['en-US', 'it-IT'],
+      defaultLang: 'en-US',
+      basePath: '../../'
+    }) as any;
+    await plugin.configResolved?.({});
+    await plugin.buildStart?.();
+    const transformed = await plugin.transform?.(mockCode, '/src/mock.code.js');
+    expect(transformed).toBe(mockTransformedCode);
+    await plugin.writeBundle?.({}, {
+      'mock.chunk.js': {
+        type: 'chunk',
+        code: mockChunkCode,
+        fileName: 'build/1.js'
+      }
+    });
+    expect(writeFile).toHaveBeenCalledTimes(3);
+    expect(writeFile).toHaveBeenNthCalledWith(1, normalize('../../dist/build/en-US/1.js'), mockInlinedCode);
+    expect(writeFile).toHaveBeenNthCalledWith(2, normalize('../../dist/build/1.js'), mockInlinedCode);
+    expect(writeFile).toHaveBeenNthCalledWith(3, normalize('../../dist/build/it-IT/1.js'), mockInlinedCodeByLang);
   });
 });
