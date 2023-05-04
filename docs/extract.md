@@ -13,7 +13,7 @@ Optionally, you can use a default value for the keys. The syntax is `key@@[defau
 ```
 When you use a default value, it will be used as initial value for the key in every translation.
 
-> Note. A key will not be extracted when a function argument is a variable or a function (dynamic)
+> Note. A key will not be extracted when it is an identifier or contains an indentifier (dynamic)
 
 #### Naming conventions
 If you use scoped translations, the first property will be used as filename:

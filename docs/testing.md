@@ -7,7 +7,7 @@ To unit test a component which uses `qwik-speak`, you need to wrap it with `Qwik
 Given the `config` object and a component to test like in [Quick Start](./quick-start.md):
 
 _src/routes/index.tsx_
-```jsx
+```tsx
 import {
   $translate as t,
   formatDate as fd,
@@ -41,7 +41,7 @@ export default component$(() => {
 We'll have the following unit test (using _Vitest_):
 
 _src/routes/index.spec.tsx_
-```jsx
+```tsx
 import Home from './index';
 
 test(`[Home Component]: Should render the component`, async () => {
@@ -73,7 +73,7 @@ const translationFnStub: TranslationFn = {
 ```
 and pass it with the language you want to `QwikSpeakProvider`:
 
-```jsx
+```tsx
 test(`[Home Component]: Should render translated texts in Italian`, async () => {
   const { screen, render } = await createDOM();
 

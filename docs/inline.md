@@ -1,11 +1,11 @@
 # Qwik Speak Inline Vite plugin
 
-> Inline Qwik Speak `$translate` function at compile time
+> Inline Qwik Speak `$translate`, `$inlineTranslate` and `$plural` functions at compile time
 
 ## How it works
 In development mode, translation happens _at runtime_: translations are loaded during SSR or on client, and the lookup also happens at runtime.
 
-Using _Qwik Speak Inline_ Vite plugin, translation happens _at compile-time_: translations are loaded and inlined in chunks sent to the browser during the build, and only _runtime assets_ are translated on the client.
+Using _Qwik Speak Inline_ Vite plugin, translation happens _at compile-time_: translations are loaded and inlined in chunks sent to the browser during the build, and only `runtimeAssets` are translated on the client:
 
 ```mermaid
 sequenceDiagram

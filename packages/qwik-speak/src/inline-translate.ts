@@ -3,7 +3,7 @@ import { translate } from './core';
 
 export type InlineTranslateFn = {
   /**
-   * Translate a key.
+   * Translate a key outside the component$.
    * The syntax of the string is 'key@@[default value]'
    * @param key The key to translate
    * @param ctx The Speak context
@@ -14,7 +14,7 @@ export type InlineTranslateFn = {
   (key: string, ctx: SpeakState, params?: any, lang?: string): string;
   <T>(key: string, ctx: SpeakState, params?: any, lang?: string): T;
   /**
-   * Translate an array of keys.
+   * Translate an array of keys outside the component$.
    * The syntax of the strings is 'key@@[default value]'
    * @param keys The array of keys to translate
    * @param ctx The Speak context

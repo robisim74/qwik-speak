@@ -51,7 +51,7 @@ We have added the Speak config and the implementation of the `loadTranslation$` 
 Just wrap Qwik City provider with `QwikSpeakProvider` component in `root.tsx` and pass it the configuration and the translation functions:
 
 _src/root.tsx_
-```jsx
+```tsx
 import { QwikSpeakProvider } from 'qwik-speak';
 
 export default component$(() => {
@@ -76,7 +76,7 @@ export default component$(() => {
 Finally we add an `index.tsx` with some translation:
 
 _src/routes/index.tsx_
-```jsx
+```tsx
 import {
   $translate as t,
   formatDate as fd,
@@ -150,7 +150,7 @@ Internally, Qwik Speak will try to take the Qwik `locale`, before falling back t
 Now we want to change locale. Let's create a `ChangeLocale` component:
 
 _src/components/change-locale.tsx_
-```jsx
+```tsx
 import { $translate as t, useSpeakConfig, SpeakLocale } from 'qwik-speak';
 
 export const ChangeLocale = component$(() => {
@@ -176,7 +176,7 @@ export const ChangeLocale = component$(() => {
 });
 ```
 and add the component in `header.tsx`:
-```jsx
+```tsx
 export default component$(() => {
   return (
     <header>

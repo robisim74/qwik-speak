@@ -75,7 +75,7 @@ We assign the value of the `lang` parameter to Qwik `locale`. This way it will b
 Just wrap Qwik City provider with `QwikSpeakProvider` component in `root.tsx` and pass it the configuration and the translation functions:
 
 _src/root.tsx_
-```jsx
+```tsx
 export default component$(() => {
   return (
     <QwikSpeakProvider config={config} translationFn={translationFn}>
@@ -98,7 +98,7 @@ export default component$(() => {
 Finally we add an `index.tsx` with some translation:
 
 _src/routes/[...lang]/index.tsx_
-```jsx
+```tsx
 import {
   $translate as t,
   formatDate as fd,
@@ -145,7 +145,7 @@ We are also providing default values for each translation: `key@@[default value]
 You may have noticed, that in `index.tsx` we have provided the meta title and description with only the keys. Since the Qwik City `DocumentHead` is out of context, we need to do the translations directly in `router-head.tsx`:
 
 _src/components/router-head/router-head.tsx_
-```jsx
+```tsx
 <title>{t(head.title)}</title>
 
 {head.meta.map((m) => (
@@ -174,7 +174,7 @@ export default function (opts: RenderToStreamOptions) {
 Now we want to change locale. Let's create a `ChangeLocale` component:
 
 _src/components/change-locale.tsx_
-```jsx
+```tsx
 export const ChangeLocale = component$(() => {
   const loc = useLocation();
 
@@ -209,7 +209,7 @@ export const ChangeLocale = component$(() => {
 });
 ```
 and add the component in `header.tsx`:
-```jsx
+```tsx
 export default component$(() => {
   return (
     <header>
@@ -236,12 +236,12 @@ i18n/en-US/app.json
 i18n/en-US/home.json
 i18n/it-IT/app.json
 i18n/it-IT/home.json
-skipped keys due to dynamic params: 2
+translations skipped due to dynamic keys: 2
 extracted keys: 4
 ```
 `app` asset and `home` asset for each language, initialized with the default values we provided.
 
-_Skipped keys due to dynamic params_ are meta title and description keys, because those keys are passed as dynamic parameters to the `$translate` function. We have to add them manually in a new file that we will call `runtime`:
+_translations skipped due to dynamic keys_ are meta title and description keys, because those keys are passed as dynamic parameters to the `$translate` function. We have to add them manually in a new file that we will call `runtime`:
 
 _public/i18n/[lang]/runtime.json_
 ```json
@@ -257,7 +257,7 @@ _public/i18n/[lang]/runtime.json_
 }
 ```
 Update the keys in `DocumentHead` of `index.tsx`:
-```jsx
+```tsx
 export const head: DocumentHead = {
   title: 'runtime.home.head.title@@Qwik Speak',
   meta: [{ name: 'description', content: 'runtime.home.head.description@@Qwik Speak with localized routing' }]
