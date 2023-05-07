@@ -26,13 +26,13 @@ export const config: SpeakConfig = {
 _src/speak-functions.ts_
 ```typescript
 import { server$ } from '@builder.io/qwik-city';
-import type { LoadTranslationFn, TranslationFn } from 'qwik-speak';
+import type { LoadTranslationFn, Translation, TranslationFn } from 'qwik-speak';
 
 /**
  * Translation files are lazy-loaded via dynamic import and will be split into separate chunks during build.
- * Json files are converted to objects: keys must be valid variable names
+ * Keys must be valid variable names
  */
-const translationData = import.meta.glob('/i18n/**/*.json');
+const translationData = import.meta.glob<Translation>('/i18n/**/*.json');
 
 /**
  * Using server$, translation data is always accessed on the server
@@ -45,26 +45,13 @@ export const translationFn: TranslationFn = {
   loadTranslation$: loadTranslation$
 };
 ```
-We have added the Speak config and the implementation of the `loadTranslation$` function. We could also catch errors during development:
-```typescript
-const loadTranslation$: LoadTranslationFn = server$((lang: string, asset: string) => {
-  const langAsset = `/i18n/${lang}/${asset}.json`;
-  if (langAsset in translationData) {
-    return translationData[langAsset]();
-  }
-  if (isDev) {
-    console.warn(`loadTranslation$: ${langAsset} not found`);
-  }
-  return null;
-});
-```
-`loadTranslation$` is a customizable function, with which you can load the translation files in the way you prefer.
+We have added the Speak config and the implementation of the `loadTranslation$` function. `loadTranslation$` is a customizable function, with which you can load the translation files in the way you prefer.
 
 ## Adding Qwik Speak
 Just wrap Qwik City provider with `QwikSpeakProvider` component in `root.tsx` and pass it the configuration and the translation functions:
 
 _src/root.tsx_
-```jsx
+```tsx
 import { QwikSpeakProvider } from 'qwik-speak';
 
 export default component$(() => {
@@ -89,7 +76,7 @@ export default component$(() => {
 Finally we add an `index.tsx` with some translation:
 
 _src/routes/index.tsx_
-```jsx
+```tsx
 import {
   $translate as t,
   formatDate as fd,
@@ -130,9 +117,9 @@ We are also providing default values for each translation: `key@@[default value]
 
 
 ## Resolve locale
-We can resolve the locale to use in two ways: passing the `locale` parameter to the `QwikSpeakProvider` component, or assigning it to the `locale` handled by Qwik. In `layout.tsx`, after the default `component$`, we add:
+We can resolve the locale to use in two ways: passing the `locale` parameter to the `QwikSpeakProvider` component, or assigning it to the `locale` handled by Qwik. Create `plugin.ts` in the root of the `src/routes` directory:
 
-_src/routes/layout.tsx_
+_src/routes/plugin.ts_
 ```typescript
 export const onRequest: RequestHandler = ({ request, locale }) => {
   const cookie = request.headers?.get('cookie');
@@ -163,7 +150,7 @@ Internally, Qwik Speak will try to take the Qwik `locale`, before falling back t
 Now we want to change locale. Let's create a `ChangeLocale` component:
 
 _src/components/change-locale.tsx_
-```jsx
+```tsx
 import { $translate as t, useSpeakConfig, SpeakLocale } from 'qwik-speak';
 
 export const ChangeLocale = component$(() => {
@@ -178,9 +165,9 @@ export const ChangeLocale = component$(() => {
 
   return (
     <div>
-      <div>{t('app.changeLocale@@Change locale')}</div>
+      <h2>{t('app.changeLocale@@Change locale')}</h2>
       {config.supportedLocales.map(value => (
-        <button onClick$={async () => await changeLocale$(value)}>
+        <button key={value.lang} onClick$={async () => await changeLocale$(value)}>
           {value.lang}
         </button>
       ))}
@@ -189,7 +176,7 @@ export const ChangeLocale = component$(() => {
 });
 ```
 and add the component in `header.tsx`:
-```jsx
+```tsx
 export default component$(() => {
   return (
     <header>
@@ -198,6 +185,7 @@ export default component$(() => {
   );
 });
 ```
+In `changeLocale$` we set the locale in a cookie, before reloading the page.
 
 ## Extraction: [Qwik Speak Extract](./extract.md)
 We can now extract the translations and generate the `assets` as json. In `package.json` add the following command to the scripts:
@@ -224,16 +212,15 @@ We can translate the `it-IT` files, and run the app:
 npm start
 ```
 
-## Inlining: [Qwik Speak Inline Vite plugin](./inline.md)
+## Production: [Qwik Speak Inline Vite plugin](./inline.md)
+In production mode, `assets` are loaded only during SSR, and to get the translations on the client as well it is required to inline the translations in chucks sent to the browser.
+
 Add `qwikSpeakInline` Vite plugin in `vite.config.ts`:
 ```typescript
 import { qwikSpeakInline } from 'qwik-speak/inline';
 
 export default defineConfig(() => {
   return {
-    build: {
-      minify: false // To inspect production files
-    },
     plugins: [
       qwikCity(),
       qwikVite(),
@@ -273,6 +260,3 @@ npm run preview
 ```
 
 > The app will have the same behavior as you saw in dev mode, but now the translations are inlined as you can verify by inspecting the production files, reducing resource usage at runtime
-
-## Production
-See [Qwik Speak and Adapters](./adapters.md)

@@ -1,20 +1,20 @@
 import { test, describe, expect } from 'vitest';
 
-import { getValue, transpileParams } from '../core';
+import { translate, transpileParams } from '../core';
 
 describe('core', () => {
-  test('getValue', () => {
-    let value = getValue('KEY1', { KEY1: 'key1', KEY2: 'key2' });
+  test('translate', () => {
+    let value = translate('KEY1', { KEY1: 'key1', KEY2: 'key2' });
     expect(value).toBe('key1');
-    value = getValue('SUBKEY1.AA', { KEY1: 'key1', SUBKEY1: { AA: 'aa' } });
+    value = translate('SUBKEY1.AA', { KEY1: 'key1', SUBKEY1: { AA: 'aa' } });
     expect(value).toBe('aa');
-    value = getValue('SUBKEY1', { KEY1: 'key1', SUBKEY1: { AA: 'aa' } });
+    value = translate('SUBKEY1', { KEY1: 'key1', SUBKEY1: { AA: 'aa' } });
     expect(value).toEqual({ AA: 'aa' });
-    value = getValue('SUBKEY1.BB', { KEY1: 'key1', SUBKEY1: { AA: 'aa' } });
-    expect(value).toBeUndefined();
+    value = translate('SUBKEY1.BB', { KEY1: 'key1', SUBKEY1: { AA: 'aa' } });
+    expect(value).toBe('SUBKEY1.BB');
   });
-  test('getValue when String', () => {
-    const value = getValue('KEY1', { KEY1: new String('key1') });
+  test('translate when String', () => {
+    const value = translate('KEY1', { KEY1: new String('key1') });
     expect(value).toBe('key1');
   });
   test('transpileParams', () => {

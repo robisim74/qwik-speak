@@ -7,7 +7,7 @@ To unit test a component which uses `qwik-speak`, you need to wrap it with `Qwik
 Given the `config` object and a component to test like in [Quick Start](./quick-start.md):
 
 _src/routes/index.tsx_
-```jsx
+```tsx
 import {
   $translate as t,
   formatDate as fd,
@@ -41,7 +41,7 @@ export default component$(() => {
 We'll have the following unit test (using _Vitest_):
 
 _src/routes/index.spec.tsx_
-```jsx
+```tsx
 import Home from './index';
 
 test(`[Home Component]: Should render the component`, async () => {
@@ -57,14 +57,28 @@ test(`[Home Component]: Should render the component`, async () => {
 });
 ```
 
-Optionally, if you need to test the translated texts in different languages, you have to provide a `loadTranslation$` to ensure translations are loaded in test environment, and pass it with the language you want to `QwikSpeakProvider`:
+Optionally, if you need to test the translated texts in different languages, you have to provide a stub `loadTranslation$` to ensure translations are loaded in test environment. For example you could load the json files of translations as follows:
+```typescript
+const loadTranslationStub$: LoadTranslationFn = $((lang: string, asset: string) =>
+  JSON.parse(
+    import.meta.glob('/public/i18n/**/*.json', { as: 'raw', eager: true })[
+    `/public/i18n/${lang}/${asset}.json`
+    ]
+  )
+);
 
-```jsx
+const translationFnStub: TranslationFn = {
+  loadTranslation$: loadTranslationStub$
+};
+```
+and pass it with the language you want to `QwikSpeakProvider`:
+
+```tsx
 test(`[Home Component]: Should render translated texts in Italian`, async () => {
   const { screen, render } = await createDOM();
 
   await render(
-    <QwikSpeakProvider config={config} translationFn={translationFn} locale={{ lang: 'it-IT', currency: 'EUR', timeZone: 'Europe/Rome' }}>
+    <QwikSpeakProvider config={config} translationFn={translationFnStub} locale={{ lang: 'it-IT', currency: 'EUR', timeZone: 'Europe/Rome' }}>
       <Home />
     </QwikSpeakProvider>
   );

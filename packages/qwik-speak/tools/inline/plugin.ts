@@ -6,7 +6,7 @@ import { extname, normalize } from 'path';
 
 import type { QwikSpeakInlineOptions, Translation } from '../core/types';
 import type { Argument, Property } from '../core/parser';
-import { getPluralAlias, getTranslateAlias, parseJson } from '../core/parser';
+import { getPluralAlias, getTranslateAlias, getInlineTranslateAlias, parseJson } from '../core/parser';
 import { parseSequenceExpressions } from '../core/parser';
 import { getOptions, getRules } from '../core/intl-parser';
 
@@ -21,7 +21,7 @@ const dynamicParams: string[] = [];
 /**
  * Qwik Speak Inline Vite plugin
  * 
- * Inline $translate & $plural values
+ * Inline $translate, $inlineTranslate & $plural values
  */
 export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
   // Resolve options
@@ -102,6 +102,10 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
       if (target === 'client') {
         // Filter id
         if (/\/src\//.test(id) && /\.(js|cjs|mjs|jsx|ts|tsx)$/.test(id)) {
+          // TEST
+          /* if (code.includes('$translate')) {
+            console.log(code);
+          } */
           // Filter code: $plural
           if (/\$plural/.test(code)) {
             code = transformPlural(code);
@@ -110,6 +114,14 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
           if (/\$translate/.test(code)) {
             code = transform(code);
           }
+          // Filter code: $inlineTranslate
+          if (/\$inlineTranslate/.test(code)) {
+            code = transformInline(code);
+          }
+          // TEST
+          /* if (code.includes('$translate')) {
+            console.log(code);
+          } */
           return code;
         }
       }
@@ -164,10 +176,20 @@ export async function writeChunks(
     if (chunk.type === 'chunk' && 'code' in chunk && /build\//.test(chunk.fileName)) {
       const filename = normalize(`${targetDir}/${chunk.fileName.split('/')[1]}`);
 
+      // TEST
+      /* if (chunk.code.includes(inlinePlaceholder)) {
+        console.log(filename);
+        console.log(chunk.code);
+      } */
       // Inline
       let code = inlinePlural(chunk.code, inlinePluralPlaceholder, inlinePlaceholder, lang, opts);
       code = inline(code, translation, inlinePlaceholder, lang, opts);
       tasks.push(writeFile(filename, code));
+      // TEST
+      /* if (chunk.code.includes(inlinePlaceholder)) {
+        console.log(filename);
+        console.log(code);
+      } */
 
       // Original chunks to default lang
       if (lang === opts.defaultLang) {
@@ -201,7 +223,37 @@ export function transform(code: string): string {
       if (checkDynamic(args, originalFn)) continue;
 
       // Transpile with placeholder
-      const transpiled = originalFn.replace(new RegExp(`${alias}\\(`, 's'), `${inlinePlaceholder}(`);
+      const transpiled = originalFn.replace(new RegExp(`${alias}\\(`), `${inlinePlaceholder}(`);
+      // Replace
+      code = code.replace(originalFn, transpiled);
+    }
+  }
+
+  return code;
+}
+
+/**
+ * Transform $inlineTranslate to placeholder
+ */
+export function transformInline(code: string): string {
+  const alias = getInlineTranslateAlias(code);
+
+  // Parse sequence
+  const sequence = parseSequenceExpressions(code, alias);
+
+  if (sequence.length === 0) return code;
+
+  for (const expr of sequence) {
+    // Original function
+    const originalFn = expr.value;
+    // Arguments
+    const args = expr.arguments;
+
+    if (args?.length > 0) {
+      if (checkDynamicInline(args, originalFn)) continue;
+
+      // Transpile with placeholder
+      const transpiled = originalFn.replace(new RegExp(`${alias}\\(`), `${inlinePlaceholder}(`);
       // Replace
       code = code.replace(originalFn, transpiled);
     }
@@ -231,7 +283,7 @@ export function transformPlural(code: string): string {
       if (checkDynamicPlural(args, originalFn)) continue;
 
       // Transpile with placeholder
-      const transpiled = originalFn.replace(new RegExp(`${alias}\\(`, 's'), `${inlinePluralPlaceholder}(`);
+      const transpiled = originalFn.replace(new RegExp(`${alias}\\(`), `${inlinePluralPlaceholder}(`);
       // Replace
       code = code.replace(originalFn, transpiled);
     }
@@ -259,9 +311,9 @@ export function inline(
     const args = expr.arguments;
 
     if (args?.length > 0) {
-      const resolvedLang = withLang(lang, args[3], opts);
+      const resolvedLang = withLang(lang, args[2], opts);
 
-      let resolvedValue: string | Translation = '';
+      let resolvedValue: string | Translation = quoteValue('');
 
       // Get array of keys or key
       if (args[0].type === 'ArrayExpression') {
@@ -272,6 +324,7 @@ export function inline(
           const value = getValue(key, translation[resolvedLang], args[1], opts.keySeparator);
           if (!value) {
             missingValues.push(`${resolvedLang} - missing value for key: ${key}`);
+            keyValues.push(quoteValue(''));
           } else {
             keyValues.push(value);
           }
@@ -305,7 +358,7 @@ export function inlinePlural(
   placeholder: string,
   lang: string,
   opts: Required<QwikSpeakInlineOptions>
-) {
+): string {
   // Parse sequence
   const sequence = parseSequenceExpressions(code, pluralPlaceholder);
 
@@ -318,7 +371,7 @@ export function inlinePlural(
     const args = expr.arguments;
 
     if (args?.length > 0) {
-      const resolvedLang = withLang(lang, args[5], opts);
+      const resolvedLang = withLang(lang, args[4], opts);
 
       // Rules
       const options = getOptions(args[3]?.properties);
@@ -380,9 +433,9 @@ export function transpilePluralFn(
       if (rule !== rules[rules.length - 1]) {
         const strOptions = args[3]?.properties?.map(p => `${p.key.value}: ${stringifyParam(p)}`)?.join(', ');
         const strRule = stringifyRule(lang, args[0].value!, rule, strOptions);
-        expr += (strRule + ` && ${placeholder}(${quoteValue(key)}, {${strParams}}, ${args[4]?.value}, ${quoteValue(lang)}) || `);
+        expr += (strRule + ` && ${placeholder}(${quoteValue(key)}, {${strParams}}, ${quoteValue(lang)}) || `);
       } else {
-        expr += `${placeholder}(${quoteValue(key)}, {${strParams}}, ${args[4]?.value}, ${quoteValue(lang)})`;
+        expr += `${placeholder}(${quoteValue(key)}, {${strParams}}, ${quoteValue(lang)})`;
       }
     }
     expr += ')';
@@ -410,6 +463,30 @@ export function checkDynamic(args: Argument[], originalFn: string): boolean {
 
     // Dynamic argument (params, lang)
     if (args[1]?.type === 'Identifier' || args[1]?.type === 'CallExpression' ||
+      args[2]?.type === 'Identifier' || args[2]?.type === 'CallExpression') {
+      dynamicParams.push(`dynamic params: ${originalFn.replace(/\s+/g, ' ')} - skip`);
+      return true;
+    }
+  }
+  return false;
+}
+
+export function checkDynamicInline(args: Argument[], originalFn: string): boolean {
+  if (args?.[0]?.value) {
+    // Dynamic key
+    if (args[0].type === 'Identifier') {
+      if (args[0].value !== 'key' && args[0].value !== 'keys') dynamicKeys.push(`dynamic key: ${originalFn.replace(/\s+/g, ' ')} - skip`)
+      return true;
+    }
+    if (args[0].type === 'Literal') {
+      if (args[0].value !== 'key' && args[0].value !== 'keys' && /\${.*}/.test(args[0].value)) {
+        dynamicKeys.push(`dynamic key: ${originalFn.replace(/\s+/g, ' ')} - skip`)
+        return true;
+      }
+    }
+
+    // Dynamic argument (params, lang)
+    if (args[2]?.type === 'Identifier' || args[2]?.type === 'CallExpression' ||
       args[3]?.type === 'Identifier' || args[3]?.type === 'CallExpression') {
       dynamicParams.push(`dynamic params: ${originalFn.replace(/\s+/g, ' ')} - skip`);
       return true;
@@ -424,7 +501,7 @@ export function checkDynamicPlural(args: Argument[], originalFn: string): boolea
     if (args[1]?.type === 'Identifier' || args[1]?.type === 'CallExpression' ||
       args[2]?.type === 'Identifier' || args[2]?.type === 'CallExpression' ||
       args[3]?.type === 'Identifier' || args[3]?.type === 'CallExpression' ||
-      args[5]?.type === 'Identifier' || args[5]?.type === 'CallExpression') {
+      args[4]?.type === 'Identifier' || args[4]?.type === 'CallExpression') {
       dynamicParams.push(`dynamic plural: ${originalFn.replace(/\s+/g, ' ')} - skip`);
       return true;
     }
@@ -432,7 +509,7 @@ export function checkDynamicPlural(args: Argument[], originalFn: string): boolea
   return false;
 }
 
-export function withLang(lang: string, arg: Argument, opts: Required<QwikSpeakInlineOptions>) {
+export function withLang(lang: string, arg: Argument, opts: Required<QwikSpeakInlineOptions>): string {
   let optionalLang: string | undefined;
 
   // Check multilingual
@@ -526,7 +603,7 @@ export function stringifyObject(value: Translation): string {
 /**
  * Replace quoted values with a placeholder
  */
-function replacer(key: string, value: string | Translation) {
+function replacer(key: string, value: string | Translation): string | Translation {
   if (typeof value === 'string' && /^`.*`$/.test(value)) return value.replace(/^`/, '__qsOpenBt').replace(/`$/, '__qsCloseBt');
   return value;
 }

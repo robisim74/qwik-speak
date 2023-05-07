@@ -1,4 +1,4 @@
-# Qwik Speak ![logo](https://user-images.githubusercontent.com/14012361/230638591-98477fff-2c07-47fd-ac2a-cc5c81098f60.png)
+# Qwik Speak
 [![Node.js CI](https://github.com/robisim74/qwik-speak/actions/workflows/node.js.yml/badge.svg)](https://github.com/robisim74/qwik-speak/actions/workflows/node.js.yml) [![Playwright](https://github.com/robisim74/qwik-speak/actions/workflows/playwright.yml/badge.svg)](https://github.com/robisim74/qwik-speak/actions/workflows/playwright.yml)
 
 > Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps
@@ -11,6 +11,7 @@ npm install qwik-speak --save-dev
 - [Quick Start](./docs/quick-start.md)
 - [Tutorial: localized routing](./docs/tutorial-routing.md)
 - [Translate](./docs/translate.md)
+- [Translation functions](./docs/translation-functions.md)  
 - [Qwik Speak and Adapters](./docs/adapters.md)
 - [Testing](./docs/testing.md)
 
@@ -18,7 +19,7 @@ Live example on [Cloudflare pages](https://qwik-speak.pages.dev/) and playground
 
 ## Overview
 ### Getting the translation
-```jsx
+```tsx
 import { $translate as t } from 'qwik-speak';
 
 export default component$(() => {
@@ -31,7 +32,7 @@ export default component$(() => {
 });
 ```
 ### Getting dates, relative time & numbers
-```jsx
+```tsx
 import { formatDate as fd, relativeTime as rt, formatNumber as fn } from 'qwik-speak';
 
 export default component$(() => {
@@ -83,7 +84,7 @@ stateDiagram-v2
         of translation data
     end note
 ```
-`SpeakState` is immutable: it cannot be updated after it is created and is not reactive.
+> `SpeakState` is immutable: it cannot be updated after it is created and is not reactive.
 
 - `useSpeakContext()` Returns the Speak state
 - `useSpeakConfig()` Returns the configuration in Speak context
@@ -93,7 +94,7 @@ stateDiagram-v2
 - `defaultLocale` The default locale to use as fallback
 - `supportedLocales` List of locales supported by the app
 - `assets` An array of strings: each asset is passed to the `loadTranslation$` function to obtain data according to the language
-- `runtimeAssets` Optional assets available at runtime
+- `runtimeAssets` Assets available at runtime
 - `keySeparator` Separator of nested keys. Default is `.`
 - `keyValueSeparator` Key-value separator. Default is `@@`
 
@@ -115,50 +116,44 @@ and optionally contains:
 
 ## APIs
 ### Components
-```mermaid
-C4Container
-    Container_Boundary(a, "App") {
-        Component(a0, "QwikSpeakProvider", "", "Creates Speak context")
-        Container_Boundary(b1, "Home") {
-            Component(a10, "Speak", "", "Adds its own translation data to the context")        
-        }  
-        Container_Boundary(b2, "Page") {
-            Component(a20, "Speak", "", "Adds its own translation data to the context")        
-        }       
-    }
-```
 #### QwikSpeakProvider component
 `QwikSpeakProvider` component provides the Speak context to the app. `Props`:
-  - `config` Speak config (required)
+  - `config` Speak config
   - `translationFn` Optional functions to use
   - `locale` Optional locale to use
   - `langs` Optional additional languages to preload data for (multilingual)
 
 #### Speak component (scoped translations)
 `Speak` component can be used for scoped translations. `Props`:
-  - `assets` Assets to load (required)
-  - `runtimeAssets` Optional assets to load available at runtime
+  - `assets` Assets to load
+  - `runtimeAssets` Assets to load available at runtime
   - `langs` Optional additional languages to preload data for (multilingual)
 
-> `QwikSpeakProvider` and `Speak` components are `Slot` components: because Qwik renders `Slot` components and direct children in isolation, translations are not immediately available in direct children
-
 ### Functions
-- `$translate(keys: string | string[], params?: any, ctx?: SpeakState, lang?: string)`
+#### Translate
+- `$translate(keys: string | string[], params?: any, lang?: string)`
 Translates a key or an array of keys. The syntax of the string is `key@@[default value]`
 
-- `$plural(value: number | string, key?: string, params?: any, options?: Intl.PluralRulesOptions, ctx?: SpeakState, lang?: string)`
+- `$inlineTranslate(keys: string | string[], ctx: SpeakState, params?: any, lang?: string)`
+Translates a key or an array of keys outside the component$. The syntax of the string is `key@@[default value]`
+
+- `useTranslate$()`
+Returns the translate functions as QRL
+
+- `$plural(value: number | string, key?: string, params?: any, options?: Intl.PluralRulesOptions, lang?: string)`
 Gets the plural by a number using [Intl.PluralRules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/PluralRules) API
 
-- `formatDate(value: Date | number | string, options?: Intl.DateTimeFormatOptions, locale?: SpeakLocale, lang?: string, timeZone?: string)`
+#### Localize
+- `formatDate(value: Date | number | string, options?: Intl.DateTimeFormatOptions, lang?: string, timeZone?: string)`
 Formats a date using [Intl.DateTimeFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat) API
 
-- `relativeTime(value: number | string, unit: Intl.RelativeTimeFormatUnit, options?: Intl.RelativeTimeFormatOptions, locale?: SpeakLocale, lang?: string)`
+- `relativeTime(value: number | string, unit: Intl.RelativeTimeFormatUnit, options?: Intl.RelativeTimeFormatOptions, lang?: string)`
 Formats a relative time using [Intl.RelativeTimeFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/RelativeTimeFormat) API
 
-- `formatNumber(value: number | string, options?: Intl.NumberFormatOptions, locale?: SpeakLocale, lang?: string, currency?: string)`
+- `formatNumber(value: number | string, options?: Intl.NumberFormatOptions, lang?: string, currency?: string)`
 Formats a number using [Intl.NumberFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat) API
 
-- `displayName(code: string, options: Intl.DisplayNamesOptions, locale?: SpeakLocale, lang?: string)`
+- `displayName(code: string, options: Intl.DisplayNamesOptions, lang?: string)`
 Returns the translation of language, region, script or currency display names using [Intl.DisplayNames](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DisplayNames) API
 
 ## Development Builds

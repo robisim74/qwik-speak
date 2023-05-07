@@ -3,7 +3,8 @@ import { existsSync, mkdirSync } from 'fs';
 import { extname, join, normalize } from 'path';
 
 import type { QwikSpeakExtractOptions, Translation } from '../core/types';
-import { getPluralAlias, getTranslateAlias, parseJson, parseSequenceExpressions } from '../core/parser';
+import type { Argument, CallExpression, Element } from '../core/parser';
+import { getPluralAlias, getTranslateAlias, getInlineTranslateAlias, getUseTranslateAlias, parseJson, parseSequenceExpressions } from '../core/parser';
 import { deepClone, deepMerge, deepSet } from '../core/merge';
 import { minDepth, sortTarget, toJsonString } from '../core/format';
 import { getOptions, getRules } from '../core/intl-parser';
@@ -54,6 +55,21 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
     }
   };
 
+  const checkDynamic = (element: Element | Argument): boolean => {
+    // Dynamic key
+    if (element.type === 'Identifier') {
+      stats.set('dynamic', (stats.get('dynamic') ?? 0) + 1);
+      return true;
+    }
+    if (element.type === 'Literal' && element.value) {
+      if (/\${.*}/.test(element.value)) {
+        stats.set('dynamic', (stats.get('dynamic') ?? 0) + 1);
+        return true;
+      }
+    }
+    return false;
+  }
+
   /**
    * Parse source file to return keys
    */
@@ -62,14 +78,11 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
 
     let code = await readFile(normalize(`${resolvedOptions.basePath}/${file}`), 'utf8');
 
-    // $translate
-    if (/\$translate/.test(code)) {
-      const alias = getTranslateAlias(code);
-      // Clear types
+    const clearTypes = (alias: string) => {
       code = code.replace(new RegExp(`${alias}<.*>\\(`, 'g'), `${alias.replace('\\b', '')}(`);
-      // Parse sequence
-      const sequence = parseSequenceExpressions(code, alias);
+    }
 
+    const parseSequence = (sequence: CallExpression[]) => {
       for (const expr of sequence) {
         const args = expr.arguments;
 
@@ -79,27 +92,16 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
             if (args[0].elements) {
               for (const element of args[0].elements) {
                 if (element.type === 'Literal') {
+                  if (checkDynamic(element))
+                    continue;
+
                   keys.push(element.value);
                 }
               }
             }
           } else if (args?.[0]?.value) {
-            // Dynamic key
-            if (args[0].type === 'Identifier') {
-              stats.set('dynamic', (stats.get('dynamic') ?? 0) + 1);
+            if (checkDynamic(args[0]))
               continue;
-            }
-            if (args[0].type === 'Literal') {
-              if (/\${.*}/.test(args[0].value)) {
-                stats.set('dynamic', (stats.get('dynamic') ?? 0) + 1);
-                continue;
-              }
-            }
-            // Dynamic argument (params)
-            if (args[1]?.type === 'Identifier' || args[1]?.type === 'CallExpression') {
-              stats.set('dynamic', (stats.get('dynamic') ?? 0) + 1);
-              continue;
-            }
 
             keys.push(args[0].value);
           }
@@ -107,18 +109,38 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
       }
     }
 
+    // $translate
+    if (/\$translate/.test(code)) {
+      const alias = getTranslateAlias(code);
+      // Clear types
+      clearTypes(alias);
+      // Parse sequence
+      const sequence = parseSequenceExpressions(code, alias);
+      parseSequence(sequence);
+    }
+
+    // $inlineTranslate
+    if (/\$inlineTranslate/.test(code)) {
+      const alias = getInlineTranslateAlias(code);
+      // Clear types
+      clearTypes(alias);
+      // Parse sequence
+      const sequence = parseSequenceExpressions(code, alias);
+      parseSequence(sequence);
+    }
+
     // $plural
     if (/\$plural/.test(code)) {
       const alias = getPluralAlias(code);
       // Parse sequence
       const sequence = parseSequenceExpressions(code, alias);
+
       for (const expr of sequence) {
         const args = expr.arguments;
 
         if (args?.length > 0) {
-          // Dynamic argument (key, params, options)
+          // Dynamic argument (key, options)
           if (args[1]?.type === 'Identifier' || args[1]?.type === 'CallExpression' ||
-            args[2]?.type === 'Identifier' || args[2]?.type === 'CallExpression' ||
             args[3]?.type === 'Identifier' || args[3]?.type === 'CallExpression') {
             stats.set('dynamic plural', (stats.get('dynamic plural') ?? 0) + 1);
             continue;
@@ -143,43 +165,57 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
       }
     }
 
+    // useTranslate$
+    if (/useTranslate\$/.test(code)) {
+      const alias = getUseTranslateAlias(code);
+      if (alias) {
+        // Clear types
+        clearTypes(alias);
+        // Parse sequence
+        const sequence = parseSequenceExpressions(code, alias);
+        parseSequence(sequence);
+      }
+    }
+
     return keys;
   };
 
   /**
-   * Read, deep merge & sort translation data
+   * Read assets
    */
-  const readAssets = async () => {
+  const readAssets = async (): Promise<Map<string, Translation>> => {
+    const assetsData = new Map<string, Translation>();
+
     for (const lang of resolvedOptions.supportedLangs) {
       const baseAssets = normalize(`${resolvedOptions.basePath}/${resolvedOptions.assetsPath}/${lang}`);
 
-      if (!existsSync(baseAssets)) return;
+      if (existsSync(baseAssets)) {
 
-      const files = await readdir(baseAssets);
+        const files = await readdir(baseAssets);
 
-      if (files.length > 0) {
-        const ext = extname(files[0]);
-        let data: Translation = {};
+        if (files.length > 0) {
+          const ext = extname(files[0]);
+          let data: Translation = {};
 
-        const tasks = files.map(filename => readFile(`${baseAssets}/${filename}`, 'utf8'));
-        const sources = await Promise.all(tasks);
+          const tasks = files.map(filename => readFile(`${baseAssets}/${filename}`, 'utf8'));
+          const sources = await Promise.all(tasks);
 
-        for (const source of sources) {
-          if (source) {
-            switch (ext) {
-              case '.json':
-                data = parseJson(data, source);
-                break;
+          for (const source of sources) {
+            if (source) {
+              switch (ext) {
+                case '.json':
+                  data = parseJson(data, source);
+                  break;
+              }
             }
           }
+
+          assetsData.set(lang, data);
         }
-
-        deepMerge(translation[lang], data);
-
-        // Sort by key
-        translation[lang] = sortTarget(translation[lang]);
       }
     }
+
+    return assetsData;
   };
 
   /**
@@ -231,12 +267,15 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
   };
 
   /**
-   * Start pipeline
+   * START PIPELINE
    */
+
+  /* Read sources files */
   for (const baseSource of baseSources) {
     await readSourceFiles(baseSource, excludedPaths);
   }
 
+  /* Parse sources */
   const tasks = sourceFiles.map(file => parseSourceFile(file));
   const sources = await Promise.all(tasks);
 
@@ -245,11 +284,11 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
     keys = keys.concat(source);
   }
 
-  // Unique
+  /* Unique keys */
   keys = [...new Set<string>(keys)];
   stats.set('unique keys', (stats.get('unique keys') ?? 0) + keys.length);
 
-  // Deep set
+  /* Deep set in translation data */
   for (let key of keys) {
     let defaultValue: string | Translation | undefined = undefined;
 
@@ -265,23 +304,35 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
     }
   }
 
-  // Read, deep merge & sort
-  await readAssets();
+  /* Read assets */
+  const assetsData = await readAssets();
 
-  // Write
+  /* Deep merge translation data */
+  if (assetsData.size > 0) {
+    for (const [lang, data] of assetsData) {
+      deepMerge(translation[lang], data);
+    }
+  }
+
+  /* Sort by key */
+  for (const lang of resolvedOptions.supportedLangs) {
+    translation[lang] = sortTarget(translation[lang]);
+  }
+
+  /* Write translation data */
   await writeAssets();
 
-  // Log
+  /* Log */
   for (const [key, value] of stats) {
     switch (key) {
       case 'unique keys':
         console.log('\x1b[32m%s\x1b[0m', `extracted keys: ${value}`);
         break;
       case 'dynamic':
-        console.log('\x1b[32m%s\x1b[0m', `skipped keys due to dynamic params: ${value}`);
+        console.log('\x1b[32m%s\x1b[0m', `translations skipped due to dynamic keys: ${value}`);
         break;
       case 'dynamic plural':
-        console.log('\x1b[32m%s\x1b[0m', `skipped plurals due to dynamic params: ${value}`);
+        console.log('\x1b[32m%s\x1b[0m', `plurals skipped due to dynamic keys/options: ${value}`);
         break;
     }
   }
