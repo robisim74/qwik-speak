@@ -278,16 +278,15 @@ We can translate the `it-IT` files, and run the app:
 npm start
 ```
 
-## Inlining: [Qwik Speak Inline Vite plugin](./inline.md)
+## Production: [Qwik Speak Inline Vite plugin](./inline.md)
+In production mode, `assets` are loaded only during SSR, and to get the translations on the client as well it is required to inline the translations in chucks sent to the browser.
+
 Add `qwikSpeakInline` Vite plugin in `vite.config.ts`:
 ```typescript
 import { qwikSpeakInline } from 'qwik-speak/inline';
 
 export default defineConfig(() => {
   return {
-    build: {
-      minify: false // To inspect production files
-    },
     plugins: [
       qwikCity(),
       qwikVite(),
