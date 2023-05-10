@@ -98,6 +98,24 @@ export const Home = component$(() => {
 });
 ```
 
+## useTranslate$
+The `useTranslate$` closure returns the translate function as QRL. This means that it is serializable and it can be passed to other QRL functions characterized by lazy loading:
+```tsx
+import { useTranslate$ } from 'qwik-speak';
+
+const MyComponent = component$(() => {
+  const t$ = useTranslate$();
+
+  const s = useSignal('');
+
+  return (
+      <button onClick$={async () => s.value = await t$('runtime.test')}></button>
+  );
+});
+```
+> The translation keys passed into its must be provided in `runtimeAssets` and will not be inlined
+
+
 ## $plural
 The `$plural` function uses the [Intl.PluralRules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/PluralRules) API:
 ```tsx
@@ -129,24 +147,6 @@ It is rendered as:
 ```text
 1 software developer
 ```
-
-## useTranslate$
-The `useTranslate$` closure returns the translate function as QRL. This means that it is serializable and it can be passed to other QRL functions characterized by lazy loading:
-```tsx
-import { useTranslate$ } from 'qwik-speak';
-
-const MyComponent = component$(() => {
-  const t$ = useTranslate$();
-
-  const s = useSignal('');
-
-  return (
-      <button onClick$={async () => s.value = await t$('runtime.test')}></button>
-  );
-});
-```
-> The translation keys passed into its must be provided in `runtimeAssets` and will not be inlined
-
 
 # Localize
 > All localization functions use the Speak context internally: they must be used within the Qwik components
