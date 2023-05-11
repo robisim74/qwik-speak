@@ -3,22 +3,16 @@ import { qwikVite } from '@builder.io/qwik/optimizer';
 import { qwikCity } from '@builder.io/qwik-city/vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
-import { fileURLToPath } from 'url';
-import { qwikSpeakInline } from './packages/qwik-speak/tools/inline';
+import { qwikSpeakInline } from 'qwik-speak/inline';
 
 export default defineConfig(() => {
   return {
     build: {
-      minify: false // To inspect production files
+      minify: true
     },
     plugins: [
       qwikCity(),
-      qwikVite({
-        // Handle packages
-        vendorRoots: [
-          fileURLToPath(new URL('./packages/qwik-speak/src', import.meta.url))
-        ]
-      }),
+      qwikVite(),
       qwikSpeakInline({
         supportedLangs: ['en-US', 'it-IT'],
         defaultLang: 'en-US',
