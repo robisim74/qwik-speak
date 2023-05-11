@@ -83,7 +83,7 @@ export const loadTranslations = async (
 export const translate = (
   key: string | string[],
   data: Translation,
-  params?: any,
+  params?: Record<string, any>,
   keySeparator = '.',
   keyValueSeparator = '@@',
 ): any => {
@@ -126,7 +126,7 @@ export const separateKeyValue = (key: string, keyValueSeparator: string): [strin
 /**
  * Replace params in the value
  */
-export const transpileParams = (value: string, params: any): string => {
+export const transpileParams = (value: string, params: Record<string, any>): string => {
   const replacedValue = value.replace(/{{\s?([^{}\s]*)\s?}}/g, (substring: string, parsedKey: string) => {
     const replacer = params[parsedKey];
     return replacer !== undefined ? replacer : substring;

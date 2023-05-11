@@ -131,16 +131,16 @@ and optionally contains:
 
 ### Functions
 #### Translate
-- `$translate(keys: string | string[], params?: any, lang?: string)`
+- `$translate(keys: string | string[], params?: Record<string, any>, lang?: string)`
 Translates a key or an array of keys. The syntax of the string is `key@@[default value]`
 
-- `$inlineTranslate(keys: string | string[], ctx: SpeakState, params?: any, lang?: string)`
+- `$inlineTranslate(keys: string | string[], ctx: SpeakState, params?: Record<string, any>, lang?: string)`
 Translates a key or an array of keys outside the component$. The syntax of the string is `key@@[default value]`
 
 - `useTranslate$()`
-Returns the translate functions as QRL
+Returns the translate function as QRL
 
-- `$plural(value: number | string, key?: string, params?: any, options?: Intl.PluralRulesOptions, lang?: string)`
+- `$plural(value: number | string, key?: string, params?: Record<string, any>, options?: Intl.PluralRulesOptions, lang?: string)`
 Gets the plural by a number using [Intl.PluralRules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/PluralRules) API
 
 #### Localize

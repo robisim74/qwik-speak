@@ -25,7 +25,7 @@ export interface SpeakLocale {
   /**
    * Key value pairs of unit identifiers
    */
-  units?: { [key: string]: string };
+  units?: Record<string, string>;
 }
 
 /**

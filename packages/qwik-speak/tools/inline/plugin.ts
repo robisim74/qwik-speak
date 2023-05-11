@@ -102,10 +102,6 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
       if (target === 'client') {
         // Filter id
         if (/\/src\//.test(id) && /\.(js|cjs|mjs|jsx|ts|tsx)$/.test(id)) {
-          // TEST
-          /* if (code.includes('$translate')) {
-            console.log(code);
-          } */
           // Filter code: $plural
           if (/\$plural/.test(code)) {
             code = transformPlural(code);
@@ -118,10 +114,6 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
           if (/\$inlineTranslate/.test(code)) {
             code = transformInline(code);
           }
-          // TEST
-          /* if (code.includes('$translate')) {
-            console.log(code);
-          } */
           return code;
         }
       }
@@ -176,20 +168,15 @@ export async function writeChunks(
     if (chunk.type === 'chunk' && 'code' in chunk && /build\//.test(chunk.fileName)) {
       const filename = normalize(`${targetDir}/${chunk.fileName.split('/')[1]}`);
 
-      // TEST
-      /* if (chunk.code.includes(inlinePlaceholder)) {
-        console.log(filename);
-        console.log(chunk.code);
-      } */
       // Inline
-      let code = inlinePlural(chunk.code, inlinePluralPlaceholder, inlinePlaceholder, lang, opts);
-      code = inline(code, translation, inlinePlaceholder, lang, opts);
+      let code = chunk.code;
+      if (code.includes(inlinePluralPlaceholder)) {
+        code = inlinePlural(chunk.code, inlinePluralPlaceholder, inlinePlaceholder, lang, opts);
+      }
+      if (code.includes(inlinePlaceholder)) {
+        code = inline(code, translation, inlinePlaceholder, lang, opts);
+      }
       tasks.push(writeFile(filename, code));
-      // TEST
-      /* if (chunk.code.includes(inlinePlaceholder)) {
-        console.log(filename);
-        console.log(code);
-      } */
 
       // Original chunks to default lang
       if (lang === opts.defaultLang) {

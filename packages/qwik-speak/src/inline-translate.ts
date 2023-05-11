@@ -11,8 +11,8 @@ export type InlineTranslateFn = {
    * @param lang Optional language if different from the current one
    * @returns The translation or the key if not found
    */
-  (key: string, ctx: SpeakState, params?: any, lang?: string): string;
-  <T>(key: string, ctx: SpeakState, params?: any, lang?: string): T;
+  (key: string, ctx: SpeakState, params?: Record<string, any>, lang?: string): string;
+  <T>(key: string, ctx: SpeakState, params?: Record<string, any>, lang?: string): T;
   /**
    * Translate an array of keys outside the component$.
    * The syntax of the strings is 'key@@[default value]'
@@ -22,14 +22,14 @@ export type InlineTranslateFn = {
    * @param lang Optional language if different from the current one
    * @returns The translations or the keys if not found
    */
-  (keys: string[], ctx: SpeakState, params?: any, lang?: string): string[];
-  <T>(keys: string[], ctx: SpeakState, params?: any, lang?: string): T[];
+  (keys: string[], ctx: SpeakState, params?: Record<string, any>, lang?: string): string[];
+  <T>(keys: string[], ctx: SpeakState, params?: Record<string, any>, lang?: string): T[];
 };
 
 export const $inlineTranslate: InlineTranslateFn = (
   keys: string | string[],
   ctx: SpeakState,
-  params?: any,
+  params?: Record<string, any>,
   lang?: string
 ) => {
   const { locale, translation, config } = ctx;

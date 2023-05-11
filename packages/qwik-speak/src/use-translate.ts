@@ -13,8 +13,8 @@ export type TranslateFn = {
    * @param lang Optional language if different from the current one
    * @returns The translation or the key if not found
    */
-  (key: string, params?: any, lang?: string): string;
-  <T>(key: string, params?: any, lang?: string): T;
+  (key: string, params?: Record<string, any>, lang?: string): string;
+  <T>(key: string, params?: Record<string, any>, lang?: string): T;
   /**
    * Translate an array of keys.
    * The syntax of the strings is 'key@@[default value]'
@@ -23,11 +23,11 @@ export type TranslateFn = {
    * @param lang Optional language if different from the current one
    * @returns The translations or the keys if not found
    */
-  (keys: string[], params?: any, lang?: string): string[];
-  <T>(keys: string[], params?: any, lang?: string): T[];
+  (keys: string[], params?: Record<string, any>, lang?: string): string[];
+  <T>(keys: string[], params?: Record<string, any>, lang?: string): T[];
 };
 
-export const useTranslate: TranslateFn = (keys: string | string[], params?: any, lang?: string) => {
+export const useTranslate: TranslateFn = (keys: string | string[], params?: Record<string, any>, lang?: string) => {
   const ctx = useSpeakContext();
   const { locale, translation, config } = ctx;
 
@@ -45,8 +45,8 @@ export interface TranslateQrl extends QRL<() => any> {
    * @param lang Optional language if different from the current one
    * @returns The translation or the key if not found
    */
-  (key: string, params?: any, lang?: string): Promise<string>;
-  <T>(key: string, params?: any, lang?: string): Promise<T>;
+  (key: string, params?: Record<string, any>, lang?: string): Promise<string>;
+  <T>(key: string, params?: Record<string, any>, lang?: string): Promise<T>;
   /**
    * Translate an array of keys.
    * The syntax of the strings is 'key@@[default value]'
@@ -55,15 +55,15 @@ export interface TranslateQrl extends QRL<() => any> {
    * @param lang Optional language if different from the current one
    * @returns The translations or the keys if not found
    */
-  (keys: string[], params?: any, lang?: string): Promise<string[]>;
-  <T>(keys: string[], params?: any, lang?: string): Promise<T[]>;
+  (keys: string[], params?: Record<string, any>, lang?: string): Promise<string[]>;
+  <T>(keys: string[], params?: Record<string, any>, lang?: string): Promise<T[]>;
 }
 
 export const useTranslateQrl = (): TranslateQrl => {
   const ctx = useSpeakContext();
   const { locale, translation, config } = ctx;
 
-  const translate$ = $((keys: string | string[], params?: any, lang?: string) => {
+  const translate$ = $((keys: string | string[], params?: Record<string, any>, lang?: string) => {
     lang ??= locale.lang;
 
     return translate(keys, translation[lang], params, config.keySeparator, config.keyValueSeparator);

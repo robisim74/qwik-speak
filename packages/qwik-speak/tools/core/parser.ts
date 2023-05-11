@@ -92,6 +92,9 @@ export function tokenize(code: string, start = 0): Token[] {
 
   const next = () => code[++index];
 
+  const lookAhead = () => code[index + 1];
+  const lookBehind = () => code[index - 1];
+
   const getRawValue = () => code.substring(start, index + 1);
 
   const startLiteral = (ch: string) => /["'`0-9+-]/.test(ch);
@@ -99,6 +102,8 @@ export function tokenize(code: string, start = 0): Token[] {
   const startIdentifier = (ch: string) => /[a-zA-Z_$]/.test(ch);
 
   const startPunctuator = (ch: string) => /[(){},:;.[\]?!]/.test(ch);
+
+  const startComment = (ch: string) => /\//.test(ch) && /\*/.test(lookAhead());
 
   const scanLiteral = (ch: string, token?: Token): Token[] => {
     if (!token) {
@@ -164,6 +169,14 @@ export function tokenize(code: string, start = 0): Token[] {
     return scan(next());
   };
 
+  const scanComment = (ch: string): Token[] => {
+    if (/\//.test(ch) && /\*/.test(lookBehind())) {
+      return scan(ch);
+    }
+
+    return scanComment(next());
+  };
+
   const endOfScan = () => (tokens[tokens.length - 1]?.type === 'Punctuator' && parenthesisStack.length === 0) ||
     index === code.length;
 
@@ -178,6 +191,8 @@ export function tokenize(code: string, start = 0): Token[] {
     if (startIdentifier(ch)) return scanIdentifier(ch);
 
     if (startPunctuator(ch)) return scanPunctuator(ch);
+
+    if (startComment(ch)) return scanComment(ch);
 
     return scan(next());
   };
@@ -231,9 +246,15 @@ export function parse(tokens: Token[], code: string, alias: string): CallExpress
     if (!property) {
       property = {
         type: 'Property',
-        key: { type: 'Identifier', value: token.value }, value: { type: 'Literal', value: '' }
+        key: { type: 'Identifier', value: token.value },
+        value: { type: 'Literal', value: '' }
       };
       properties.push(property);
+    }
+
+    if (!/\)/.test(token.value) && property.value.type == 'CallExpression') {
+      property.value.value += token.value;
+      return parseProperty(next(), properties, property);
     }
 
     if (!/:/.test(token.value) && !/:/.test(lookAhead().value)) {
@@ -296,21 +317,31 @@ export function parse(tokens: Token[], code: string, alias: string): CallExpress
     return parseArgs(next());
   };
 
-  const parseCallExpr = (token = tokens[c]): CallExpression => {
-    if (new RegExp(alias).test(token.value)) {
-      node = {
-        type: 'CallExpression',
-        value: code.substring(token.position.start, last().position.end + 1),
-        arguments: []
-      };
-      return parseArgs(next());
-    } else {
-      node.arguments.push({ type: 'CallExpression', value: token.value });
-      return parseArgs(next());
+  const parseCallExpr = (token: Token, arg?: Argument): CallExpression => {
+    if (!arg) {
+      if (new RegExp(alias).test(token.value)) {
+        node = {
+          type: 'CallExpression',
+          value: code.substring(token.position.start, last().position.end + 1),
+          arguments: []
+        };
+        return parseArgs(next());
+      } else {
+        arg = { type: 'CallExpression', value: token.value };
+        node.arguments.push(arg);
+        return parseCallExpr(next(), arg)
+      }
     }
+
+    arg.value += token.value;
+
+    // End of call
+    if (/\)/.test(token.value)) return parseArgs(next());
+
+    return parseCallExpr(next(), arg)
   }
 
-  return parseCallExpr();
+  return parseCallExpr(tokens[c]);
 }
 
 /**
