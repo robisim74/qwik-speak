@@ -311,6 +311,40 @@ describe('parser: parse', () => {
       }
     );
   });
+  test('parse with punctuation in params', () => {
+    const code = String.raw`t('text@@{{ default }}', { default: 'Text: (){},:;.[]?!\'" punctuation'})`;
+    const tokens = tokenize(code);
+    const callExpression = parse(tokens, code, '\\bt');
+    expect(callExpression).toEqual(
+      {
+        type: 'CallExpression',
+        value: "t('text@@{{ default }}', { default: 'Text: (){},:;.[]?!\\'\" punctuation'})",
+        arguments: [
+          {
+            type: 'Literal',
+            value: 'text@@{{ default }}'
+          },
+          {
+            type: 'ObjectExpression',
+            properties: [
+              {
+                type: 'Property',
+                key: {
+                  type: 'Identifier',
+                  value: 'default'
+                },
+                value: {
+                  type: 'Literal',
+                  value: "Text: (){},:;.[]?!\\'\" punctuation"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    );
+
+  });
   test('parse with dynamic params', () => {
     const code = `t('home.greeting', {
   name: obj.name, greeting: getGreeting()

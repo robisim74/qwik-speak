@@ -45,6 +45,9 @@ export interface CallExpression {
  * 
  * Punctuator:
  * [(){},:;.[]?!]
+ * 
+ * Comment
+ * [/*]
  */
 export type TokenType = 'Literal' | 'Identifier' | 'Punctuator';
 
@@ -68,6 +71,7 @@ export interface Token {
  * 'Literal': ["'`0-9+-]
  * 'Identifier': [a-zA-Z_$]
  * 'Punctuator': [(){},:;.[]?!]
+ * 'Comment': /*
  */
 export function tokenize(code: string, start = 0): Token[] {
   const tokens: Token[] = [];
@@ -92,8 +96,8 @@ export function tokenize(code: string, start = 0): Token[] {
 
   const next = () => code[++index];
 
-  const lookAhead = () => code[index + 1];
-  const lookBehind = () => code[index - 1];
+  const lookAhead = () => index < code.length - 1 ? code[index + 1] : '';
+  const lookBehind = () => index > 0 ? code[index - 1] : '';
 
   const getRawValue = () => code.substring(start, index + 1);
 
@@ -117,15 +121,12 @@ export function tokenize(code: string, start = 0): Token[] {
     }
 
     // Open/close quotes
-    if (quotesStack.length === 0 && /["'`]/.test(ch))
+    if (quotesStack.length === 0 && /["'`]/.test(ch)) {
       quotesStack.push(ch);
-    else if (quotesStack.length > 0 && quotesStack[quotesStack.length - 1] === ch)
-      quotesStack.pop();
-    // Escaped quotes
-    if (/\\/.test(ch))
-      quotesStack.push(ch);
-    else if (/["'`]/.test(ch) && /\\/.test(quotesStack[quotesStack.length - 1]))
-      quotesStack.pop();
+    } else if (quotesStack.length > 0 && quotesStack[quotesStack.length - 1] === ch) {
+      // Skip escaped
+      if (!/\\/.test(lookBehind())) quotesStack.pop();
+    }
 
     return scanLiteral(next(), token);
   }
@@ -170,6 +171,9 @@ export function tokenize(code: string, start = 0): Token[] {
   };
 
   const scanComment = (ch: string): Token[] => {
+    // Skip comment
+
+    // Close comment
     if (/\//.test(ch) && /\*/.test(lookBehind())) {
       return scan(ch);
     }
@@ -217,7 +221,7 @@ export function tokenize(code: string, start = 0): Token[] {
  * element = quote, character, quote
  * arrayExpr = "[", { element, [","] }, "]";
  * args = "(", { literal | identifier | objectExpr | callExpr, [","] }, ")";
- * callExpr = alias, args;
+ * callExpr = alias | identifier, args;
  * 
  * Recursive Descent Parsing
  */
@@ -226,7 +230,9 @@ export function parse(tokens: Token[], code: string, alias: string): CallExpress
 
   let c = 0;
 
-  const lookAhead = () => tokens[c + 1];
+  const lookAhead = () => c < tokens.length - 1 ?
+    tokens[c + 1] :
+    { type: '', value: '', position: { start: 0, end: 0 } };
   const next = () => tokens[++c];
   const last = () => tokens[tokens.length - 1];
 
@@ -252,20 +258,28 @@ export function parse(tokens: Token[], code: string, alias: string): CallExpress
       properties.push(property);
     }
 
-    if (!/\)/.test(token.value) && property.value.type == 'CallExpression') {
+    // Call expressions are inlined
+    if (/^\($/.test(token.value)) property.value.type = 'CallExpression';
+
+    if (property.value.type == 'CallExpression') {
       property.value.value += token.value;
+
+      // End of call
+      if (/^\)$/.test(token.value)) return parseObject(next(), properties);
+
       return parseProperty(next(), properties, property);
     }
 
-    if (!/:/.test(token.value) && !/:/.test(lookAhead().value)) {
+    if (!/^:$/.test(token.value) && !/^:$/.test(lookAhead().value)) {
       if (token.type === 'Literal') {
         property.value.value = trimQuotes(token.value);
       } else {
-        property.value.type = /[()]/.test(token.value) ? 'CallExpression' : 'Identifier';
-        property.value.value += token.value;
+        property.value.type = 'Identifier';
+        property.value.value = token.value;
       }
 
-      if (/[,}]/.test(lookAhead().value)) return parseObject(next(), properties);
+      // End of property
+      if (/^[,}]$/.test(lookAhead().value)) return parseObject(next(), properties);
     }
 
     return parseProperty(next(), properties, property);
@@ -278,10 +292,9 @@ export function parse(tokens: Token[], code: string, alias: string): CallExpress
     }
 
     // End of object
-    if (/}/.test(token.value)) return parseArgs(next());
+    if (/^}$/.test(token.value)) return parseArgs(next());
 
-    if (!/{/.test(token.value))
-      if (/:/.test(lookAhead().value)) return parseProperty(token, properties)
+    if (/^:$/.test(lookAhead().value)) return parseProperty(token, properties)
 
     return parseObject(next(), properties);
   };
@@ -293,7 +306,7 @@ export function parse(tokens: Token[], code: string, alias: string): CallExpress
     }
 
     // End of array
-    if (/]/.test(token.value)) return parseArgs(next());
+    if (/^]$/.test(token.value)) return parseArgs(next());
 
     if (token.type === 'Literal') {
       elements.push({ type: 'Literal', value: trimQuotes(token.value) });
@@ -309,10 +322,10 @@ export function parse(tokens: Token[], code: string, alias: string): CallExpress
     if (Object.is(token, last())) return node;
 
     if (token.type === 'Literal') return parseLiteral(token);
-    if (token.type === 'Identifier' && /\(/.test(lookAhead().value)) return parseCallExpr(token);
+    if (token.type === 'Identifier' && /^\($/.test(lookAhead().value)) return parseCallExpr(token);
     if (token.type === 'Identifier') return parseIdentifier(token);
-    if (/{/.test(token.value)) return parseObject(token);
-    if (/\[/.test(token.value)) return parseArrayExpr(token);
+    if (/^{$/.test(token.value)) return parseObject(token);
+    if (/^\[$/.test(token.value)) return parseArrayExpr(token);
 
     return parseArgs(next());
   };
@@ -320,6 +333,7 @@ export function parse(tokens: Token[], code: string, alias: string): CallExpress
   const parseCallExpr = (token: Token, arg?: Argument): CallExpression => {
     if (!arg) {
       if (new RegExp(alias).test(token.value)) {
+        // Alias Call expression
         node = {
           type: 'CallExpression',
           value: code.substring(token.position.start, last().position.end + 1),
@@ -327,21 +341,35 @@ export function parse(tokens: Token[], code: string, alias: string): CallExpress
         };
         return parseArgs(next());
       } else {
+        // Call expressions
         arg = { type: 'CallExpression', value: token.value };
         node.arguments.push(arg);
         return parseCallExpr(next(), arg)
       }
     }
 
+    // Call expressions are inlined
     arg.value += token.value;
 
     // End of call
-    if (/\)/.test(token.value)) return parseArgs(next());
+    if (/^\)$/.test(token.value)) return parseArgs(next());
 
     return parseCallExpr(next(), arg)
   }
 
   return parseCallExpr(tokens[c]);
+}
+
+export function findIndexes(code: string, alias: string) {
+  const regex = new RegExp(`${alias}\\(`, 'gs');
+  const indexes = [];
+  let match;
+
+  while ((match = regex.exec(code)) !== null) {
+    indexes.push(match.index);
+  }
+
+  return indexes;
 }
 
 /**
@@ -350,25 +378,23 @@ export function parse(tokens: Token[], code: string, alias: string): CallExpress
 export function parseSequenceExpressions(code: string, alias: string): CallExpression[] {
   const sequenceExpressions: CallExpression[] = [];
 
-  let i = 0;
-  let p = 0;
-  do {
-    i = code.slice(p).search(new RegExp(`${alias}\\(`, 'gs'));
+  const indexes = findIndexes(code, alias);
 
-    if (i >= 0) {
-      const tokens = tokenize(code, i + p);
-      if (tokens.length > 0) {
+  for (const i of indexes) {
+    const tokens = tokenize(code, i);
+    if (tokens.length > 0) {
+      try {
         const callExpression = parse(tokens, code, alias);
         if (callExpression) sequenceExpressions.push(callExpression);
-
-        p = tokens[tokens.length - 1].position.end;
-      }
-      else {
-        break;
+      } catch (ex: any) {
+        // Report Call expression
+        console.error(ex);
+        console.error('\x1b[31m\nQwik Speak Inline error parsing \x1b[0m %s',
+          code.substring(i, tokens[tokens.length - 1].position.end) +
+          '\n');
       }
     }
-
-  } while (i >= 0);
+  }
 
   return sequenceExpressions;
 }

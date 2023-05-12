@@ -171,7 +171,7 @@ export async function writeChunks(
       // Inline
       let code = chunk.code;
       if (code.includes(inlinePluralPlaceholder)) {
-        code = inlinePlural(chunk.code, inlinePluralPlaceholder, inlinePlaceholder, lang, opts);
+        code = inlinePlural(code, inlinePluralPlaceholder, inlinePlaceholder, lang, opts);
       }
       if (code.includes(inlinePlaceholder)) {
         code = inline(code, translation, inlinePlaceholder, lang, opts);

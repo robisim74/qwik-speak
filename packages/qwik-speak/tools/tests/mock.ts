@@ -26,10 +26,12 @@ export const Home = component$(() => {
 
   const count = useSignal(0);
 
+  const tParam = t('home.greeting', { name: t('app.title') });
   const tArray = t<string[]>('home.array@@["one", "two"]');
   const item = t('home.array.2@@three');
   const tObject = t<Translation>('home.obj@@{"one": "1", "two": "2"}');
   const tArrayObjects = t<Translation[]>('home.arrayObjects@@[{"num": "1"}, {"num": "2"}]');
+  console.log(tParam);
   tArray.map((x) => console.log(x));
   console.log(item);
   Object.values(tObject).map((x) => console.log(x));
@@ -109,10 +111,12 @@ export const s_dYGb4b0cyCA = ()=>{
     const ctx = useSpeakContext();
     const locale = useSpeakLocale();
     const count = useSignal(0);
+    const tParam = t('home.greeting', { name: t('app.title') });
     const tArray = t('home.array@@["one", "two"]');
     const item = t('home.array.2@@three');
     const tObject = t('home.obj@@{"one": "1", "two": "2"}');
     const tArrayObjects = t('home.arrayObjects@@[{"num": "1"}, {"num": "2"}]');
+    console.log(tParam);
     tArray.map((x)=>console.log(x));
     console.log(item);
     Object.values(tObject).map((x)=>console.log(x));
@@ -191,10 +195,12 @@ export const s_dYGb4b0cyCA = ()=>{
     const ctx = useSpeakContext();
     const locale = useSpeakLocale();
     const count = useSignal(0);
+    const tParam = __qsInline('home.greeting', { name: __qsInline('app.title') });
     const tArray = __qsInline('home.array@@["one", "two"]');
     const item = __qsInline('home.array.2@@three');
     const tObject = __qsInline('home.obj@@{"one": "1", "two": "2"}');
     const tArrayObjects = __qsInline('home.arrayObjects@@[{"num": "1"}, {"num": "2"}]');
+    console.log(tParam);
     tArray.map((x)=>console.log(x));
     console.log(item);
     Object.values(tObject).map((x)=>console.log(x));
@@ -258,10 +264,12 @@ export const mockChunkCode = `const s_dYGb4b0cyCA = () => {
   const ctx = useSpeakContext();
   const locale = useSpeakLocale();
   const count = gc(0);
+  const tParam = __qsInline('home.greeting', { name: __qsInline('app.title') });
   const tArray = __qsInline('home.array@@["one", "two"]');
   const item = __qsInline("home.array.2@@three");
   const tObject = __qsInline('home.obj@@{"one": "1", "two": "2"}');
   const tArrayObjects = __qsInline('home.arrayObjects@@[{"num": "1"}, {"num": "2"}]');
+  console.log(tParam);
   tArray.map((x) => console.log(x));
   console.log(item);
   Object.values(tObject).map((x) => console.log(x));
@@ -325,10 +333,12 @@ export const mockInlinedCode = `const s_dYGb4b0cyCA = () => {
   const ctx = useSpeakContext();
   const locale = useSpeakLocale();
   const count = gc(0);
+  const tParam = \`Hi! I am \${\`\`}\`;
   const tArray = ["one","two","three"];
   const item = \`three\`;
   const tObject = {"one":"1","two":"2"};
   const tArrayObjects = [{"num":"1"},{"num":"2"}];
+  console.log(tParam);
   tArray.map((x) => console.log(x));
   console.log(item);
   Object.values(tObject).map((x) => console.log(x));
@@ -390,10 +400,12 @@ export const mockInlinedCodeByLang = `const s_dYGb4b0cyCA = () => {
   const ctx = useSpeakContext();
   const locale = useSpeakLocale();
   const count = gc(0);
+  const tParam = \`Ciao! Sono \${\`\`}\`;
   const tArray = ["uno","due","tre"];
   const item = \`tre\`;
   const tObject = {"one":"1","two":"2"};
   const tArrayObjects = [{"num":"1"},{"num":"2"}];
+  console.log(tParam);
   tArray.map((x) => console.log(x));
   console.log(item);
   Object.values(tObject).map((x) => console.log(x));
