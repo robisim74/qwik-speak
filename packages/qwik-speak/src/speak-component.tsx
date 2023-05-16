@@ -1,5 +1,5 @@
-import { component$, Slot, useServerData, useTask$ } from '@builder.io/qwik';
-import { isDev, isServer } from '@builder.io/qwik/build';
+import { component$, Slot, useTask$ } from '@builder.io/qwik';
+import { isDev } from '@builder.io/qwik/build';
 
 import { useSpeakContext } from './use-speak';
 import { loadTranslations } from './core';
@@ -26,15 +26,11 @@ export interface SpeakProps {
 export const Speak = component$((props: SpeakProps) => {
   const ctx = useSpeakContext();
 
-  // Get URL object
-  const urlEnv = useServerData<string>('url');
-  const url = isServer && urlEnv ? new URL(urlEnv) : null;
-
   // Called the first time when the component mounts
   useTask$(async () => {
     if (isDev && !props.assets && !props.runtimeAssets) logWarn('Speak component: no assets provided');
 
-    await loadTranslations(ctx, props.assets, props.runtimeAssets, props.langs, url?.origin);
+    await loadTranslations(ctx, props.assets, props.runtimeAssets, props.langs);
   });
 
   return <Slot />;

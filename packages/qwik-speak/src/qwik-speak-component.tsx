@@ -1,5 +1,5 @@
 import { $, component$, Slot, useContextProvider, useServerData, useTask$ } from '@builder.io/qwik';
-import { isDev, isServer } from '@builder.io/qwik/build';
+import { isDev } from '@builder.io/qwik/build';
 
 import type { SpeakConfig, SpeakLocale, SpeakState, TranslationFn } from './types';
 import { SpeakContext } from './context';
@@ -29,10 +29,6 @@ export interface QwikSpeakProps {
  * Create and provide the Speak context
  */
 export const QwikSpeakProvider = component$((props: QwikSpeakProps) => {
-  // Get URL object
-  const urlEnv = useServerData<string>('url');
-  const url = isServer && urlEnv ? new URL(urlEnv) : null;
-
   // Get Qwik locale
   const lang = useServerData<string>('locale');
 
@@ -72,7 +68,7 @@ export const QwikSpeakProvider = component$((props: QwikSpeakProps) => {
 
   // Called the first time when the component mounts
   useTask$(async () => {
-    await loadTranslations(state, config.assets, config.runtimeAssets, props.langs, url?.origin);
+    await loadTranslations(state, config.assets, config.runtimeAssets, props.langs);
   });
 
   return <Slot />;

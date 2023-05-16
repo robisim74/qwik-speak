@@ -36,8 +36,7 @@ export type Translation = { [key: string]: any };
 /**
  * Must contain the logic to load translation data
  */
-export type LoadTranslationFn = QRL<(lang: string, asset: string, origin?: string) =>
-  ValueOrPromise<Translation | null>>;
+export type LoadTranslationFn = QRL<(lang: string, asset: string) => ValueOrPromise<Translation | null>>;
 
 export interface TranslationFn {
   /**

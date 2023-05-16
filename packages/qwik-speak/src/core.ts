@@ -9,7 +9,7 @@ const cache: Record<string, Promise<any>> = {};
  * In SPA mode, cache the results
  */
 export const memoize = (fn: LoadTranslationFn) => {
-  return (...args: [string, string, string | undefined]) => {
+  return (...args: [string, string]) => {
     const stringArgs = JSON.stringify(args);
 
     return stringArgs in cache ?
@@ -29,8 +29,7 @@ export const loadTranslations = async (
   ctx: SpeakState,
   assets?: string[],
   runtimeAssets?: string[],
-  langs?: string[],
-  origin?: string
+  langs?: string[]
 ): Promise<void> => {
   if (isDev === true || isServer || runtimeAssets) {
     const { locale, translation, translationFn } = ctx;
@@ -49,7 +48,7 @@ export const loadTranslations = async (
 
     for (const lang of resolvedLangs) {
       const memoized = memoize(translationFn.loadTranslation$);
-      const tasks = resolvedAssets.map(asset => memoized(lang, asset, origin));
+      const tasks = resolvedAssets.map(asset => memoized(lang, asset));
       const sources = await Promise.all(tasks);
       const assetSources = sources.map((source, i) => ({
         asset: resolvedAssets[i],
