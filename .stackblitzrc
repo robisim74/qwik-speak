@@ -1,1 +1,1 @@
-{"installDependencies":true,"startCommand":"npm run ci && npm run dev"}
+{"installDependencies":true,"startCommand":"npm --prefix packages/qwik-speak install && npm run --prefix packages/qwik-speak build.lib && npm run dev"}
