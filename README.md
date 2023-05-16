@@ -161,6 +161,7 @@ Returns the translation of language, region, script or currency display names us
 #### Build
 ```shell
 cd packages/qwik-speak
+npm install
 npm run build
 ```
 #### Test
@@ -170,6 +171,7 @@ npm test
 ### Sample app
 #### Run
 ```shell
+npm install
 npm start
 ```
 #### Preview

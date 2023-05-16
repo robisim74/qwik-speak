@@ -4,7 +4,9 @@
   "description": "Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps",
   "scripts": {
     "api-extractor": "api-extractor run --local && api-extractor run --local --config tools/api-extractor.inline.json && api-extractor run --local --config tools/api-extractor.extract.json",
-    "build": "npm run lint && vite build --mode lib && tsc && npm run build.tools && npm run api-extractor",
+    "build": "npm run lint && npm run build.lib && tsc && npm run build.tools && npm run api-extractor",
+    "build.lib": "vite build --mode lib",
+    "build.lib.watch": "vite build --mode lib --watch",
     "build.tools": "vite build --mode lib --config tools/vite.config.inline.ts && vite build --mode lib --config tools/vite.config.extract.ts && tsc --project tools/tsconfig.json",
     "build.extract": "vite build --mode lib --config tools/vite.config.extract.ts --watch",
     "lint": "eslint src/**/*.ts* tools/**/*.ts*",
