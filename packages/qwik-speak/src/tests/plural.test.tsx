@@ -2,7 +2,7 @@ import { createDOM } from '@builder.io/qwik/testing';
 import { component$ } from '@builder.io/qwik';
 import { test, describe, expect } from 'vitest';
 
-import { $plural as p } from '../use-plural';
+import { $plural as p } from '../plural';
 import { QwikSpeakProvider } from '../qwik-speak-component';
 import { config, translationFnStub } from './config';
 

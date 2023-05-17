@@ -11,7 +11,7 @@ export type DisplayNameFn = {
   (code: string, options: Intl.DisplayNamesOptions, lang?: string): string;
 };
 
-export const useDisplayName = (
+export const displayName = (
   code: string,
   options: Intl.DisplayNamesOptions,
   lang?: string
@@ -22,5 +22,3 @@ export const useDisplayName = (
 
   return new Intl.DisplayNames(lang, options).of(code) || code;
 };
-
-export { useDisplayName as displayName };

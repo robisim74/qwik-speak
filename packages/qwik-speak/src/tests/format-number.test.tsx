@@ -2,7 +2,7 @@ import { createDOM } from '@builder.io/qwik/testing';
 import { component$ } from '@builder.io/qwik';
 import { test, describe, expect } from 'vitest';
 
-import { formatNumber as fn } from '../use-format-number';
+import { formatNumber as fn } from '../format-number';
 import { QwikSpeakProvider } from '../qwik-speak-component';
 import { config } from './config';
 import { useSpeakLocale } from '../use-speak';

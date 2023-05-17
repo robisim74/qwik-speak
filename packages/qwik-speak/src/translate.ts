@@ -24,7 +24,7 @@ export type TranslateFn = {
   <T>(keys: string[], params?: Record<string, any>, lang?: string): T[];
 };
 
-export const useTranslate: TranslateFn = (keys: string | string[], params?: Record<string, any>, lang?: string) => {
+export const $translate: TranslateFn = (keys: string | string[], params?: Record<string, any>, lang?: string) => {
   const ctx = useSpeakContext();
   const { locale, translation, config } = ctx;
 
@@ -32,5 +32,3 @@ export const useTranslate: TranslateFn = (keys: string | string[], params?: Reco
 
   return translate(keys, translation[lang], params, config.keySeparator, config.keyValueSeparator);
 }
-
-export { useTranslate as $translate };

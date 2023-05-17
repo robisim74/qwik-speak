@@ -42,6 +42,6 @@ module.exports = {
     "prefer-const": ["error", {
       "destructuring": "all"
     }],
-    'qwik/use-method-usage': 'warn'
+    'qwik/use-method-usage': 'off'
   },
 };

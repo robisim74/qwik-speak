@@ -268,17 +268,17 @@ export const mockChunkCode = `const s_dYGb4b0cyCA = () => {
       ])
     }, __qsInline("home.increment"), 1, null),
     /* @__PURE__ */ Ar("h3", null, null, __qsInline("home.dates"), 1, null),
-    /* @__PURE__ */ Ar("p", null, null, useFormatDate(Date.now(), {
+    /* @__PURE__ */ Ar("p", null, null, formatDate(Date.now(), {
       dateStyle: "full",
       timeStyle: "short"
     }), 1, null),
-    /* @__PURE__ */ Ar("p", null, null, useRelativeTime(-1, "second"), 1, null),
+    /* @__PURE__ */ Ar("p", null, null, relativeTime(-1, "second"), 1, null),
     /* @__PURE__ */ Ar("h3", null, null, __qsInline("home.numbers"), 1, null),
-    /* @__PURE__ */ Ar("p", null, null, useFormatNumber(1e6), 1, null),
-    /* @__PURE__ */ Ar("p", null, null, useFormatNumber(1e6, {
+    /* @__PURE__ */ Ar("p", null, null, formatNumber(1e6), 1, null),
+    /* @__PURE__ */ Ar("p", null, null, formatNumber(1e6, {
       style: "currency"
     }), 1, null),
-    /* @__PURE__ */ Ar("p", null, null, useFormatNumber(1, {
+    /* @__PURE__ */ Ar("p", null, null, formatNumber(1, {
       style: "unit",
       unit: locale.units["length"]
     }), 1, null)
@@ -326,17 +326,17 @@ export const mockInlinedCode = `const s_dYGb4b0cyCA = () => {
       ])
     }, \`Increment\`, 1, null),
     /* @__PURE__ */ Ar("h3", null, null, \`Dates & relative time\`, 1, null),
-    /* @__PURE__ */ Ar("p", null, null, useFormatDate(Date.now(), {
+    /* @__PURE__ */ Ar("p", null, null, formatDate(Date.now(), {
       dateStyle: "full",
       timeStyle: "short"
     }), 1, null),
-    /* @__PURE__ */ Ar("p", null, null, useRelativeTime(-1, "second"), 1, null),
+    /* @__PURE__ */ Ar("p", null, null, relativeTime(-1, "second"), 1, null),
     /* @__PURE__ */ Ar("h3", null, null, \`Numbers & currencies\`, 1, null),
-    /* @__PURE__ */ Ar("p", null, null, useFormatNumber(1e6), 1, null),
-    /* @__PURE__ */ Ar("p", null, null, useFormatNumber(1e6, {
+    /* @__PURE__ */ Ar("p", null, null, formatNumber(1e6), 1, null),
+    /* @__PURE__ */ Ar("p", null, null, formatNumber(1e6, {
       style: "currency"
     }), 1, null),
-    /* @__PURE__ */ Ar("p", null, null, useFormatNumber(1, {
+    /* @__PURE__ */ Ar("p", null, null, formatNumber(1, {
       style: "unit",
       unit: locale.units["length"]
     }), 1, null)
@@ -384,17 +384,17 @@ export const mockInlinedCodeByLang = `const s_dYGb4b0cyCA = () => {
       ])
     }, \`Incrementa\`, 1, null),
     /* @__PURE__ */ Ar("h3", null, null, \`Date e tempo relativo\`, 1, null),
-    /* @__PURE__ */ Ar("p", null, null, useFormatDate(Date.now(), {
+    /* @__PURE__ */ Ar("p", null, null, formatDate(Date.now(), {
       dateStyle: "full",
       timeStyle: "short"
     }), 1, null),
-    /* @__PURE__ */ Ar("p", null, null, useRelativeTime(-1, "second"), 1, null),
+    /* @__PURE__ */ Ar("p", null, null, relativeTime(-1, "second"), 1, null),
     /* @__PURE__ */ Ar("h3", null, null, \`Numeri e valute\`, 1, null),
-    /* @__PURE__ */ Ar("p", null, null, useFormatNumber(1e6), 1, null),
-    /* @__PURE__ */ Ar("p", null, null, useFormatNumber(1e6, {
+    /* @__PURE__ */ Ar("p", null, null, formatNumber(1e6), 1, null),
+    /* @__PURE__ */ Ar("p", null, null, formatNumber(1e6, {
       style: "currency"
     }), 1, null),
-    /* @__PURE__ */ Ar("p", null, null, useFormatNumber(1, {
+    /* @__PURE__ */ Ar("p", null, null, formatNumber(1, {
       style: "unit",
       unit: locale.units["length"]
     }), 1, null)

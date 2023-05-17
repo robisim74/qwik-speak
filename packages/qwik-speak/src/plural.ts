@@ -19,7 +19,7 @@ export type PluralFn = {
     lang?: string): string;
 };
 
-export const usePlural: PluralFn = (
+export const $plural: PluralFn = (
   value: number | string,
   key?: string,
   params?: Record<string, any>,
@@ -38,5 +38,3 @@ export const usePlural: PluralFn = (
 
   return translate(key, translation[lang], { value, ...params }, config.keySeparator, config.keyValueSeparator);
 };
-
-export { usePlural as $plural };

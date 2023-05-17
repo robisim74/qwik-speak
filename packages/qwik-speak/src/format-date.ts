@@ -13,7 +13,7 @@ export type FormatDateFn = {
   (value: Date | number | string, options?: Intl.DateTimeFormatOptions, lang?: string, timeZone?: string): string;
 };
 
-export const useFormatDate = (
+export const formatDate = (
   value: Date | number | string,
   options?: Intl.DateTimeFormatOptions,
   lang?: string,
@@ -31,5 +31,3 @@ export const useFormatDate = (
 
   return new Intl.DateTimeFormat(lang, options).format(value);
 };
-
-export { useFormatDate as formatDate };

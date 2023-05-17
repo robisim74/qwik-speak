@@ -9,24 +9,24 @@ export type {
 } from './types';
 export type { QwikSpeakProps } from './qwik-speak-component';
 export type { SpeakProps } from './speak-component';
-export type { TranslateFn } from './use-translate';
-export type { PluralFn } from './use-plural';
+export type { TranslateFn } from './translate';
+export type { PluralFn } from './plural';
 export type { InlineTranslateFn } from './inline-translate';
-export type { FormatDateFn } from './use-format-date';
-export type { FormatNumberFn } from './use-format-number';
-export type { RelativeTimeFn } from './use-relative-time';
-export type { DisplayNameFn } from './use-display-name';
+export type { FormatDateFn } from './format-date';
+export type { FormatNumberFn } from './format-number';
+export type { RelativeTimeFn } from './relative-time';
+export type { DisplayNameFn } from './display-name';
 // Components
 export { QwikSpeakProvider } from './qwik-speak-component';
 export { Speak } from './speak-component';
 // Functions
-export { $translate } from './use-translate';
-export { $plural } from './use-plural';
+export { $translate } from './translate';
+export { $plural } from './plural';
 export { $inlineTranslate } from './inline-translate';
-export { formatNumber } from './use-format-number';
-export { formatDate } from './use-format-date';
-export { relativeTime } from './use-relative-time';
-export { displayName } from './use-display-name';
+export { formatNumber } from './format-number';
+export { formatDate } from './format-date';
+export { relativeTime } from './relative-time';
+export { displayName } from './display-name';
 // Use functions
 export {
   useSpeakContext,

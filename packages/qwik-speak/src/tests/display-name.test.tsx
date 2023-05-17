@@ -2,7 +2,7 @@ import { createDOM } from '@builder.io/qwik/testing';
 import { component$ } from '@builder.io/qwik';
 import { test, describe, expect } from 'vitest';
 
-import { displayName as dn } from '../use-display-name';
+import { displayName as dn } from '../display-name';
 import { QwikSpeakProvider } from '../qwik-speak-component';
 import { config } from './config';
 

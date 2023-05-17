@@ -12,7 +12,7 @@ export type FormatNumberFn = {
   (value: number | string, options?: Intl.NumberFormatOptions, lang?: string, currency?: string): string;
 };
 
-export const useFormatNumber = (
+export const formatNumber = (
   value: number | string,
   options?: Intl.NumberFormatOptions,
   lang?: string,
@@ -30,5 +30,3 @@ export const useFormatNumber = (
 
   return new Intl.NumberFormat(lang, options).format(value);
 };
-
-export { useFormatNumber as formatNumber };

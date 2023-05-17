@@ -16,7 +16,7 @@ export type RelativeTimeFn = {
   ): string;
 };
 
-export const useRelativeTime = (
+export const relativeTime = (
   value: number | string,
   unit: Intl.RelativeTimeFormatUnit,
   options?: Intl.RelativeTimeFormatOptions,
@@ -30,5 +30,3 @@ export const useRelativeTime = (
 
   return new Intl.RelativeTimeFormat(lang, options).format(value, unit);
 };
-
-export { useRelativeTime as relativeTime };

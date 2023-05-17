@@ -2,7 +2,7 @@ import { createDOM } from '@builder.io/qwik/testing';
 import { component$ } from '@builder.io/qwik';
 import { test, describe, expect } from 'vitest';
 
-import { relativeTime as rt } from '../use-relative-time';
+import { relativeTime as rt } from '../relative-time';
 import { QwikSpeakProvider } from '../qwik-speak-component';
 import { config } from './config';
 
