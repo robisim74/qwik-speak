@@ -32,7 +32,7 @@ describe('extract', () => {
     expect(readdir).toHaveBeenCalledTimes(2);
     expect(readFile).toHaveBeenCalledTimes(2);
 
-    expect(writeFile).toHaveBeenCalledTimes(3);
+    expect(writeFile).toHaveBeenCalledTimes(2);
     expect(writeFile).toHaveBeenNthCalledWith(1, normalize('../../i18n/en-US/app.json'), `{
   "app": {
     "subtitle": "",
@@ -40,10 +40,5 @@ describe('extract', () => {
   }
 }`);
     expect(writeFile).toHaveBeenNthCalledWith(2, normalize('../../i18n/en-US/home.json'), mockExtractedAsset);
-    expect(writeFile).toHaveBeenNthCalledWith(3, normalize('../../i18n/en-US/runtime.json'), `{
-  "runtime": {
-    "test": ""
-  }
-}`);
   });
 });

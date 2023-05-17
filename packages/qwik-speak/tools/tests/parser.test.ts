@@ -1,6 +1,6 @@
 import { test, describe, expect } from 'vitest';
 
-import { getInlineTranslateAlias, getPluralAlias, getTranslateAlias, getUseTranslateAlias, parse, parseSequenceExpressions, tokenize } from '../core/parser';
+import { getInlineTranslateAlias, getPluralAlias, getTranslateAlias, parse, parseSequenceExpressions, tokenize } from '../core/parser';
 
 describe('parser: tokenize', () => {
   test('tokenize', () => {
@@ -606,11 +606,5 @@ describe('aliases', () => {
     expect(alias).toBe('\\bp');
     alias = getPluralAlias("import { $plural } from 'qwik-speak';");
     expect(alias).toBe('\\$plural');
-  });
-  test('getUseTranslateAlias', () => {
-    let alias = getUseTranslateAlias(`const t = useTranslate$();`);
-    expect(alias).toBe('\\bt');
-    alias = getUseTranslateAlias('const t$ = useTranslate$();');
-    expect(alias).toBe('\\bt\\$');
   });
 });

@@ -435,19 +435,6 @@ export function getPluralAlias(code: string): string {
   return pluralAlias;
 }
 
-/**
- * Get useTranslate$ alias
- */
-export function getUseTranslateAlias(code: string): string | null {
-  let translateAlias = code.match(/(?<=\bconst\s).*?(?=\s?=\s?useTranslate(\$|Qrl)\(\);?)/)?.[0]?.trim();
-  if (!translateAlias) return null;
-  // Assert position at a word boundary
-  if (!translateAlias.startsWith('$')) translateAlias = `\\b${translateAlias}`;
-  // Escape special characters 
-  translateAlias = translateAlias.replace(/\$/g, '\\$');
-  return translateAlias;
-}
-
 export function parseJson(target: Translation, source: string): Translation {
   target = { ...target, ...JSON.parse(source) };
   return target;

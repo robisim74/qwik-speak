@@ -1,5 +1,5 @@
 /* eslint-disable */
-export const mockSource = `import { component$, useSignal, useTask$, $ } from '@builder.io/qwik';
+export const mockSource = `import { component$, useSignal } from '@builder.io/qwik';
 import type { DocumentHead } from '@builder.io/qwik-city';
 import {
   $translate as t,
@@ -10,8 +10,7 @@ import {
   relativeTime as rt,
   Speak,
   useSpeakLocale,
-  useSpeakContext,
-  useTranslate$
+  useSpeakContext
 } from 'qwik-speak';
 import type { SpeakState, Translation } from 'qwik-speak';
 
@@ -36,18 +35,6 @@ export const Home = component$(() => {
   console.log(item);
   Object.values(tObject).map((x) => console.log(x));
   tArrayObjects.map((x) => console.log(x['num']));
-
-  const t$ = useTranslate$();
-
-  const s = useSignal('');
-
-  const test$ = $(async (): Promise<string> => {
-    return await t$('runtime.test');
-  });
-
-  useTask$(async () => {
-    s.value = await test$();
-  });
 
   return (
     <div class="content">
@@ -105,8 +92,6 @@ import { $translate as t } from "qwik-speak";
 import { useSignal } from "@builder.io/qwik";
 import { useSpeakContext } from "qwik-speak";
 import { useSpeakLocale } from "qwik-speak";
-import { useTaskQrl } from "@builder.io/qwik";
-import { useTranslateQrl } from "qwik-speak";
 export const s_dYGb4b0cyCA = ()=>{
     const ctx = useSpeakContext();
     const locale = useSpeakLocale();
@@ -121,15 +106,6 @@ export const s_dYGb4b0cyCA = ()=>{
     console.log(item);
     Object.values(tObject).map((x)=>console.log(x));
     tArrayObjects.map((x)=>console.log(x['num']));
-    const t$ = useTranslateQrl();
-    const s = useSignal('');
-    const test$ = /*#__PURE__*/ qrl(()=>import("./entry_Home.js"), "s_KB0YgBSl2rk", [
-        t$
-    ]);
-    useTaskQrl(/*#__PURE__*/ qrl(()=>import("./entry_Home.js"), "s_No5mfmeFeY8", [
-        s,
-        test$
-    ]));
     return /*#__PURE__*/ _jsxQ("div", null, {
         class: "content"
     }, [
@@ -189,8 +165,6 @@ import { $translate as t } from "qwik-speak";
 import { useSignal } from "@builder.io/qwik";
 import { useSpeakContext } from "qwik-speak";
 import { useSpeakLocale } from "qwik-speak";
-import { useTaskQrl } from "@builder.io/qwik";
-import { useTranslateQrl } from "qwik-speak";
 export const s_dYGb4b0cyCA = ()=>{
     const ctx = useSpeakContext();
     const locale = useSpeakLocale();
@@ -205,15 +179,6 @@ export const s_dYGb4b0cyCA = ()=>{
     console.log(item);
     Object.values(tObject).map((x)=>console.log(x));
     tArrayObjects.map((x)=>console.log(x['num']));
-    const t$ = useTranslateQrl();
-    const s = useSignal('');
-    const test$ = /*#__PURE__*/ qrl(()=>import("./entry_Home.js"), "s_KB0YgBSl2rk", [
-        t$
-    ]);
-    useTaskQrl(/*#__PURE__*/ qrl(()=>import("./entry_Home.js"), "s_No5mfmeFeY8", [
-        s,
-        test$
-    ]));
     return /*#__PURE__*/ _jsxQ("div", null, {
         class: "content"
     }, [
@@ -274,15 +239,6 @@ export const mockChunkCode = `const s_dYGb4b0cyCA = () => {
   console.log(item);
   Object.values(tObject).map((x) => console.log(x));
   tArrayObjects.map((x) => console.log(x["num"]));
-  const t$ = useTranslateQrl();
-  const s = gc("");
-  const test$ = /* @__PURE__ */ z(() => __vitePreload(() => Promise.resolve().then(() => entry_Home), true ? void 0 : void 0), "s_KB0YgBSl2rk", [
-    t$
-  ]);
-  Vo(/* @__PURE__ */ z(() => __vitePreload(() => Promise.resolve().then(() => entry_Home), true ? void 0 : void 0), "s_No5mfmeFeY8", [
-    s,
-    test$
-  ]));
   return /* @__PURE__ */ Ar("div", null, {
     class: "content"
   }, [
@@ -343,15 +299,6 @@ export const mockInlinedCode = `const s_dYGb4b0cyCA = () => {
   console.log(item);
   Object.values(tObject).map((x) => console.log(x));
   tArrayObjects.map((x) => console.log(x["num"]));
-  const t$ = useTranslateQrl();
-  const s = gc("");
-  const test$ = /* @__PURE__ */ z(() => __vitePreload(() => Promise.resolve().then(() => entry_Home), true ? void 0 : void 0), "s_KB0YgBSl2rk", [
-    t$
-  ]);
-  Vo(/* @__PURE__ */ z(() => __vitePreload(() => Promise.resolve().then(() => entry_Home), true ? void 0 : void 0), "s_No5mfmeFeY8", [
-    s,
-    test$
-  ]));
   return /* @__PURE__ */ Ar("div", null, {
     class: "content"
   }, [
@@ -410,15 +357,6 @@ export const mockInlinedCodeByLang = `const s_dYGb4b0cyCA = () => {
   console.log(item);
   Object.values(tObject).map((x) => console.log(x));
   tArrayObjects.map((x) => console.log(x["num"]));
-  const t$ = useTranslateQrl();
-  const s = gc("");
-  const test$ = /* @__PURE__ */ z(() => __vitePreload(() => Promise.resolve().then(() => entry_Home), true ? void 0 : void 0), "s_KB0YgBSl2rk", [
-    t$
-  ]);
-  Vo(/* @__PURE__ */ z(() => __vitePreload(() => Promise.resolve().then(() => entry_Home), true ? void 0 : void 0), "s_No5mfmeFeY8", [
-    s,
-    test$
-  ]));
   return /* @__PURE__ */ Ar("div", null, {
     class: "content"
   }, [

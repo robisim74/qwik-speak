@@ -83,7 +83,7 @@ The `$inlineTranslate` function has the same behavior as `$translate`, but can b
 ```tsx
 import { $inlineTranslate, useSpeakContext } from 'qwik-speak';
 
-export const MyComponent = (props: { ctx: SpeakState }) => {
+export const TitleComponent = (props: { ctx: SpeakState }) => {
   return <h1>{$inlineTranslate('home.title@@Qwik Speak', props.ctx)}</h1>;
 };
 
@@ -91,30 +91,36 @@ export const Home = component$(() => {
   const ctx = useSpeakContext();
 
   return (
-    <>
-      <MyComponent ctx={ctx} />
-    </>
+    <div>
+      <TitleComponent ctx={ctx} />
+    </div>
   );
 });
 ```
-
-## useTranslate$
-The `useTranslate$` closure returns the translate function as QRL. This means that it is serializable and it can be passed to other QRL functions characterized by lazy loading:
+or in other functions, QRLs as well:
 ```tsx
-import { useTranslate$ } from 'qwik-speak';
+import { $inlineTranslate, useSpeakContext } from 'qwik-speak';
 
-const MyComponent = component$(() => {
-  const t$ = useTranslate$();
+export const Home = component$(() => {
+  const ctx = useSpeakContext();
 
   const s = useSignal('');
 
+  const getTitle$ = $(() => {
+    return $inlineTranslate('home.title@@Qwik Speak', ctx);
+  });
+
+  useTask$(async () => {
+    s.value = await getTitle$();
+  });
+
   return (
-      <button onClick$={async () => s.value = await t$('runtime.test')}></button>
+    <div>
+      <h1>{s.value}</h1>
+    </div>
   );
 });
 ```
-> The translation keys passed into its must be provided in `runtimeAssets` and will not be inlined
-
 
 ## $plural
 The `$plural` function uses the [Intl.PluralRules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/PluralRules) API:

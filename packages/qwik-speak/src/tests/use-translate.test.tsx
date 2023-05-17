@@ -1,45 +1,25 @@
 import { createDOM } from '@builder.io/qwik/testing';
-import { component$, $, useTask$, useSignal } from '@builder.io/qwik';
+import { component$ } from '@builder.io/qwik';
 import { test, describe, expect } from 'vitest';
 
 import type { Translation } from '../types';
-import type { TranslateQrl } from '../use-translate';
-import { $translate as t, useTranslate$ } from '../use-translate';
+import { $translate as t } from '../use-translate';
 import { QwikSpeakProvider } from '../qwik-speak-component';
 import { config, translationFnStub } from './config';
 
 interface ChildComponentProps {
   value: string;
-  sValue: string;
-  t$: TranslateQrl;
 }
 
 const ChildComponent = component$((props: ChildComponentProps) => {
-  const s = useSignal('');
-
   return (
     <div>
       <div id="B">{props.value}</div>
-      <div id="B1">{props.sValue}</div>
-      <div id="B2">{s.value}</div>
-      <button id="C" onClick$={async () => s.value = await props.t$('test')}></button>
     </div>
   );
 });
 
 const TestComponent = component$(() => {
-  const t$ = useTranslate$();
-
-  const s = useSignal('');
-
-  const test$ = $(async (): Promise<string> => {
-    return await t$('test');
-  });
-
-  useTask$(async () => {
-    s.value = await test$();
-  });
-
   return (
     <div>
       <div id="A">{t('test')}</div>
@@ -67,13 +47,13 @@ const TestComponent = component$(() => {
       </div>
       <div id="A13">{true && t('test')}</div>
       <div id="A14" title={t('test')}></div>
-      <ChildComponent value={t('test')} sValue={s.value} t$={t$} />
+      <ChildComponent value={t('test')} />
     </div>
   );
 });
 
-describe('$translate & useTranslate$ functions', async () => {
-  const { screen, render, userEvent } = await createDOM();
+describe('$translate function', async () => {
+  const { screen, render } = await createDOM();
 
   await render(
     <QwikSpeakProvider config={config} translationFn={translationFnStub} locale={config.defaultLocale}>
@@ -133,10 +113,4 @@ describe('$translate & useTranslate$ functions', async () => {
   test('props', () => {
     expect((screen.querySelector('#B') as HTMLDivElement).innerHTML).toContain('Test');
   });
-  test('qrl', () => {
-    expect((screen.querySelector('#B1') as HTMLDivElement).innerHTML).toContain('Test');
-  });
-
-  await userEvent('#C', 'click');
-  expect((screen.querySelector('#B2') as HTMLDivElement).innerHTML).toContain('Test');
 });

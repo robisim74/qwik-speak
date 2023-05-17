@@ -9,7 +9,7 @@ export type {
 } from './types';
 export type { QwikSpeakProps } from './qwik-speak-component';
 export type { SpeakProps } from './speak-component';
-export type { TranslateFn, TranslateQrl } from './use-translate';
+export type { TranslateFn } from './use-translate';
 export type { PluralFn } from './use-plural';
 export type { InlineTranslateFn } from './inline-translate';
 export type { FormatDateFn } from './use-format-date';
@@ -33,4 +33,3 @@ export {
   useSpeakLocale,
   useSpeakConfig,
 } from './use-speak';
-export { useTranslate$, useTranslateQrl } from './use-translate';
