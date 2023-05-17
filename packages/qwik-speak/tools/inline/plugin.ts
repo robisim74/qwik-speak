@@ -11,6 +11,7 @@ import { parseSequenceExpressions } from '../core/parser';
 import { getOptions, getRules } from '../core/intl-parser';
 
 const inlinePlaceholder = '__qsInline';
+const inlineTranslatePlaceholder = '__qsInlineTranslate';
 const inlinePluralPlaceholder = '__qsInlinePlural';
 
 // Logs
@@ -176,6 +177,9 @@ export async function writeChunks(
       if (code.includes(inlinePlaceholder)) {
         code = inline(code, translation, inlinePlaceholder, lang, opts);
       }
+      if (code.includes(inlineTranslatePlaceholder)) {
+        code = inline(code, translation, inlineTranslatePlaceholder, lang, opts);
+      }
       tasks.push(writeFile(filename, code));
 
       // Original chunks to default lang
@@ -240,7 +244,7 @@ export function transformInline(code: string): string {
       if (checkDynamicInline(args, originalFn)) continue;
 
       // Transpile with placeholder
-      const transpiled = originalFn.replace(new RegExp(`${alias}\\(`), `${inlinePlaceholder}(`);
+      const transpiled = originalFn.replace(new RegExp(`${alias}\\(`), `${inlineTranslatePlaceholder}(`);
       // Replace
       code = code.replace(originalFn, transpiled);
     }
@@ -298,7 +302,7 @@ export function inline(
     const args = expr.arguments;
 
     if (args?.length > 0) {
-      const resolvedLang = withLang(lang, args[2], opts);
+      const resolvedLang = withLang(lang, placeholder === inlinePlaceholder ? args[2] : args[3], opts);
 
       let resolvedValue: string | Translation = quoteValue('');
 
@@ -308,7 +312,12 @@ export function inline(
 
         const keyValues: (string | Translation)[] = [];
         for (const key of keys) {
-          const value = getValue(key, translation[resolvedLang], args[1], opts.keySeparator);
+          const value = getValue(
+            key,
+            translation[resolvedLang],
+            placeholder === inlinePlaceholder ? args[1] : args[2],
+            opts.keySeparator
+          );
           if (!value) {
             missingValues.push(`${resolvedLang} - missing value for key: ${key}`);
             keyValues.push(quoteValue(''));
@@ -320,7 +329,12 @@ export function inline(
       } else if (args?.[0]?.value) {
         const key = getKey(args[0].value, opts.keyValueSeparator);
 
-        const value = getValue(key, translation[resolvedLang], args[1], opts.keySeparator);
+        const value = getValue(
+          key,
+          translation[resolvedLang],
+          placeholder === inlinePlaceholder ? args[1] : args[2],
+          opts.keySeparator
+        );
         if (!value) {
           missingValues.push(`${resolvedLang} - missing value for key: ${key}`);
         } else {
