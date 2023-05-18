@@ -78,6 +78,21 @@ $translate('home.array.2@@three')
 ```
 > To reduce complexity (arrays and objects are _inlined_ during build) it is recommended to use objects with _a depth not greater than 1_. For the same reason, `params` interpolation is not supported when you return an array or an object
 
+### Components props
+Avoid using `$translate` in components props, pass the already translated value instead:
+```tsx
+export const HomeComponent = component$(() => {
+  const value = t('home.title@@Qwik Speak');
+
+  return (
+    <div>
+      <ChildComponent value={value} />
+    </div>
+  );
+});
+```
+or use `$inlineTranslate`.
+
 ## $inlineTranslate
 The `$inlineTranslate` function has the same behavior as `$translate`, but can be used outside the `component$`, for example in _Inline components_, passing the Speak context as second argument:
 ```tsx
@@ -93,30 +108,6 @@ export const Home = component$(() => {
   return (
     <div>
       <TitleComponent ctx={ctx} />
-    </div>
-  );
-});
-```
-or in other functions, QRLs as well:
-```tsx
-import { $inlineTranslate, useSpeakContext } from 'qwik-speak';
-
-export const Home = component$(() => {
-  const ctx = useSpeakContext();
-
-  const s = useSignal('');
-
-  const getTitle$ = $(() => {
-    return $inlineTranslate('home.title@@Qwik Speak', ctx);
-  });
-
-  useTask$(async () => {
-    s.value = await getTitle$();
-  });
-
-  return (
-    <div>
-      <h1>{s.value}</h1>
     </div>
   );
 });
