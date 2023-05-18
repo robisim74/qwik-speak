@@ -1,29 +1,16 @@
 import { createDOM } from '@builder.io/qwik/testing';
-import { $ } from '@builder.io/qwik';
 import { test, expect } from 'vitest';
-import type { LoadTranslationFn, TranslationFn } from 'qwik-speak';
 import { QwikSpeakProvider } from 'qwik-speak';
 
 import Home from './index';
 import { config } from '../../speak-config';
-
-const loadTranslationStub$: LoadTranslationFn = $((lang: string, asset: string) =>
-  JSON.parse(
-    import.meta.glob('/i18n/**/*.json', { as: 'raw', eager: true })[
-    `/i18n/${lang}/${asset}.json`
-    ]
-  )
-);
-
-const translationFnStub: TranslationFn = {
-  loadTranslation$: loadTranslationStub$
-};
+import { translationFn } from '../../speak-functions';
 
 test(`[Home Component]: Should render translated texts`, async () => {
   const { screen, render, userEvent } = await createDOM();
 
   await render(
-    <QwikSpeakProvider config={config} translationFn={translationFnStub} locale={config.defaultLocale}>
+    <QwikSpeakProvider config={config} translationFn={translationFn} locale={config.defaultLocale}>
       <Home />
     </QwikSpeakProvider>
   );
