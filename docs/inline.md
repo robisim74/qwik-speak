@@ -110,6 +110,3 @@ export const config: SpeakConfig = {
 ```
 Likewise, you can also create scoped runtime files for different pages and pass them to `Speak` components.
 
-## Troubleshooting
-- _Keep the translation functions simple_: for the plugin they are just placeholders to replace with the translated texts
-- Avoid using variables or functions as keys or parameters, for example: `t(key, getParams())`. They cannot be evaluated during the build, and you will have to put them in `runtimeAssets`: they will be evaluated at runtime reducing performance
