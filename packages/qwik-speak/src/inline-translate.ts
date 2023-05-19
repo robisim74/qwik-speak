@@ -1,5 +1,5 @@
 import type { SpeakState } from './types';
-import { translate } from './core';
+import { getValue } from './core';
 
 export type InlineTranslateFn = {
   /**
@@ -36,5 +36,5 @@ export const $inlineTranslate: InlineTranslateFn = (
 
   lang ??= locale.lang;
 
-  return translate(keys, translation[lang], params, config.keySeparator, config.keyValueSeparator);
+  return getValue(keys, translation[lang], params, config.keySeparator, config.keyValueSeparator);
 };

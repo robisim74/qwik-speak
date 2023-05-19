@@ -1,13 +1,13 @@
 import { component$, useSignal } from '@builder.io/qwik';
 import type { DocumentHead } from '@builder.io/qwik-city';
 import {
-  $translate as t,
   $plural as p,
   formatDate as fd,
   formatNumber as fn,
   relativeTime as rt,
   Speak,
-  useSpeakLocale
+  useSpeakLocale,
+  useTranslate
 } from 'qwik-speak';
 
 export const Home = component$(() => {
@@ -15,6 +15,8 @@ export const Home = component$(() => {
   const units = locale.units!;
 
   const count = useSignal(0);
+
+  const t = useTranslate();
 
   return (
     <div class="content">

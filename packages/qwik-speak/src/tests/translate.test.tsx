@@ -3,7 +3,7 @@ import { component$ } from '@builder.io/qwik';
 import { test, describe, expect } from 'vitest';
 
 import type { Translation } from '../types';
-import { $translate as t } from '../translate';
+import { $translate as t } from '../use-translate';
 import { QwikSpeakProvider } from '../qwik-speak-component';
 import { config, translationFnStub } from './config';
 

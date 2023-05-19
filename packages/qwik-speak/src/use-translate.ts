@@ -1,5 +1,5 @@
 import { useSpeakContext } from './use-speak';
-import { translate } from './core';
+import { getValue } from './core';
 
 export type TranslateFn = {
   /**
@@ -30,5 +30,19 @@ export const $translate: TranslateFn = (keys: string | string[], params?: Record
 
   lang ??= locale.lang;
 
-  return translate(keys, translation[lang], params, config.keySeparator, config.keyValueSeparator);
+  return getValue(keys, translation[lang], params, config.keySeparator, config.keyValueSeparator);
 }
+
+export const useTranslate = (): TranslateFn => {
+  const ctx = useSpeakContext();
+
+  const translate = (keys: string | string[], params?: any, lang?: string) => {
+    const { locale, translation, config } = ctx;
+
+    lang ??= locale.lang;
+
+    return getValue(keys, translation[lang], params, config.keySeparator, config.keyValueSeparator);
+  };
+
+  return translate as TranslateFn;
+};
