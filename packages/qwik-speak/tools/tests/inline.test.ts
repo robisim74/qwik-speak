@@ -182,7 +182,7 @@ describe('inline', () => {
     expect(inlined).toBe('const values = [`Qwik Speak`,`Translate your Qwik apps into any language`]');
   });
   test('transform & inline multilingual', async () => {
-    const code = `import { $translate as t } from "qwik-speak";const value = t('app.subtitle', undefined, 'it-IT')`;
+    const code = `import { useTranslate } from "qwik-speak";const t = useTranslate();const value = t('app.subtitle', undefined, 'it-IT')`;
     const transformed = transform(code);
     const inlined = inline(transformed,
       {
@@ -208,16 +208,16 @@ describe('inline', () => {
         assetsPath: 'i18n',
         outDir: 'dist'
       });
-    expect(inlined).toBe('import { $translate as t } from "qwik-speak";const value = `Traduci le tue app Qwik in qualsiasi lingua`');
+    expect(inlined).toBe('import { useTranslate } from "qwik-speak";const t = useTranslate();const value = `Traduci le tue app Qwik in qualsiasi lingua`');
   });
   test('transform & inlineTranslate', async () => {
-    const code = `import { $inlineTranslate as t } from "qwik-speak";const value = t('home.greeting', ctx, { name: 'Qwik Speak' })`;
+    const code = `import { inlineTranslate as t } from "qwik-speak";const value = t('app.subtitle', ctx)`;
     const transformed = transformInline(code);
     const inlined = inline(transformed,
       {
         'en-US': {
-          'home': {
-            'greeting': 'Hi! I am {{name}}',
+          'app': {
+            'subtitle': 'Translate your Qwik apps into any language',
           }
         }
       },
@@ -232,7 +232,7 @@ describe('inline', () => {
         assetsPath: 'i18n',
         outDir: 'dist'
       });
-    expect(inlined).toBe('import { $inlineTranslate as t } from "qwik-speak";const value = `Hi! I am Qwik Speak`');
+    expect(inlined).toBe('import { inlineTranslate as t } from "qwik-speak";const value = `Translate your Qwik apps into any language`');
   });
   test('writeChunks', async () => {
     const plugin = qwikSpeakInline({

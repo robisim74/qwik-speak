@@ -6,7 +6,7 @@ import { extname, normalize } from 'path';
 
 import type { QwikSpeakInlineOptions, Translation } from '../core/types';
 import type { Argument, Property } from '../core/parser';
-import { getPluralAlias, getTranslateAlias, getUseTranslateAlias, getInlineTranslateAlias, parseJson, parse, tokenize } from '../core/parser';
+import { getUseTranslateAlias, getInlineTranslateAlias, getUsePluralAlias, parseJson, parse, tokenize } from '../core/parser';
 import { parseSequenceExpressions } from '../core/parser';
 import { getOptions, getRules } from '../core/intl-parser';
 
@@ -103,20 +103,16 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
       if (target === 'client') {
         // Filter id
         if (/\/src\//.test(id) && /\.(js|cjs|mjs|jsx|ts|tsx)$/.test(id)) {
-          // Filter code: $plural
-          if (/\$plural/.test(code)) {
+          // Filter code: usePlural
+          if (/usePlural/.test(code)) {
             code = transformPlural(code);
-          }
-          // Filter code: $translate
-          if (/\$translate/.test(code)) {
-            code = transform(code);
           }
           // Filter code: useTranslate
           if (/useTranslate/.test(code)) {
-            code = transformUse(code);
+            code = transform(code);
           }
-          // Filter code: $inlineTranslate
-          if (/\$inlineTranslate/.test(code)) {
+          // Filter code: inlineTranslate
+          if (/inlineTranslate/.test(code)) {
             code = transformInline(code);
           }
           return code;
@@ -198,39 +194,9 @@ export async function writeChunks(
 }
 
 /**
- * Transform $translate to placeholder
- */
-export function transform(code: string): string {
-  const alias = getTranslateAlias(code);
-
-  // Parse sequence
-  const sequence = parseSequenceExpressions(code, alias);
-
-  if (sequence.length === 0) return code;
-
-  for (const expr of sequence) {
-    // Original function
-    const originalFn = expr.value;
-    // Arguments
-    const args = expr.arguments;
-
-    if (args?.length > 0) {
-      if (checkDynamic(args, originalFn)) continue;
-
-      // Transpile with placeholder
-      const transpiled = originalFn.replace(new RegExp(`${alias}\\(`), `${inlinePlaceholder}(`);
-      // Replace
-      code = code.replace(originalFn, transpiled);
-    }
-  }
-
-  return code;
-}
-
-/**
  * Transform useTranslate to placeholder
  */
-export function transformUse(code: string): string {
+export function transform(code: string): string {
   const alias = getUseTranslateAlias(code);
 
   if (alias) {
@@ -301,7 +267,7 @@ export function transformUse(code: string): string {
 }
 
 /**
- * Transform $inlineTranslate to placeholder
+ * Transform inlineTranslate to placeholder
  */
 export function transformInline(code: string): string {
   const alias = getInlineTranslateAlias(code);
@@ -331,29 +297,31 @@ export function transformInline(code: string): string {
 }
 
 /**
- * Transform $plural to placeholder
+ * Transform usePlural to placeholder
  */
 export function transformPlural(code: string): string {
-  const alias = getPluralAlias(code);
+  const alias = getUsePluralAlias(code);
 
-  // Parse sequence
-  const sequence = parseSequenceExpressions(code, alias);
+  if (alias) {
+    // Parse sequence
+    const sequence = parseSequenceExpressions(code, alias);
 
-  if (sequence.length === 0) return code;
+    if (sequence.length === 0) return code;
 
-  for (const expr of sequence) {
-    // Original function
-    const originalFn = expr.value;
-    // Arguments
-    const args = expr.arguments;
+    for (const expr of sequence) {
+      // Original function
+      const originalFn = expr.value;
+      // Arguments
+      const args = expr.arguments;
 
-    if (args?.length > 0) {
-      if (checkDynamicPlural(args, originalFn)) continue;
+      if (args?.length > 0) {
+        if (checkDynamicPlural(args, originalFn)) continue;
 
-      // Transpile with placeholder
-      const transpiled = originalFn.replace(new RegExp(`${alias}\\(`), `${inlinePluralPlaceholder}(`);
-      // Replace
-      code = code.replace(originalFn, transpiled);
+        // Transpile with placeholder
+        const transpiled = originalFn.replace(new RegExp(`${alias}\\(`), `${inlinePluralPlaceholder}(`);
+        // Replace
+        code = code.replace(originalFn, transpiled);
+      }
     }
   }
 

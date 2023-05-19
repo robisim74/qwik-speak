@@ -1,6 +1,6 @@
 import { test, describe, expect } from 'vitest';
 
-import { getInlineTranslateAlias, getPluralAlias, getTranslateAlias, getUseTranslateAlias, parse, parseSequenceExpressions, tokenize } from '../core/parser';
+import { getInlineTranslateAlias, getUsePluralAlias, getUseTranslateAlias, parse, parseSequenceExpressions, tokenize } from '../core/parser';
 
 describe('parser: tokenize', () => {
   test('tokenize', () => {
@@ -634,53 +634,21 @@ describe('parser: parseSequenceExpressions', () => {
 });
 
 describe('aliases', () => {
-  test('getTranslateAlias', () => {
-    let alias = getTranslateAlias(`import {
-  $translate as t,
-  $plural as p,
-  formatDate as fd,
-  formatNumber as fn,
-  relativeTime as rt,
-  Speak,
-  useSpeakLocale
-} from 'qwik-speak';`);
-    expect(alias).toBe('\\bt');
-    alias = getTranslateAlias("import { $translate as t } from 'qwik-speak';");
-    expect(alias).toBe('\\bt');
-    alias = getTranslateAlias("import { $translate } from 'qwik-speak';");
-    expect(alias).toBe('\\$translate');
-  });
   test('getUseTranslateAlias', () => {
-    let alias = getUseTranslateAlias(`const t = useTranslate();`);
+    const alias = getUseTranslateAlias(`const t = useTranslate();`);
     expect(alias).toBe('\\bt');
-    alias = getUseTranslateAlias('const t$ = useTranslate();');
-    expect(alias).toBe('\\bt\\$');
   });
   test('getInlineTranslateAlias', () => {
     let alias = getInlineTranslateAlias(`import {
-  $inlineTranslate as t,
-  useSpeakLocale
-} from 'qwik-speak';`);
+      inlineTranslate as t,
+      useSpeakLocale
+    } from 'qwik-speak';`);
     expect(alias).toBe('\\bt');
-    alias = getInlineTranslateAlias("import { $inlineTranslate as $translate } from 'qwik-speak';");
-    expect(alias).toBe('\\$translate');
-    alias = getInlineTranslateAlias("import { $inlineTranslate } from 'qwik-speak';");
-    expect(alias).toBe('\\$inlineTranslate');
+    alias = getInlineTranslateAlias("import { inlineTranslate } from 'qwik-speak';");
+    expect(alias).toBe('\\binlineTranslate');
   });
-  test('getPluralAlias', () => {
-    let alias = getPluralAlias(`import {
-  $translate as t,
-  $plural as p,
-  formatDate as fd,
-  formatNumber as fn,
-  relativeTime as rt,
-  Speak,
-  useSpeakLocale
-} from 'qwik-speak';`);
+  test('getUsePluralAlias', () => {
+    const alias = getUsePluralAlias('const p = usePlural();');
     expect(alias).toBe('\\bp');
-    alias = getPluralAlias("import { $plural as p} from 'qwik-speak';");
-    expect(alias).toBe('\\bp');
-    alias = getPluralAlias("import { $plural } from 'qwik-speak';");
-    expect(alias).toBe('\\$plural');
   });
 });

@@ -2,13 +2,16 @@ import { component$, useSignal } from '@builder.io/qwik';
 import type { DocumentHead } from '@builder.io/qwik-city';
 import {
   Speak,
+  inlineTranslate,
   useFormatDate,
   useFormatNumber,
   usePlural,
   useRelativeTime,
+  useSpeakContext,
   useSpeakLocale,
   useTranslate
 } from 'qwik-speak';
+import type { SpeakState } from 'qwik-speak';
 
 interface TitleProps {
   name: string;
@@ -18,6 +21,10 @@ export const Title = component$((props: TitleProps) => {
   return (<h1>{props.name}</h1>)
 });
 
+export const SubTitle = (props: { ctx: SpeakState }) => {
+  return <h2>{inlineTranslate('app.subtitle', props.ctx)}</h2>;
+};
+
 export const Home = component$(() => {
   const t = useTranslate();
   const p = usePlural();
@@ -25,6 +32,7 @@ export const Home = component$(() => {
   const rt = useRelativeTime();
   const fn = useFormatNumber();
 
+  const ctx = useSpeakContext();
   const locale = useSpeakLocale();
   const units = locale.units!;
 
@@ -34,7 +42,7 @@ export const Home = component$(() => {
     <div class="content">
       <Title name={t('app.title')} />
 
-      <h2>{t('app.subtitle')}</h2>
+      <SubTitle ctx={ctx} />
 
       <h3>{t('home.params')}</h3>
       <p>{t('home.greeting', { name: 'Qwik Speak' })}</p>
