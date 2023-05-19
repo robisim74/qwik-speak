@@ -67,7 +67,7 @@ describe('inline', () => {
           {
             type: 'Property',
             key: { type: 'Identifier', value: 'param2' },
-            value: { type: 'Identifier', value: 'variable' }
+            value: { type: 'Expression', value: 'variable' }
           }
         ]
       }, '.');

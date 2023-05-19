@@ -422,7 +422,7 @@ export function transpilePluralFn(
       const params: Property[] = [{
         type: 'Property',
         key: { type: 'Identifier', value: 'value' },
-        value: { type: 'Identifier', value: args[0].value! }
+        value: { type: 'Expression', value: args[0].value! }
       }];
       if (args[2]?.properties) {
         for (const p of args[2].properties) {

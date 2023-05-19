@@ -343,7 +343,6 @@ describe('parser: parse', () => {
         ]
       }
     );
-
   });
   test('parse with dynamic params', () => {
     const code = `t('home.greeting', {
@@ -364,12 +363,12 @@ describe('parser: parse', () => {
               {
                 type: 'Property',
                 key: { type: 'Identifier', value: 'name' },
-                value: { type: 'Identifier', value: 'obj.name' }
+                value: { type: 'Expression', value: 'obj.name' }
               },
               {
                 type: 'Property',
                 key: { type: 'Identifier', value: 'greeting' },
-                value: { type: 'CallExpression', value: 'getGreeting()' }
+                value: { type: 'Expression', value: 'getGreeting()' }
               }
             ]
           },
@@ -393,7 +392,7 @@ describe('parser: parse', () => {
       }
     );
   });
-  test('parse with nested function call params', () => {
+  test('parse with function in params', () => {
     const code = `t('home.num', { val: fn(1000000, { style: 'currency' }) })`;
     const tokens = tokenize(code);
     const callExpression = parse(tokens, code, '\\bt');
@@ -416,11 +415,85 @@ describe('parser: parse', () => {
                   value: 'val'
                 },
                 value: {
-                  type: 'CallExpression',
+                  type: 'Expression',
                   value: "fn(1000000,{style:'currency'})"
                 }
               }
             ]
+          }
+        ]
+      }
+    );
+  });
+  test('parse with comments in params', () => {
+    const code = `t('home.date', {
+  val: /* @__PURE__ */ new Date()
+})`;
+    const tokens = tokenize(code);
+    const callExpression = parse(tokens, code, 't');
+    expect(callExpression).toEqual(
+      {
+        type: 'CallExpression',
+        value: "t('home.date', {\n  val: /* @__PURE__ */ new Date()\n})",
+        arguments: [
+          {
+            type: 'Literal',
+            value: 'home.date'
+          },
+          {
+            type: 'ObjectExpression',
+            properties: [
+              {
+                type: 'Property',
+                key: {
+                  type: 'Identifier',
+                  value: 'val'
+                },
+                value: {
+                  type: 'Expression',
+                  value: 'new Date()'
+                }
+              }
+            ]
+          }
+        ]
+      }
+    );
+  });
+  test('parse with conditional params', () => {
+    const code = `t('home.greeting', {
+  name: (_a = obj.value) == null ? void 0 : _a.name
+}, 'en-US')`;
+    const tokens = tokenize(code);
+    const callExpression = parse(tokens, code, '\\bt');
+    expect(callExpression).toEqual(
+      {
+        type: 'CallExpression',
+        value: "t('home.greeting', {\n  name: (_a = obj.value) == null ? void 0 : _a.name\n}, 'en-US')",
+        arguments: [
+          {
+            type: 'Literal',
+            value: 'home.greeting'
+          },
+          {
+            type: 'ObjectExpression',
+            properties: [
+              {
+                type: 'Property',
+                key: {
+                  type: 'Identifier',
+                  value: 'name'
+                },
+                value: {
+                  type: 'Expression',
+                  value: '(_a =obj.value)==null ?void 0 :_a.name'
+                }
+              }
+            ]
+          },
+          {
+            type: 'Literal',
+            value: 'en-US'
           }
         ]
       }
@@ -484,41 +557,6 @@ describe('parser: parse', () => {
               {
                 type: 'Identifier',
                 value: 'key'
-              }
-            ]
-          }
-        ]
-      }
-    );
-  });
-  test('parse placeholder with comments', () => {
-    const code = `__qsInline("home.date", {
-  val: /* @__PURE__ */ new Date()
-})`;
-    const tokens = tokenize(code);
-    const callExpression = parse(tokens, code, '__qsInline');
-    expect(callExpression).toEqual(
-      {
-        type: 'CallExpression',
-        value: '__qsInline("home.date", {\n  val: /* @__PURE__ */ new Date()\n})',
-        arguments: [
-          {
-            type: 'Literal',
-            value: 'home.date'
-          },
-          {
-            type: 'ObjectExpression',
-            properties: [
-              {
-                type: 'Property',
-                key: {
-                  type: 'Identifier',
-                  value: 'val'
-                },
-                value: {
-                  type: 'CallExpression',
-                  value: 'new Date()'
-                }
               }
             ]
           }

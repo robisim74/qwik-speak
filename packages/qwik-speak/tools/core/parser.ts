@@ -7,7 +7,7 @@ export interface Property {
     value: string;
   };
   value: {
-    type: 'Literal' | 'Identifier' | 'CallExpression';
+    type: 'Literal' | 'Expression';
     value: string;
   };
 }
@@ -44,7 +44,7 @@ export interface CallExpression {
  * [0-9a-zA-Z_$]
  * 
  * Punctuator:
- * [(){},:;.[]?!]
+ * [(){},:;.[]?!=<>]
  * 
  * Comment
  * [/*]
@@ -70,7 +70,7 @@ export interface Token {
  * Start rules:
  * 'Literal': ["'`0-9+-]
  * 'Identifier': [a-zA-Z_$]
- * 'Punctuator': [(){},:;.[]?!]
+ * 'Punctuator': [(){},:;.[]?!=<>]
  * 'Comment': /*
  */
 export function tokenize(code: string, start = 0): Token[] {
@@ -105,7 +105,7 @@ export function tokenize(code: string, start = 0): Token[] {
 
   const startIdentifier = (ch: string) => /[a-zA-Z_$]/.test(ch);
 
-  const startPunctuator = (ch: string) => /[(){},:;.[\]?!]/.test(ch);
+  const startPunctuator = (ch: string) => /[(){},:;.[\]?!=<>]/.test(ch);
 
   const startComment = (ch: string) => /\//.test(ch) && /\*/.test(lookAhead());
 
@@ -215,7 +215,7 @@ export function tokenize(code: string, start = 0): Token[] {
  * literal = quote, character, quote | digit | "null" | "undefined" | "true" | "false";
  * identifier = letter | "_" | "$", { digit | letter | "_" | "$" };
  * key = identifier;
- * value = literal | identifier ["." | "?." | "!.", identifier, [!]] | callExpr;
+ * value = literal | expression;
  * property = key, ":", value;
  * objectExpr = "{", { property, [","] }, "}";
  * element = quote, character, quote
@@ -229,6 +229,8 @@ export function parse(tokens: Token[], code: string, alias: string): CallExpress
   let node: CallExpression;
 
   let c = 0;
+
+  const parenthesisStack: string[] = [];
 
   const lookAhead = () => c < tokens.length - 1 ?
     tokens[c + 1] :
@@ -258,32 +260,33 @@ export function parse(tokens: Token[], code: string, alias: string): CallExpress
       properties.push(property);
     }
 
-    // Call expressions are inlined
-    if (/^\($/.test(token.value)) property.value.type = 'CallExpression';
-
-    if (property.value.type == 'CallExpression') {
-      property.value.value += token.value;
-
-      // End of call
-      if (/^\)$/.test(token.value)) return parseObject(next(), properties);
-
-      return parseProperty(next(), properties, property);
-    }
-
     if (!/^:$/.test(token.value) && !/^:$/.test(lookAhead().value)) {
       if (token.type === 'Literal') {
         property.value.value = trimQuotes(token.value);
+        // End of property
+        return parseObject(next(), properties);
       } else {
-        property.value.type = 'Identifier';
-        property.value.value = token.value;
+        property.value.type = 'Expression';
+        return parseExpr(token, properties, property);
       }
-
-      // End of property
-      if (/^[,}]$/.test(lookAhead().value)) return parseObject(next(), properties);
     }
 
     return parseProperty(next(), properties, property);
   };
+
+  const parseExpr = (token: Token, properties: Property[], property: Property): CallExpression => {
+    property.value.value += token.value;
+
+    if (/^[({]$/.test(token.value))
+      parenthesisStack.push(token.value);
+    else if (/^[)}]$/.test(token.value))
+      parenthesisStack.pop()
+
+    // End of property
+    if (/^[,}]$/.test(lookAhead().value) && parenthesisStack.length === 0) return parseObject(next(), properties);
+
+    return parseExpr(next(), properties, property);
+  }
 
   const parseObject = (token: Token, properties?: Property[]): CallExpression => {
     if (!properties) {
