@@ -13,21 +13,25 @@ export type FormatDateFn = {
   (value: Date | number | string, options?: Intl.DateTimeFormatOptions, lang?: string, timeZone?: string): string;
 };
 
-export const formatDate = (
-  value: Date | number | string,
-  options?: Intl.DateTimeFormatOptions,
-  lang?: string,
-  timeZone?: string
-): string => {
+export const useFormatDate = (): FormatDateFn => {
   const locale = useSpeakLocale();
 
-  lang ??= locale.extension ?? locale.lang;
-  timeZone ??= locale.timeZone;
+  const formateDate = (
+    value: Date | number | string,
+    options?: Intl.DateTimeFormatOptions,
+    lang?: string,
+    timeZone?: string
+  ) => {
+    lang ??= locale.extension ?? locale.lang;
+    timeZone = timeZone ?? locale.timeZone;
 
-  value = new Date(value);
+    value = new Date(value);
 
-  options = { ...options };
-  if (timeZone) options.timeZone = timeZone;
+    options = { ...options };
+    if (timeZone) options.timeZone = timeZone;
 
-  return new Intl.DateTimeFormat(lang, options).format(value);
+    return new Intl.DateTimeFormat(lang, options).format(value);
+  };
+
+  return formateDate as FormatDateFn;
 };

@@ -1,11 +1,11 @@
 import { component$, useSignal } from '@builder.io/qwik';
 import type { DocumentHead } from '@builder.io/qwik-city';
 import {
-  $plural as p,
-  formatDate as fd,
-  formatNumber as fn,
-  relativeTime as rt,
   Speak,
+  useFormatDate,
+  useFormatNumber,
+  usePlural,
+  useRelativeTime,
   useSpeakLocale,
   useTranslate
 } from 'qwik-speak';
@@ -20,6 +20,10 @@ export const Title = component$((props: TitleProps) => {
 
 export const Home = component$(() => {
   const t = useTranslate();
+  const p = usePlural();
+  const fd = useFormatDate();
+  const rt = useRelativeTime();
+  const fn = useFormatNumber();
 
   const locale = useSpeakLocale();
   const units = locale.units!;

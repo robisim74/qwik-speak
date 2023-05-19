@@ -16,17 +16,21 @@ export type RelativeTimeFn = {
   ): string;
 };
 
-export const relativeTime = (
-  value: number | string,
-  unit: Intl.RelativeTimeFormatUnit,
-  options?: Intl.RelativeTimeFormatOptions,
-  lang?: string
-) => {
+export const useRelativeTime = () => {
   const locale = useSpeakLocale();
 
-  lang ??= locale.extension ?? locale.lang;
+  const relativeTime = (
+    value: number | string,
+    unit: Intl.RelativeTimeFormatUnit,
+    options?: Intl.RelativeTimeFormatOptions,
+    lang?: string
+  ) => {
+    lang ??= locale.extension ?? locale.lang;
 
-  value = +value;
+    value = +value;
 
-  return new Intl.RelativeTimeFormat(lang, options).format(value, unit);
+    return new Intl.RelativeTimeFormat(lang, options).format(value, unit);
+  };
+
+  return relativeTime as RelativeTimeFn;
 };

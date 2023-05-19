@@ -12,21 +12,25 @@ export type FormatNumberFn = {
   (value: number | string, options?: Intl.NumberFormatOptions, lang?: string, currency?: string): string;
 };
 
-export const formatNumber = (
-  value: number | string,
-  options?: Intl.NumberFormatOptions,
-  lang?: string,
-  currency?: string
-) => {
+export const useFormatNumber = () => {
   const locale = useSpeakLocale();
 
-  lang ??= locale.extension ?? locale.lang;
-  currency ??= locale.currency;
+  const formatNumber = (
+    value: number | string,
+    options?: Intl.NumberFormatOptions,
+    lang?: string,
+    currency?: string
+  ) => {
+    lang ??= locale.extension ?? locale.lang;
+    currency = currency ?? locale.currency;
 
-  value = +value;
+    value = +value;
 
-  options = { ...options };
-  if (currency) options.currency = currency;
+    options = { ...options };
+    if (currency) options.currency = currency;
 
-  return new Intl.NumberFormat(lang, options).format(value);
+    return new Intl.NumberFormat(lang, options).format(value);
+  };
+
+  return formatNumber as FormatNumberFn;
 };

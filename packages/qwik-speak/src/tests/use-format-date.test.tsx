@@ -2,11 +2,13 @@ import { createDOM } from '@builder.io/qwik/testing';
 import { component$ } from '@builder.io/qwik';
 import { test, describe, expect } from 'vitest';
 
-import { formatDate as fd } from '../format-date';
+import { useFormatDate } from '../use-format-date';
 import { QwikSpeakProvider } from '../qwik-speak-component';
 import { config } from './config';
 
 const TestComponent = component$(() => {
+  const fd = useFormatDate();
+
   return (
     <div>
       <div id="A">{fd(new Date('2022-07-19T16:30:00Z'))}</div>

@@ -11,14 +11,14 @@ export type DisplayNameFn = {
   (code: string, options: Intl.DisplayNamesOptions, lang?: string): string;
 };
 
-export const displayName = (
-  code: string,
-  options: Intl.DisplayNamesOptions,
-  lang?: string
-): string => {
+export const useDisplayName = () => {
   const locale = useSpeakLocale();
 
-  lang ??= locale.extension ?? locale.lang;
+  const displayName = (code: string, options: Intl.DisplayNamesOptions, lang?: string) => {
+    lang ??= locale.extension ?? locale.lang;
 
-  return new Intl.DisplayNames(lang, options).of(code) || code;
+    return new Intl.DisplayNames(lang, options).of(code) || code;
+  };
+
+  return displayName as DisplayNameFn;
 };

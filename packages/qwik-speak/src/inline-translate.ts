@@ -26,7 +26,7 @@ export type InlineTranslateFn = {
   <T>(keys: string[], ctx: SpeakState, params?: Record<string, any>, lang?: string): T[];
 };
 
-export const $inlineTranslate: InlineTranslateFn = (
+export const inlineTranslate: InlineTranslateFn = (
   keys: string | string[],
   ctx: SpeakState,
   params?: Record<string, any>,

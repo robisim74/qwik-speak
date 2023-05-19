@@ -2,14 +2,14 @@ import { createDOM } from '@builder.io/qwik/testing';
 import { component$, useSignal, useTask$, $ } from '@builder.io/qwik';
 import { test, describe, expect } from 'vitest';
 
-import { $inlineTranslate } from '../inline-translate';
+import { inlineTranslate } from '../inline-translate';
 import { useSpeakContext } from '../use-speak';
 import { QwikSpeakProvider } from '../qwik-speak-component';
 import { config, translationFnStub } from './config';
 import type { SpeakState } from '../types';
 
 const MyComponent = (props: { ctx: SpeakState }) => {
-  return <div id="B">{$inlineTranslate('test', props.ctx)}</div>;
+  return <div id="B">{inlineTranslate('test', props.ctx)}</div>;
 };
 
 const TestComponent = component$(() => {
@@ -18,7 +18,7 @@ const TestComponent = component$(() => {
   const s = useSignal('');
 
   const test$ = $(() => {
-    return $inlineTranslate('test', ctx);
+    return inlineTranslate('test', ctx);
   });
 
   useTask$(async () => {
