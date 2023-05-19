@@ -6,13 +6,15 @@ import { extname, normalize } from 'path';
 
 import type { QwikSpeakInlineOptions, Translation } from '../core/types';
 import type { Argument, Property } from '../core/parser';
-import { getPluralAlias, getTranslateAlias, getInlineTranslateAlias, parseJson } from '../core/parser';
+import { getPluralAlias, getTranslateAlias, getUseTranslateAlias, getInlineTranslateAlias, parseJson, parse, tokenize } from '../core/parser';
 import { parseSequenceExpressions } from '../core/parser';
 import { getOptions, getRules } from '../core/intl-parser';
 
 const inlinePlaceholder = '__qsInline';
 const inlineTranslatePlaceholder = '__qsInlineTranslate';
 const inlinePluralPlaceholder = '__qsInlinePlural';
+
+const signalAlias = '\\b_fnSignal';
 
 // Logs
 const missingValues: string[] = [];
@@ -21,8 +23,6 @@ const dynamicParams: string[] = [];
 
 /**
  * Qwik Speak Inline Vite plugin
- * 
- * Inline $translate, $inlineTranslate & $plural values
  */
 export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
   // Resolve options
@@ -110,6 +110,10 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
           // Filter code: $translate
           if (/\$translate/.test(code)) {
             code = transform(code);
+          }
+          // Filter code: useTranslate
+          if (/useTranslate/.test(code)) {
+            code = transformUse(code);
           }
           // Filter code: $inlineTranslate
           if (/\$inlineTranslate/.test(code)) {
@@ -217,6 +221,79 @@ export function transform(code: string): string {
       const transpiled = originalFn.replace(new RegExp(`${alias}\\(`), `${inlinePlaceholder}(`);
       // Replace
       code = code.replace(originalFn, transpiled);
+    }
+  }
+
+  return code;
+}
+
+/**
+ * Transform useTranslate to placeholder
+ */
+export function transformUse(code: string): string {
+  const alias = getUseTranslateAlias(code);
+
+  if (alias) {
+    // Parse sequence
+    const sequence = parseSequenceExpressions(code, alias);
+
+    if (sequence.length === 0) return code;
+
+    for (const expr of sequence) {
+      // Original function
+      const originalFn = expr.value;
+      // Arguments
+      const args = expr.arguments;
+
+      if (args?.length > 0) {
+        if (checkDynamic(args, originalFn)) continue;
+
+        // Transpile with placeholder
+        const transpiled = originalFn.replace(new RegExp(`${alias}\\(`), `${inlinePlaceholder}(`);
+        // Replace
+        code = code.replace(originalFn, transpiled);
+      }
+    }
+  }
+
+  // Props
+  const sequence = parseSequenceExpressions(code, signalAlias);
+
+  if (sequence.length === 0) return code;
+
+  for (const expr of sequence) {
+    // Arguments
+    const args = expr.arguments;
+
+    // Check identifier
+    if (args?.length > 2) {
+      if (args[2].type === 'ArrayExpression' && args[2].elements) {
+        if (args[2].elements.find(element => new RegExp(`^${alias}$`).test(element.value))) {
+          if (args[0].type === 'Identifier' && args[1].type === 'CallExpression') {
+            // Transformed function
+            const transformedFn = args[1].value;
+            if (transformedFn && args[0].value) {
+              const transformedAlias = `\\b${args[0].value}`;
+              const tokens = tokenize(transformedFn);
+              const transformedExpr = parse(tokens, transformedFn, transformedAlias);
+
+              if (transformedExpr) {
+                // Arguments
+                const transformedArgs = transformedExpr.arguments;
+
+                if (transformedArgs?.length > 0) {
+                  if (checkDynamic(transformedArgs, transformedFn)) continue;
+
+                  // Transpile with placeholder
+                  const transpiled = transformedFn.replace(new RegExp(`${transformedAlias}\\(`), `${inlinePlaceholder}(`);
+                  // Replace
+                  code = code.replace(transformedFn, transpiled);
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 

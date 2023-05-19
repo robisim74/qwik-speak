@@ -1,6 +1,6 @@
 import { component$, useStyles$ } from '@builder.io/qwik';
 import { Link, useLocation } from '@builder.io/qwik-city';
-import { $translate as t, useSpeakConfig, useSpeakLocale } from 'qwik-speak';
+import { useSpeakConfig, useSpeakLocale, useTranslate } from 'qwik-speak';
 
 import { ChangeLocale } from '../change-locale/change-locale';
 import { SpeakLogo } from '../icons/speak';
@@ -9,6 +9,8 @@ import styles from './header.css?inline';
 
 export const Header = component$(() => {
   useStyles$(styles);
+
+  const t = useTranslate();
 
   const pathname = useLocation().url.pathname;
   const lang = useSpeakLocale().lang;

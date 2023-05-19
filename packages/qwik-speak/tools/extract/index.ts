@@ -4,7 +4,7 @@ import { extname, join, normalize } from 'path';
 
 import type { QwikSpeakExtractOptions, Translation } from '../core/types';
 import type { Argument, CallExpression, Element } from '../core/parser';
-import { getPluralAlias, getTranslateAlias, getInlineTranslateAlias, parseJson, parseSequenceExpressions } from '../core/parser';
+import { getPluralAlias, getTranslateAlias, getUseTranslateAlias, getInlineTranslateAlias, parseJson, parseSequenceExpressions } from '../core/parser';
 import { deepClone, deepMerge, deepSet } from '../core/merge';
 import { minDepth, sortTarget, toJsonString } from '../core/format';
 import { getOptions, getRules } from '../core/intl-parser';
@@ -117,6 +117,18 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
       // Parse sequence
       const sequence = parseSequenceExpressions(code, alias);
       parseSequence(sequence);
+    }
+
+    // useTranslate
+    if (/useTranslate/.test(code)) {
+      const alias = getUseTranslateAlias(code);
+      if (alias) {
+        // Clear types
+        clearTypes(alias);
+        // Parse sequence
+        const sequence = parseSequenceExpressions(code, alias);
+        parseSequence(sequence);
+      }
     }
 
     // $inlineTranslate

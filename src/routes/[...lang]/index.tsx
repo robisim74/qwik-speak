@@ -10,17 +10,26 @@ import {
   useTranslate
 } from 'qwik-speak';
 
+interface TitleProps {
+  name: string;
+}
+
+export const Title = component$((props: TitleProps) => {
+  return (<h1>{props.name}</h1>)
+});
+
 export const Home = component$(() => {
+  const t = useTranslate();
+
   const locale = useSpeakLocale();
   const units = locale.units!;
 
   const count = useSignal(0);
 
-  const t = useTranslate();
-
   return (
     <div class="content">
-      <h1>{t('app.title')}</h1>
+      <Title name={t('app.title')} />
+
       <h2>{t('app.subtitle')}</h2>
 
       <h3>{t('home.params')}</h3>

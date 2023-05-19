@@ -12,18 +12,6 @@ const MyComponent = (props: { ctx: SpeakState }) => {
   return <div id="B">{$inlineTranslate('test', props.ctx)}</div>;
 };
 
-interface ChildComponentProps {
-  value: string;
-}
-
-const ChildComponent = component$((props: ChildComponentProps) => {
-  return (
-    <div>
-      <div id="C">{props.value}</div>
-    </div>
-  );
-});
-
 const TestComponent = component$(() => {
   const ctx = useSpeakContext();
 
@@ -41,7 +29,6 @@ const TestComponent = component$(() => {
     <div>
       <div id="A">{s.value}</div>
       <MyComponent ctx={ctx} />
-      <ChildComponent value={$inlineTranslate('test', ctx)} />
     </div>
   );
 });
@@ -58,6 +45,5 @@ describe('inlineTranslate function', async () => {
   test('translate', () => {
     expect((screen.querySelector('#A') as HTMLDivElement).innerHTML).toContain('Test');
     expect((screen.querySelector('#B') as HTMLDivElement).innerHTML).toContain('Test');
-    expect((screen.querySelector('#C') as HTMLDivElement).innerHTML).toContain('Test');
   });
 });

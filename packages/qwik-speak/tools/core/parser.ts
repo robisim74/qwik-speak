@@ -415,6 +415,19 @@ export function getTranslateAlias(code: string): string {
 }
 
 /**
+ * Get useTranslate alias
+ */
+export function getUseTranslateAlias(code: string): string | null {
+  let translateAlias = code.match(/(?<=\bconst\s).*?(?=\s?=\s?useTranslate\(\);?)/)?.[0]?.trim();
+  if (!translateAlias) return null;
+  // Assert position at a word boundary
+  if (!translateAlias.startsWith('$')) translateAlias = `\\b${translateAlias}`;
+  // Escape special characters 
+  translateAlias = translateAlias.replace(/\$/g, '\\$');
+  return translateAlias;
+}
+
+/**
  * Get $inlineTranslate alias
  */
 export function getInlineTranslateAlias(code: string): string {

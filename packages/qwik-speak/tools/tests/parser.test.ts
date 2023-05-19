@@ -1,6 +1,6 @@
 import { test, describe, expect } from 'vitest';
 
-import { getInlineTranslateAlias, getPluralAlias, getTranslateAlias, parse, parseSequenceExpressions, tokenize } from '../core/parser';
+import { getInlineTranslateAlias, getPluralAlias, getTranslateAlias, getUseTranslateAlias, parse, parseSequenceExpressions, tokenize } from '../core/parser';
 
 describe('parser: tokenize', () => {
   test('tokenize', () => {
@@ -564,6 +564,38 @@ describe('parser: parse', () => {
       }
     );
   });
+  test('parse with arrow functions', () => {
+    const code = `_fnSignal((p0)=>p0('home.text'), [
+      t
+  ])`;
+    const tokens = tokenize(code);
+    const callExpression = parse(tokens, code, '\\b_fnSignal');
+    expect(callExpression).toEqual(
+      {
+        type: 'CallExpression',
+        value: "_fnSignal((p0)=>p0('home.text'), [\n      t\n  ])",
+        arguments: [
+          {
+            type: 'Identifier',
+            value: 'p0'
+          },
+          {
+            type: 'CallExpression',
+            value: "p0('home.text')"
+          },
+          {
+            type: 'ArrayExpression',
+            elements: [
+              {
+                type: 'Identifier',
+                value: 't'
+              }
+            ]
+          }
+        ]
+      }
+    );
+  });
 });
 
 describe('parser: parseSequenceExpressions', () => {
@@ -617,6 +649,12 @@ describe('aliases', () => {
     expect(alias).toBe('\\bt');
     alias = getTranslateAlias("import { $translate } from 'qwik-speak';");
     expect(alias).toBe('\\$translate');
+  });
+  test('getUseTranslateAlias', () => {
+    let alias = getUseTranslateAlias(`const t = useTranslate();`);
+    expect(alias).toBe('\\bt');
+    alias = getUseTranslateAlias('const t$ = useTranslate();');
+    expect(alias).toBe('\\bt\\$');
   });
   test('getInlineTranslateAlias', () => {
     let alias = getInlineTranslateAlias(`import {

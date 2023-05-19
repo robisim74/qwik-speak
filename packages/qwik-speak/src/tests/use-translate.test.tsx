@@ -3,11 +3,25 @@ import { component$ } from '@builder.io/qwik';
 import { test, describe, expect } from 'vitest';
 
 import type { Translation } from '../types';
-import { $translate as t } from '../use-translate';
+import { useTranslate } from '../use-translate';
 import { QwikSpeakProvider } from '../qwik-speak-component';
 import { config, translationFnStub } from './config';
 
+interface ChildComponentProps {
+  value: string;
+}
+
+const ChildComponent = component$((props: ChildComponentProps) => {
+  return (
+    <div>
+      <div id="B">{props.value}</div>
+    </div>
+  );
+});
+
 const TestComponent = component$(() => {
+  const t = useTranslate();
+
   return (
     <div>
       <div id="A">{t('test')}</div>
@@ -35,11 +49,12 @@ const TestComponent = component$(() => {
       </div>
       <div id="A13">{true && t('test')}</div>
       <div id="A14" title={t('test')}></div>
+      <ChildComponent value={t('test')} />
     </div>
   );
 });
 
-describe('$translate function', async () => {
+describe('useTranslate function', async () => {
   const { screen, render } = await createDOM();
 
   await render(
@@ -96,4 +111,7 @@ describe('$translate function', async () => {
   test('html attributes', () => {
     expect((screen.querySelector('#A14') as HTMLDivElement).getAttribute('title')).toContain('Test');
   });
+  test('component props', () => {
+    expect((screen.querySelector('#B') as HTMLDivElement).innerHTML).toContain('Test');
+  })
 });
