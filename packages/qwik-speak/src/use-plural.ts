@@ -1,5 +1,5 @@
 import { useSpeakContext } from './use-speak';
-import { translate } from './core';
+import { getValue } from './core';
 
 export type PluralFn = {
   /**
@@ -19,22 +19,26 @@ export type PluralFn = {
     lang?: string): string;
 };
 
-export const $plural: PluralFn = (
-  value: number | string,
-  key?: string,
-  params?: Record<string, any>,
-  options?: Intl.PluralRulesOptions,
-  lang?: string
-) => {
+export const usePlural = (): PluralFn => {
   const ctx = useSpeakContext();
-  const { locale, translation, config } = ctx;
 
-  lang ??= locale.lang;
+  const plural = (
+    value: number | string,
+    key?: string,
+    params?: any,
+    options?: Intl.PluralRulesOptions,
+    lang?: string
+  ) => {
+    const { locale, translation, config } = ctx;
+    lang ??= locale.lang;
 
-  value = +value;
+    value = +value;
 
-  const rule = new Intl.PluralRules(lang, options).select(value);
-  key = key ? `${key}${config.keySeparator}${rule}` : rule;
+    const rule = new Intl.PluralRules(lang, options).select(value);
+    key = key ? `${key}${config.keySeparator}${rule}` : rule;
 
-  return translate(key, translation[lang], { value, ...params }, config.keySeparator, config.keyValueSeparator);
+    return getValue(key, translation[lang], { value, ...params }, config.keySeparator);
+  };
+
+  return plural as PluralFn;
 };

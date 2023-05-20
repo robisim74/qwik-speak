@@ -41,7 +41,6 @@ module.exports = {
     'quotes': ["error", "single", { "avoidEscape": true, "allowTemplateLiterals": true }],
     "prefer-const": ["error", {
       "destructuring": "all"
-    }],
-    'qwik/use-method-usage': 'off'
+    }]
   },
 };

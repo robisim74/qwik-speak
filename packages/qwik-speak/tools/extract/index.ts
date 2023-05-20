@@ -4,7 +4,7 @@ import { extname, join, normalize } from 'path';
 
 import type { QwikSpeakExtractOptions, Translation } from '../core/types';
 import type { Argument, CallExpression, Element } from '../core/parser';
-import { getPluralAlias, getTranslateAlias, getInlineTranslateAlias, parseJson, parseSequenceExpressions } from '../core/parser';
+import { getUseTranslateAlias, getInlineTranslateAlias, getUsePluralAlias, parseJson, parseSequenceExpressions } from '../core/parser';
 import { deepClone, deepMerge, deepSet } from '../core/merge';
 import { minDepth, sortTarget, toJsonString } from '../core/format';
 import { getOptions, getRules } from '../core/intl-parser';
@@ -109,18 +109,20 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
       }
     }
 
-    // $translate
-    if (/\$translate/.test(code)) {
-      const alias = getTranslateAlias(code);
-      // Clear types
-      clearTypes(alias);
-      // Parse sequence
-      const sequence = parseSequenceExpressions(code, alias);
-      parseSequence(sequence);
+    // useTranslate
+    if (/useTranslate/.test(code)) {
+      const alias = getUseTranslateAlias(code);
+      if (alias) {
+        // Clear types
+        clearTypes(alias);
+        // Parse sequence
+        const sequence = parseSequenceExpressions(code, alias);
+        parseSequence(sequence);
+      }
     }
 
-    // $inlineTranslate
-    if (/\$inlineTranslate/.test(code)) {
+    // inlineTranslate
+    if (/inlineTranslate/.test(code)) {
       const alias = getInlineTranslateAlias(code);
       // Clear types
       clearTypes(alias);
@@ -129,37 +131,40 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
       parseSequence(sequence);
     }
 
-    // $plural
-    if (/\$plural/.test(code)) {
-      const alias = getPluralAlias(code);
-      // Parse sequence
-      const sequence = parseSequenceExpressions(code, alias);
+    // usePlural
+    if (/usePlural/.test(code)) {
+      const alias = getUsePluralAlias(code);
 
-      for (const expr of sequence) {
-        const args = expr.arguments;
+      if (alias) {
+        // Parse sequence
+        const sequence = parseSequenceExpressions(code, alias);
 
-        if (args?.length > 0) {
-          // Dynamic argument (key, options)
-          if (args[1]?.type === 'Identifier' || args[1]?.type === 'CallExpression' ||
-            args[3]?.type === 'Identifier' || args[3]?.type === 'CallExpression') {
-            stats.set('dynamic plural', (stats.get('dynamic plural') ?? 0) + 1);
-            continue;
-          }
+        for (const expr of sequence) {
+          const args = expr.arguments;
 
-          // Map of rules
-          const rules = new Set<string>();
-          const options = getOptions(args[3]?.properties);
-          for (const lang of resolvedOptions.supportedLangs) {
-            const rulesByLang = getRules(lang, options);
-            for (const rule of rulesByLang) {
-              rules.add(rule);
+          if (args?.length > 0) {
+            // Dynamic argument (key, options)
+            if (args[1]?.type === 'Identifier' || args[1]?.type === 'CallExpression' ||
+              args[3]?.type === 'Identifier' || args[3]?.type === 'CallExpression') {
+              stats.set('dynamic plural', (stats.get('dynamic plural') ?? 0) + 1);
+              continue;
             }
-          }
 
-          for (const rule of rules) {
-            let key = args?.[1]?.value;
-            key = key ? `${key}${resolvedOptions.keySeparator}${rule}` : rule;
-            keys.push(key);
+            // Map of rules
+            const rules = new Set<string>();
+            const options = getOptions(args[3]?.properties);
+            for (const lang of resolvedOptions.supportedLangs) {
+              const rulesByLang = getRules(lang, options);
+              for (const rule of rulesByLang) {
+                rules.add(rule);
+              }
+            }
+
+            for (const rule of rules) {
+              let key = args?.[1]?.value;
+              key = key ? `${key}${resolvedOptions.keySeparator}${rule}` : rule;
+              keys.push(key);
+            }
           }
         }
       }

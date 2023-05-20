@@ -403,10 +403,11 @@ export function parseSequenceExpressions(code: string, alias: string): CallExpre
 }
 
 /**
- * Get $translate alias
+ * Get useTranslate alias
  */
-export function getTranslateAlias(code: string): string {
-  let translateAlias = code.match(/(?<=\$translate\s+as).*?(?=,|\})/s)?.[0]?.trim() || '$translate';
+export function getUseTranslateAlias(code: string): string | null {
+  let translateAlias = code.match(/(?<=\bconst\s).*?(?=\s?=\s?useTranslate\(\);?)/)?.[0]?.trim();
+  if (!translateAlias) return null;
   // Assert position at a word boundary
   if (!translateAlias.startsWith('$')) translateAlias = `\\b${translateAlias}`;
   // Escape special characters 
@@ -415,10 +416,10 @@ export function getTranslateAlias(code: string): string {
 }
 
 /**
- * Get $inlineTranslate alias
+ * Get inlineTranslate alias
  */
 export function getInlineTranslateAlias(code: string): string {
-  let translateAlias = code.match(/(?<=\$inlineTranslate\s+as).*?(?=,|\})/s)?.[0]?.trim() || '$inlineTranslate';
+  let translateAlias = code.match(/(?<=inlineTranslate\s+as).*?(?=,|\})/s)?.[0]?.trim() || 'inlineTranslate';
   // Assert position at a word boundary
   if (!translateAlias.startsWith('$')) translateAlias = `\\b${translateAlias}`;
   // Escape special characters 
@@ -427,10 +428,11 @@ export function getInlineTranslateAlias(code: string): string {
 }
 
 /**
- * Get $plural alias
+ * Get usePlural alias
  */
-export function getPluralAlias(code: string): string {
-  let pluralAlias = code.match(/(?<=\$plural\s+as).*?(?=,|\})/s)?.[0]?.trim() || '$plural';
+export function getUsePluralAlias(code: string): string | null {
+  let pluralAlias = code.match(/(?<=\bconst\s).*?(?=\s?=\s?usePlural\(\);?)/)?.[0]?.trim();
+  if (!pluralAlias) return null;
   // Assert position at a word boundary
   if (!pluralAlias.startsWith('$')) pluralAlias = `\\b${pluralAlias}`;
   // Escape special characters 
