@@ -25,7 +25,7 @@ export const usePlural = (): PluralFn => {
   const plural = (
     value: number | string,
     key?: string,
-    params?: any,
+    params?: Record<string, any>,
     options?: Intl.PluralRulesOptions,
     lang?: string
   ) => {

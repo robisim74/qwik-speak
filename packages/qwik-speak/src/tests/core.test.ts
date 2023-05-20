@@ -3,7 +3,7 @@ import { test, describe, expect } from 'vitest';
 import { getValue, transpileParams } from '../core';
 
 describe('core', () => {
-  test('translate', () => {
+  test('getValue', () => {
     let value = getValue('KEY1', { KEY1: 'key1', KEY2: 'key2' });
     expect(value).toBe('key1');
     value = getValue('SUBKEY1.AA', { KEY1: 'key1', SUBKEY1: { AA: 'aa' } });
@@ -13,7 +13,7 @@ describe('core', () => {
     value = getValue('SUBKEY1.BB', { KEY1: 'key1', SUBKEY1: { AA: 'aa' } });
     expect(value).toBe('SUBKEY1.BB');
   });
-  test('translate when String', () => {
+  test('getValue when String', () => {
     const value = getValue('KEY1', { KEY1: new String('key1') });
     expect(value).toBe('key1');
   });

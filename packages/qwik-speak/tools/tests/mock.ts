@@ -40,9 +40,9 @@ export const Home = component$(() => {
   const count = useSignal(0);
 
   const tParam = t('home.greeting', { name: t('app.title') });
-  const tArray = t<string[]>('home.array@@["one", "two"]');
-  const item = t('home.array.2@@three');
-  const tObject = t<Translation>('home.obj@@{"one": "1", "two": "2"}');
+  const tArray = t<string[]>('home.array@@["{{ name }} one", "{{ name }} two"]', { name: 'n.' });
+  const item = t('home.array.2@@{{ name }} three', { name: 'n.' });
+  const tObject = t<Translation>('home.obj@@{"one": "{{ name }} 1", "two": "{{ name }} 2"}', { name: 'n.' });
   const tArrayObjects = t<Translation[]>('home.arrayObjects@@[{"num": "1"}, {"num": "2"}]');
   console.log(tParam);
   tArray.map((x) => console.log(x));
@@ -121,9 +121,9 @@ export const s_dYGb4b0cyCA = ()=>{
     const tParam = t('home.greeting', {
         name: t('app.title')
     });
-    const tArray = t('home.array@@["one", "two"]');
-    const item = t('home.array.2@@three');
-    const tObject = t('home.obj@@{"one": "1", "two": "2"}');
+    const tArray = t('home.array@@["{{ name }} one", "{{ name }} two"]', { name: 'n.' });
+    const item = t('home.array.2@@{{ name }} three', { name: 'n.' });
+    const tObject = t('home.obj@@{"one": "{{ name }} 1", "two": "{{ name }} 2"}', { name: 'n.' });
     const tArrayObjects = t('home.arrayObjects@@[{"num": "1"}, {"num": "2"}]');
     console.log(tParam);
     tArray.map((x)=>console.log(x));
@@ -214,9 +214,9 @@ export const s_dYGb4b0cyCA = ()=>{
     const tParam = __qsInline('home.greeting', {
         name: __qsInline('app.title')
     });
-    const tArray = __qsInline('home.array@@["one", "two"]');
-    const item = __qsInline('home.array.2@@three');
-    const tObject = __qsInline('home.obj@@{"one": "1", "two": "2"}');
+    const tArray = __qsInline('home.array@@["{{ name }} one", "{{ name }} two"]', { name: 'n.' });
+    const item = __qsInline('home.array.2@@{{ name }} three', { name: 'n.' });
+    const tObject = __qsInline('home.obj@@{"one": "{{ name }} 1", "two": "{{ name }} 2"}', { name: 'n.' });
     const tArrayObjects = __qsInline('home.arrayObjects@@[{"num": "1"}, {"num": "2"}]');
     console.log(tParam);
     tArray.map((x)=>console.log(x));
@@ -292,9 +292,9 @@ export const mockChunkCode = `const s_dYGb4b0cyCA = () => {
   const tParam = __qsInline("home.greeting", {
     name: __qsInline("app.title")
   });
-  const tArray = __qsInline('home.array@@["one", "two"]');
-  const item = __qsInline("home.array.2@@three");
-  const tObject = __qsInline('home.obj@@{"one": "1", "two": "2"}');
+  const tArray = __qsInline('home.array@@["{{ name }} one", "{{ name }} two"]', { name: 'n.' });
+  const item = __qsInline('home.array.2@@{{ name }} three', { name: 'n.' });
+  const tObject = __qsInline('home.obj@@{"one": "{{ name }} 1", "two": "{{ name }} 2"}', { name: 'n.' });
   const tArrayObjects = __qsInline('home.arrayObjects@@[{"num": "1"}, {"num": "2"}]');
   console.log(tParam);
   tArray.map((x) => console.log(x));
@@ -368,9 +368,9 @@ export const mockInlinedCode = `const s_dYGb4b0cyCA = () => {
   const locale = useSpeakLocale();
   const count = Sc(0);
   const tParam = \`Hi! I am \${\`\`}\`;
-  const tArray = ["one","two","three"];
-  const item = \`three\`;
-  const tObject = {"one":"1","two":"2"};
+  const tArray = [\`n. one\`,\`n. two\`,\`n. three\`];
+  const item = \`n. three\`;
+  const tObject = {"one":\`n. 1\`,"two":\`n. 2\`};
   const tArrayObjects = [{"num":"1"},{"num":"2"}];
   console.log(tParam);
   tArray.map((x) => console.log(x));
@@ -442,9 +442,9 @@ export const mockInlinedCodeByLang = `const s_dYGb4b0cyCA = () => {
   const locale = useSpeakLocale();
   const count = Sc(0);
   const tParam = \`Ciao! Sono \${\`\`}\`;
-  const tArray = ["uno","due","tre"];
-  const item = \`tre\`;
-  const tObject = {"one":"1","two":"2"};
+  const tArray = [\`n. uno\`,\`n. due\`,\`n. tre\`];
+  const item = \`n. tre\`;
+  const tObject = {"one":\`n. 1\`,"two":\`n. 2\`};
   const tArrayObjects = [{"num":"1"},{"num":"2"}];
   console.log(tParam);
   tArray.map((x) => console.log(x));
@@ -521,9 +521,9 @@ export const mockAsset = JSON.stringify({
 export const mockExtractedAsset = JSON.stringify({
   "home": {
     "array": [
-      "one",
-      "two",
-      "three"
+      "{{ name }} one",
+      "{{ name }} two",
+      "{{ name }} three"
     ],
     "arrayObjects": [
       {
@@ -542,8 +542,8 @@ export const mockExtractedAsset = JSON.stringify({
     "increment": "Increment",
     "numbers": "Numbers & currencies",
     "obj": {
-      "one": "1",
-      "two": "2"
+      "one": "{{ name }} 1",
+      "two": "{{ name }} 2"
     },
     "params": "",
     "plural": "Plural",
@@ -555,9 +555,9 @@ export const mockExtractedAsset = JSON.stringify({
 export const mockTranslatedAsset = JSON.stringify({
   "home": {
     "array": [
-      "one",
-      "two",
-      "three"
+      "{{ name }} one",
+      "{{ name }} two",
+      "{{ name }} three"
     ],
     "arrayObjects": [
       {
@@ -576,8 +576,8 @@ export const mockTranslatedAsset = JSON.stringify({
     "increment": "Increment",
     "numbers": "Numbers & currencies",
     "obj": {
-      "one": "1",
-      "two": "2"
+      "one": "{{ name }} 1",
+      "two": "{{ name }} 2"
     },
     "params": "Parameters",
     "plural": "Plural",
@@ -589,9 +589,9 @@ export const mockTranslatedAsset = JSON.stringify({
 export const mockTranslatedAssetByLang = JSON.stringify({
   "home": {
     "array": [
-      "uno",
-      "due",
-      "tre"
+      "{{ name }} uno",
+      "{{ name }} due",
+      "{{ name }} tre"
     ],
     "arrayObjects": [
       {
@@ -610,8 +610,8 @@ export const mockTranslatedAssetByLang = JSON.stringify({
     "increment": "Incrementa",
     "numbers": "Numeri e valute",
     "obj": {
-      "one": "1",
-      "two": "2"
+      "one": "{{ name }} 1",
+      "two": "{{ name }} 2"
     },
     "params": "Parametri",
     "plural": "Plurale",

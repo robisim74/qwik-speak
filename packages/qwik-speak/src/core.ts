@@ -102,21 +102,22 @@ export const getValue = (
   if (value) {
     if (typeof value === 'string' || value instanceof String)
       return params ? transpileParams(value.toString(), params) : value.toString();
-    if (typeof value === 'object') return value;
+    if (typeof value === 'object')
+      return params ? JSON.parse(transpileParams(JSON.stringify(value), params)) : value;
   }
 
   if (defaultValue) {
     if (!/^[[{].*[\]}]$/.test(defaultValue) || /^{{/.test(defaultValue))
       return params ? transpileParams(defaultValue, params) : defaultValue;
     // Default value is an array/object
-    return JSON.parse(defaultValue);
+    return params ? JSON.parse(transpileParams(defaultValue, params)) : JSON.parse(defaultValue);
   }
 
   return key;
 }
 
 /**
- * Separate key & value
+ * Separate key & default value
  */
 export const separateKeyValue = (key: string, keyValueSeparator: string): [string, string | undefined] => {
   return <[string, string | undefined]>key.split(keyValueSeparator);

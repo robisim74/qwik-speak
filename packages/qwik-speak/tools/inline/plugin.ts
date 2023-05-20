@@ -596,14 +596,21 @@ export function getValue(
 
   if (value) {
     if (typeof value === 'string') return params ? transpileParams(value, params) : quoteValue(value);
-    if (typeof value === 'object') return value;
+    if (typeof value === 'object') return params ? transpileObjectParams(value, params) : value;
   }
 
   return undefined;
 }
 
+export function transpileObjectParams(value: Translation, params?: Argument): Translation {
+  Object.keys(value).map(k => {
+    if (typeof value[k] === 'string') value[k] = params ? transpileParams(value[k], params) : quoteValue(value[k]);
+    if (value[k] && typeof value[k] === 'object') value[k] = transpileObjectParams(value[k], params);
+  });
+  return value;
+}
 
-export function transpileParams(value: string, params: Argument): string | undefined {
+export function transpileParams(value: string, params: Argument): string {
   if (params.properties) {
     for (const property of params.properties) {
       value = value.replace(/{{\s?([^{}\s]*)\s?}}/g, (token: string, key: string) => {

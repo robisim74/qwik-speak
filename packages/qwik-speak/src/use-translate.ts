@@ -27,7 +27,7 @@ export type TranslateFn = {
 export const useTranslate = (): TranslateFn => {
   const ctx = useSpeakContext();
 
-  const translate = (keys: string | string[], params?: any, lang?: string) => {
+  const translate = (keys: string | string[], params?: Record<string, any>, lang?: string) => {
     const { locale, translation, config } = ctx;
 
     lang ??= locale.lang;

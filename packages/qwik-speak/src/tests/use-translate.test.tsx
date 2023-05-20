@@ -32,12 +32,12 @@ const TestComponent = component$(() => {
       <div id="A5">{t('nested.test')}</div>
       <div id="A6">{t('test1@@Test 1')}</div>
       <div id="A7">{t('test1@@Test {{param}}', { param: 'params' })}</div>
-      <div id="A8">{t<string[]>('nested.array').map((v, i) =>
+      <div id="A8">{t<string[]>('nested.array', { param: 'params' }).map((v, i) =>
         (<div key={i}>{v}</div>))}
       </div>
-      <div id="A9">{t('nested.array.1')}</div>
+      <div id="A9">{t('nested.array.1', { param: 'params' })}</div>
       <div id="A10">{t<Translation>('nested')['test']}</div>
-      <div id="A11">{t<Translation[]>('arrayObjects').map((o, i) =>
+      <div id="A11">{t<Translation[]>('arrayObjects', { param: 'params' }).map((o, i) =>
         (<div key={i}>{o['num']}</div>))}
       </div>
       <div id="A12">
@@ -89,18 +89,18 @@ describe('useTranslate function', async () => {
     expect((screen.querySelector('#A7') as HTMLDivElement).innerHTML).toContain('Test params');
   });
   test('array', () => {
-    expect((screen.querySelector('#A8') as HTMLDivElement).innerHTML).toContain('Test1');
-    expect((screen.querySelector('#A8') as HTMLDivElement).innerHTML).toContain('Test2');
+    expect((screen.querySelector('#A8') as HTMLDivElement).innerHTML).toContain('Test1 params');
+    expect((screen.querySelector('#A8') as HTMLDivElement).innerHTML).toContain('Test2 params');
   });
   test('array with dot notation', () => {
-    expect((screen.querySelector('#A9') as HTMLDivElement).innerHTML).toContain('Test2');
+    expect((screen.querySelector('#A9') as HTMLDivElement).innerHTML).toContain('Test2 params');
   });
   test('object', () => {
     expect((screen.querySelector('#A10') as HTMLDivElement).innerHTML).toContain('Test');
   });
   test('array of objects', () => {
-    expect((screen.querySelector('#A11') as HTMLDivElement).innerHTML).toContain('1');
-    expect((screen.querySelector('#A11') as HTMLDivElement).innerHTML).toContain('3');
+    expect((screen.querySelector('#A11') as HTMLDivElement).innerHTML).toContain('1 params');
+    expect((screen.querySelector('#A11') as HTMLDivElement).innerHTML).toContain('3 params');
   });
   test('conditional rendering', () => {
     expect((screen.querySelector('#A12') as HTMLDivElement).innerHTML).toContain('Test');

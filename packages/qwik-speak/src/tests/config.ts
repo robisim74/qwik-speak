@@ -17,13 +17,13 @@ export const loadTranslationStub$: LoadTranslationFn = $(() => {
     testParams: 'Test {{param}}',
     nested: {
       test: 'Test',
-      array: ['Test1', 'Test2'],
+      array: ['Test1 {{ param }}', 'Test2 {{ param }}' ],
     },
     one: 'One {{ role }} developer',
     other: '{{value}} {{ role }} developers',
     arrayObjects: [
-      { num: '1' },
-      { num: '3' }
+      { num: '1 {{ param }}' },
+      { num: '3 {{ param }}' }
     ]
   };
 });
