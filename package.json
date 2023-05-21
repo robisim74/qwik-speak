@@ -12,12 +12,12 @@
     "build.server": "vite build -c adapters/cloudflare-pages/vite.config.ts",
     "build.types": "tsc --incremental --noEmit",
     "deploy": "wrangler pages publish ./dist",
-    "serve": "wrangler pages dev ./dist",
     "dev": "vite --mode ssr",
     "dev.debug": "node --inspect-brk ./node_modules/vite/bin/vite.js --mode ssr --force",
     "lint": "eslint src/**/*.ts*",
     "preview": "qwik build preview && vite preview --open",
     "qwik-speak-extract": "qwik-speak-extract --supportedLangs=en-US,it-IT --assetsPath=i18n",
+    "serve": "wrangler pages dev ./dist",
     "start": "vite --open --mode ssr",
     "test": "vitest test --run",
     "test.e2e": "playwright test",
@@ -42,7 +42,7 @@
     "vite": "4.3.5",
     "vite-tsconfig-paths": "4.2.0",
     "vitest": "^0.30.1",
-    "wrangler": "latest"
+    "wrangler": "^2.20.0"
   },
   "type": "module"
 }
