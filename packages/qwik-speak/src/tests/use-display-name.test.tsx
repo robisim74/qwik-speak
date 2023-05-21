@@ -17,7 +17,7 @@ const TestComponent = component$(() => {
   );
 });
 
-describe('displayName function', async () => {
+describe('useDisplayName function', async () => {
   const { screen, render } = await createDOM();
 
   await render(

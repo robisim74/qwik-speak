@@ -3,7 +3,7 @@
 > Note. It is recommended to put these functions in a separate file from the configuration, to allow the Qwik compiler to respect the initialization order of the functions
 
 ## loadTranslation$
-`loadTranslation$` is the core function of the library. It is a customizable function, with which you can load the translation files in the way you prefer.
+`loadTranslation$` is the core function of the library. It is a customizable QRL function, with which you can load the translation files in the way you prefer.
 
 ### Fetching files
 You can fetch files from the _public_ folder:

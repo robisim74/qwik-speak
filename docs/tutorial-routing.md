@@ -42,7 +42,9 @@ export const translationFn: TranslationFn = {
   loadTranslation$: loadTranslation$
 };
 ```
-We have added the Speak config and the implementation of the `loadTranslation$` function. `loadTranslation$` is a customizable function, with which you can load the translation files in the way you prefer.
+We have added the Speak config and the implementation of the `loadTranslation$` function to load translation files.
+
+> `loadTranslation$` is a customizable QRL function: you can load the translation files in the way you prefer
 
 ## Routing
 Let's assume that we want to create a navigation of this type:
@@ -100,12 +102,16 @@ Finally we add an `index.tsx` with some translation:
 _src/routes/[...lang]/index.tsx_
 ```tsx
 import {
-  $translate as t,
-  formatDate as fd,
-  formatNumber as fn,
+  useTranslate,
+  useFormatDate,
+  useFormatNumber,
 } from 'qwik-speak';
 
 export const Home = component$(() => {
+  const t = useTranslate();
+  const fd = useFormatDate();
+  const fn = useFormatNumber();
+
   return (
     <>
       <h1>{t('app.title@@{{name}} demo', { name: 'Qwik Speak' })}</h1>
@@ -135,11 +141,13 @@ export const head: DocumentHead = {
   meta: [{ name: 'description', content: 'home.head.description@@Qwik Speak with localized routing' }]
 };
 ```
-Here we have used the `Speak` component to add scoped translations to the home page. This means that in addition to the `app` asset that comes with the configuration, the home page will also use the `home` asset. To distinguish them, `app` asset keys start with `app` and home asset keys start with `home`.
+Here we have used the `Speak` component to add scoped translations to the `Home` component:
+- `Home` component will use the `home` asset, in addition to the `app` asset that comes with the configuration
+- `home` asset keys start with `home`
 
 We are also providing default values for each translation: `key@@[default value]`.
 
-> `Speak` component is a `Slot` component: because Qwik renders `Slot` components and direct children in isolation, translations are not immediately available in direct children, and we need to use a component for the `Home` page. It is generally not necessary to use more than one `Speak` component per page
+> `Speak` component is a `Slot` component: because Qwik renders `Slot` components and direct children in isolation, translations are not immediately available in direct children, and we need to use a component for the `Home` page. It is not necessary to use more than one `Speak` component per page
 
 ## Head metas
 You may have noticed, that in `index.tsx` we have provided the meta title and description with only the keys. Since the Qwik City `DocumentHead` is out of context, we need to do the translations directly in `router-head.tsx`:
@@ -176,8 +184,9 @@ Now we want to change locale. Let's create a `ChangeLocale` component:
 _src/components/change-locale.tsx_
 ```tsx
 export const ChangeLocale = component$(() => {
-  const loc = useLocation();
+  const t = useTranslate();
 
+  const loc = useLocation();
   const config = useSpeakConfig();
 
   // Replace the locale and navigate to the new URL
@@ -220,7 +229,7 @@ export default component$(() => {
 ```
 In `navigateByLocale$` we replace the language in the URL, before navigating to the new localized URL.
 
-## Extraction: [Qwik Speak Extract](./extract.md)
+## Extraction
 We can now extract the translations and generate the `assets` as json. In `package.json` add the following command to the scripts:
 ```json
 "qwik-speak-extract": "qwik-speak-extract --supportedLangs=en-US,it-IT --assetsPath=i18n"
@@ -241,9 +250,9 @@ extracted keys: 4
 ```
 `app` asset and `home` asset for each language, initialized with the default values we provided.
 
-_translations skipped due to dynamic keys_ are meta title and description keys, because those keys are passed as dynamic parameters to the `$translate` function. We have to add them manually in a new file that we will call `runtime`:
+_translations skipped due to dynamic keys_ are meta title and description keys, because those keys are passed as dynamic parameters. We have to add them manually in a new file that we will call `runtime`:
 
-_public/i18n/[lang]/runtime.json_
+_i18n/[lang]/runtime.json_
 ```json
 {
   "runtime": {
@@ -272,13 +281,14 @@ runtimeAssets: [
   'runtime' // Translations with dynamic keys or parameters
 ]
 ```
-
 We can translate the `it-IT` files, and run the app:
 ```shell
 npm start
 ```
 
-## Production: [Qwik Speak Inline Vite plugin](./inline.md)
+See [Qwik Speak Extract](./extract.md) for more details.
+
+## Production
 In production mode, `assets` are loaded only during SSR, and to get the translations on the client as well it is required to inline the translations in chucks sent to the browser.
 
 Add `qwikSpeakInline` Vite plugin in `vite.config.ts`:
@@ -324,12 +334,10 @@ export default function (opts: RenderToStreamOptions) {
   });
 }
 ```
-
 Build the production app in preview mode:
 ```shell
 npm run preview
 ```
-
 Inspect the `qwik-speak-inline.log` file in root folder:
 
 ```
@@ -340,3 +348,5 @@ dynamic key: t(m.content) - skip
 It contains the non-inlined dynamic keys that we added in the `runtime.json` file.
 
 > The app will have the same behavior as you saw in dev mode, but now the translations are inlined as you can verify by inspecting the production files, reducing resource usage at runtime
+
+See [Qwik Speak Inline Vite plugin](./inline.md) for more details.

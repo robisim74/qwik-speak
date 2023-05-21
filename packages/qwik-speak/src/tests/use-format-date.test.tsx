@@ -18,7 +18,7 @@ const TestComponent = component$(() => {
   );
 });
 
-describe('formatDate function', async () => {
+describe('useFormatDate function', async () => {
   const { screen, render } = await createDOM();
 
   await render(

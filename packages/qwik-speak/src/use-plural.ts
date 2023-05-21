@@ -37,7 +37,7 @@ export const usePlural = (): PluralFn => {
     const rule = new Intl.PluralRules(lang, options).select(value);
     key = key ? `${key}${config.keySeparator}${rule}` : rule;
 
-    return getValue(key, translation[lang], { value, ...params }, config.keySeparator);
+    return getValue(key, translation[lang], { value, ...params }, config.keySeparator, config.keyValueSeparator);
   };
 
   return plural as PluralFn;

@@ -9,13 +9,17 @@ Given the `config` object and a component to test like in [Quick Start](./quick-
 _src/routes/index.tsx_
 ```tsx
 import {
-  $translate as t,
-  formatDate as fd,
-  formatNumber as fn,
+  useTranslate,
+  useFormatDate,
+  useFormatNumber,
   Speak,
 } from 'qwik-speak';
 
 export const Home = component$(() => {
+  const t = useTranslate();
+  const fd = useFormatDate();
+  const fn = useFormatNumber();
+
   return (
     <>
       <h1>{t('app.title@@{{name}} demo', { name: 'Qwik Speak' })}</h1>
@@ -57,7 +61,7 @@ test(`[Home Component]: Should render the component`, async () => {
 });
 ```
 
-Optionally, if you need to test the translated texts in different languages, you have to provide `loadTranslation$` to ensure translations are loaded in test environment and the locale to use:
+Optionally, if you need to test the translated texts in different languages, you have to provide `loadTranslation$` to ensure translations are loaded in test environment, and the locale to use:
 
 ```tsx
 test(`[Home Component]: Should render translated texts in Italian`, async () => {

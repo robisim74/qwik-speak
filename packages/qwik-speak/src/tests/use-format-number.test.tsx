@@ -23,7 +23,7 @@ const TestComponent = component$(() => {
   );
 });
 
-describe('formatNumber function', async () => {
+describe('useFormatNumber function', async () => {
   const { screen, render } = await createDOM();
 
   await render(

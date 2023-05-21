@@ -17,7 +17,7 @@ const TestComponent = component$(() => {
   );
 });
 
-describe('relativeTime function', async () => {
+describe('useRelativeTime function', async () => {
   const { screen, render } = await createDOM();
 
   await render(
