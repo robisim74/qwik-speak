@@ -1,11 +1,13 @@
 import { component$ } from '@builder.io/qwik';
 import { useDocumentHead, useLocation } from '@builder.io/qwik-city';
-import { $translate as t } from 'qwik-speak';
+import { useTranslate } from 'qwik-speak';
 
 /**
  * The RouterHead component is placed inside of the document `<head>` element.
  */
 export const RouterHead = component$(() => {
+  const t = useTranslate();
+
   const head = useDocumentHead();
   const loc = useLocation();
 

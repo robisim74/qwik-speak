@@ -15,6 +15,10 @@ jobs:
         node-version: '16.x'
     - name: Install dependencies
       run: npm ci
+    - name: Install lib dependencies
+      run: npm --prefix packages/qwik-speak ci
+    - name: Build lib
+      run: npm run --prefix packages/qwik-speak build.lib
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
     - name: Run Playwright tests

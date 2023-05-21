@@ -1,8 +1,10 @@
 import { component$ } from '@builder.io/qwik';
 import type { DocumentHead } from '@builder.io/qwik-city';
-import { Speak, $translate as t } from 'qwik-speak';
+import { Speak, useTranslate } from 'qwik-speak';
 
 export const Page = component$(() => {
+  const t = useTranslate();
+
   const key = 'dynamic';
 
   return (

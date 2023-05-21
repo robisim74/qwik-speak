@@ -3,19 +3,15 @@
 > Note. It is recommended to put these functions in a separate file from the configuration, to allow the Qwik compiler to respect the initialization order of the functions
 
 ## loadTranslation$
-`loadTranslation$` is the core function of the library. It is a customizable function, with which you can load the translation files in the way you prefer.
+`loadTranslation$` is the core function of the library. It is a customizable QRL function, with which you can load the translation files in the way you prefer.
 
 ### Fetching files
-A simple implementation is to fetch files from the public folder:
+You can fetch files from the _public_ folder:
 
 ```typescript
-export const loadTranslation$: LoadTranslationFn = $(async (lang: string, asset: string, origin?: string) => {
-  let url = '';
+const loadTranslation$ = server$(async function (lang: string, asset: string) {
   // Absolute urls on server
-  if (isServer && origin) {
-    url = origin;
-  }
-  url += `/public/i18n/${lang}/${asset}.json`;
+  const url = `${this.url.origin}/i18n/${lang}/${asset}.json`;
   const response = await fetch(url);
 
   if (response.ok) {
@@ -26,8 +22,6 @@ export const loadTranslation$: LoadTranslationFn = $(async (lang: string, asset:
   }
 });
 ```
-
-> The function must be able to load files to both the server and the client
 
 ### Bundling files
 #### Dynamic import
