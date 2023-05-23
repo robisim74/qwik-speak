@@ -75,7 +75,7 @@ export default component$(() => {
 });
 ```
 
-Finally we add an `index.tsx` with some translation:
+Finally we add an `index.tsx` with some translation, providing default values for each translation: `key@@[default value]`:
 
 _src/routes/index.tsx_
 ```tsx
@@ -120,11 +120,11 @@ export const head: DocumentHead = {
   meta: [{ name: 'description', content: 'home.head.description@@Quick start' }]
 };
 ```
-Here we have used the `Speak` component to add scoped translations to the `Home` component:
-- `Home` component will use the `home` asset, in addition to the `app` asset that comes with the configuration
-- `home` asset keys start with `home`
 
-We are also providing default values for each translation: `key@@[default value]`.
+## Scoped translation
+We have used the `Speak` component to add scoped translations to the `Home` component:
+- `Home` component will use the `home` asset, in addition to the `app` asset that comes with the configuration
+- Using the asset name `home` as the root property in each key is the best practice to avoid keys in different files being overwritten
 
 > `Speak` component is a `Slot` component: because Qwik renders `Slot` components and direct children in isolation, translations are not immediately available in direct children, and we need to use a component for the `Home` page. It is not necessary to use more than one `Speak` component per page
 
@@ -133,17 +133,29 @@ You may have noticed, that in `index.tsx` we have provided the meta title and de
 
 _src/components/router-head/router-head.tsx_
 ```tsx
-<title>{t(head.title)}</title>
+export const RouterHead = component$(() => {
+  const t = useTranslate();
 
-{head.meta.map((m) => (
-  <meta key={m.key} name={m.name} content={m.name === 'description' ? t(m.content!) : m.content} />
-))}
+  const head = useDocumentHead();
+
+  return (
+    <>
+      <title>{t(head.title, { name: 'Qwik Speak' })}</title>
+
+      {head.meta.map((m) => (
+        <meta key={m.key} name={m.name} content={m.name === 'description' ? t(m.content!) : m.content} />
+      ))}
+    </>
+  );
+});
 ```
 
 We can also pass the `lang` attribute in the html tag:
 
 _src/entry.ssr.tsx_
 ```typescript
+import { config } from './speak-config';
+
 export default function (opts: RenderToStreamOptions) {
   return renderToStream(<Root />, {
     manifest,
@@ -185,7 +197,7 @@ export const onRequest: RequestHandler = ({ request, locale }) => {
   locale(lang || config.defaultLocale.lang);
 };
 ```
-Internally, Qwik Speak will try to take the Qwik `locale`, before falling back to default locale if it is not in `supportedLocales`.
+Internally, Qwik Speak will try to use the Qwik `locale`, before falling back to default locale if it is not in `supportedLocales`.
 
 ## Change locale
 Now we want to change locale. Let's create a `ChangeLocale` component:

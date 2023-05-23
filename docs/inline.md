@@ -1,6 +1,6 @@
 # Qwik Speak Inline Vite plugin
 
-> Inline Qwik Speak `useTranslate`, `inlineTranslate` and `usePNrlural` functions at compile time
+> Inline Qwik Speak `useTranslate`, `inlineTranslate` and `usePlural` functions at compile time
 
 ## How it works
 In development mode, translation happens _at runtime_: `assets` are loaded during SSR or on client, and the lookup also happens at runtime.
