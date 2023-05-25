@@ -5,7 +5,7 @@ import { extname, join, normalize } from 'path';
 import type { QwikSpeakExtractOptions, Translation } from '../core/types';
 import type { Argument, CallExpression, Element } from '../core/parser';
 import { getUseTranslateAlias, getInlineTranslateAlias, getUsePluralAlias, parseJson, parseSequenceExpressions } from '../core/parser';
-import { deepClone, deepMerge, deepSet } from '../core/merge';
+import { deepClone, deepMerge, deepSet, merge } from '../core/merge';
 import { minDepth, sortTarget, toJsonString } from '../core/format';
 import { getOptions, getRules } from '../core/intl-parser';
 
@@ -195,11 +195,15 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
 
           for (const source of sources) {
             if (source) {
+              let parsed: Translation = {};
+
               switch (ext) {
                 case '.json':
-                  data = parseJson(data, source);
+                  parsed = parseJson(source);
                   break;
               }
+
+              data = merge(data, parsed)
             }
           }
 

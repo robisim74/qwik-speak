@@ -440,7 +440,9 @@ export function getUsePluralAlias(code: string): string | null {
   return pluralAlias;
 }
 
-export function parseJson(target: Translation, source: string): Translation {
-  target = { ...target, ...JSON.parse(source) };
-  return target;
+/**
+ * Parse source removing null and empty values
+ */
+export function parseJson(source: string): Translation {
+  return JSON.parse(source, (key, value) => value === null || value === '' ? undefined : value);
 }

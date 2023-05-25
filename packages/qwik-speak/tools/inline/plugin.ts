@@ -9,6 +9,7 @@ import type { Argument, Property } from '../core/parser';
 import { getUseTranslateAlias, getInlineTranslateAlias, getUsePluralAlias, parseJson, parse, tokenize } from '../core/parser';
 import { parseSequenceExpressions } from '../core/parser';
 import { getOptions, getRules } from '../core/intl-parser';
+import { merge } from '../core/merge';
 
 const inlinePlaceholder = '__qsInline';
 const inlineTranslatePlaceholder = '__qsInlineTranslate';
@@ -81,11 +82,15 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
 
             for (const source of sources) {
               if (source) {
+                let parsed: Translation = {};
+
                 switch (ext) {
                   case '.json':
-                    data = parseJson(data, source);
+                    parsed = parseJson(source);
                     break;
                 }
+
+                data = merge(data, parsed);
               }
             }
 

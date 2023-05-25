@@ -20,7 +20,12 @@ export function deepMerge(target: Translation, source: Translation) {
   return source;
 }
 
-export function deepClone(value: string | Translation){
+export function deepClone(value: string | Translation) {
   if (typeof value === 'object') return JSON.parse(JSON.stringify(value));
   return value;
+}
+
+export function merge(target: Translation, source: Translation) {
+  target = { ...target, ...source };
+  return target;
 }
