@@ -22,8 +22,8 @@ export const loadTranslationStub$: LoadTranslationFn = $(() => {
     one: 'One {{ role }} developer',
     other: '{{value}} {{ role }} developers',
     arrayObjects: [
-      { num: '1 {{ param }}' },
-      { num: '3 {{ param }}' }
+      { num: 'one {{ param }}' },
+      { num: 'two {{ param }}' }
     ]
   };
 });

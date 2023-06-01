@@ -99,8 +99,8 @@ describe('useTranslate function', async () => {
     expect((screen.querySelector('#A10') as HTMLDivElement).innerHTML).toContain('Test');
   });
   test('array of objects', () => {
-    expect((screen.querySelector('#A11') as HTMLDivElement).innerHTML).toContain('1 params');
-    expect((screen.querySelector('#A11') as HTMLDivElement).innerHTML).toContain('3 params');
+    expect((screen.querySelector('#A11') as HTMLDivElement).innerHTML).toContain('one params');
+    expect((screen.querySelector('#A11') as HTMLDivElement).innerHTML).toContain('two params');
   });
   test('conditional rendering', () => {
     expect((screen.querySelector('#A12') as HTMLDivElement).innerHTML).toContain('Test');

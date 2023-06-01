@@ -7,22 +7,10 @@ const t = useTranslate();
 
 t('home.title@@Qwik Speak')
 ```
-- In dev mode, the function returns the default value (value after `@@`) if provided
-- When extracting translations, it creates scoped translation files:
-
-  _home.json_
-  ```json
-  {
-    "home": {
-      "title": "Qwik Speak"
-    }
-  }
-  ```
-- After extraction, it returns the value in files
-- In prod mod, using _Qwik Speak Inline_ Vite plugin, `t` function is replaced by its translation in chunks sent to the browser:
-  ```tsx
-  `Qwik Speak`
-  ```
+Value after `@@` is the optional default value:
+```tsx
+`Qwik Speak`
+```
 
 ### Params interpolation
 `t` function accept params as well:
@@ -45,7 +33,7 @@ and returns an array of translated values:
 ```
 
 ### Arrays and objects as values
-It can get arrays and objects directly from files:
+`t` function can get arrays and objects directly from files:
 ```json
 {
   "home": {
@@ -55,8 +43,8 @@ It can get arrays and objects directly from files:
       "three"
     ],
     "obj": {
-      "one": "1",
-      "two": "2"
+      "one": "one",
+      "two": "two"
     }
   }
 }
@@ -75,8 +63,41 @@ t('home.array.2@@three')
 Finally, it is possible to set arrays and objects passing a _valid stringified_ default value:
 ```tsx
 t<string[]>('home.array@@["one","two","three"]')
-t<Translation>('home.obj@@{"one":"1","two":"2"}')
+t<Translation>('home.obj@@{"one":"one","two":"two"}')
 ```
+
+### Component$ props
+Prefer translating inside components rather than on boundaries:
+
+```tsx
+export const Title = component$<TitleProps>((props) => {
+  return (<h1>{props.name}</h1>)
+});
+
+export const Home = component$(() => {
+  const t = useTranslate();
+
+  const name = t('app.title');
+  return (
+    <Title name={name} />
+  );
+});
+```
+or
+```tsx
+export const Title = component$<TitleProps>((props) => {
+  const t = useTranslate();
+
+  return (<h1>{t(props.name)}</h1>)
+});
+
+export const Home = component$(() => {
+  return (
+    <Title name='app.title' />
+  );
+});
+```
+In the latter case, `app.title` will have to be placed in the `runtimeAssets`, as a dynamic key is passed to the `t` function.
 
 ## inlineTranslate
 `inlineTranslate` function has the same behavior as the function returned by `useTranslate`, but can be used outside the `component$`, for example in _Inline components_, passing the Speak context as second argument:
