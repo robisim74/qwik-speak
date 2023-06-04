@@ -12,11 +12,13 @@ export type PluralFn = {
    * @param lang Optional language if different from the current one
    * @returns The translation for the plural
    */
-  (value: number | string,
+  (
+    value: number | string,
     key?: string,
     params?: Record<string, any>,
     options?: Intl.PluralRulesOptions,
-    lang?: string): string;
+    lang?: string
+  ): string;
 };
 
 export const usePlural = (): PluralFn => {

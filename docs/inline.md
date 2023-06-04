@@ -26,6 +26,8 @@ sequenceDiagram
 ### Get the code ready
 Qwik uses the `q:base` attribute to determine the base URL for loading the chunks in the browser, so you have to set it in `entry.ssr.tsx` file:
 ```typescript
+import { isDev } from '@builder.io/qwik/build';
+
 export function extractBase({ serverData }: RenderOptions): string {
   if (!isDev && serverData?.locale) {
     return '/build/' + serverData.locale;

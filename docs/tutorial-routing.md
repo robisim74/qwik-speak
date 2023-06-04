@@ -12,6 +12,8 @@ Let's create `speak-config.ts` and `speak-functions.ts` files in `src`:
 
 _src/speak-config.ts_
 ```typescript
+import type { SpeakConfig } from 'qwik-speak';
+
 export const config: SpeakConfig = {
   defaultLocale: { lang: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles' },
   supportedLocales: [
@@ -25,6 +27,9 @@ export const config: SpeakConfig = {
 ```
 _src/speak-functions.ts_
 ```typescript
+import { server$ } from '@builder.io/qwik-city';
+import type { LoadTranslationFn, Translation, TranslationFn } from 'qwik-speak';
+
 /**
  * Translation files are lazy-loaded via dynamic import and will be split into separate chunks during build.
  * Keys must be valid variable names
@@ -64,6 +69,8 @@ Now let's handle it. Create `plugin.ts` in the root of the `src/routes` director
 
 _src/routes/plugin.ts_
 ```typescript
+import { config } from '../speak-config';
+
 export const onRequest: RequestHandler = ({ params, locale }) => {
   const lang = params.lang;
 
@@ -78,6 +85,8 @@ Just wrap Qwik City provider with `QwikSpeakProvider` component in `root.tsx` an
 
 _src/root.tsx_
 ```tsx
+import { QwikSpeakProvider } from 'qwik-speak';
+
 export default component$(() => {
   return (
     <QwikSpeakProvider config={config} translationFn={translationFn}>
@@ -101,6 +110,13 @@ Finally we add an `index.tsx` with some translation, providing default values fo
 
 _src/routes/[...lang]/index.tsx_
 ```tsx
+import {
+  useTranslate,
+  useFormatDate,
+  useFormatNumber,
+  Speak,
+} from 'qwik-speak';
+
 export const Home = component$(() => {
   const t = useTranslate();
   const fd = useFormatDate();
@@ -169,6 +185,8 @@ We can also pass the `lang` attribute in the html tag:
 
 _src/entry.ssr.tsx_
 ```typescript
+import { config } from './speak-config';
+
 export default function (opts: RenderToStreamOptions) {
   return renderToStream(<Root />, {
     manifest,
@@ -187,6 +205,9 @@ Now we want to change locale. Let's create a `ChangeLocale` component:
 
 _src/components/change-locale.tsx_
 ```tsx
+import type { SpeakLocale } from 'qwik-speak';
+import { useSpeakConfig, useTranslate } from 'qwik-speak';
+
 export const ChangeLocale = component$(() => {
   const t = useTranslate();
 
@@ -316,6 +337,8 @@ export default defineConfig(() => {
 ```
 Set the base URL for loading the chunks in the browser in `entry.ssr.tsx` file:
 ```typescript
+import { isDev } from '@builder.io/qwik/build';
+
 export function extractBase({ serverData }: RenderOptions): string {
   if (!isDev && serverData?.locale) {
     return '/build/' + serverData.locale;

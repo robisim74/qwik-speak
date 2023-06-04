@@ -174,6 +174,8 @@ We can resolve the locale to use in two ways: passing the `locale` parameter to 
 
 _src/routes/plugin.ts_
 ```typescript
+import { config } from '../speak-config';
+
 export const onRequest: RequestHandler = ({ request, locale }) => {
   const cookie = request.headers?.get('cookie');
   const acceptLanguage = request.headers?.get('accept-language');
@@ -204,7 +206,8 @@ Now we want to change locale. Let's create a `ChangeLocale` component:
 
 _src/components/change-locale.tsx_
 ```tsx
-import { useTranslate, useSpeakConfig, SpeakLocale } from 'qwik-speak';
+import type { SpeakLocale } from 'qwik-speak';
+import { useSpeakConfig, useTranslate } from 'qwik-speak';
 
 export const ChangeLocale = component$(() => {
   const t = useTranslate();
@@ -326,6 +329,8 @@ export default defineConfig(() => {
 ```
 Set the base URL for loading the chunks in the browser in `entry.ssr.tsx` file:
 ```typescript
+import { isDev } from '@builder.io/qwik/build';
+
 export function extractBase({ serverData }: RenderOptions): string {
   if (!isDev && serverData?.locale) {
     return '/build/' + serverData.locale;

@@ -11,21 +11,23 @@ export const config: SpeakConfig = {
   keyValueSeparator: '@@'
 };
 
-export const loadTranslationStub$: LoadTranslationFn = $(() => {
-  return {
+export const mockJson = {
+  test: 'Test',
+  testParams: 'Test {{param}}',
+  nested: {
     test: 'Test',
-    testParams: 'Test {{param}}',
-    nested: {
-      test: 'Test',
-      array: ['Test1 {{ param }}', 'Test2 {{ param }}' ],
-    },
-    one: 'One {{ role }} developer',
-    other: '{{value}} {{ role }} developers',
-    arrayObjects: [
-      { num: 'one {{ param }}' },
-      { num: 'two {{ param }}' }
-    ]
-  };
+    array: ['Test1 {{ param }}', 'Test2 {{ param }}']
+  },
+  one: 'One {{ role }} developer',
+  other: '{{value}} {{ role }} developers',
+  arrayObjects: [
+    { num: 'One {{ param }}' },
+    { num: 'Two {{ param }}' }
+  ]
+};
+
+export const loadTranslationStub$: LoadTranslationFn = $(() => {
+  return mockJson;
 });
 
 export const translationFnStub: TranslationFn = {

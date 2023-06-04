@@ -36,5 +36,9 @@ export const inlineTranslate: InlineTranslateFn = (
 
   lang ??= locale.lang;
 
+  if (Array.isArray(keys)) {
+    return keys.map(k => getValue(k, translation[lang!], params, config.keySeparator, config.keyValueSeparator));
+  }
+
   return getValue(keys, translation[lang], params, config.keySeparator, config.keyValueSeparator);
 };

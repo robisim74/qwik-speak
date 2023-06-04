@@ -80,16 +80,12 @@ export const loadTranslations = async (
  * Get translation value
  */
 export const getValue = (
-  key: string | string[],
+  key: string,
   data: Translation,
   params?: Record<string, any>,
   keySeparator = '.',
   keyValueSeparator = '@@',
-): any => {
-  if (Array.isArray(key)) {
-    return key.map(k => getValue(k, data, params, keySeparator, keyValueSeparator));
-  }
-
+) => {
   let defaultValue: string | undefined = undefined;
 
   [key, defaultValue] = separateKeyValue(key, keyValueSeparator);
