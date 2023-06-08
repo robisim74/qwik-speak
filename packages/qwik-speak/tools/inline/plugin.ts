@@ -169,11 +169,11 @@ export async function writeChunks(
     mkdirSync(targetDir, { recursive: true });
   }
 
-  const tasks: Promise<void>[] = [];
+  // One chunk at a time to avoid "too many open files"
   for (const chunk of bundles) {
+    const tasks: Promise<void>[] = [];
     if (chunk.type === 'chunk' && 'code' in chunk && /build\//.test(chunk.fileName)) {
       const filename = normalize(`${targetDir}/${chunk.fileName.split('/')[1]}`);
-
       // Inline
       let code = chunk.code;
       if (code.includes(inlinePluralPlaceholder)) {
@@ -194,8 +194,8 @@ export async function writeChunks(
         tasks.push(writeFile(defaultFilename, code));
       }
     }
+    await Promise.all(tasks);
   }
-  await Promise.all(tasks);
 }
 
 /**

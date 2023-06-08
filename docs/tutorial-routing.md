@@ -65,7 +65,7 @@ src/routes/
     layout.tsx
 ```
 
-Now let's handle it. Create `plugin.ts` in the root of the `src/routes` directory::
+Now let's handle it. Create `plugin.ts` in the root of the `src/routes` directory:
 
 _src/routes/plugin.ts_
 ```typescript
