@@ -99,7 +99,7 @@ stateDiagram-v2
 ### Speak config
 - `defaultLocale` The default locale to use as fallback
 - `supportedLocales` List of locales supported by the app
-- `assets` An array of strings: each asset is passed to the `loadTranslation$` function to obtain data according to the language
+- `assets` Translation file names. Each asset is passed to the `loadTranslation$` function to obtain data according to the language
 - `runtimeAssets` Assets available at runtime
 - `keySeparator` Separator of nested keys. Default is `.`
 - `keyValueSeparator` Key-value separator. Default is `@@`

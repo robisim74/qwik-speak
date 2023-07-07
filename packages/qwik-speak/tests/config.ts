@@ -1,5 +1,5 @@
 import { $ } from '@builder.io/qwik';
-import type { SpeakConfig, LoadTranslationFn, TranslationFn } from '../types';
+import type { SpeakConfig, LoadTranslationFn, TranslationFn } from '../src/types';
 
 export const config: SpeakConfig = {
   defaultLocale: { lang: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles', units: { 'length': 'mile' } },

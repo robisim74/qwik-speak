@@ -55,7 +55,8 @@ export interface SpeakConfig {
    */
   supportedLocales: SpeakLocale[];
   /**
-   * An array of strings: each asset is passed to the loadTranslation$ function to obtain data according to the language
+   * Translation file names.
+   * Each asset is passed to the loadTranslation$ function to obtain data according to the language
    */
   assets?: string[];
   /**

@@ -65,7 +65,18 @@ export default defineConfig(() => {
   };
 });
 ```
-and build the app:
+Available options:
+- `supportedLangs` Supported langs. Required
+- `defaultLang` Default lang. Required
+- `basePath` The base path. Default to `'./'`
+- `assetsPath` Path to translation files: `[basePath]/[assetsPath]/[lang]/*.json`. Default to `'i18n'`
+- `outDir` The build output directory. Default to `'dist'`
+- `keySeparator` Separator of nested keys. Default is `'.'`
+- `keyValueSeparator` Key-value separator. Default is `'@@'`
+
+> Note. Currently, only `json` is supported as format
+
+Now build the app:
 ```shell
 npm run preview
 ```
@@ -93,8 +104,6 @@ At the end of the build, in root folder a `qwik-speak-inline.log` file is genera
 - Missing values
 - Translations with dynamic keys
 - Translations with dynamic params
-
-> Note. Currently, only `json` files are supported as assets
 
 ## Qwik Speak Inline Vite plugin & runtime
 When there are translations with dynamic keys or params, you have to use separate files, and add them to `runtimeAssets`:

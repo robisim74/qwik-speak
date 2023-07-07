@@ -2,9 +2,9 @@ import { createDOM } from '@builder.io/qwik/testing';
 import { component$ } from '@builder.io/qwik';
 import { test, describe, expect } from 'vitest';
 
-import type { Translation } from '../types';
-import { useTranslate } from '../use-translate';
-import { QwikSpeakProvider } from '../qwik-speak-component';
+import type { Translation } from '../src/types';
+import { useTranslate } from '../src/use-translate';
+import { QwikSpeakProvider } from '../src/qwik-speak-component';
 import { config, translationFnStub } from './config';
 
 interface ChildComponentProps {

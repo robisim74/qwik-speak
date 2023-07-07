@@ -2,11 +2,11 @@ import { createDOM } from '@builder.io/qwik/testing';
 import { component$, useSignal, useTask$, $ } from '@builder.io/qwik';
 import { test, describe, expect } from 'vitest';
 
-import { inlineTranslate } from '../inline-translate';
-import { useSpeakContext } from '../use-speak';
-import { QwikSpeakProvider } from '../qwik-speak-component';
+import { inlineTranslate } from '../src/inline-translate';
+import { useSpeakContext } from '../src/use-speak';
+import { QwikSpeakProvider } from '../src/qwik-speak-component';
 import { config, translationFnStub } from './config';
-import type { SpeakState } from '../types';
+import type { SpeakState } from '../src/types';
 
 const MyComponent = (props: { ctx: SpeakState }) => {
   return <div id="B">{inlineTranslate('test', props.ctx)}</div>;

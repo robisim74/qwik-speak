@@ -2,8 +2,8 @@ import { createDOM } from '@builder.io/qwik/testing';
 import { component$ } from '@builder.io/qwik';
 import { test, describe, expect } from 'vitest';
 
-import { usePlural } from '../use-plural';
-import { QwikSpeakProvider } from '../qwik-speak-component';
+import { usePlural } from '../src/use-plural';
+import { QwikSpeakProvider } from '../src/qwik-speak-component';
 import { config, translationFnStub } from './config';
 
 const TestComponent = component$(() => {

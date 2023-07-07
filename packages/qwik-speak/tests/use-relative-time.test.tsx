@@ -2,8 +2,8 @@ import { createDOM } from '@builder.io/qwik/testing';
 import { component$ } from '@builder.io/qwik';
 import { test, describe, expect } from 'vitest';
 
-import { useRelativeTime } from '../use-relative-time';
-import { QwikSpeakProvider } from '../qwik-speak-component';
+import { useRelativeTime } from '../src/use-relative-time';
+import { QwikSpeakProvider } from '../src/qwik-speak-component';
 import { config } from './config';
 
 const TestComponent = component$(() => {

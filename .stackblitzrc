@@ -1,1 +1,0 @@
-{"installDependencies":true,"startCommand":"npm --prefix packages/qwik-speak install && npm run --prefix packages/qwik-speak build.lib && npm run dev"}

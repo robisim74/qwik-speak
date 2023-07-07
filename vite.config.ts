@@ -16,7 +16,7 @@ export default defineConfig(() => {
       qwikVite({
         // Handle packages
         vendorRoots: [
-          fileURLToPath(new URL('./packages/qwik-speak/lib', import.meta.url))
+          fileURLToPath(new URL('./packages/qwik-speak/src', import.meta.url))
         ]
       }),
       qwikSpeakInline({

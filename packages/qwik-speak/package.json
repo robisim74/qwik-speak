@@ -4,10 +4,9 @@
   "description": "Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps",
   "scripts": {
     "api-extractor": "api-extractor run --local && api-extractor run --local --config tools/api-extractor.inline.json && api-extractor run --local --config tools/api-extractor.extract.json",
-    "build": "npm run lint && npm run build.lib && tsc && npm run build.tools && npm run api-extractor",
+    "build": "npm run lint && npm run build.lib && tsc --project tsconfig.build.json && npm run build.tools && npm run api-extractor",
     "build.lib": "vite build --mode lib",
-    "build.lib.watch": "vite build --mode lib --watch",
-    "build.tools": "vite build --mode lib --config tools/vite.config.inline.ts && vite build --mode lib --config tools/vite.config.extract.ts && tsc --project tools/tsconfig.json",
+    "build.tools": "vite build --mode lib --config tools/vite.config.inline.ts && vite build --mode lib --config tools/vite.config.extract.ts && tsc --project tools/tsconfig.build.json",
     "build.extract": "vite build --mode lib --config tools/vite.config.extract.ts --watch",
     "lint": "eslint src/**/*.ts* tools/**/*.ts*",
     "release": "npm run build && np",
@@ -23,7 +22,7 @@
   "devDependencies": {
     "@builder.io/qwik": "1.1.4",
     "@microsoft/api-documenter": "^7.22.3",
-    "@microsoft/api-extractor": "^7.34.7",
+    "@microsoft/api-extractor": "^7.36.1",
     "@types/eslint": "8.37.0",
     "@types/node": "^18.16.1",
     "@typescript-eslint/eslint-plugin": "5.59.1",
