@@ -1,6 +1,6 @@
 {
   "name": "qwik-speak",
-  "version": "0.14.1",
+  "version": "0.14.2",
   "description": "Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps",
   "scripts": {
     "api-extractor": "api-extractor run --local && api-extractor run --local --config tools/api-extractor.inline.json && api-extractor run --local --config tools/api-extractor.extract.json",
