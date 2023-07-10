@@ -56,6 +56,9 @@ _src/root.tsx_
 ```tsx
 import { QwikSpeakProvider } from 'qwik-speak';
 
+import { config } from './speak-config';
+import { translationFn } from './speak-functions';
+
 export default component$(() => {
   return (
     <QwikSpeakProvider config={config} translationFn={translationFn}>
@@ -195,8 +198,11 @@ export const onRequest: RequestHandler = ({ request, locale }) => {
     }
   }
 
+  // Check supported locales
+  lang = config.supportedLocales.find(value => value.lang === lang)?.lang || config.defaultLocale.lang;
+
   // Set Qwik locale
-  locale(lang || config.defaultLocale.lang);
+  locale(lang);
 };
 ```
 Internally, Qwik Speak will try to use the Qwik `locale`, before falling back to default locale if it is not in `supportedLocales`.

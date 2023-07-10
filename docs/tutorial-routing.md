@@ -87,6 +87,9 @@ _src/root.tsx_
 ```tsx
 import { QwikSpeakProvider } from 'qwik-speak';
 
+import { config } from './speak-config';
+import { translationFn } from './speak-functions';
+
 export default component$(() => {
   return (
     <QwikSpeakProvider config={config} translationFn={translationFn}>
