@@ -238,13 +238,15 @@ export function transform(code: string): string {
 
     // Check identifier
     if (args?.length > 2) {
-      if (args[2].type === 'ArrayExpression' && args[2].elements) {
-        if (args[2].elements.find(element => new RegExp(`^${alias}$`).test(element.value))) {
-          if (args[0].type === 'Identifier' && args[1].type === 'CallExpression') {
+      if (args[args.length - 1].type === 'ArrayExpression') {
+        const elements = args[args.length - 1].elements;
+        if (elements && elements.find(element => new RegExp(`^${alias}$`).test(element.value))) {
+          const index = elements.findIndex(element => new RegExp(`^${alias}$`).test(element.value));
+          if (args[index].type === 'Identifier' && args[args.length - 2].type === 'CallExpression') {
             // Transformed function
-            const transformedFn = args[1].value;
-            if (transformedFn && args[0].value) {
-              const transformedAlias = `\\b${args[0].value}`;
+            const transformedFn = args[args.length - 2].value;
+            if (transformedFn && args[index].value) {
+              const transformedAlias = `\\b${args[index].value}`;
               const tokens = tokenize(transformedFn);
               const transformedExpr = parse(tokens, transformedFn, transformedAlias);
 
@@ -502,11 +504,11 @@ export function checkDynamic(args: Argument[], originalFn: string): boolean {
   if (args?.[0]?.value) {
     // Dynamic key
     if (args[0].type === 'Identifier') {
-      if (args[0].value !== 'key' && args[0].value !== 'keys') dynamicKeys.push(`dynamic key: ${originalFn.replace(/\s+/g, ' ')} - skip`)
+      dynamicKeys.push(`dynamic key: ${originalFn.replace(/\s+/g, ' ')} - skip`)
       return true;
     }
     if (args[0].type === 'Literal') {
-      if (args[0].value !== 'key' && args[0].value !== 'keys' && /\${.*}/.test(args[0].value)) {
+      if (/\${.*}/.test(args[0].value)) {
         dynamicKeys.push(`dynamic key: ${originalFn.replace(/\s+/g, ' ')} - skip`)
         return true;
       }
@@ -526,11 +528,11 @@ export function checkDynamicInline(args: Argument[], originalFn: string): boolea
   if (args?.[0]?.value) {
     // Dynamic key
     if (args[0].type === 'Identifier') {
-      if (args[0].value !== 'key' && args[0].value !== 'keys') dynamicKeys.push(`dynamic key: ${originalFn.replace(/\s+/g, ' ')} - skip`)
+      dynamicKeys.push(`dynamic key: ${originalFn.replace(/\s+/g, ' ')} - skip`)
       return true;
     }
     if (args[0].type === 'Literal') {
-      if (args[0].value !== 'key' && args[0].value !== 'keys' && /\${.*}/.test(args[0].value)) {
+      if (/\${.*}/.test(args[0].value)) {
         dynamicKeys.push(`dynamic key: ${originalFn.replace(/\s+/g, ' ')} - skip`)
         return true;
       }

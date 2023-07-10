@@ -333,31 +333,33 @@ export function parse(tokens: Token[], code: string, alias: string): CallExpress
     return parseArgs(next());
   };
 
-  const parseCallExpr = (token: Token, arg?: Argument): CallExpression => {
+  const parseCallExpr = (token: Token, arg?: Argument, start = token.position.start): CallExpression => {
     if (!arg) {
       if (new RegExp(alias).test(token.value)) {
         // Alias Call expression
         node = {
           type: 'CallExpression',
-          value: code.substring(token.position.start, last().position.end + 1),
+          value: code.substring(start, last().position.end + 1),
           arguments: []
         };
         return parseArgs(next());
       } else {
         // Call expressions
-        arg = { type: 'CallExpression', value: token.value };
+        arg = { type: 'CallExpression', value: '' };
         node.arguments.push(arg);
-        return parseCallExpr(next(), arg)
+        return parseCallExpr(next(), arg, start)
       }
     }
 
-    // Call expressions are inlined
-    arg.value += token.value;
-
     // End of call
-    if (/^\)$/.test(token.value)) return parseArgs(next());
+    if (/^\)$/.test(token.value)) {
+      // Call expressions are inlined
+      arg.value = code.substring(start, token.position.end + 1);
 
-    return parseCallExpr(next(), arg)
+      return parseArgs(next());
+    }
+
+    return parseCallExpr(next(), arg, start)
   }
 
   return parseCallExpr(tokens[c]);
