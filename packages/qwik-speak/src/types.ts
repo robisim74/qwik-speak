@@ -26,6 +26,10 @@ export interface SpeakLocale {
    * Key value pairs of unit identifiers
    */
   units?: Record<string, string>;
+  /**
+   * Text direction
+   */
+  dir?: 'ltr' | 'rtl' | 'auto';
 }
 
 /**

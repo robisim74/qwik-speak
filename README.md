@@ -115,6 +115,7 @@ and optionally contains:
 - `currency` ISO 4217 three-letter code
 - `timeZone` From the IANA time zone database
 - `units` Key value pairs of unit identifiers
+- `dir` Text direction: `'ltr' | 'rtl' | 'auto'`
 
 ### Translation functions
 `TranslationFn` interface can be implemented to change the behavior of the library:
