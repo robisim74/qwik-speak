@@ -57,6 +57,11 @@ To extract translations directly from the components, a command is available tha
 
 See [Qwik Speak Extract](./docs/extract.md) for more information on how to use it.
 
+## Automatic translation
+To automatically translate files, an external command is available that uses OpenAI GPT Chat Completions API.
+
+See [GPT Translate JSON](./docs/gpt-translate-json.md) for more information on how to use it.
+
 ## Production
 Using _Qwik Speak Inline_ Vite plugin, translations are loaded and inlined during the build.
 

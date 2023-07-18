@@ -309,12 +309,31 @@ runtimeAssets: [
   'runtime' // Translations with dynamic keys or parameters
 ]
 ```
-We can translate the `it-IT` files, and run the app:
+
+See [Qwik Speak Extract](./extract.md) for more details.
+
+## Translation
+We can translate the `it-IT` files.
+
+If you have an OpenAI API key, you could use `gpt-translate-json` package:
+```shell
+npm install gpt-translate-json --save-dev
+```
+In `package.json` add the following command to the scripts:
+```json
+"gpt-translate-json": "gpt-translate-json --apiKey=openai_api_key --model=gpt-3.5-turbo --maxTokens=3000 --langs=en-US,it-IT --originalLang=en-US"
+```
+
+```shell
+npm gpt-translate-json
+```
+
+Run the app:
 ```shell
 npm start
 ```
 
-See [Qwik Speak Extract](./extract.md) for more details.
+See [GPT Translate JSON](./docs/gpt-translate-json.md) for more details.
 
 ## Production
 In production mode, `assets` are loaded only during SSR, and to get the translations on the client as well it is required to inline the translations in chucks sent to the browser.
