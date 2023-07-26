@@ -34,10 +34,9 @@ vi.mock('fs/promises', async () => {
 
 describe('inline', () => {
   test('getKey', () => {
-    let key = getKey('key1', '@@');
+    const { key, defaultValue } = getKey('key1@@Key1', '@@');
     expect(key).toBe('key1');
-    key = getKey('key1@@Key1', '@@');
-    expect(key).toBe('key1');
+    expect(defaultValue).toBe('Key1');
   });
   test('getValue', () => {
     let value = getValue('key1', { key1: 'Key1' }, undefined, '.');

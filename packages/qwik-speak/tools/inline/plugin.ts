@@ -22,6 +22,8 @@ const missingValues: string[] = [];
 const dynamicKeys: string[] = [];
 const dynamicParams: string[] = [];
 
+let baseUrl = false;
+
 /**
  * Qwik Speak Inline Vite plugin
  */
@@ -123,6 +125,12 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
           return code;
         }
       }
+      if (target === 'ssr') {
+        // Base url
+        if (/(?<!\/\/\s*)base:\s*extractBase/.test(code)) {
+          baseUrl = true;
+        }
+      }
     },
 
     /**
@@ -141,7 +149,7 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
 
     async closeBundle() {
       if (target === 'client') {
-        const log = createWriteStream('./qwik-speak-inline.log', { flags: 'a' });
+        const log = createWriteStream('./qwik-speak-inline.log', { flags: 'w' });
 
         log.write(`${target}: ` + (input ?? '-') + '\n');
 
@@ -150,6 +158,22 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
         dynamicParams.forEach(x => log.write(x + '\n'));
 
         log.write((`Qwik Speak Inline: build ends at ${new Date().toLocaleString()}\n`));
+
+        if (missingValues.length > 0 || dynamicKeys.length > 0 || dynamicParams.length > 0) {
+          console.log(
+            '\n\x1b[33mQwik Speak Inline warn\x1b[0m\n%s',
+            'There are missing values or dynamic keys: see ./qwik-speak-inline.log'
+          );
+        }
+      }
+      if (target === 'ssr') {
+        if (!baseUrl) {
+          console.log(
+            '\n\x1b[31mQwik Speak Inline error\x1b[0m\n%s',
+            "Missing 'base' option in 'entry.ssr.tsx' file: see https://robisim74.gitbook.io/qwik-speak/tools/inline#usage"
+          );
+          process.exit(1)
+        }
       }
     }
   };
@@ -174,6 +198,7 @@ export async function writeChunks(
     const tasks: Promise<void>[] = [];
     if (chunk.type === 'chunk' && 'code' in chunk && /build\//.test(chunk.fileName)) {
       const filename = normalize(`${targetDir}/${chunk.fileName.split('/')[1]}`);
+
       // Inline
       let code = chunk.code;
       if (code.includes(inlinePluralPlaceholder)) {
@@ -363,7 +388,7 @@ export function inline(
         const keys = getKeys(args[0], opts.keyValueSeparator);
 
         const keyValues: (string | Translation)[] = [];
-        for (const key of keys) {
+        for (const { key, defaultValue } of keys) {
           const value = getValue(
             key,
             translation[resolvedLang],
@@ -372,14 +397,18 @@ export function inline(
           );
           if (!value) {
             missingValues.push(`${resolvedLang} - missing value for key: ${key}`);
-            keyValues.push(quoteValue(''));
+            if (defaultValue) {
+              keyValues.push(quoteValue(defaultValue));
+            } else {
+              keyValues.push(quoteValue(''));
+            }
           } else {
             keyValues.push(value);
           }
         }
         resolvedValue = keyValues;
       } else if (args?.[0]?.value) {
-        const key = getKey(args[0].value, opts.keyValueSeparator);
+        const { key, defaultValue } = getKey(args[0].value, opts.keyValueSeparator);
 
         const value = getValue(
           key,
@@ -389,6 +418,9 @@ export function inline(
         );
         if (!value) {
           missingValues.push(`${resolvedLang} - missing value for key: ${key}`);
+          if (defaultValue) {
+            resolvedValue = quoteValue(defaultValue);
+          }
         } else {
           resolvedValue = value;
         }
@@ -504,12 +536,16 @@ export function checkDynamic(args: Argument[], originalFn: string): boolean {
   if (args?.[0]?.value) {
     // Dynamic key
     if (args[0].type === 'Identifier') {
-      dynamicKeys.push(`dynamic key: ${originalFn.replace(/\s+/g, ' ')} - skip`)
+      dynamicKeys.push(
+        `dynamic key: ${originalFn.replace(/\s+/g, ' ')} - Make sure the keys are in 'runtimeAssets'`
+      )
       return true;
     }
     if (args[0].type === 'Literal') {
       if (/\${.*}/.test(args[0].value)) {
-        dynamicKeys.push(`dynamic key: ${originalFn.replace(/\s+/g, ' ')} - skip`)
+        dynamicKeys.push(
+          `dynamic key: ${originalFn.replace(/\s+/g, ' ')} - Make sure the keys are in 'runtimeAssets'`
+        )
         return true;
       }
     }
@@ -517,7 +553,9 @@ export function checkDynamic(args: Argument[], originalFn: string): boolean {
     // Dynamic argument (params, lang)
     if (args[1]?.type === 'Identifier' || args[1]?.type === 'CallExpression' ||
       args[2]?.type === 'Identifier' || args[2]?.type === 'CallExpression') {
-      dynamicParams.push(`dynamic params: ${originalFn.replace(/\s+/g, ' ')} - skip`);
+      dynamicParams.push(
+        `dynamic params: ${originalFn.replace(/\s+/g, ' ')} - Make sure the keys are in 'runtimeAssets'`
+      );
       return true;
     }
   }
@@ -528,12 +566,16 @@ export function checkDynamicInline(args: Argument[], originalFn: string): boolea
   if (args?.[0]?.value) {
     // Dynamic key
     if (args[0].type === 'Identifier') {
-      dynamicKeys.push(`dynamic key: ${originalFn.replace(/\s+/g, ' ')} - skip`)
+      dynamicKeys.push(
+        `dynamic key: ${originalFn.replace(/\s+/g, ' ')} - Make sure the keys are in 'runtimeAssets'`
+      )
       return true;
     }
     if (args[0].type === 'Literal') {
       if (/\${.*}/.test(args[0].value)) {
-        dynamicKeys.push(`dynamic key: ${originalFn.replace(/\s+/g, ' ')} - skip`)
+        dynamicKeys.push(
+          `dynamic key: ${originalFn.replace(/\s+/g, ' ')} - Make sure the keys are in 'runtimeAssets'`
+        )
         return true;
       }
     }
@@ -541,7 +583,9 @@ export function checkDynamicInline(args: Argument[], originalFn: string): boolea
     // Dynamic argument (params, lang)
     if (args[2]?.type === 'Identifier' || args[2]?.type === 'CallExpression' ||
       args[3]?.type === 'Identifier' || args[3]?.type === 'CallExpression') {
-      dynamicParams.push(`dynamic params: ${originalFn.replace(/\s+/g, ' ')} - skip`);
+      dynamicParams.push(`
+      dynamic params: ${originalFn.replace(/\s+/g, ' ')} - Make sure the keys are in 'runtimeAssets'`
+      );
       return true;
     }
   }
@@ -555,7 +599,9 @@ export function checkDynamicPlural(args: Argument[], originalFn: string): boolea
       args[2]?.type === 'Identifier' || args[2]?.type === 'CallExpression' ||
       args[3]?.type === 'Identifier' || args[3]?.type === 'CallExpression' ||
       args[4]?.type === 'Identifier' || args[4]?.type === 'CallExpression') {
-      dynamicParams.push(`dynamic plural: ${originalFn.replace(/\s+/g, ' ')} - skip`);
+      dynamicParams.push(
+        `dynamic plural: ${originalFn.replace(/\s+/g, ' ')} - Make sure the keys are in 'runtimeAssets'`
+      );
       return true;
     }
   }
@@ -573,22 +619,30 @@ export function withLang(lang: string, arg: Argument, opts: Required<QwikSpeakIn
   return optionalLang ?? lang;
 }
 
-export function getKey(key: string, keyValueSeparator: string): string {
-  key = key.split(keyValueSeparator)[0];
-  return key;
+export function getKey(key: string, keyValueSeparator: string) {
+  let defaultValue: string | undefined = undefined;
+  [key, defaultValue] = separateKeyValue(key, keyValueSeparator);
+  return { key, defaultValue };
 }
 
-export function getKeys(key: Argument, keyValueSeparator: string): string[] {
-  const keys: string[] = [];
-  if (key.elements) {
-    for (const element of key.elements) {
+export function getKeys(arg: Argument, keyValueSeparator: string) {
+  const keys = [];
+  if (arg.elements) {
+    for (const element of arg.elements) {
       if (element.type === 'Literal') {
-        keys.push(element.value.split(keyValueSeparator)[0]);
+        let key: string;
+        let defaultValue: string | undefined = undefined;
+        [key, defaultValue] = separateKeyValue(element.value, keyValueSeparator);
+        keys.push({ key, defaultValue });
       }
     }
   }
   return keys;
 }
+
+export const separateKeyValue = (key: string, keyValueSeparator: string): [string, string | undefined] => {
+  return <[string, string | undefined]>key.split(keyValueSeparator);
+};
 
 export function getValue(
   key: string,
