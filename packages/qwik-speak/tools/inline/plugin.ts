@@ -1,4 +1,4 @@
-import type { Plugin } from 'vite';
+import type { Plugin, ViteDevServer } from 'vite';
 import type { NormalizedOutputOptions, OutputBundle, OutputAsset, OutputChunk } from 'rollup';
 import { readFile, readdir, writeFile } from 'fs/promises';
 import { createWriteStream, existsSync, mkdirSync } from 'fs';
@@ -19,10 +19,16 @@ const signalAlias = '\\b_fnSignal';
 
 // Logs
 const missingValues: string[] = [];
-const dynamicKeys: string[] = [];
-const dynamicParams: string[] = [];
+const dynamics: string[] = [];
+const missingValueText = (lang: string, key: string) => `${lang} - missing value for key: ${key}`;
+const dynamicText = (originalFn: string, text: string) => `dynamic ${text}: ${originalFn.replace(/\s+/g, ' ')} - Make sure the keys are in 'runtimeAssets'`;
 
 let baseUrl = false;
+
+// Config
+let target: 'ssr' | 'lib' | 'test' | 'client';
+let mode: 'dev' | 'prod';
+let input: string | undefined;
 
 /**
  * Qwik Speak Inline Vite plugin
@@ -31,6 +37,7 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
   // Resolve options
   const resolvedOptions: Required<QwikSpeakInlineOptions> = {
     ...options,
+    env: options.env ?? 'both',
     basePath: options.basePath ?? './',
     assetsPath: options.assetsPath ?? 'i18n',
     outDir: options.outDir ?? 'dist',
@@ -41,18 +48,50 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
   // Translation data
   const translation: Translation = Object.fromEntries(resolvedOptions.supportedLangs.map(value => [value, {}]));
 
-  // Client or server files
-  let target: string;
-  let input: string | undefined;
+  // Vite dev server
+  let server: ViteDevServer;
+
+  let devLang: string;
+
+  // Listen to the language change
+  if (!('__qsLang' in globalThis)) {
+    Object.defineProperties(globalThis, {
+      qsLang: {
+        value: 'string',
+        writable: true
+      },
+      __qsLang: {
+        get: function () {
+          return this.qsLang;
+        },
+        set: function (val) {
+          this.qsLang = val;
+          if (devLang && devLang !== this.qsLang) {
+            // Invalidate to inline new translations
+            if (server) server.moduleGraph.invalidateAll();
+          }
+          devLang = this.qsLang;
+        }
+      }
+    });
+  }
 
   const plugin: Plugin = {
     name: 'vite-plugin-qwik-speak-inline',
     enforce: 'post',
-    // Apply only on build
-    apply: 'build',
+    apply: resolvedOptions.env === 'build' ? resolvedOptions.env : undefined,
 
     configResolved(resolvedConfig) {
-      target = resolvedConfig.build?.ssr || resolvedConfig.mode === 'ssr' ? 'ssr' : 'client';
+      if (resolvedConfig.build?.ssr || resolvedConfig.mode === 'ssr') {
+        target = 'ssr';
+      } else if (resolvedConfig.mode === 'lib') {
+        target = 'lib';
+      } else if (resolvedConfig.mode === 'test') {
+        target = 'test';
+      } else {
+        target = 'client';
+      }
+      mode = resolvedConfig.isProduction || resolvedConfig.mode === 'production' ? 'prod' : 'dev';
 
       const inputOption = resolvedConfig.build?.rollupOptions?.input;
       if (inputOption) {
@@ -64,15 +103,19 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
       input = input?.split('/')?.pop();
     },
 
+    configureServer(_server) {
+      server = _server;
+    },
+
     /**
      * Load translation files when build starts
      */
     async buildStart() {
-      if (target === 'client') {
-        // For all langs
-        await Promise.all(resolvedOptions.supportedLangs.map(async lang => {
-          const baseDir = normalize(`${resolvedOptions.basePath}/${resolvedOptions.assetsPath}/${lang}`);
-          // For all files
+      // For all langs
+      await Promise.all(resolvedOptions.supportedLangs.map(async lang => {
+        const baseDir = normalize(`${resolvedOptions.basePath}/${resolvedOptions.assetsPath}/${lang}`);
+        // For all files
+        if (existsSync(baseDir)) {
           const files = await readdir(baseDir);
 
           if (files.length > 0) {
@@ -98,16 +141,16 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
 
             translation[lang] = { ...translation[lang], ...data }; // Shallow merge
           }
-        }));
-      }
+        }
+      }));
     },
 
     /**
      * Transform functions
      * Prefer transform hook because unused imports will be removed, unlike renderChunk
      */
-    async transform(code: string, id: string) {
-      if (target === 'client') {
+    async transform(code: string, id: string, options) {
+      if (target === 'client' || options?.ssr === false) {
         // Filter id
         if (/\/src\//.test(id) && /\.(js|cjs|mjs|jsx|ts|tsx)$/.test(id)) {
           // Filter code: usePlural
@@ -122,6 +165,12 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
           if (/inlineTranslate/.test(code)) {
             code = transformInline(code);
           }
+
+          // Inline
+          if (mode === 'dev') {
+            code = inlineAll(code, devLang, resolvedOptions, translation);
+          }
+
           return code;
         }
       }
@@ -154,12 +203,11 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
         log.write(`${target}: ` + (input ?? '-') + '\n');
 
         missingValues.forEach(x => log.write(x + '\n'));
-        dynamicKeys.forEach(x => log.write(x + '\n'));
-        dynamicParams.forEach(x => log.write(x + '\n'));
+        dynamics.forEach(x => log.write(x + '\n'));
 
         log.write((`Qwik Speak Inline: build ends at ${new Date().toLocaleString()}\n`));
 
-        if (missingValues.length > 0 || dynamicKeys.length > 0 || dynamicParams.length > 0) {
+        if (missingValues.length > 0 || dynamics.length > 0) {
           console.log(
             '\n\x1b[33mQwik Speak Inline warn\x1b[0m\n%s',
             'There are missing values or dynamic keys: see ./qwik-speak-inline.log'
@@ -201,15 +249,7 @@ export async function writeChunks(
 
       // Inline
       let code = chunk.code;
-      if (code.includes(inlinePluralPlaceholder)) {
-        code = inlinePlural(code, inlinePluralPlaceholder, inlinePlaceholder, lang, opts);
-      }
-      if (code.includes(inlinePlaceholder)) {
-        code = inline(code, translation, inlinePlaceholder, lang, opts);
-      }
-      if (code.includes(inlineTranslatePlaceholder)) {
-        code = inline(code, translation, inlineTranslatePlaceholder, lang, opts);
-      }
+      code = inlineAll(code, lang, opts, translation);
       tasks.push(writeFile(filename, code));
 
       // Original chunks to default lang
@@ -360,6 +400,24 @@ export function transformPlural(code: string): string {
   return code;
 }
 
+export function inlineAll(
+  code: string,
+  lang: string,
+  opts: Required<QwikSpeakInlineOptions>,
+  translation: Translation
+) {
+  if (code.includes(inlinePluralPlaceholder)) {
+    code = inlinePlural(code, inlinePluralPlaceholder, inlinePlaceholder, lang, opts);
+  }
+  if (code.includes(inlinePlaceholder)) {
+    code = inline(code, translation, inlinePlaceholder, lang, opts);
+  }
+  if (code.includes(inlineTranslatePlaceholder)) {
+    code = inline(code, translation, inlineTranslatePlaceholder, lang, opts);
+  }
+  return code;
+}
+
 export function inline(
   code: string,
   translation: Translation,
@@ -396,7 +454,7 @@ export function inline(
             opts.keySeparator
           );
           if (!value) {
-            missingValues.push(`${resolvedLang} - missing value for key: ${key}`);
+            logMissingValue(resolvedLang, key);
             if (defaultValue) {
               keyValues.push(quoteValue(defaultValue));
             } else {
@@ -417,7 +475,7 @@ export function inline(
           opts.keySeparator
         );
         if (!value) {
-          missingValues.push(`${resolvedLang} - missing value for key: ${key}`);
+          logMissingValue(resolvedLang, key);
           if (defaultValue) {
             resolvedValue = quoteValue(defaultValue);
           }
@@ -536,16 +594,12 @@ export function checkDynamic(args: Argument[], originalFn: string): boolean {
   if (args?.[0]?.value) {
     // Dynamic key
     if (args[0].type === 'Identifier') {
-      dynamicKeys.push(
-        `dynamic key: ${originalFn.replace(/\s+/g, ' ')} - Make sure the keys are in 'runtimeAssets'`
-      )
+      logDynamic(originalFn, 'key');
       return true;
     }
     if (args[0].type === 'Literal') {
       if (/\${.*}/.test(args[0].value)) {
-        dynamicKeys.push(
-          `dynamic key: ${originalFn.replace(/\s+/g, ' ')} - Make sure the keys are in 'runtimeAssets'`
-        )
+        logDynamic(originalFn, 'key');
         return true;
       }
     }
@@ -553,9 +607,7 @@ export function checkDynamic(args: Argument[], originalFn: string): boolean {
     // Dynamic argument (params, lang)
     if (args[1]?.type === 'Identifier' || args[1]?.type === 'CallExpression' ||
       args[2]?.type === 'Identifier' || args[2]?.type === 'CallExpression') {
-      dynamicParams.push(
-        `dynamic params: ${originalFn.replace(/\s+/g, ' ')} - Make sure the keys are in 'runtimeAssets'`
-      );
+      logDynamic(originalFn, 'params');
       return true;
     }
   }
@@ -566,16 +618,12 @@ export function checkDynamicInline(args: Argument[], originalFn: string): boolea
   if (args?.[0]?.value) {
     // Dynamic key
     if (args[0].type === 'Identifier') {
-      dynamicKeys.push(
-        `dynamic key: ${originalFn.replace(/\s+/g, ' ')} - Make sure the keys are in 'runtimeAssets'`
-      )
+      logDynamic(originalFn, 'key');
       return true;
     }
     if (args[0].type === 'Literal') {
       if (/\${.*}/.test(args[0].value)) {
-        dynamicKeys.push(
-          `dynamic key: ${originalFn.replace(/\s+/g, ' ')} - Make sure the keys are in 'runtimeAssets'`
-        )
+        logDynamic(originalFn, 'key');
         return true;
       }
     }
@@ -583,9 +631,7 @@ export function checkDynamicInline(args: Argument[], originalFn: string): boolea
     // Dynamic argument (params, lang)
     if (args[2]?.type === 'Identifier' || args[2]?.type === 'CallExpression' ||
       args[3]?.type === 'Identifier' || args[3]?.type === 'CallExpression') {
-      dynamicParams.push(`
-      dynamic params: ${originalFn.replace(/\s+/g, ' ')} - Make sure the keys are in 'runtimeAssets'`
-      );
+      logDynamic(originalFn, 'params');
       return true;
     }
   }
@@ -599,9 +645,7 @@ export function checkDynamicPlural(args: Argument[], originalFn: string): boolea
       args[2]?.type === 'Identifier' || args[2]?.type === 'CallExpression' ||
       args[3]?.type === 'Identifier' || args[3]?.type === 'CallExpression' ||
       args[4]?.type === 'Identifier' || args[4]?.type === 'CallExpression') {
-      dynamicParams.push(
-        `dynamic plural: ${originalFn.replace(/\s+/g, ' ')} - Make sure the keys are in 'runtimeAssets'`
-      );
+      logDynamic(originalFn, 'params');
       return true;
     }
   }
@@ -712,6 +756,32 @@ export function stringifyObject(value: Translation): string {
   let strValue = JSON.stringify(value, replacer);
   strValue = strValue.replace(/("__qsOpenBt)|(__qsCloseBt")/g, '`');
   return strValue;
+}
+
+export function logMissingValue(lang: string, key: string) {
+  const text = missingValueText(lang, key);
+  if (!missingValues.includes(text)) {
+    missingValues.push(text);
+    if (mode === 'dev') {
+      console.log(
+        '\x1b[33mQwik Speak Inline warn\x1b[0m %s',
+        missingValueText(lang, key)
+      );
+    }
+  }
+}
+
+export function logDynamic(originalFn: string, type: 'key' | 'params') {
+  const text = dynamicText(originalFn, type);
+  if (!dynamics.includes(text)) {
+    dynamics.push(text);
+    if (mode === 'dev') {
+      console.log(
+        '\x1b[36mQwik Speak Inline info\x1b[0m %s',
+        dynamicText(originalFn, type)
+      );
+    }
+  }
 }
 
 /**
