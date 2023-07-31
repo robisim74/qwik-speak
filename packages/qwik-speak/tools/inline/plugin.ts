@@ -101,38 +101,40 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
      * Load translation files when build starts
      */
     async buildStart() {
-      // For all langs
-      await Promise.all(resolvedOptions.supportedLangs.map(async lang => {
-        const baseDir = normalize(`${resolvedOptions.basePath}/${resolvedOptions.assetsPath}/${lang}`);
-        // For all files
-        if (existsSync(baseDir)) {
-          const files = await readdir(baseDir);
+      if (target === 'client' || mode === 'dev') {
+        // For all langs
+        await Promise.all(resolvedOptions.supportedLangs.map(async lang => {
+          const baseDir = normalize(`${resolvedOptions.basePath}/${resolvedOptions.assetsPath}/${lang}`);
+          // For all files
+          if (existsSync(baseDir)) {
+            const files = await readdir(baseDir);
 
-          if (files.length > 0) {
-            const ext = extname(files[0]);
-            let data: Translation = {};
+            if (files.length > 0) {
+              const ext = extname(files[0]);
+              let data: Translation = {};
 
-            const tasks = files.map(filename => readFile(`${baseDir}/${filename}`, 'utf8'));
-            const sources = await Promise.all(tasks);
+              const tasks = files.map(filename => readFile(`${baseDir}/${filename}`, 'utf8'));
+              const sources = await Promise.all(tasks);
 
-            for (const source of sources) {
-              if (source) {
-                let parsed: Translation = {};
+              for (const source of sources) {
+                if (source) {
+                  let parsed: Translation = {};
 
-                switch (ext) {
-                  case '.json':
-                    parsed = parseJson(source);
-                    break;
+                  switch (ext) {
+                    case '.json':
+                      parsed = parseJson(source);
+                      break;
+                  }
+
+                  data = merge(data, parsed);
                 }
-
-                data = merge(data, parsed);
               }
-            }
 
-            translation[lang] = { ...translation[lang], ...data }; // Shallow merge
+              translation[lang] = { ...translation[lang], ...data }; // Shallow merge
+            }
           }
-        }
-      }));
+        }));
+      }
     },
 
     /**
@@ -140,7 +142,7 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
      * Prefer transform hook because unused imports will be removed, unlike renderChunk
      */
     async transform(code: string, id: string, options) {
-      if (target === 'client' || options?.ssr === false) {
+      if (target === 'client' || (target === 'ssr' && options?.ssr === false)) {
         // Filter id
         if (/\/src\//.test(id) && /\.(js|cjs|mjs|jsx|ts|tsx)$/.test(id)) {
           // Filter code: usePlural
