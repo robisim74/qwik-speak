@@ -1,4 +1,4 @@
-import type { Plugin, ViteDevServer } from 'vite';
+import type { Plugin } from 'vite';
 import type { NormalizedOutputOptions, OutputBundle, OutputAsset, OutputChunk } from 'rollup';
 import { readFile, readdir, writeFile } from 'fs/promises';
 import { createWriteStream, existsSync, mkdirSync } from 'fs';
@@ -23,12 +23,13 @@ const dynamics: string[] = [];
 const missingValueText = (lang: string, key: string) => `${lang} - missing value for key: ${key}`;
 const dynamicText = (originalFn: string, text: string) => `dynamic ${text}: ${originalFn.replace(/\s+/g, ' ')} - Make sure the keys are in 'runtimeAssets'`;
 
-let baseUrl = false;
-
 // Config
 let target: 'ssr' | 'lib' | 'test' | 'client';
 let mode: 'dev' | 'prod';
 let input: string | undefined;
+
+// Inlined modules
+const moduleIds = new Set<string>();
 
 /**
  * Qwik Speak Inline Vite plugin
@@ -48,38 +49,13 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
   // Translation data
   const translation: Translation = Object.fromEntries(resolvedOptions.supportedLangs.map(value => [value, {}]));
 
-  // Vite dev server
-  let server: ViteDevServer;
-
+  // Current lang
   let devLang: string;
-
-  // Listen to the language change
-  if (!('__qsLang' in globalThis)) {
-    Object.defineProperties(globalThis, {
-      qsLang: {
-        value: 'string',
-        writable: true
-      },
-      __qsLang: {
-        get: function () {
-          return this.qsLang;
-        },
-        set: function (val) {
-          this.qsLang = val;
-          if (devLang && devLang !== this.qsLang) {
-            // Invalidate to inline new translations
-            if (server) server.moduleGraph.invalidateAll();
-          }
-          devLang = this.qsLang;
-        }
-      }
-    });
-  }
 
   const plugin: Plugin = {
     name: 'vite-plugin-qwik-speak-inline',
     enforce: 'post',
-    apply: resolvedOptions.env === 'build' ? resolvedOptions.env : undefined,
+    apply: resolvedOptions.env === 'build' ? resolvedOptions.env : undefined, // both
 
     configResolved(resolvedConfig) {
       if (resolvedConfig.build?.ssr || resolvedConfig.mode === 'ssr') {
@@ -103,8 +79,22 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
       input = input?.split('/')?.pop();
     },
 
-    configureServer(_server) {
-      server = _server;
+    configureServer(server) {
+      // In dev mode, listen to lang from client 
+      if (mode === 'dev') {
+        server.ws.on('qwik-speak:lang', (data) => {
+          if (devLang && devLang !== data.msg) {
+            // Invalidate inlined modules
+            for (const id of moduleIds) {
+              const module = server.moduleGraph.getModuleById(id);
+              if (module) server.moduleGraph.invalidateModule(module);
+            }
+            moduleIds.clear();
+          }
+          // Update current lang
+          devLang = data.msg;
+        });
+      }
     },
 
     /**
@@ -166,18 +156,51 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
             code = transformInline(code);
           }
 
-          // Inline
+          // Inline in dev mode
           if (mode === 'dev') {
-            code = inlineAll(code, devLang, resolvedOptions, translation);
+            if (code.includes(inlinePlaceholder) ||
+              code.includes(inlineTranslatePlaceholder) ||
+              code.includes(inlinePluralPlaceholder)) {
+              code = inlineAll(code, devLang, resolvedOptions, translation);
+
+              moduleIds.add(id);
+            }
           }
 
           return code;
         }
       }
+
+      // Check Inline component in dev mode
+      if (target === 'ssr' && mode === 'dev') {
+        if (id.endsWith('root.tsx' || id.endsWith('root.jsx'))) {
+          if (!/QwikSpeakInline/.test(code)) {
+            console.log(
+              '\n\x1b[31mQwik Speak Inline error\x1b[0m\n%s',
+              "Missing 'QwikSpeakInline' component in 'root.tsx' file: see https://robisim74.gitbook.io/qwik-speak/tools/inline#usage"
+            );
+            process.exit(1)
+          }
+        }
+      }
+      // Remove Inline component in prod mode
+      if (target === 'ssr' && mode === 'prod') {
+        if (id.endsWith('root.tsx' || id.endsWith('root.jsx'))) {
+          code = code.replace(/_jsxC\(QwikSpeakInline.*\)/, '');
+          return code;
+        }
+      }
+
+      // Check base url
       if (target === 'ssr') {
-        // Base url
-        if (/(?<!\/\/\s*)base:\s*extractBase/.test(code)) {
-          baseUrl = true;
+        if (id.endsWith('entry.ssr.tsx' || id.endsWith('entry.ssr.jsx'))) {
+          if (!/(?<!\/\/\s*)base:\s*extractBase/.test(code)) {
+            console.log(
+              '\n\x1b[31mQwik Speak Inline error\x1b[0m\n%s',
+              "Missing 'base' option in 'entry.ssr.tsx' file: see https://robisim74.gitbook.io/qwik-speak/tools/inline#usage"
+            );
+            process.exit(1)
+          }
         }
       }
     },
@@ -212,15 +235,6 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
             '\n\x1b[33mQwik Speak Inline warn\x1b[0m\n%s',
             'There are missing values or dynamic keys: see ./qwik-speak-inline.log'
           );
-        }
-      }
-      if (target === 'ssr') {
-        if (!baseUrl) {
-          console.log(
-            '\n\x1b[31mQwik Speak Inline error\x1b[0m\n%s',
-            "Missing 'base' option in 'entry.ssr.tsx' file: see https://robisim74.gitbook.io/qwik-speak/tools/inline#usage"
-          );
-          process.exit(1)
         }
       }
     }

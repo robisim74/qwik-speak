@@ -19,6 +19,7 @@ export type { DisplayNameFn } from './use-display-name';
 // Components
 export { QwikSpeakProvider } from './qwik-speak-component';
 export { Speak } from './speak-component';
+export { QwikSpeakInline } from './qwik-speak-inline-component';
 // Functions
 export { inlineTranslate } from './inline-translate';
 // Use functions

@@ -1,5 +1,5 @@
 import { $, component$, Slot, useContextProvider, useServerData, useTask$ } from '@builder.io/qwik';
-import { isDev, isServer } from '@builder.io/qwik/build';
+import { isDev } from '@builder.io/qwik/build';
 
 import type { SpeakConfig, SpeakLocale, SpeakState, TranslationFn } from './types';
 import { SpeakContext } from './context';
@@ -45,10 +45,6 @@ export const QwikSpeakProvider = component$((props: QwikSpeakProps) => {
     if (isDev) logWarn(`Locale not resolved. Fallback to default locale: ${props.config.defaultLocale.lang}`);
   } else if (isDev) {
     logDebug(`Resolved locale: ${resolvedLocale.lang}`);
-  }
-  if (isDev && isServer) {
-    // To inline plugin
-    (globalThis as any).__qsLang = resolvedLocale.lang;
   }
 
   // Set initial state as object (no reactive)

@@ -170,6 +170,7 @@ describe('inline', () => {
       '__qsInline',
       'en-US',
       {
+        env: 'build',
         supportedLangs: ['en-US', 'it-IT'],
         defaultLang: 'en-US',
         keySeparator: '.',
@@ -199,6 +200,7 @@ describe('inline', () => {
       '__qsInline',
       'en-US',
       {
+        env: 'build',
         supportedLangs: ['en-US', 'it-IT'],
         defaultLang: 'en-US',
         keySeparator: '.',
@@ -223,6 +225,7 @@ describe('inline', () => {
       '__qsInlineTranslate',
       'en-US',
       {
+        env: 'build',
         supportedLangs: ['en-US', 'it-IT'],
         defaultLang: 'en-US',
         keySeparator: '.',
@@ -239,7 +242,7 @@ describe('inline', () => {
       defaultLang: 'en-US',
       basePath: '../../'
     }) as any;
-    await plugin.configResolved?.({});
+    await plugin.configResolved?.({ isProduction: true });
     await plugin.buildStart?.();
     const transformed = await plugin.transform?.(mockCode, '/src/mock.code.js');
     expect(transformed).toBe(mockTransformedCode);
