@@ -22,8 +22,6 @@ const missingValues: string[] = [];
 const dynamicKeys: string[] = [];
 const dynamicParams: string[] = [];
 
-let baseUrl = false;
-
 /**
  * Qwik Speak Inline Vite plugin
  */
@@ -125,10 +123,17 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
           return code;
         }
       }
+
+      // Check base url
       if (target === 'ssr') {
-        // Base url
-        if (/(?<!\/\/\s*)base:\s*extractBase/.test(code)) {
-          baseUrl = true;
+        if (id.endsWith('entry.ssr.tsx' || id.endsWith('entry.ssr.jsx'))) {
+          if (!/(?<!\/\/\s*)base:\s*extractBase/.test(code)) {
+            console.log(
+              '\n\x1b[31mQwik Speak Inline error\x1b[0m\n%s',
+              "Missing 'base' option in 'entry.ssr.tsx' file: see https://robisim74.gitbook.io/qwik-speak/tools/inline#usage"
+            );
+            process.exit(1)
+          }
         }
       }
     },
@@ -164,15 +169,6 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
             '\n\x1b[33mQwik Speak Inline warn\x1b[0m\n%s',
             'There are missing values or dynamic keys: see ./qwik-speak-inline.log'
           );
-        }
-      }
-      if (target === 'ssr') {
-        if (!baseUrl) {
-          console.log(
-            '\n\x1b[31mQwik Speak Inline error\x1b[0m\n%s',
-            "Missing 'base' option in 'entry.ssr.tsx' file: see https://robisim74.gitbook.io/qwik-speak/tools/inline#usage"
-          );
-          process.exit(1)
         }
       }
     }

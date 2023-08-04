@@ -24,7 +24,7 @@ If you want to use Static Site Generation with the localized router, it is neces
 export const onStaticGenerate: StaticGenerateHandler = () => {
   return {
     params: config.supportedLocales.map(locale => {
-      return { lang: locale.lang !== config.defaultLocale.lang ? locale.lang : '' };
+      return { lang: locale.lang !== config.defaultLocale.lang ? locale.lang : '.' };
     })
   };
 };
