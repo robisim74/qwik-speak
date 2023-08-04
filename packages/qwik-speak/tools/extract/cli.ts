@@ -44,6 +44,10 @@ for (const arg of args) {
       if (assertType(value, 'json')) options.format = value;
       else errors.push(wrongOption(key, value));
       break;
+    case 'filename':
+      if (assertType(value, 'string')) options.filename = value;
+      else errors.push(wrongOption(key, value));
+      break;
     case 'supportedLangs':
       if (assertType(value, 'array')) options.supportedLangs = value;
       else if (assertType(value, 'string')) options.supportedLangs = [value];
@@ -70,12 +74,12 @@ if (!options.supportedLangs) errors.push(missingOption('supportedLangs'));
 
 // Log errors
 if (errors.length > 0) {
-  console.log('\x1b[36m%s\x1b[0m', 'Qwik Speak Extract options errors:');
+  console.log('\x1b[31m%s\x1b[0m', 'Qwik Speak Extract errors:');
   for (const error of errors) {
-    console.log('\x1b[33m%s\x1b[0m', error);
+    console.log(error);
   }
 
-  process.exitCode = 1; // Exit process
+  process.exit(1); // Exit process
 }
 
 // Process
