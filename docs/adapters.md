@@ -15,17 +15,27 @@ const loadTranslation$: LoadTranslationFn = server$((lang: string, asset: string
 ```
 
 ## Static Site Generation (SSG)
-If you want to use Static Site Generation with the localized router, it is necessary to manage the dynamic language parameter, and you need to add the values it can take to the pages that will be pre-rendered:
+If you want to use Static Site Generation, you need to generate for each supported language an `index.html` of each page you will include in SSG.
 
+### Get the code ready
+- Bundle the translation files (see [Translation functions](./translation-functions.md)) or provide a running server during the build if you are fetching the files
+- Configure a localized router with a `lang` parameter
+- Handle the dynamic `lang` parameter, adding the values it can take to each page included in SSG, i.e.:
+
+_src\routes\[...lang]\index.tsx_
 ```typescript
-/**
- * Dynamic SSG route
- */
 export const onStaticGenerate: StaticGenerateHandler = () => {
   return {
     params: config.supportedLocales.map(locale => {
-      return { lang: locale.lang !== config.defaultLocale.lang ? locale.lang : '' };
+      return { lang: locale.lang !== config.defaultLocale.lang ? locale.lang : '.' };
     })
   };
 };
 ```
+> See [Dynamic SSG routes](https://qwik.builder.io/docs/guides/static-site-generation/#dynamic-ssg-routes) in official Qwik docs for more details
+
+### Building
+```shell
+npm run build
+```
+Inspect the `dist` folder: you should have for each language an `index.html` of each page you have included in SSG.
