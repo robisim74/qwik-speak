@@ -391,8 +391,8 @@ Inspect the `qwik-speak-inline.log` file in root folder:
 
 ```
 client: root.tsx
-dynamic key: t(head.title) - skip
-dynamic key: t(m.content) - skip
+dynamic key: t(head.title) - Make sure the keys are in 'runtimeAssets'
+dynamic key: t(m.content) - Make sure the keys are in 'runtimeAssets'
 ```
 It contains the non-inlined dynamic keys that we added in the `runtime.json` file.
 
