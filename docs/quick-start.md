@@ -1,5 +1,7 @@
 # Quick Start
 
+> Step by step, let's build a sample app with Qwik Speak
+
 ```shell
 npm create qwik@latest
 npm install qwik-speak --save-dev
@@ -327,7 +329,7 @@ Run the app:
 npm start
 ```
 
-See [GPT Translate JSON](./docs/gpt-translate-json.md) for more details.
+See [GPT Translate JSON](./gpt-translate-json.md) for more details.
 
 ## Production
 In production mode, `assets` are loaded only during SSR, and to get the translations on the client as well it is required to inline the translations in chucks sent to the browser.
