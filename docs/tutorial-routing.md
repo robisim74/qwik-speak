@@ -1,6 +1,6 @@
 # Tutorial: localized routing
 
-> Step by step, let's build an app with Qwik Speak and a localized router
+> Step by step, let's build a sample app with Qwik Speak and a localized router using Qwik City features
 
 ```shell
 npm create qwik@latest
@@ -333,7 +333,7 @@ Run the app:
 npm start
 ```
 
-See [GPT Translate JSON](./docs/gpt-translate-json.md) for more details.
+See [GPT Translate JSON](./gpt-translate-json.md) for more details.
 
 ## Production
 In production mode, `assets` are loaded only during SSR, and to get the translations on the client as well it is required to inline the translations in chucks sent to the browser.
@@ -391,8 +391,8 @@ Inspect the `qwik-speak-inline.log` file in root folder:
 
 ```
 client: root.tsx
-dynamic key: t(head.title) - skip
-dynamic key: t(m.content) - skip
+dynamic key: t(head.title) - Make sure the keys are in 'runtimeAssets'
+dynamic key: t(m.content) - Make sure the keys are in 'runtimeAssets'
 ```
 It contains the non-inlined dynamic keys that we added in the `runtime.json` file.
 

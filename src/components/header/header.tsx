@@ -24,7 +24,7 @@ export const Header = component$(() => {
     <>
       <header class="header">
         <div class="logo">
-          <Link href={getHref('/')}>
+          <Link href={getHref('/')} title={t('app.title')}>
             <SpeakLogo />
           </Link>
         </div>

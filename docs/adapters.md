@@ -22,7 +22,7 @@ If you want to use Static Site Generation, you need to generate for each support
 - Configure a localized router with a `lang` parameter
 - Handle the dynamic `lang` parameter, adding the values it can take to each page included in SSG, i.e.:
 
-_src\routes\[...lang]\index.tsx_
+_src/routes/[...lang]/index.tsx_
 ```typescript
 export const onStaticGenerate: StaticGenerateHandler = () => {
   return {

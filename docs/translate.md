@@ -1,4 +1,5 @@
 # Translate
+> The return functions of `useTranslate`, `inlineTranslate` and `usePlural` are parsed and replaced with translated texts at compile time. For this reason, they expect _values_ or _identifiers_ as parameters, and no JavaScript _operators_
 
 ## useTranslate
 `useTranslate` returns a functions to get the translation using key-value pairs:

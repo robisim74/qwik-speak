@@ -1,3 +1,4 @@
+import { noSerialize } from '@builder.io/qwik';
 import { useSpeakLocale } from './use-speak';
 
 export type FormatNumberFn = {
@@ -32,5 +33,5 @@ export const useFormatNumber = () => {
     return new Intl.NumberFormat(lang, options).format(value);
   };
 
-  return formatNumber as FormatNumberFn;
+  return noSerialize(formatNumber) as FormatNumberFn;
 };
