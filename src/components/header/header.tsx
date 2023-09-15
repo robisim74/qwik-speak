@@ -1,6 +1,6 @@
 import { component$, useStyles$ } from '@builder.io/qwik';
 import { Link, useLocation } from '@builder.io/qwik-city';
-import { useSpeakConfig, useSpeakLocale, useTranslate } from 'qwik-speak';
+import { useTranslate, useTranslatePath } from 'qwik-speak';
 
 import { ChangeLocale } from '../change-locale/change-locale';
 import { SpeakLogo } from '../icons/speak';
@@ -11,33 +11,33 @@ export const Header = component$(() => {
   useStyles$(styles);
 
   const t = useTranslate();
+  const tp = useTranslatePath();
 
-  const pathname = useLocation().url.pathname;
-  const lang = useSpeakLocale().lang;
-  const config = useSpeakConfig();
+  const { url } = useLocation();
 
-  const getHref = (name: string) => {
-    return lang === config.defaultLocale.lang ? name : `/${lang}${name}`;
-  };
+  const [
+      homePath,
+      pagePath,
+  ] = tp(['/', '/page/'])
 
   return (
     <>
       <header class="header">
         <div class="logo">
-          <Link href={getHref('/')} title={t('app.title')}>
+          <Link href={homePath} title={t('app.title')}>
             <SpeakLogo />
           </Link>
         </div>
         <ul>
           <li>
-            <Link href={getHref('/')}
-              class={{ active: pathname === '/' || config.supportedLocales.some(x => pathname.endsWith(`${x.lang}/`)) }}>
+            <Link href={homePath}
+              class={{ active: url.pathname === homePath }}>
               {t('app.nav.home')}
             </Link>
           </li>
           <li>
-            <Link href={getHref('/page')}
-              class={{ active: pathname.endsWith('/page/') }}>
+            <Link href={pagePath}
+              class={{ active: url.pathname === pagePath }}>
               {t('app.nav.page')}
             </Link>
           </li>

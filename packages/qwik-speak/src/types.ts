@@ -75,6 +75,13 @@ export interface SpeakConfig {
    * Key-value separator. Default is '@@'
    */
   keyValueSeparator?: string;
+  /**
+   * Rewrite routes as specified in vite config for qwikCity
+   */
+  rewriteRoutes?: {
+    prefix?: string;
+    paths: Record<string, string>;
+  }[];
 }
 
 export interface SpeakState {

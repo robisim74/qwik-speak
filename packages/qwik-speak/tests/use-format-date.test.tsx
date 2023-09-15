@@ -30,6 +30,6 @@ describe('useFormatDate function', async () => {
   test('format', () => {
     expect((screen.querySelector('#A') as HTMLDivElement).innerHTML).toContain('7/19/2022');
     expect((screen.querySelector('#A1') as HTMLDivElement).innerHTML).toContain('Tuesday, July 19, 2022');
-    expect((screen.querySelector('#A2') as HTMLDivElement).innerHTML).toContain('Tuesday, July 19, 2022 at 9:30 AM');
+    expect((screen.querySelector('#A2') as HTMLDivElement).innerHTML).toContain('Tuesday, July 19, 2022 at 9:30\u202fAM');
   });
 });

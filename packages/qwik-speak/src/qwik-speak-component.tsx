@@ -52,6 +52,7 @@ export const QwikSpeakProvider = component$((props: QwikSpeakProps) => {
     locale: Object.assign({}, resolvedLocale),
     translation: Object.fromEntries(props.config.supportedLocales.map(value => [value.lang, {}])),
     config: {
+      rewriteRoutes: props.config.rewriteRoutes,
       defaultLocale: props.config.defaultLocale,
       supportedLocales: props.config.supportedLocales,
       assets: props.config.assets,
