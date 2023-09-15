@@ -23,7 +23,7 @@ export default defineConfig(() => {
         ]
       }),
       qwikSpeakInline({
-        supportedLangs: ['en-US', 'it-IT'],
+        supportedLangs: ['en-US', 'it-IT', 'de-DE'],
         defaultLang: 'en-US',
         assetsPath: 'i18n'
       }),

@@ -14,7 +14,7 @@
     "dev.debug": "node --inspect-brk ./node_modules/vite/bin/vite.js --mode ssr --force",
     "lint": "eslint src/**/*.ts*",
     "preview": "qwik build preview && vite preview --open",
-    "qwik-speak-extract": "node ./packages/qwik-speak/extract/cli.js --supportedLangs=en-US,it-IT --assetsPath=i18n",
+    "qwik-speak-extract": "node ./packages/qwik-speak/extract/cli.js --supportedLangs=en-US,it-IT,de-DE --assetsPath=i18n",
     "start": "vite --open --mode ssr",
     "test": "vitest test --run",
     "test.e2e": "playwright test",
