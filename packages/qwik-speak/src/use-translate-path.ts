@@ -25,14 +25,17 @@ export const useTranslatePath = (): TranslatePathFn => {
     const { config } = ctx;
 
     const source = config.rewriteRoutes?.find(rewrite => (
+      pathname === `/${rewrite.prefix}` ||
       pathname.startsWith(`/${rewrite.prefix}/`) ||
       pathname.startsWith(`${rewrite.prefix}/`)
     ))
 
     if (source) {
-      pathname = pathname.startsWith('/')
-        ? pathname.substring(`/${source.prefix}`.length)
-        : pathname.substring(`${source.prefix}/`.length)
+      pathname = pathname === `/${source.prefix}`
+        ? '/'
+        : pathname.startsWith('/')
+          ? pathname.substring(`/${source.prefix}`.length)
+          : pathname.substring(`${source.prefix}/`.length)
 
       const sourceEntries = Object.entries(source.paths).map(([from, to]) => [to, from])
       const revertedPaths = Object.fromEntries(sourceEntries)
@@ -69,20 +72,36 @@ export const useTranslatePath = (): TranslatePathFn => {
     return translated.join('/')
   }
 
+  const slashPath = (pathname: string, rewrote: string) => {
+    if(pathname.endsWith('/') && !rewrote.endsWith('/')) {
+      return rewrote + '/'
+    } else if(!pathname.endsWith('/') && rewrote.endsWith('/') && (rewrote !== '/')) {
+      return rewrote.substring(0, rewrote.length - 1)
+    }
+
+    return rewrote
+  }
+
+  const translateOne = (pathname: string, lang?: string) => {
+    const { locale } = ctx;
+
+    lang ??= locale.lang;
+
+    const normalized = normalizePath(pathname)
+    const rewrote = rewritePath(normalized, lang)
+    return slashPath(pathname, rewrote)
+  };
+
   const translate = (pathname: string | string[], lang?: string) => {
     const { locale } = ctx;
 
     lang ??= locale.lang;
 
     if (Array.isArray(pathname)) {
-      return pathname.map(path => {
-        const normalized = normalizePath(path)
-        return rewritePath(normalized, lang)
-      })
+      return pathname.map(path => translateOne(path, lang))
     }
 
-    const normalized = normalizePath(pathname)
-    return rewritePath(normalized, lang)
+    return translateOne(pathname, lang)
   };
 
   return noSerialize(translate) as TranslatePathFn;

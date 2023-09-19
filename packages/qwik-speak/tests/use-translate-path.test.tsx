@@ -20,6 +20,9 @@ const TestComponent = component$(() => {
       <div id="A7">{tp('/page/my-page-slug')}</div>
       <div id="A8">{tp('/it-IT/pagina/my-page-slug')}</div>
       <div id="A9">{tp('/de-DE/seite/my-page-slug')}</div>
+      <div id="A10">{tp('/page/my-page-slug/')}</div>
+      <div id="A11">{tp('/it-IT/pagina/my-page-slug/')}</div>
+      <div id="A12">{tp('/de-DE/seite/my-page-slug/')}</div>
 
       <div id="B1">{tp('/page', 'en-US')}</div>
       <div id="B2">{tp('/it-IT/pagina', 'en-US')}</div>
@@ -30,6 +33,9 @@ const TestComponent = component$(() => {
       <div id="B7">{tp('/page/my-page-slug', 'en-US')}</div>
       <div id="B8">{tp('/it-IT/pagina/my-page-slug', 'en-US')}</div>
       <div id="B9">{tp('/de-DE/seite/my-page-slug', 'en-US')}</div>
+      <div id="B10">{tp('/page/my-page-slug/', 'en-US')}</div>
+      <div id="B11">{tp('/it-IT/pagina/my-page-slug/', 'en-US')}</div>
+      <div id="B12">{tp('/de-DE/seite/my-page-slug/', 'en-US')}</div>
 
       <div id="C1">{tp('/page', 'it-IT')}</div>
       <div id="C2">{tp('/it-IT/pagina', 'it-IT')}</div>
@@ -40,6 +46,9 @@ const TestComponent = component$(() => {
       <div id="C7">{tp('/page/my-page-slug', 'it-IT')}</div>
       <div id="C8">{tp('/it-IT/pagina/my-page-slug', 'it-IT')}</div>
       <div id="C9">{tp('/de-DE/seite/my-page-slug', 'it-IT')}</div>
+      <div id="C10">{tp('/page/my-page-slug/', 'it-IT')}</div>
+      <div id="C11">{tp('/it-IT/pagina/my-page-slug/', 'it-IT')}</div>
+      <div id="C12">{tp('/de-DE/seite/my-page-slug/', 'it-IT')}</div>
 
       <div id="D1">{tp('/page', 'de-DE')}</div>
       <div id="D2">{tp('/it-IT/pagina', 'de-DE')}</div>
@@ -50,6 +59,9 @@ const TestComponent = component$(() => {
       <div id="D7">{tp('/page/my-page-slug', 'de-DE')}</div>
       <div id="D8">{tp('/it-IT/pagina/my-page-slug', 'de-DE')}</div>
       <div id="D9">{tp('/de-DE/seite/my-page-slug', 'de-DE')}</div>
+      <div id="D10">{tp('/page/my-page-slug/', 'de-DE')}</div>
+      <div id="D11">{tp('/it-IT/pagina/my-page-slug/', 'de-DE')}</div>
+      <div id="D12">{tp('/de-DE/seite/my-page-slug/', 'de-DE')}</div>
 
       <div id="E1">{tp('/other')}</div>
       <div id="E2">{tp('/other', 'en-US')}</div>
@@ -59,6 +71,21 @@ const TestComponent = component$(() => {
       <div id="E6">{tp('/other/about', 'en-US')}</div>
       <div id="E7">{tp('/other/about', 'it-IT')}</div>
       <div id="E8">{tp('/other/about', 'de-DE')}</div>
+      <div id="E10">{tp('/other/about/', 'en-US')}</div>
+      <div id="E11">{tp('/other/about/', 'it-IT')}</div>
+      <div id="E12">{tp('/other/about/', 'de-DE')}</div>
+
+      <div id="F1">{tp('/')}</div>
+      <div id="F2">{tp('/', 'en-US')}</div>
+      <div id="F3">{tp('/', 'it-IT')}</div>
+      <div id="F4">{tp('/', 'de-DE')}</div>
+      <div id="F5">{tp('/it-IT')}</div>
+      <div id="F6">{tp('/it-IT', 'en-US')}</div>
+      <div id="F7">{tp('/it-IT', 'it-IT')}</div>
+      <div id="F8">{tp('/it-IT', 'de-DE')}</div>
+      <div id="F10">{tp('/it-IT/', 'en-US')}</div>
+      <div id="F11">{tp('/it-IT/', 'it-IT')}</div>
+      <div id="F12">{tp('/it-IT/', 'de-DE')}</div>
 
     </div>
   );
@@ -83,6 +110,9 @@ describe('useTranslatePath function', async () => {
     expect((screen.querySelector('#A7') as HTMLDivElement).innerHTML).toBe('/page/my-page-slug');
     expect((screen.querySelector('#A8') as HTMLDivElement).innerHTML).toBe('/page/my-page-slug');
     expect((screen.querySelector('#A9') as HTMLDivElement).innerHTML).toBe('/page/my-page-slug');
+    expect((screen.querySelector('#A10') as HTMLDivElement).innerHTML).toBe('/page/my-page-slug/');
+    expect((screen.querySelector('#A11') as HTMLDivElement).innerHTML).toBe('/page/my-page-slug/');
+    expect((screen.querySelector('#A12') as HTMLDivElement).innerHTML).toBe('/page/my-page-slug/');
   });
 
   test('translate with default prefix', () => {
@@ -95,6 +125,9 @@ describe('useTranslatePath function', async () => {
     expect((screen.querySelector('#B7') as HTMLDivElement).innerHTML).toBe('/page/my-page-slug');
     expect((screen.querySelector('#B8') as HTMLDivElement).innerHTML).toBe('/page/my-page-slug');
     expect((screen.querySelector('#B9') as HTMLDivElement).innerHTML).toBe('/page/my-page-slug');
+    expect((screen.querySelector('#B10') as HTMLDivElement).innerHTML).toBe('/page/my-page-slug/');
+    expect((screen.querySelector('#B11') as HTMLDivElement).innerHTML).toBe('/page/my-page-slug/');
+    expect((screen.querySelector('#B12') as HTMLDivElement).innerHTML).toBe('/page/my-page-slug/');
   });
 
   test('translate with it-IT prefix', () => {
@@ -107,6 +140,9 @@ describe('useTranslatePath function', async () => {
     expect((screen.querySelector('#C7') as HTMLDivElement).innerHTML).toBe('/it-IT/pagina/my-page-slug');
     expect((screen.querySelector('#C8') as HTMLDivElement).innerHTML).toBe('/it-IT/pagina/my-page-slug');
     expect((screen.querySelector('#C9') as HTMLDivElement).innerHTML).toBe('/it-IT/pagina/my-page-slug');
+    expect((screen.querySelector('#C10') as HTMLDivElement).innerHTML).toBe('/it-IT/pagina/my-page-slug/');
+    expect((screen.querySelector('#C11') as HTMLDivElement).innerHTML).toBe('/it-IT/pagina/my-page-slug/');
+    expect((screen.querySelector('#C12') as HTMLDivElement).innerHTML).toBe('/it-IT/pagina/my-page-slug/');
   });
 
   test('translate with de-DE prefix', () => {
@@ -119,6 +155,9 @@ describe('useTranslatePath function', async () => {
     expect((screen.querySelector('#D7') as HTMLDivElement).innerHTML).toBe('/de-DE/seite/my-page-slug');
     expect((screen.querySelector('#D8') as HTMLDivElement).innerHTML).toBe('/de-DE/seite/my-page-slug');
     expect((screen.querySelector('#D9') as HTMLDivElement).innerHTML).toBe('/de-DE/seite/my-page-slug');
+    expect((screen.querySelector('#D10') as HTMLDivElement).innerHTML).toBe('/de-DE/seite/my-page-slug/');
+    expect((screen.querySelector('#D11') as HTMLDivElement).innerHTML).toBe('/de-DE/seite/my-page-slug/');
+    expect((screen.querySelector('#D12') as HTMLDivElement).innerHTML).toBe('/de-DE/seite/my-page-slug/');
   });
 
   test('translate untranslated page', () => {
@@ -130,5 +169,22 @@ describe('useTranslatePath function', async () => {
     expect((screen.querySelector('#E6') as HTMLDivElement).innerHTML).toBe('/other/about');
     expect((screen.querySelector('#E7') as HTMLDivElement).innerHTML).toBe('/other/about');
     expect((screen.querySelector('#E8') as HTMLDivElement).innerHTML).toBe('/other/about');
+    expect((screen.querySelector('#E10') as HTMLDivElement).innerHTML).toBe('/other/about/');
+    expect((screen.querySelector('#E11') as HTMLDivElement).innerHTML).toBe('/other/about/');
+    expect((screen.querySelector('#E12') as HTMLDivElement).innerHTML).toBe('/other/about/');
+  });
+
+  test('translate home page', () => {
+    expect((screen.querySelector('#F1') as HTMLDivElement).innerHTML).toBe('/');
+    expect((screen.querySelector('#F2') as HTMLDivElement).innerHTML).toBe('/');
+    expect((screen.querySelector('#F3') as HTMLDivElement).innerHTML).toBe('/it-IT/');
+    expect((screen.querySelector('#F4') as HTMLDivElement).innerHTML).toBe('/de-DE/');
+    expect((screen.querySelector('#F5') as HTMLDivElement).innerHTML).toBe('/');
+    expect((screen.querySelector('#F6') as HTMLDivElement).innerHTML).toBe('/');
+    expect((screen.querySelector('#F7') as HTMLDivElement).innerHTML).toBe('/it-IT');
+    expect((screen.querySelector('#F8') as HTMLDivElement).innerHTML).toBe('/de-DE');
+    expect((screen.querySelector('#F10') as HTMLDivElement).innerHTML).toBe('/');
+    expect((screen.querySelector('#F11') as HTMLDivElement).innerHTML).toBe('/it-IT/');
+    expect((screen.querySelector('#F12') as HTMLDivElement).innerHTML).toBe('/de-DE/');
   });
 });
