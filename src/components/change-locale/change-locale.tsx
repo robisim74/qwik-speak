@@ -8,11 +8,11 @@ import styles from './change-locale.css?inline';
 export const ChangeLocale = component$(() => {
   useStyles$(styles);
 
-  const loc = useLocation()
   const t = useTranslate();
   const tp = useTranslatePath();
   const dn = useDisplayName();
 
+  const loc = useLocation()
   const locale = useSpeakLocale();
   const config = useSpeakConfig();
 
