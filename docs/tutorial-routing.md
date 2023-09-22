@@ -72,10 +72,11 @@ _src/routes/plugin.ts_
 import { config } from '../speak-config';
 
 export const onRequest: RequestHandler = ({ params, locale }) => {
-  const lang = params.lang;
+  // Check supported locales
+  const lang = config.supportedLocales.find(value => value.lang === params.lang)?.lang || config.defaultLocale.lang;
 
   // Set Qwik locale
-  locale(lang || config.defaultLocale.lang);
+  locale(lang);
 };
 ```
 We assign the value of the `lang` parameter to Qwik `locale`. This way it will be immediately available to the library.
@@ -361,6 +362,11 @@ Set the base URL for loading the chunks in the browser in `entry.ssr.tsx` file:
 ```typescript
 import { isDev } from '@builder.io/qwik/build';
 
+/**
+ * Determine the base URL to use for loading the chunks in the browser.
+ * The value set through Qwik 'locale()' in 'plugin.ts' is saved by Qwik in 'serverData.locale' directly.
+ * Make sure the locale is among the 'supportedLocales'
+ */
 export function extractBase({ serverData }: RenderOptions): string {
   if (!isDev && serverData?.locale) {
     return '/build/' + serverData.locale;

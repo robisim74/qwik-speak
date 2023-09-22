@@ -45,6 +45,8 @@ export default function (opts: RenderToStreamOptions) {
   });
 }
 ```
+> Note. The value set through Qwik `locale()` in `plugin.ts` is saved by Qwik in `serverData.locale` directly. Make sure the locale is among the `supportedLocales`
+
 ### Configure
 Add `qwikSpeakInline` Vite plugin in `vite.config.ts`:
 ```typescript
