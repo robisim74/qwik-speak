@@ -1,5 +1,4 @@
 import type { QRL, ValueOrPromise } from '@builder.io/qwik';
-import type { QwikCityVitePluginOptions } from '@builder.io/qwik-city/vite';
 
 export interface SpeakLocale {
   /**
@@ -50,6 +49,11 @@ export interface TranslationFn {
   loadTranslation$: LoadTranslationFn;
 }
 
+export interface RewriteRouteOption {
+    prefix?: string;
+    paths: Record<string, string>;
+}
+
 export interface SpeakConfig {
   /**
    * The default locale to use as fallback
@@ -79,7 +83,7 @@ export interface SpeakConfig {
   /**
    * Rewrite routes as specified in vite config for qwikCity
    */
-  rewriteRoutes?: QwikCityVitePluginOptions['rewriteRoutes'];
+  rewriteRoutes?: RewriteRouteOption[];
 }
 
 export interface SpeakState {
