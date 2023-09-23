@@ -1,5 +1,7 @@
 import { noSerialize } from '@builder.io/qwik';
+import { isDev } from '@builder.io/qwik/build';
 import { useSpeakContext } from './use-speak';
+import { logWarn } from './log';
 
 export type TranslatePathFn = {
   /**
@@ -93,7 +95,12 @@ export const useTranslatePath = (): TranslatePathFn => {
   };
 
   const translate = (pathname: string | string[], lang?: string) => {
-    const { locale } = ctx;
+    const { locale, config } = ctx;
+
+    if(!config.rewriteRoutes) {
+      if (isDev) logWarn(`SpeakConfig rewriteRoutes not found`);
+      return pathname
+    }
 
     lang ??= locale.lang;
 

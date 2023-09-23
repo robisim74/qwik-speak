@@ -5,7 +5,6 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 
 import { fileURLToPath } from 'url';
 import { qwikSpeakInline } from './packages/qwik-speak/tools/inline';
-import {rewriteRoutes} from "./src/speak-routes";
 
 export default defineConfig(() => {
   return {
@@ -13,9 +12,10 @@ export default defineConfig(() => {
       minify: false // To inspect production files
     },
     plugins: [
-      qwikCity({
-        rewriteRoutes
-      }),
+      qwikCity(
+        /** Uncomment this line to use url rewriting to translate paths */
+        // {rewriteRoutes}
+      ),
       qwikVite({
         // Handle packages
         vendorRoots: [

@@ -20,7 +20,6 @@ export const rewriteRoutes = [
         }
     }
 ]
-
 ```
 _src/speak-config.ts_
 ```typescript
@@ -62,6 +61,7 @@ export const translationFn: TranslationFn = {
 };
 ```
 We have added the Speak config and the implementation of the `loadTranslation$` function to load translation files.
+We passed in the Speak config the same `rewriteRoutes` we use in `qwikCity()` in `vite.config.ts`
 
 > `loadTranslation$` is a customizable QRL function: you can load the translation files in the way you prefer
 
@@ -378,11 +378,14 @@ In production mode, `assets` are loaded only during SSR, and to get the translat
 Add `qwikSpeakInline` Vite plugin in `vite.config.ts`:
 ```typescript
 import { qwikSpeakInline } from 'qwik-speak/inline';
+import { rewriteRoutes } from "./src/speak-routes";
 
 export default defineConfig(() => {
   return {
     plugins: [
-      qwikCity(),
+      qwikCity({
+        rewriteRoutes
+      }),
       qwikVite(),
       qwikSpeakInline({
         supportedLangs: ['en-US', 'it-IT'],

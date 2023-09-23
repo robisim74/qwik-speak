@@ -1,5 +1,5 @@
 import type { QRL, ValueOrPromise } from '@builder.io/qwik';
-import type { QwikCityVitePluginOptions } from "@builder.io/qwik-city/vite";
+import type { QwikCityVitePluginOptions } from '@builder.io/qwik-city/vite';
 
 export interface SpeakLocale {
   /**

@@ -1,6 +1,6 @@
 import { $ } from '@builder.io/qwik';
 import type { SpeakConfig, LoadTranslationFn, TranslationFn } from '../src/types';
-import {rewriteRoutes} from "../../../src/speak-routes";
+import { rewriteRoutes } from '../../../src/speak-routes';
 
 export const config: SpeakConfig = {
   rewriteRoutes,

@@ -1,6 +1,6 @@
 import { component$, useStyles$ } from '@builder.io/qwik';
 import { Link, useLocation } from '@builder.io/qwik-city';
-import { useTranslate, useTranslatePath } from 'qwik-speak';
+import { useSpeakConfig, useSpeakLocale, useTranslate } from 'qwik-speak';
 
 import { ChangeLocale } from '../change-locale/change-locale';
 import { SpeakLogo } from '../icons/speak';
@@ -11,33 +11,44 @@ export const Header = component$(() => {
   useStyles$(styles);
 
   const t = useTranslate();
-  const tp = useTranslatePath();
 
-  const { url } = useLocation();
+  const pathname = useLocation().url.pathname;
+  const lang = useSpeakLocale().lang;
+  const config = useSpeakConfig();
 
-  const [
-      homePath,
-      pagePath,
-  ] = tp(['/', '/page/'])
+  const getHref = (name: string) => {
+    return lang === config.defaultLocale.lang ? name : `/${lang}${name}`;
+  };
+
+  /** Uncomment this lines to use url rewriting to translate paths */
+  // const tp = useTranslatePath();
+  // const { url } = useLocation();
+  // const [homePath, pagePath] = tp(['/', '/page/'])
 
   return (
     <>
       <header class="header">
         <div class="logo">
-          <Link href={homePath} title={t('app.title')}>
+          {/** Uncomment this line to use url rewriting to translate paths */}
+          {/* <Link href={homePath} title={t('app.title')}> */}
+          <Link href={getHref('/')} title={t('app.title')}>
             <SpeakLogo />
           </Link>
         </div>
         <ul>
           <li>
-            <Link href={homePath}
-              class={{ active: url.pathname === homePath }}>
+            {/** Uncomment this line to use url rewriting to translate paths */}
+            {/* <Link href={homePath} class={{ active: url.pathname === homePath }}> */}
+            <Link href={getHref('/')}
+              class={{ active: pathname === '/' || config.supportedLocales.some(x => pathname.endsWith(`${x.lang}/`)) }}>
               {t('app.nav.home')}
             </Link>
           </li>
           <li>
-            <Link href={pagePath}
-              class={{ active: url.pathname === pagePath }}>
+            {/** Uncomment this line to use url rewriting to translate paths */}
+            {/* <Link href={pagePath} class={{ active: url.pathname === pagePath }}> */}
+            <Link href={getHref('/page')}
+              class={{ active: pathname.endsWith('/page/') }}>
               {t('app.nav.page')}
             </Link>
           </li>
