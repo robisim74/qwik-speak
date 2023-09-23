@@ -9,7 +9,8 @@ npm install qwik-speak --save-dev
 
 ## Getting Started
 - [Quick Start](./docs/quick-start.md)
-- [Tutorial: localized routing](./docs/tutorial-routing.md)
+- [Tutorial: localized routing with prefix only](./docs/tutorial-routing.md)
+- [Tutorial: localized routing with url rewriting](./docs/tutorial-routing-rewrite.md)
 - [Translate](./docs/translate.md)
 - [Translation functions](./docs/translation-functions.md)  
 - [Qwik Speak and Adapters](./docs/adapters.md)
@@ -109,6 +110,7 @@ stateDiagram-v2
 - `runtimeAssets` Assets available at runtime
 - `keySeparator` Separator of nested keys. Default is `.`
 - `keyValueSeparator` Key-value separator. Default is `@@`
+- `rewriteRoutes` Rewrite routes as specified in vite config for qwikCity
 
 ### SpeakLocale
 The `SpeakLocale` object contains the `lang`, in the format `language[-script][-region]`, where:
@@ -146,6 +148,9 @@ and optionally contains:
 #### Translate
 - `useTranslate: () => (keys: string | string[], params?: Record<string, any>, lang?: string)`
 Translates a key or an array of keys. The syntax of the string is `key@@[default value]`
+
+- `useTranslatePath: () => (paths: string | string[], lang?: string)`
+Translates a path or an array of paths. The translating string can be in any language. If not specified the target lang is the current one.
 
 - `inlineTranslate(keys: string | string[], ctx: SpeakState, params?: Record<string, any>, lang?: string)`
 Translates a key or an array of keys outside the `component$`. The syntax of the string is `key@@[default value]`

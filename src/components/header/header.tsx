@@ -20,22 +20,33 @@ export const Header = component$(() => {
     return lang === config.defaultLocale.lang ? name : `/${lang}${name}`;
   };
 
+  /** Uncomment this lines to use url rewriting to translate paths */
+  // const tp = useTranslatePath();
+  // const { url } = useLocation();
+  // const [homePath, pagePath] = tp(['/', '/page/'])
+
   return (
     <>
       <header class="header">
         <div class="logo">
+          {/** Uncomment this line to use url rewriting to translate paths */}
+          {/* <Link href={homePath} title={t('app.title')}> */}
           <Link href={getHref('/')} title={t('app.title')}>
             <SpeakLogo />
           </Link>
         </div>
         <ul>
           <li>
+            {/** Uncomment this line to use url rewriting to translate paths */}
+            {/* <Link href={homePath} class={{ active: url.pathname === homePath }}> */}
             <Link href={getHref('/')}
               class={{ active: pathname === '/' || config.supportedLocales.some(x => pathname.endsWith(`${x.lang}/`)) }}>
               {t('app.nav.home')}
             </Link>
           </li>
           <li>
+            {/** Uncomment this line to use url rewriting to translate paths */}
+            {/* <Link href={pagePath} class={{ active: url.pathname === pagePath }}> */}
             <Link href={getHref('/page')}
               class={{ active: pathname.endsWith('/page/') }}>
               {t('app.nav.page')}

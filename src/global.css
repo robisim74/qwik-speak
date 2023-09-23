@@ -19,18 +19,19 @@ main .content {
   text-align: center;
 }
 
-button {
+button, .button {
   display: inline-block;
   padding: 5px 10px;
   margin: 5px 10px;
   border-radius: 5px;
   border-width: 1px;
+  border: 1px solid #bbb;
   background-color: #fff;
   font-size: 14px;
   text-decoration: none;
 }
 
-button:hover {
+button:hover, .button:hover {
   background-color: #f2f2f2;
   cursor: pointer;
 }
@@ -49,7 +50,7 @@ button:hover {
     padding: 20px 70px;
   }
 
-  button {
+  button, .button {
     display: inline-block;
     padding: 10px 20px;
     font-size: 16px;

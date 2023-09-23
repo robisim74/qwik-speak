@@ -11,10 +11,20 @@ export const ChangeLocale = component$(() => {
   const t = useTranslate();
   const dn = useDisplayName();
 
+  /** Uncomment this line to use url rewriting to translate paths */
+  // const tp = useTranslatePath();
+
   const loc = useLocation();
 
   const locale = useSpeakLocale();
   const config = useSpeakConfig();
+
+  /** Uncomment this lines to use url rewriting to translate paths */
+  // const getLocalePath = (newLocale: SpeakLocale) => {
+  //   const url = new URL(loc.url)
+  //   url.pathname = tp(url.pathname, newLocale.lang)
+  //   return url.toString();
+  // };
 
   // Replace the locale and navigate to the new URL
   const navigateByLocale$ = $((newLocale: SpeakLocale) => {
@@ -41,6 +51,10 @@ export const ChangeLocale = component$(() => {
             onClick$={async () => await navigateByLocale$(value)}>
             {dn(value.lang, { type: 'language' })}
           </button>
+          /** Uncomment this lines to use url rewriting to translate paths */
+          // <a key={value.lang} class={{ button: true, active: value.lang == locale.lang }} href={getLocalePath(value)}>
+          //   {dn(value.lang, { type: 'language' })}
+          // </a>
         ))}
       </div>
     </div>

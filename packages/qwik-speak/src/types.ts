@@ -49,6 +49,11 @@ export interface TranslationFn {
   loadTranslation$: LoadTranslationFn;
 }
 
+export interface RewriteRouteOption {
+    prefix?: string;
+    paths: Record<string, string>;
+}
+
 export interface SpeakConfig {
   /**
    * The default locale to use as fallback
@@ -75,6 +80,10 @@ export interface SpeakConfig {
    * Key-value separator. Default is '@@'
    */
   keyValueSeparator?: string;
+  /**
+   * Rewrite routes as specified in vite config for qwikCity
+   */
+  rewriteRoutes?: RewriteRouteOption[];
 }
 
 export interface SpeakState {

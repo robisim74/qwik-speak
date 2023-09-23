@@ -1,10 +1,14 @@
 import { $ } from '@builder.io/qwik';
 import type { SpeakConfig, LoadTranslationFn, TranslationFn } from '../src/types';
+import { rewriteRoutes } from '../../../src/speak-routes';
 
 export const config: SpeakConfig = {
+  rewriteRoutes,
   defaultLocale: { lang: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles', units: { 'length': 'mile' } },
   supportedLocales: [
-    { lang: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles', units: { 'length': 'mile' } }
+    { lang: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles', units: { 'length': 'mile' } },
+    { lang: 'it-IT', currency: 'EUR', timeZone: 'Europe/Rome', units: { 'length': 'kilometer' } },
+    { lang: 'de-DE', currency: 'EUR', timeZone: 'Europe/Rome', units: { 'length': 'kilometer' } }
   ],
   assets: ['test'],
   keySeparator: '.',

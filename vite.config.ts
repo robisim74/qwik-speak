@@ -12,7 +12,10 @@ export default defineConfig(() => {
       minify: false // To inspect production files
     },
     plugins: [
-      qwikCity(),
+      qwikCity(
+        /** Uncomment this line to use url rewriting to translate paths */
+        // {rewriteRoutes}
+      ),
       qwikVite({
         // Handle packages
         vendorRoots: [
@@ -20,7 +23,7 @@ export default defineConfig(() => {
         ]
       }),
       qwikSpeakInline({
-        supportedLangs: ['en-US', 'it-IT'],
+        supportedLangs: ['en-US', 'it-IT', 'de-DE'],
         defaultLang: 'en-US',
         assetsPath: 'i18n'
       }),
