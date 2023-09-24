@@ -6,6 +6,7 @@ export type {
   SpeakConfig,
   SpeakState,
   LoadTranslationFn,
+  RewriteRouteOption
 } from './types';
 export type { QwikSpeakProps } from './qwik-speak-component';
 export type { SpeakProps } from './speak-component';
