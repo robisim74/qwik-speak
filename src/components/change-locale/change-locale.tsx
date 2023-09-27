@@ -2,7 +2,7 @@ import { $, component$, useStyles$ } from '@builder.io/qwik';
 import { useLocation } from '@builder.io/qwik-city';
 import type { SpeakLocale } from 'qwik-speak';
 import { useSpeakLocale, useSpeakConfig, useDisplayName, useTranslate } from 'qwik-speak';
-// import { useTranslatePath } from 'qwik-speak';
+import { useTranslatePath } from 'qwik-speak';
 
 import styles from './change-locale.css?inline';
 
@@ -13,7 +13,7 @@ export const ChangeLocale = component$(() => {
   const dn = useDisplayName();
 
   /** Uncomment this line to use url rewriting to translate paths */
-  // const tp = useTranslatePath();
+  const tp = useTranslatePath();
 
   const loc = useLocation();
 
@@ -21,11 +21,11 @@ export const ChangeLocale = component$(() => {
   const config = useSpeakConfig();
 
   /** Uncomment this lines to use url rewriting to translate paths */
-  // const getLocalePath = (newLocale: SpeakLocale) => {
-  //   const url = new URL(loc.url)
-  //   url.pathname = tp(url.pathname, newLocale.lang)
-  //   return url.toString();
-  // };
+  const getLocalePath = (newLocale: SpeakLocale) => {
+    const url = new URL(loc.url)
+    url.pathname = tp(url.pathname, newLocale.lang)
+    return url.toString();
+  };
 
   // Replace the locale and navigate to the new URL
   const navigateByLocale$ = $((newLocale: SpeakLocale) => {
@@ -48,14 +48,14 @@ export const ChangeLocale = component$(() => {
       <h2>{t('app.changeLocale')}</h2>
       <div class="names">
         {config.supportedLocales.map(value => (
-          <button key={value.lang} class={{ active: value.lang == locale.lang }}
-            onClick$={async () => await navigateByLocale$(value)}>
-            {dn(value.lang, { type: 'language' })}
-          </button>
-          /** Uncomment this lines to use url rewriting to translate paths */
-          // <a key={value.lang} class={{ button: true, active: value.lang == locale.lang }} href={getLocalePath(value)}>
+          // <button key={value.lang} class={{ active: value.lang == locale.lang }}
+          //   onClick$={async () => await navigateByLocale$(value)}>
           //   {dn(value.lang, { type: 'language' })}
-          // </a>
+          // </button>
+          /** Uncomment this lines to use url rewriting to translate paths */
+          <a key={value.lang} class={{ button: true, active: value.lang == locale.lang }} href={getLocalePath(value)}>
+            {dn(value.lang, { type: 'language' })}
+          </a>
         ))}
       </div>
     </div>
