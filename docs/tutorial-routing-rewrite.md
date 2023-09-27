@@ -1,30 +1,64 @@
 # Tutorial: localized routing with url rewriting
 
-> Step by step, let's build a sample app with Qwik Speak and a localized router using Qwik City features
+> Step by step, let's build a sample app with Qwik Speak and translated paths using Qwik City features
 
 ```shell
 npm create qwik@latest
 npm install qwik-speak --save-dev
 ```
 
+Let's assume that we want to create a navigation of this type:
+- default language (en-US): routes not localized `http://127.0.0.1:4173/`
+- other languages (it-IT): localized routes `http://127.0.0.1:4173/it-IT/`
+
+Or:
+- default language (en-US): routes not localized `http://127.0.0.1:4173/page`
+- other languages (it-IT): localized routes `http://127.0.0.1:4173/it-IT/pagina`
+
+But we DON'T want to have this url instead:
+- other languages (it-IT): localized routes `http://127.0.0.1:4173/it-IT/page`
+
 ## Configuration
-Let's create `speak-routes.ts`, `speak-config.ts` and `speak-functions.ts` files in `src`:
+Let's create `speak-routes.ts` file in `src`:
 
 _src/speak-routes.ts_
 ```typescript
+/**
+ * Translation paths
+ */
 export const rewriteRoutes = [
-    {
-        prefix: 'it-IT',
-        paths: {
-            'page': 'pagina'
-        }
+  {
+    prefix: 'it-IT',
+    paths: {
+        'page': 'pagina'
     }
+  }
 ]
 ```
+and update `qwikCity` Vite plugin in `vite.config.ts`:
+```typescript
+import { rewriteRoutes } from './src/speak-routes';
+
+export default defineConfig(() => {
+  return {
+    plugins: [
+      qwikCity(
+        { rewriteRoutes }
+      ),
+      qwikVite(),
+      tsconfigPaths(),
+    ],
+  };
+});
+```
+
+Now create `speak-config.ts` and `speak-functions.ts` files in `src`:
+
 _src/speak-config.ts_
 ```typescript
 import type { SpeakConfig } from 'qwik-speak';
-import { rewriteRoutes } from '~/speak-routes';
+
+import { rewriteRoutes } from './speak-routes';
 
 export const config: SpeakConfig = {
   rewriteRoutes,
@@ -61,30 +95,18 @@ export const translationFn: TranslationFn = {
 };
 ```
 We have added the Speak config and the implementation of the `loadTranslation$` function to load translation files.
-We passed in the Speak config the same `rewriteRoutes` we use in `qwikCity()` in `vite.config.ts`
 
 > `loadTranslation$` is a customizable QRL function: you can load the translation files in the way you prefer
 
 ## Routing
-Let's assume that we want to create a navigation of this type:
-- default language (en-US): routes not localized `http://127.0.0.1:4173/`
-- other languages (it-IT): localized routes `http://127.0.0.1:4173/it-IT/`
-
-Or:
-- default language (en-US): routes not localized `http://127.0.0.1:4173/page`
-- other languages (it-IT): localized routes `http://127.0.0.1:4173/it-IT/pagina`
-
-But we DON'T want to have this url instead:
-- other languages (it-IT): localized routes `http://127.0.0.1:4173/it-IT/page`
-
-Now let's handle it. Create `plugin.ts` in the root of the `src/routes` directory:
+Now let's handle the routing. Create `plugin.ts` in the root of the `src/routes` directory:
 
 _src/routes/plugin.ts_
 ```typescript
 import type { RequestHandler } from "@builder.io/qwik-city";
 
-import { config } from '~/speak-config';
-import { rewriteRoutes } from "~/speak-routes";
+import { config } from '../speak-config';
+import { rewriteRoutes } from '../speak-routes';
 
 export const onRequest: RequestHandler = ({ params, locale }) => {
     const parts = url.pathname.split('/')
@@ -127,7 +149,7 @@ export default component$(() => {
 });
 ```
 
-Finally we add an `index.tsx` with some translation, providing default values for each translation: `key@@[default value]`:
+Now we add an `index.tsx` with some translation, providing default values for each translation: `key@@[default value]`:
 
 _src/routes/index.tsx_
 ```tsx
@@ -171,6 +193,25 @@ export const head: DocumentHead = {
   title: 'home.head.title@@Qwik Speak',
   meta: [{ name: 'description', content: 'home.head.description@@Qwik Speak with localized routing' }]
 };
+```
+
+Finally we add a `page/index.tsx` to try the router:
+
+_src/routes/page/index.tsx_
+```tsx
+import { component$ } from '@builder.io/qwik';
+import { useTranslate } from 'qwik-speak';
+
+export default component$(() => {
+  const t = useTranslate();
+
+  return (
+    <>
+      <h1>{t('app.title')}</h1>
+      <h2>{t('app.subtitle')}</h2>
+    </>
+  );
+});
 ```
 
 ## Scoped translation
@@ -279,12 +320,12 @@ export default component$(() => {
       <ul>
         <li>
           <Link href={homePath} class={{ active: url.pathname === homePath }}>
-            {t('app.nav.home')}
+            {t('app.nav.home@@Home')}
           </Link>
         </li>
         <li>
           <Link href={pagePath} class={{ active: url.pathname === pagePath }}>
-            {t('app.nav.page')}
+            {t('app.nav.page@@Page')}
           </Link>
         </li>
       </ul>
@@ -378,14 +419,15 @@ In production mode, `assets` are loaded only during SSR, and to get the translat
 Add `qwikSpeakInline` Vite plugin in `vite.config.ts`:
 ```typescript
 import { qwikSpeakInline } from 'qwik-speak/inline';
-import { rewriteRoutes } from "./src/speak-routes";
+
+import { rewriteRoutes } from './src/speak-routes';
 
 export default defineConfig(() => {
   return {
     plugins: [
-      qwikCity({
-        rewriteRoutes
-      }),
+      qwikCity(
+        { rewriteRoutes }
+      ),
       qwikVite(),
       qwikSpeakInline({
         supportedLangs: ['en-US', 'it-IT'],
@@ -401,6 +443,11 @@ Set the base URL for loading the chunks in the browser in `entry.ssr.tsx` file:
 ```typescript
 import { isDev } from '@builder.io/qwik/build';
 
+/**
+ * Determine the base URL to use for loading the chunks in the browser.
+ * The value set through Qwik 'locale()' in 'plugin.ts' is saved by Qwik in 'serverData.locale' directly.
+ * Make sure the locale is among the 'supportedLocales'
+ */
 export function extractBase({ serverData }: RenderOptions): string {
   if (!isDev && serverData?.locale) {
     return '/build/' + serverData.locale;

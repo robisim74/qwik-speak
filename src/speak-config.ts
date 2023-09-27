@@ -1,5 +1,7 @@
 import type { SpeakConfig } from 'qwik-speak';
 
+// import { rewriteRoutes } from './speak-routes';
+
 /**
  * Speak config
  */

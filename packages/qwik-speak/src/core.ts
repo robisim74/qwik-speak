@@ -40,7 +40,7 @@ export const loadTranslations = async (
         assets?.find(asset => config.runtimeAssets?.includes(asset)) ||
         runtimeAssets?.find(asset => config.assets?.includes(asset));
       if (conflictingAsset) {
-        logWarn(`Speak component: conflict between assets and runtimeAssets '${conflictingAsset}'`);
+        logWarn(`Conflict between assets and runtimeAssets '${conflictingAsset}'`);
       }
     }
 

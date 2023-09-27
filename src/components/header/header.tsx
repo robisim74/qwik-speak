@@ -1,6 +1,7 @@
 import { component$, useStyles$ } from '@builder.io/qwik';
 import { Link, useLocation } from '@builder.io/qwik-city';
 import { useSpeakConfig, useSpeakLocale, useTranslate } from 'qwik-speak';
+// import { useTranslatePath } from 'qwik-speak';
 
 import { ChangeLocale } from '../change-locale/change-locale';
 import { SpeakLogo } from '../icons/speak';

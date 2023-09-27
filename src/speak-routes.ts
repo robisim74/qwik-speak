@@ -1,7 +1,15 @@
+import type { RewriteRouteOption } from 'qwik-speak';
+
 /**
  * Translation paths
  */
-export const rewriteRoutes = [
+export const rewriteRoutes: RewriteRouteOption[] = [
+  // No prefix for default locale
+  // {
+  //   paths: {
+  //     'page': 'page'
+  //   }
+  // },
   {
     prefix: 'it-IT',
     paths: {

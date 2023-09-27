@@ -50,8 +50,15 @@ export interface TranslationFn {
 }
 
 export interface RewriteRouteOption {
-    prefix?: string;
-    paths: Record<string, string>;
+  /**
+   * Optional language
+   */
+  prefix?: string;
+  /**
+   * Translated segments.
+   * Key value pairs: folder name - translated value
+   */
+  paths: Record<string, string>;
 }
 
 export interface SpeakConfig {
@@ -81,7 +88,7 @@ export interface SpeakConfig {
    */
   keyValueSeparator?: string;
   /**
-   * Rewrite routes as specified in vite config for qwikCity
+   * Rewrite routes as specified in Vite config for qwikCity
    */
   rewriteRoutes?: RewriteRouteOption[];
 }
