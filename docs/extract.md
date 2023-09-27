@@ -64,7 +64,7 @@ If you add new translations in the components, or a new language, they will be m
 
 ### Using it programmatically
 Rather than using the command, you can invoke `qwikSpeakExtract` function:
-```typescript
+```javascript
 import { qwikSpeakExtract } from 'qwik-speak/extract';
 
 await qwikSpeakExtract({

@@ -1,0 +1,14 @@
+{
+  "runtime": {
+    "head": {
+      "home": {
+        "description": "Internationalisierungsbibliothek (i18n) zum Übersetzen von Texten, Datumsangaben und Zahlen in Qwik-Apps",
+        "title": "{{name}}"
+      },
+      "page": {
+        "description": "Ich bin eine andere Seite",
+        "title": "Seite - {{name}}"
+      }
+    }
+  }
+}

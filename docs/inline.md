@@ -1,6 +1,6 @@
 # Qwik Speak Inline Vite plugin
 
-> Inline Qwik Speak `useTranslate`, `inlineTranslate` and `usePNrlural` functions at compile time
+> Inline Qwik Speak `useTranslate`, `inlineTranslate` and `usePlural` functions at compile time
 
 ## How it works
 In development mode, translation happens _at runtime_: `assets` are loaded during SSR or on client, and the lookup also happens at runtime.
@@ -26,6 +26,8 @@ sequenceDiagram
 ### Get the code ready
 Qwik uses the `q:base` attribute to determine the base URL for loading the chunks in the browser, so you have to set it in `entry.ssr.tsx` file:
 ```typescript
+import { isDev } from '@builder.io/qwik/build';
+
 export function extractBase({ serverData }: RenderOptions): string {
   if (!isDev && serverData?.locale) {
     return '/build/' + serverData.locale;
@@ -43,6 +45,8 @@ export default function (opts: RenderToStreamOptions) {
   });
 }
 ```
+> Note. The value set through Qwik `locale()` in `plugin.ts` is saved by Qwik in `serverData.locale` directly. Make sure the locale is among the `supportedLocales`
+
 ### Configure
 Add `qwikSpeakInline` Vite plugin in `vite.config.ts`:
 ```typescript
@@ -63,7 +67,18 @@ export default defineConfig(() => {
   };
 });
 ```
-and build the app:
+Available options:
+- `supportedLangs` Supported langs. Required
+- `defaultLang` Default lang. Required
+- `basePath` The base path. Default to `'./'`
+- `assetsPath` Path to translation files: `[basePath]/[assetsPath]/[lang]/*.json`. Default to `'i18n'`
+- `outDir` The build output directory. Default to `'dist'`
+- `keySeparator` Separator of nested keys. Default is `'.'`
+- `keyValueSeparator` Key-value separator. Default is `'@@'`
+
+> Note. Currently, only `json` is supported as format
+
+Now build the app:
 ```shell
 npm run preview
 ```
@@ -91,8 +106,6 @@ At the end of the build, in root folder a `qwik-speak-inline.log` file is genera
 - Missing values
 - Translations with dynamic keys
 - Translations with dynamic params
-
-> Note. Currently, only `json` files are supported as assets
 
 ## Qwik Speak Inline Vite plugin & runtime
 When there are translations with dynamic keys or params, you have to use separate files, and add them to `runtimeAssets`:

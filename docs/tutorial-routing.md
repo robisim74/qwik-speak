@@ -1,6 +1,6 @@
-# Tutorial: localized routing
+# Tutorial: localized routing with prefix only
 
-> Step by step, let's build an app with Qwik Speak and a localized router
+> Step by step, let's build a sample app with Qwik Speak and a localized router using Qwik City features
 
 ```shell
 npm create qwik@latest
@@ -12,6 +12,8 @@ Let's create `speak-config.ts` and `speak-functions.ts` files in `src`:
 
 _src/speak-config.ts_
 ```typescript
+import type { SpeakConfig } from 'qwik-speak';
+
 export const config: SpeakConfig = {
   defaultLocale: { lang: 'en-US', currency: 'USD', timeZone: 'America/Los_Angeles' },
   supportedLocales: [
@@ -25,6 +27,9 @@ export const config: SpeakConfig = {
 ```
 _src/speak-functions.ts_
 ```typescript
+import { server$ } from '@builder.io/qwik-city';
+import type { LoadTranslationFn, Translation, TranslationFn } from 'qwik-speak';
+
 /**
  * Translation files are lazy-loaded via dynamic import and will be split into separate chunks during build.
  * Keys must be valid variable names
@@ -60,15 +65,25 @@ src/routes/
     layout.tsx
 ```
 
-Now let's handle it. Create `plugin.ts` in the root of the `src/routes` directory::
+Now let's handle it. Create `plugin.ts` in the root of the `src/routes` directory:
 
 _src/routes/plugin.ts_
 ```typescript
+import { config } from '../speak-config';
+
 export const onRequest: RequestHandler = ({ params, locale }) => {
-  const lang = params.lang;
+  // Check supported locales
+  const supportedLocale = config.supportedLocales.find(value => value.lang === params.lang)
+
+  // Check for 404 error page
+  const lang = supportedLocale
+    ? supportedLocale.lang
+    : !params.lang && config.defaultLocale.lang
+
+  if(!lang) throw error(404, 'Page not found');
 
   // Set Qwik locale
-  locale(lang || config.defaultLocale.lang);
+  locale(lang);
 };
 ```
 We assign the value of the `lang` parameter to Qwik `locale`. This way it will be immediately available to the library.
@@ -78,6 +93,11 @@ Just wrap Qwik City provider with `QwikSpeakProvider` component in `root.tsx` an
 
 _src/root.tsx_
 ```tsx
+import { QwikSpeakProvider } from 'qwik-speak';
+
+import { config } from './speak-config';
+import { translationFn } from './speak-functions';
+
 export default component$(() => {
   return (
     <QwikSpeakProvider config={config} translationFn={translationFn}>
@@ -97,7 +117,7 @@ export default component$(() => {
 });
 ```
 
-Finally we add an `index.tsx` with some translation:
+Finally we add an `index.tsx` with some translation, providing default values for each translation: `key@@[default value]`:
 
 _src/routes/[...lang]/index.tsx_
 ```tsx
@@ -105,6 +125,7 @@ import {
   useTranslate,
   useFormatDate,
   useFormatNumber,
+  Speak,
 } from 'qwik-speak';
 
 export const Home = component$(() => {
@@ -141,11 +162,11 @@ export const head: DocumentHead = {
   meta: [{ name: 'description', content: 'home.head.description@@Qwik Speak with localized routing' }]
 };
 ```
-Here we have used the `Speak` component to add scoped translations to the `Home` component:
-- `Home` component will use the `home` asset, in addition to the `app` asset that comes with the configuration
-- `home` asset keys start with `home`
 
-We are also providing default values for each translation: `key@@[default value]`.
+## Scoped translation
+We have used the `Speak` component to add scoped translations to the `Home` component:
+- `Home` component will use the `home` asset, in addition to the `app` asset that comes with the configuration
+- Using the asset name `home` as the root property in each key is the best practice to avoid keys in different files being overwritten
 
 > `Speak` component is a `Slot` component: because Qwik renders `Slot` components and direct children in isolation, translations are not immediately available in direct children, and we need to use a component for the `Home` page. It is not necessary to use more than one `Speak` component per page
 
@@ -154,17 +175,29 @@ You may have noticed, that in `index.tsx` we have provided the meta title and de
 
 _src/components/router-head/router-head.tsx_
 ```tsx
-<title>{t(head.title)}</title>
+export const RouterHead = component$(() => {
+  const t = useTranslate();
 
-{head.meta.map((m) => (
-  <meta key={m.key} name={m.name} content={m.name === 'description' ? t(m.content!) : m.content} />
-))}
+  const head = useDocumentHead();
+
+  return (
+    <>
+      <title>{t(head.title, { name: 'Qwik Speak' })}</title>
+
+      {head.meta.map((m) => (
+        <meta key={m.key} name={m.name} content={m.name === 'description' ? t(m.content!) : m.content} />
+      ))}
+    </>
+  );
+});
 ```
 
 We can also pass the `lang` attribute in the html tag:
 
 _src/entry.ssr.tsx_
 ```typescript
+import { config } from './speak-config';
+
 export default function (opts: RenderToStreamOptions) {
   return renderToStream(<Root />, {
     manifest,
@@ -183,6 +216,9 @@ Now we want to change locale. Let's create a `ChangeLocale` component:
 
 _src/components/change-locale.tsx_
 ```tsx
+import type { SpeakLocale } from 'qwik-speak';
+import { useSpeakConfig, useTranslate } from 'qwik-speak';
+
 export const ChangeLocale = component$(() => {
   const t = useTranslate();
 
@@ -281,12 +317,31 @@ runtimeAssets: [
   'runtime' // Translations with dynamic keys or parameters
 ]
 ```
-We can translate the `it-IT` files, and run the app:
+
+See [Qwik Speak Extract](./extract.md) for more details.
+
+## Translation
+We can translate the `it-IT` files.
+
+If you have an OpenAI API key, you could use `gpt-translate-json` package:
+```shell
+npm install gpt-translate-json --save-dev
+```
+In `package.json` add the following command to the scripts:
+```json
+"gpt-translate-json": "gpt-translate-json --apiKey=openai_api_key --model=gpt-3.5-turbo --maxTokens=3000 --langs=en-US,it-IT --originalLang=en-US"
+```
+
+```shell
+npm gpt-translate-json
+```
+
+Run the app:
 ```shell
 npm start
 ```
 
-See [Qwik Speak Extract](./extract.md) for more details.
+See [GPT Translate JSON](./gpt-translate-json.md) for more details.
 
 ## Production
 In production mode, `assets` are loaded only during SSR, and to get the translations on the client as well it is required to inline the translations in chucks sent to the browser.
@@ -312,6 +367,13 @@ export default defineConfig(() => {
 ```
 Set the base URL for loading the chunks in the browser in `entry.ssr.tsx` file:
 ```typescript
+import { isDev } from '@builder.io/qwik/build';
+
+/**
+ * Determine the base URL to use for loading the chunks in the browser.
+ * The value set through Qwik 'locale()' in 'plugin.ts' is saved by Qwik in 'serverData.locale' directly.
+ * Make sure the locale is among the 'supportedLocales'
+ */
 export function extractBase({ serverData }: RenderOptions): string {
   if (!isDev && serverData?.locale) {
     return '/build/' + serverData.locale;
@@ -342,8 +404,8 @@ Inspect the `qwik-speak-inline.log` file in root folder:
 
 ```
 client: root.tsx
-dynamic key: t(head.title) - skip
-dynamic key: t(m.content) - skip
+dynamic key: t(head.title) - Make sure the keys are in 'runtimeAssets'
+dynamic key: t(m.content) - Make sure the keys are in 'runtimeAssets'
 ```
 It contains the non-inlined dynamic keys that we added in the `runtime.json` file.
 

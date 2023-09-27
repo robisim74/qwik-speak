@@ -1,0 +1,11 @@
+{
+  "app": {
+    "changeLocale": "Den Ort wechseln",
+    "nav": {
+      "home": "Heim",
+      "page": "Seite"
+    },
+    "subtitle": "Übersetzen Sie Ihre Qwik-Apps in eine beliebige Sprache",
+    "title": "Qwik Speak"
+  }
+}
