@@ -68,7 +68,9 @@ t<Translation>('home.obj@@{"one":"one","two":"two"}')
 ```
 
 ### Component$ props
-Prefer translating inside components rather than on boundaries:
+> A component can wake up independently from the parent component. If the component wakes up, it needs to be able to know its props
+
+Prefer translating inside components rather than on props:
 
 ```tsx
 export const Title = component$<TitleProps>((props) => {

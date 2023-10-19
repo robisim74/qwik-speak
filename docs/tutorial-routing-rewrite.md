@@ -23,10 +23,12 @@ Let's create `speak-routes.ts` file in `src`:
 
 _src/speak-routes.ts_
 ```typescript
+import type { RewriteRouteOption } from 'qwik-speak';
+
 /**
  * Translation paths
  */
-export const rewriteRoutes = [
+export const rewriteRoutes: RewriteRouteOption[] = [
   {
     prefix: 'it-IT',
     paths: {
