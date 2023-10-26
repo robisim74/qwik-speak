@@ -111,7 +111,7 @@ describe('useTranslate function', async () => {
   test('html attributes', () => {
     expect((screen.querySelector('#A14') as HTMLDivElement).getAttribute('title')).toContain('Test');
   });
-  test('component props', () => {
+  test('no reactive component props', () => {
     expect((screen.querySelector('#B') as HTMLDivElement).innerHTML).toContain('Test');
   })
 });

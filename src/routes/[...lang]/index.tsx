@@ -38,9 +38,12 @@ export const Home = component$(() => {
 
   const count = useSignal(0);
 
+  // Prefer translating inside components rather than on props
+  const title = t('app.title');
+
   return (
     <div class="content">
-      <Title name={t('app.title')} />
+      <Title name={title} />
 
       <SubTitle ctx={ctx} />
 

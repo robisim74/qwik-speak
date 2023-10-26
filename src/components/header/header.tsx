@@ -31,8 +31,8 @@ export const Header = component$(() => {
       <header class="header">
         <div class="logo">
           {/** Uncomment this line to use url rewriting to translate paths */}
-          {/* <Link href={homePath} title={t('app.title')}> */}
-          <Link href={getHref('/')} title={t('app.title')}>
+          {/* <Link href={homePath}> */}
+          <Link href={getHref('/')}>
             <SpeakLogo />
           </Link>
         </div>

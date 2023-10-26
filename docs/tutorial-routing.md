@@ -117,7 +117,7 @@ export default component$(() => {
 });
 ```
 
-Finally we add an `index.tsx` with some translation, providing default values for each translation: `key@@[default value]`:
+Finally we add an `index.tsx` with some translation, providing optional default values for each translation: `key@@[default value]`:
 
 _src/routes/[...lang]/index.tsx_
 ```tsx
@@ -128,14 +128,21 @@ import {
   Speak,
 } from 'qwik-speak';
 
+export const Title = component$((props: TitleProps) => {
+  return (<h1>{props.name}</h1>)
+});
+
 export const Home = component$(() => {
   const t = useTranslate();
   const fd = useFormatDate();
   const fn = useFormatNumber();
 
+  // Prefer translating inside components rather than on props
+  const title = t('app.title@@{{name}} demo', { name: 'Qwik Speak' });
+
   return (
     <>
-      <h1>{t('app.title@@{{name}} demo', { name: 'Qwik Speak' })}</h1>
+      <Title name={title} />
 
       <h3>{t('home.dates@@Dates')}</h3>
       <p>{fd(Date.now(), { dateStyle: 'full', timeStyle: 'short' })}</p>
