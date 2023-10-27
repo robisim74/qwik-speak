@@ -17,7 +17,7 @@ interface TitleProps {
   name: string;
 }
 
-export const Title = component$((props: TitleProps) => {
+export const Title = component$<TitleProps>(props => {
   return (<h1>{props.name}</h1>)
 });
 
