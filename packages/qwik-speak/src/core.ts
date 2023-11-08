@@ -2,6 +2,7 @@ import { noSerialize } from '@builder.io/qwik';
 import { isDev, isServer } from '@builder.io/qwik/build';
 
 import type { Translation, SpeakState, LoadTranslationFn } from './types';
+import { logWarn } from './log';
 
 const cache: Record<string, Promise<any>> = {};
 
@@ -31,11 +32,20 @@ export const loadTranslations = async (
   runtimeAssets?: string[],
   langs?: string[]
 ): Promise<void> => {
-  if (isDev === true || isServer || runtimeAssets) {
-    const { locale, translation, translationFn } = ctx;
+  if (isDev || isServer || runtimeAssets) {
+    const { locale, translation, translationFn, config } = ctx;
+
+    if (isDev) {
+      const conflictingAsset = assets?.find(asset => runtimeAssets?.includes(asset)) ||
+        assets?.find(asset => config.runtimeAssets?.includes(asset)) ||
+        runtimeAssets?.find(asset => config.assets?.includes(asset));
+      if (conflictingAsset) {
+        logWarn(`Conflict between assets and runtimeAssets '${conflictingAsset}'`);
+      }
+    }
 
     let resolvedAssets: string[];
-    if (isDev === true || isServer) {
+    if (isDev || isServer) {
       resolvedAssets = [...assets ?? [], ...runtimeAssets ?? []];
     } else {
       resolvedAssets = [...runtimeAssets ?? []];

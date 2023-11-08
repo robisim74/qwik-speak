@@ -21,7 +21,8 @@
   align-items: center;
 }
 
-.change-locale .names button.active {
+.change-locale .names button.active,
+.change-locale .names .button.active {
   background-color: #327335;
   color: #fff;
 }

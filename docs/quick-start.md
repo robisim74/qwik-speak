@@ -80,7 +80,7 @@ export default component$(() => {
 });
 ```
 
-Finally we add an `index.tsx` with some translation, providing default values for each translation: `key@@[default value]`:
+Finally we add an `index.tsx` with some translation, providing optional default values for each translation: `key@@[default value]`:
 
 _src/routes/index.tsx_
 ```tsx
@@ -91,14 +91,25 @@ import {
   Speak,
 } from 'qwik-speak';
 
+interface TitleProps {
+  name: string;
+}
+
+export const Title = component$<TitleProps>(props => {
+  return (<h1>{props.name}</h1>)
+});
+
 export const Home = component$(() => {
   const t = useTranslate();
   const fd = useFormatDate();
   const fn = useFormatNumber();
 
+  // Prefer translating inside components rather than on props
+  const title = t('app.title@@{{name}} demo', { name: 'Qwik Speak' });
+
   return (
     <>
-      <h1>{t('app.title@@{{name}} demo', { name: 'Qwik Speak' })}</h1>
+      <Title name={title} />
 
       <h3>{t('home.dates@@Dates')}</h3>
       <p>{fd(Date.now(), { dateStyle: 'full', timeStyle: 'short' })}</p>
@@ -357,6 +368,11 @@ Set the base URL for loading the chunks in the browser in `entry.ssr.tsx` file:
 ```typescript
 import { isDev } from '@builder.io/qwik/build';
 
+/**
+ * Determine the base URL to use for loading the chunks in the browser.
+ * The value set through Qwik 'locale()' in 'plugin.ts' is saved by Qwik in 'serverData.locale' directly.
+ * Make sure the locale is among the 'supportedLocales'
+ */
 export function extractBase({ serverData }: RenderOptions): string {
   if (!isDev && serverData?.locale) {
     return '/build/' + serverData.locale;

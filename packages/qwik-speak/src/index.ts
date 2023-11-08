@@ -6,10 +6,12 @@ export type {
   SpeakConfig,
   SpeakState,
   LoadTranslationFn,
+  RewriteRouteOption
 } from './types';
 export type { QwikSpeakProps } from './qwik-speak-component';
 export type { SpeakProps } from './speak-component';
 export type { TranslateFn } from './use-translate';
+export type { TranslatePathFn } from './use-translate-path';
 export type { PluralFn } from './use-plural';
 export type { InlineTranslateFn } from './inline-translate';
 export type { FormatDateFn } from './use-format-date';
@@ -24,6 +26,7 @@ export { QwikSpeakInline } from './qwik-speak-inline-component';
 export { inlineTranslate } from './inline-translate';
 // Use functions
 export { useTranslate } from './use-translate';
+export { useTranslatePath } from './use-translate-path';
 export { usePlural } from './use-plural';
 export { useFormatNumber } from './use-format-number';
 export { useFormatDate } from './use-format-date';

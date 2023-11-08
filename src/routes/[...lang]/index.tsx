@@ -17,7 +17,7 @@ interface TitleProps {
   name: string;
 }
 
-export const Title = component$((props: TitleProps) => {
+export const Title = component$<TitleProps>(props => {
   return (<h1>{props.name}</h1>)
 });
 
@@ -38,9 +38,12 @@ export const Home = component$(() => {
 
   const count = useSignal(0);
 
+  // Prefer translating inside components rather than on props
+  const title = t('app.title');
+
   return (
     <div class="content">
-      <Title name={t('app.title')} />
+      <Title name={title} />
 
       <SubTitle ctx={ctx} />
 

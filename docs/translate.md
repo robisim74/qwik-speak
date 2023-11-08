@@ -67,8 +67,25 @@ t<string[]>('home.array@@["one","two","three"]')
 t<Translation>('home.obj@@{"one":"one","two":"two"}')
 ```
 
-### Component$ props
-Prefer translating inside components rather than on boundaries:
+### Html in translations
+You can have Html in translations, like:
+```json
+{
+  "home": {
+    "text": "<em>Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps</em>"
+  }
+}
+```
+but you have to use `dangerouslySetInnerHTML`:
+```tsx
+<p dangerouslySetInnerHTML={t('home.text')}></p>
+```
+> On the client the text is _inlined_ during build, so there are no XSS risks
+
+## component$ props
+> A component can wake up independently from the parent component. If the component wakes up, it needs to be able to know its props
+
+Prefer translating inside components rather than on props:
 
 ```tsx
 export const Title = component$<TitleProps>((props) => {

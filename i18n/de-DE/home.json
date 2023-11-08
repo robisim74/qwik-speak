@@ -1,0 +1,16 @@
+{
+  "home": {
+    "dates": "Daten und relative Zeit",
+    "devs": {
+      "one": "{{ value }} Softwareentwickler",
+      "other": "{{ value }} Softwareentwickler"
+    },
+    "greeting": "Hallo! Im {{name}}",
+    "increment": "Zunahme",
+    "numbers": "Zahlen und Währungen",
+    "params": "Parameter",
+    "plural": "Plural",
+    "tags": "HTML-Tags",
+    "text": "<em>Internationalisierungsbibliothek (i18n) zum Übersetzen von Texten, Datumsangaben und Zahlen in Qwik-Apps</em>"
+  }
+}
