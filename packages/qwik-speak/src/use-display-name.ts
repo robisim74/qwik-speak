@@ -12,7 +12,7 @@ export type DisplayNameFn = {
   (code: string, options: Intl.DisplayNamesOptions, lang?: string): string;
 };
 
-export const useDisplayName = () => {
+export const useDisplayName = (): DisplayNameFn => {
   const locale = useSpeakLocale();
 
   const displayName = (code: string, options: Intl.DisplayNamesOptions, lang?: string) => {

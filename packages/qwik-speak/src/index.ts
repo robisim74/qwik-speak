@@ -20,7 +20,7 @@ export type { RelativeTimeFn } from './use-relative-time';
 export type { DisplayNameFn } from './use-display-name';
 // Components
 export { QwikSpeakProvider } from './qwik-speak-component';
-export { Speak } from './speak-component';
+export { Speak, useSpeak } from './speak-component';
 // Functions
 export { inlineTranslate } from './inline-translate';
 // Use functions

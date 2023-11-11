@@ -13,7 +13,7 @@ export type FormatNumberFn = {
   (value: number | string, options?: Intl.NumberFormatOptions, lang?: string, currency?: string): string;
 };
 
-export const useFormatNumber = () => {
+export const useFormatNumber = (): FormatNumberFn => {
   const locale = useSpeakLocale();
 
   const formatNumber = (
