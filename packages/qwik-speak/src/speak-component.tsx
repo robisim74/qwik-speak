@@ -21,9 +21,20 @@ export interface SpeakProps {
 }
 
 /**
- * Add scoped translation data to the context
+ * Add scoped translation data to the context.
+ * Translations will only be available in child components
  */
 export const Speak = component$((props: SpeakProps) => {
+  useSpeak(props);
+
+  return <Slot />;
+});
+
+/**
+ * Add scoped translation data to the context.
+ * Translations will only be available in child components
+ */
+export const useSpeak = (props: SpeakProps) => {
   const ctx = useSpeakContext();
 
   const { config } = ctx;
@@ -44,6 +55,4 @@ export const Speak = component$((props: SpeakProps) => {
 
     await loadTranslations(ctx, props.assets, props.runtimeAssets, props.langs);
   });
-
-  return <Slot />;
-});
+};

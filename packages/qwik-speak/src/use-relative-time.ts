@@ -17,7 +17,7 @@ export type RelativeTimeFn = {
   ): string;
 };
 
-export const useRelativeTime = () => {
+export const useRelativeTime = (): RelativeTimeFn => {
   const locale = useSpeakLocale();
 
   const relativeTime = (
