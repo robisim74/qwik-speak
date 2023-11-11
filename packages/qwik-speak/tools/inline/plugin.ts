@@ -38,7 +38,6 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
   // Resolve options
   const resolvedOptions: Required<QwikSpeakInlineOptions> = {
     ...options,
-    env: options.env ?? 'both',
     basePath: options.basePath ?? './',
     assetsPath: options.assetsPath ?? 'i18n',
     outDir: options.outDir ?? 'dist',
@@ -55,7 +54,7 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
   const plugin: Plugin = {
     name: 'vite-plugin-qwik-speak-inline',
     enforce: 'post',
-    apply: resolvedOptions.env === 'build' ? resolvedOptions.env : undefined, // both
+    apply: undefined, // both
 
     configResolved(resolvedConfig) {
       if (resolvedConfig.build?.ssr || resolvedConfig.mode === 'ssr') {
@@ -173,29 +172,17 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
         }
       }
 
-      // Check Inline component in dev mode
+      // Add useInline in dev mode
       if (target === 'ssr' && mode === 'dev') {
-        if (id.endsWith('root.tsx' || id.endsWith('root.jsx'))) {
-          if (!/QwikSpeakInline/.test(code)) {
-            console.log(
-              '\n\x1b[31mQwik Speak Inline error\x1b[0m\n%s',
-              "Missing 'QwikSpeakInline' component in 'root.tsx' file: see https://robisim74.gitbook.io/qwik-speak/tools/inline#usage"
-            );
-            process.exit(1)
-          }
-        }
-      }
-      // Remove Inline component in prod mode
-      if (target === 'ssr' && mode === 'prod') {
-        if (id.endsWith('root.tsx' || id.endsWith('root.jsx'))) {
-          code = code.replace(/_jsxC\(QwikSpeakInline.*\)/, '');
-          return code;
+        if (id.endsWith('router-head.tsx') || id.endsWith('router-head.jsx')) {
+          code = code.replace(/^/, `import { useInline } from 'qwik-speak';\n`);
+          code = code.replace('return /*#__PURE__*/ _jsxC', `useInline();\nreturn /*#__PURE__*/ _jsxC`);
         }
       }
 
       // Check base url
       if (target === 'ssr') {
-        if (id.endsWith('entry.ssr.tsx' || id.endsWith('entry.ssr.jsx'))) {
+        if (id.endsWith('entry.ssr.tsx') || id.endsWith('entry.ssr.jsx')) {
           if (!/(?<!\/\/\s*)base:\s*extractBase/.test(code)) {
             console.log(
               '\n\x1b[31mQwik Speak Inline error\x1b[0m\n%s',
@@ -205,6 +192,8 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
           }
         }
       }
+
+      return code;
     },
 
     /**

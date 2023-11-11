@@ -45,10 +45,6 @@ export interface QwikSpeakExtractOptions {
  */
 export interface QwikSpeakInlineOptions {
   /**
-   * Application environment:. Default to 'both' serve and build
-   */
-  env?: 'build' | 'both';
-  /**
    * The base path. Default to './'
    */
   basePath?: string;

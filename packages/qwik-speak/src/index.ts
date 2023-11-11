@@ -36,3 +36,5 @@ export {
   useSpeakLocale,
   useSpeakConfig,
 } from './use-speak';
+// Internals
+export { useInline } from './useInline';

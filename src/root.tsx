@@ -1,6 +1,6 @@
 import { component$ } from '@builder.io/qwik';
 import { QwikCityProvider, RouterOutlet, ServiceWorkerRegister } from '@builder.io/qwik-city';
-import { QwikSpeakInline, QwikSpeakProvider } from 'qwik-speak';
+import { QwikSpeakProvider } from 'qwik-speak';
 
 import { RouterHead } from './components/router-head/router-head';
 import { config } from './speak-config';

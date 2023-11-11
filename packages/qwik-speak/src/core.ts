@@ -21,10 +21,9 @@ export const memoize = (fn: LoadTranslationFn) => {
 
 /**
  * Load translations when: 
- * - dev mode
  * - on server
  * - or runtime assets
- * In prod mode, assets are not serialized
+ * Assets are not serialized
  */
 export const loadTranslations = async (
   ctx: SpeakState,
@@ -32,7 +31,7 @@ export const loadTranslations = async (
   runtimeAssets?: string[],
   langs?: string[]
 ): Promise<void> => {
-  if (isDev || isServer || runtimeAssets) {
+  if (isServer || runtimeAssets) {
     const { locale, translation, translationFn, config } = ctx;
 
     if (isDev) {
@@ -45,7 +44,7 @@ export const loadTranslations = async (
     }
 
     let resolvedAssets: string[];
-    if (isDev || isServer) {
+    if (isServer) {
       resolvedAssets = [...assets ?? [], ...runtimeAssets ?? []];
     } else {
       resolvedAssets = [...runtimeAssets ?? []];
@@ -67,8 +66,8 @@ export const loadTranslations = async (
 
       for (const data of assetSources) {
         if (data?.source) {
-          if (!isDev && isServer && assets?.includes(data.asset)) {
-            // In prod mode, assets are not serialized
+          if (isServer && assets?.includes(data.asset)) {
+            // Assets are not serialized
             for (let [key, value] of Object.entries<Translation>(data.source)) {
               // Depth 0: convert string to String object
               if (typeof value === 'string') {
@@ -77,7 +76,7 @@ export const loadTranslations = async (
               translation[lang][key] = noSerialize(value);
             }
           } else {
-            // Serialize whether dev mode, or runtime assets
+            // Serialize whether runtime assets
             Object.assign(translation[lang], data.source);
           }
         }
