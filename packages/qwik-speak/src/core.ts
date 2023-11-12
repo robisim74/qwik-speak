@@ -56,8 +56,15 @@ export const loadTranslations = async (
     resolvedLangs.add(locale.lang);
 
     for (const lang of resolvedLangs) {
-      const memoized = memoize(translationFn.loadTranslation$);
-      const tasks = resolvedAssets.map(asset => memoized(lang, asset));
+      let tasks: Promise<any>[];
+      // Cache requests in prod mode
+      if (!isDev) {
+        const memoized = memoize(translationFn.loadTranslation$);
+        tasks = resolvedAssets.map(asset => memoized(lang, asset));
+      } else {
+        tasks = resolvedAssets.map(asset => translationFn.loadTranslation$(lang, asset));
+      }
+
       const sources = await Promise.all(tasks);
       const assetSources = sources.map((source, i) => ({
         asset: resolvedAssets[i],

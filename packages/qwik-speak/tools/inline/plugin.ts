@@ -96,43 +96,34 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
       }
     },
 
+    handleHotUpdate({ file, server }) {
+      // Filter json
+      if (new RegExp(resolvedOptions.assetsPath).test(file) && /\.(json)$/.test(file)) {
+        for (const lang of resolvedOptions.supportedLangs) {
+          if (new RegExp(lang).test(file)) {
+            loadTranslations(translation, [lang], resolvedOptions.basePath, resolvedOptions.assetsPath);
+          }
+        }
+        // Invalidate inlined modules
+        for (const id of moduleIds) {
+          const module = server.moduleGraph.getModuleById(id);
+          if (module) server.moduleGraph.invalidateModule(module);
+        }
+        moduleIds.clear();
+      }
+    },
+
     /**
      * Load translation files when build starts
      */
     async buildStart() {
       if (target === 'client' || mode === 'dev') {
-        // For all langs
-        await Promise.all(resolvedOptions.supportedLangs.map(async lang => {
-          const baseDir = normalize(`${resolvedOptions.basePath}/${resolvedOptions.assetsPath}/${lang}`);
-          // For all files
-          if (existsSync(baseDir)) {
-            const files = await readdir(baseDir);
-
-            if (files.length > 0) {
-              const ext = extname(files[0]);
-              let data: Translation = {};
-
-              const tasks = files.map(filename => readFile(`${baseDir}/${filename}`, 'utf8'));
-              const sources = await Promise.all(tasks);
-
-              for (const source of sources) {
-                if (source) {
-                  let parsed: Translation = {};
-
-                  switch (ext) {
-                    case '.json':
-                      parsed = parseJson(source);
-                      break;
-                  }
-
-                  data = merge(data, parsed);
-                }
-              }
-
-              translation[lang] = { ...translation[lang], ...data }; // Shallow merge
-            }
-          }
-        }));
+        await loadTranslations(
+          translation,
+          resolvedOptions.supportedLangs,
+          resolvedOptions.basePath,
+          resolvedOptions.assetsPath
+        );
       }
     },
 
@@ -177,11 +168,13 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
         if (id.endsWith('router-head.tsx') || id.endsWith('router-head.jsx')) {
           code = code.replace(/^/, `import { useInline } from 'qwik-speak';\n`);
           code = code.replace('return /*#__PURE__*/ _jsxC', `useInline();\nreturn /*#__PURE__*/ _jsxC`);
+
+          return code;
         }
       }
 
-      // Check base url
-      if (target === 'ssr') {
+      // Check base url in prod mode
+      if (target === 'ssr' && mode === 'prod') {
         if (id.endsWith('entry.ssr.tsx') || id.endsWith('entry.ssr.jsx')) {
           if (!/(?<!\/\/\s*)base:\s*extractBase/.test(code)) {
             console.log(
@@ -192,8 +185,6 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
           }
         }
       }
-
-      return code;
     },
 
     /**
@@ -232,6 +223,46 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
   };
 
   return plugin;
+}
+
+export async function loadTranslations(
+  translation: Translation,
+  langs: string[],
+  basePath: string,
+  assetsPath: string
+) {
+  // For all langs
+  await Promise.all(langs.map(async lang => {
+    const baseDir = normalize(`${basePath}/${assetsPath}/${lang}`);
+    // For all files
+    if (existsSync(baseDir)) {
+      const files = await readdir(baseDir);
+
+      if (files.length > 0) {
+        const ext = extname(files[0]);
+        let data: Translation = {};
+
+        const tasks = files.map(filename => readFile(`${baseDir}/${filename}`, 'utf8'));
+        const sources = await Promise.all(tasks);
+
+        for (const source of sources) {
+          if (source) {
+            let parsed: Translation = {};
+
+            switch (ext) {
+              case '.json':
+                parsed = parseJson(source);
+                break;
+            }
+
+            data = merge(data, parsed);
+          }
+        }
+
+        translation[lang] = { ...translation[lang], ...data }; // Shallow merge
+      }
+    }
+  }));
 }
 
 export async function writeChunks(
@@ -767,12 +798,6 @@ export function logMissingValue(lang: string, key: string) {
   const text = missingValueText(lang, key);
   if (!missingValues.includes(text)) {
     missingValues.push(text);
-    if (mode === 'dev') {
-      console.log(
-        '\x1b[33mQwik Speak Inline warn\x1b[0m %s',
-        missingValueText(lang, key)
-      );
-    }
   }
 }
 
@@ -780,12 +805,6 @@ export function logDynamic(originalFn: string, type: 'key' | 'params') {
   const text = dynamicText(originalFn, type);
   if (!dynamics.includes(text)) {
     dynamics.push(text);
-    if (mode === 'dev') {
-      console.log(
-        '\x1b[36mQwik Speak Inline info\x1b[0m %s',
-        dynamicText(originalFn, type)
-      );
-    }
   }
 }
 

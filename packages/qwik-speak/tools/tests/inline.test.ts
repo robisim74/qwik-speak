@@ -170,7 +170,6 @@ describe('inline', () => {
       '__qsInline',
       'en-US',
       {
-        env: 'build',
         supportedLangs: ['en-US', 'it-IT'],
         defaultLang: 'en-US',
         keySeparator: '.',
@@ -200,7 +199,6 @@ describe('inline', () => {
       '__qsInline',
       'en-US',
       {
-        env: 'build',
         supportedLangs: ['en-US', 'it-IT'],
         defaultLang: 'en-US',
         keySeparator: '.',
@@ -225,7 +223,6 @@ describe('inline', () => {
       '__qsInlineTranslate',
       'en-US',
       {
-        env: 'build',
         supportedLangs: ['en-US', 'it-IT'],
         defaultLang: 'en-US',
         keySeparator: '.',
