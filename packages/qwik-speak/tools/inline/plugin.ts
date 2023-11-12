@@ -477,47 +477,35 @@ export function inline(
 
       let resolvedValue: string | Translation = quoteValue('');
 
-      // Get array of keys or key
       if (args[0].type === 'ArrayExpression') {
-        const keys = getKeys(args[0], opts.keyValueSeparator);
+        const keys = getKeys(args[0]);
 
         const keyValues: (string | Translation)[] = [];
-        for (const { key, defaultValue } of keys) {
+        for (const key of keys) {
           const value = getValue(
             key,
             translation[resolvedLang],
             placeholder === inlinePlaceholder ? args[1] : args[2],
-            opts.keySeparator
+            opts.keySeparator,
+            opts.keyValueSeparator,
+            resolvedLang
           );
-          if (!value) {
-            logMissingValue(resolvedLang, key);
-            if (defaultValue) {
-              keyValues.push(quoteValue(defaultValue));
-            } else {
-              keyValues.push(quoteValue(''));
-            }
-          } else {
-            keyValues.push(value);
-          }
+          keyValues.push(value);
         }
         resolvedValue = keyValues;
       } else if (args?.[0]?.value) {
-        const { key, defaultValue } = getKey(args[0].value, opts.keyValueSeparator);
+        const key = getKey(args[0]);
 
         const value = getValue(
           key,
           translation[resolvedLang],
           placeholder === inlinePlaceholder ? args[1] : args[2],
-          opts.keySeparator
+          opts.keySeparator,
+          opts.keyValueSeparator,
+          resolvedLang
         );
-        if (!value) {
-          logMissingValue(resolvedLang, key);
-          if (defaultValue) {
-            resolvedValue = quoteValue(defaultValue);
-          }
-        } else {
-          resolvedValue = value;
-        }
+
+        resolvedValue = value;
       }
 
       // Transpile
@@ -699,21 +687,16 @@ export function withLang(lang: string, arg: Argument, opts: Required<QwikSpeakIn
   return optionalLang ?? lang;
 }
 
-export function getKey(key: string, keyValueSeparator: string) {
-  let defaultValue: string | undefined = undefined;
-  [key, defaultValue] = separateKeyValue(key, keyValueSeparator);
-  return { key, defaultValue };
+export function getKey(arg: Argument) {
+  return arg.value!;
 }
 
-export function getKeys(arg: Argument, keyValueSeparator: string) {
+export function getKeys(arg: Argument) {
   const keys = [];
   if (arg.elements) {
     for (const element of arg.elements) {
       if (element.type === 'Literal') {
-        let key: string;
-        let defaultValue: string | undefined = undefined;
-        [key, defaultValue] = separateKeyValue(element.value, keyValueSeparator);
-        keys.push({ key, defaultValue });
+        keys.push(element.value);
       }
     }
   }
@@ -728,8 +711,14 @@ export function getValue(
   key: string,
   data: Translation,
   params: Argument | undefined,
-  keySeparator: string
-): string | Translation | undefined {
+  keySeparator: string,
+  keyValueSeparator: string,
+  lang?: string
+): string | Translation {
+  let defaultValue: string | undefined = undefined;
+
+  [key, defaultValue] = separateKeyValue(key, keyValueSeparator);
+
   const value = key.split(keySeparator).reduce((acc, cur) =>
     (acc && acc[cur] !== undefined) ?
       acc[cur] :
@@ -738,9 +727,18 @@ export function getValue(
   if (value) {
     if (typeof value === 'string') return params ? transpileParams(value, params) : quoteValue(value);
     if (typeof value === 'object') return params ? transpileObjectParams(value, params) : value;
+  } else if (lang) {
+    logMissingValue(lang, key);
   }
 
-  return undefined;
+  if (defaultValue) {
+    if (!/^[[{].*[\]}]$/.test(defaultValue) || /^{{/.test(defaultValue))
+      return params ? transpileParams(defaultValue, params) : quoteValue(defaultValue);
+    // Default value is an array/object
+    return params ? transpileObjectParams(JSON.parse(defaultValue), params) : JSON.parse(defaultValue);
+  }
+
+  return mode === 'dev' ? key : quoteValue('');
 }
 
 export function transpileObjectParams(value: Translation, params?: Argument): Translation {

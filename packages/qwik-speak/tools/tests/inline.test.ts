@@ -33,18 +33,13 @@ vi.mock('fs/promises', async () => {
 });
 
 describe('inline', () => {
-  test('getKey', () => {
-    const { key, defaultValue } = getKey('key1@@Key1', '@@');
-    expect(key).toBe('key1');
-    expect(defaultValue).toBe('Key1');
-  });
   test('getValue', () => {
-    let value = getValue('key1', { key1: 'Key1' }, undefined, '.');
+    let value = getValue('key1', { key1: 'Key1' }, undefined, '.', '@@');
     expect(value).toBe('`Key1`');
-    value = getValue('key1.subkey1', { key1: { subkey1: 'Subkey1' } }, undefined, '.');
+    value = getValue('key1.subkey1', { key1: { subkey1: 'Subkey1' } }, undefined, '.', '@@');
     expect(value).toBe('`Subkey1`');
-    value = getValue('key1.subkey2', { key1: { subkey1: 'Subkey1' } }, undefined, '.');
-    expect(value).toBeUndefined();
+    value = getValue('key1.subkey2', { key1: { subkey1: 'Subkey1' } }, undefined, '.', '@@');
+    expect(value).toBe('``');
     value = getValue('key1', { key1: 'Key1 {{param1}}' }, {
       type: 'ObjectExpression', properties: [
         {
@@ -53,7 +48,7 @@ describe('inline', () => {
           value: { type: 'Literal', value: 'Param1' }
         }
       ]
-    }, '.');
+    }, '.', '@@');
     expect(value).toBe('`Key1 Param1`');
     value = getValue('key1', { key1: 'Key1 {{param1}} and {{param2}}' },
       {
@@ -69,7 +64,7 @@ describe('inline', () => {
             value: { type: 'Expression', value: 'variable' }
           }
         ]
-      }, '.');
+      }, '.', '@@');
     expect(value).toBe('`Key1 Param1 and ${variable}`');
     value = getValue('key1', { key1: 'Key1' }, {
       type: 'ObjectExpression', properties: [
@@ -79,7 +74,7 @@ describe('inline', () => {
           value: { type: 'Literal', value: 'Param1' }
         }
       ]
-    }, '.');
+    }, '.', '@@');
     expect(value).toBe('`Key1`');
     value = getValue('key1', { key1: 'Key1 {{param1}}' }, {
       type: 'ObjectExpression', properties: [
@@ -89,7 +84,7 @@ describe('inline', () => {
           value: { type: 'Literal', value: 'Param2' }
         }
       ]
-    }, '.');
+    }, '.', '@@');
     expect(value).toBe('`Key1 {{param1}}`');
     value = getValue('key1', { key1: 'Key1 {{param1}}' },
       {
@@ -100,7 +95,7 @@ describe('inline', () => {
             value: { type: 'Literal', value: 'Param1 ${variable}' }
           }
         ]
-      }, '.');
+      }, '.', '@@');
     expect(value).toBe('`Key1 Param1 ${variable}`');
   });
   test('transpileFn', () => {
