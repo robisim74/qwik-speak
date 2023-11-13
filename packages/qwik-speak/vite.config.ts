@@ -18,5 +18,6 @@ export default defineConfig(() => {
       }
     },
     plugins: [qwikVite()],
+    define: { 'import.meta.hot': 'import.meta.hot' }
   };
 });

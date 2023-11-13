@@ -4,7 +4,7 @@ import { writeFile } from 'fs/promises';
 import { normalize } from 'path';
 
 import { getRules } from '../core/intl-parser';
-import { getKey, getValue, inline, qwikSpeakInline, transform, transformInline, transpileFn, transpilePluralFn } from '../inline/plugin';
+import { getValue, inline, qwikSpeakInline, transform, transformInline, transpileFn, transpilePluralFn } from '../inline/plugin';
 import { mockChunkCode, mockCode, mockInlinedCode, mockInlinedCodeByLang, mockTransformedCode, mockTranslatedAsset, mockTranslatedAssetByLang } from './mock';
 
 // Mock part of 'fs' module

@@ -738,7 +738,7 @@ export function getValue(
     return params ? transpileObjectParams(JSON.parse(defaultValue), params) : JSON.parse(defaultValue);
   }
 
-  return mode === 'dev' ? key : quoteValue('');
+  return mode === 'dev' ? quoteValue(key) : quoteValue('');
 }
 
 export function transpileObjectParams(value: Translation, params?: Argument): Translation {
