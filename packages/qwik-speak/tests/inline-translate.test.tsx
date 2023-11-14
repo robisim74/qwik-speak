@@ -2,23 +2,19 @@ import { createDOM } from '@builder.io/qwik/testing';
 import { component$, useSignal, useTask$, $ } from '@builder.io/qwik';
 import { test, describe, expect } from 'vitest';
 
-import { inlineTranslate } from '../src/inline-translate';
-import { useSpeakContext } from '../src/use-speak';
+import { inlineTranslate as _ } from '../src/inline-translate';
 import { QwikSpeakProvider } from '../src/qwik-speak-component';
 import { config, translationFnStub } from './config';
-import type { SpeakState } from '../src/types';
 
-const MyComponent = (props: { ctx: SpeakState }) => {
-  return <div id="B">{inlineTranslate('test', props.ctx)}</div>;
+const MyComponent = () => {
+  return <div id="B">{_('test')}</div>;
 };
 
 const TestComponent = component$(() => {
-  const ctx = useSpeakContext();
-
   const s = useSignal('');
 
   const test$ = $(() => {
-    return inlineTranslate('test', ctx);
+    return _('test');
   });
 
   useTask$(async () => {
@@ -28,7 +24,7 @@ const TestComponent = component$(() => {
   return (
     <div>
       <div id="A">{s.value}</div>
-      <MyComponent ctx={ctx} />
+      <MyComponent />
     </div>
   );
 });

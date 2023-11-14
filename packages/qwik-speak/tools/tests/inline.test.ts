@@ -205,8 +205,8 @@ describe('inline', () => {
     expect(inlined).toBe('import { useTranslate } from "qwik-speak";const t = useTranslate();const value = `Traduci le tue app Qwik in qualsiasi lingua`');
   });
   test('transform & inlineTranslate', async () => {
-    const code = `import { inlineTranslate as t } from "qwik-speak";const value = t('app.subtitle', ctx)`;
-    const transformed = transformInline(code);
+    const code = `import { inlineTranslate as _ } from "qwik-speak";const value = _('app.subtitle')`;
+    const transformed = transformInline(code, '');
     const inlined = inline(transformed,
       {
         'en-US': {
@@ -226,7 +226,7 @@ describe('inline', () => {
         assetsPath: 'i18n',
         outDir: 'dist'
       });
-    expect(inlined).toBe('import { inlineTranslate as t } from "qwik-speak";const value = `Translate your Qwik apps into any language`');
+    expect(inlined).toBe('import { inlineTranslate as _ } from "qwik-speak";const value = `Translate your Qwik apps into any language`');
   });
   test('writeChunks', async () => {
     const plugin = qwikSpeakInline({

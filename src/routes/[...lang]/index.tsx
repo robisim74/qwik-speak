@@ -2,16 +2,14 @@ import { component$, useSignal } from '@builder.io/qwik';
 import type { DocumentHead } from '@builder.io/qwik-city';
 import {
   Speak,
-  inlineTranslate,
+  inlineTranslate as _,
   useFormatDate,
   useFormatNumber,
   usePlural,
   useRelativeTime,
-  useSpeakContext,
   useSpeakLocale,
   useTranslate
 } from 'qwik-speak';
-import type { SpeakState } from 'qwik-speak';
 
 interface TitleProps {
   name: string;
@@ -21,8 +19,8 @@ export const Title = component$<TitleProps>(props => {
   return (<h1>{props.name}</h1>)
 });
 
-export const SubTitle = (props: { ctx: SpeakState }) => {
-  return <h2>{inlineTranslate('app.subtitle', props.ctx)}</h2>;
+export const SubTitle = () => {
+  return <h2>{_('app.subtitle')}</h2>;
 };
 
 export const Home = component$(() => {
@@ -32,26 +30,22 @@ export const Home = component$(() => {
   const rt = useRelativeTime();
   const fn = useFormatNumber();
 
-  const ctx = useSpeakContext();
   const locale = useSpeakLocale();
   const units = locale.units!;
 
   const count = useSignal(0);
 
-  // Translate inside components rather than on props
-  const [title, text] = t(['app.title', 'home.text']);
-
   return (
     <div class="content">
-      <Title name={title} />
+      <Title name={_('app.title')} />
 
-      <SubTitle ctx={ctx} />
+      <SubTitle />
 
       <h3>{t('home.params')}</h3>
       <p>{t('home.greeting', { name: 'Qwik Speak' })}</p>
 
       <h3>{t('home.tags')}</h3>
-      <p dangerouslySetInnerHTML={text}></p>
+      <p dangerouslySetInnerHTML={_('home.text')}></p>
 
       <h3>{t('home.plural')}</h3>
       <p class="counter">{p(count.value, 'home.devs')}</p>

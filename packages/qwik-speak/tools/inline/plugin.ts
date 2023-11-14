@@ -145,7 +145,7 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
           }
           // Filter code: inlineTranslate
           if (/inlineTranslate/.test(code)) {
-            code = transformInline(code);
+            code = transformInline(code, id);
           }
 
           // Inline in dev mode
@@ -173,7 +173,7 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
             transform(code, id);
           }
           if (/inlineTranslate/.test(code)) {
-            transformInline(code);
+            transformInline(code, id);
           }
         }
       }
@@ -346,7 +346,7 @@ export function transform(code: string, id: string): string {
     }
 
     // Props
-    code = validateProps(id, code, alias);
+    validateProps(id, code, alias);
   }
 
   return code;
@@ -355,7 +355,7 @@ export function transform(code: string, id: string): string {
 /**
  * Transform inlineTranslate to placeholder
  */
-export function transformInline(code: string): string {
+export function transformInline(code: string, id: string): string {
   const alias = getInlineTranslateAlias(code);
 
   // Parse sequence
@@ -370,7 +370,8 @@ export function transformInline(code: string): string {
     const args = expr.arguments;
 
     if (args?.length > 0) {
-      if (checkDynamicInline(args, originalFn)) continue;
+      // Dynamic
+      validateInline(args, originalFn, id);
 
       // Transpile with placeholder
       const transpiled = originalFn.replace(new RegExp(`${alias}\\(`), `${inlineTranslatePlaceholder}(`);
@@ -411,7 +412,7 @@ export function transformPlural(code: string, id: string): string {
     }
 
     // Props
-    code = validateProps(id, code, alias);
+    validateProps(id, code, alias);
   }
 
   return code;
@@ -420,7 +421,7 @@ export function transformPlural(code: string, id: string): string {
 export function validateProps(id: string, code: string, alias: string) {
   const sequence = parseSequenceExpressions(code, signalAlias);
 
-  if (sequence.length === 0) return code;
+  if (sequence.length === 0) return;
 
   for (const expr of sequence) {
     // Arguments
@@ -453,7 +454,7 @@ export function validateProps(id: string, code: string, alias: string) {
                   if (mode === 'dev') {
                     console.log(
                       '\n\x1b[31mQwik Speak Inline error\x1b[0m\n%s',
-                      `${transformedFn} is used as a prop or attribute in the following file:\n${id}\nSee https://robisim74.gitbook.io/qwik-speak/library/translate#component-props-and-jsx-attributes`
+                      `${transformedFn} is used as a prop or attribute\nFile: ${id}\nSee https://robisim74.gitbook.io/qwik-speak/library/translate#component-props-and-jsx-attributes`
                     );
                   } else {
                     console.log(
@@ -470,8 +471,44 @@ export function validateProps(id: string, code: string, alias: string) {
       }
     }
   }
+}
 
-  return code;
+export function validateInline(args: Argument[], originalFn: string, id: string) {
+  let dynamic = false;
+
+  if (args?.[0]?.value) {
+    // Dynamic key
+    if (args[0].type === 'Identifier') {
+      dynamic = true;
+    }
+    if (args[0].type === 'Literal') {
+      if (/\${.*}/.test(args[0].value)) {
+        dynamic = true;
+      }
+    }
+
+    // Dynamic argument (params, lang)
+    if (args[1]?.type === 'Identifier' || args[1]?.type === 'CallExpression' ||
+      args[2]?.type === 'Identifier' || args[2]?.type === 'CallExpression') {
+      dynamic = true;
+    }
+  }
+
+  if (dynamic) {
+    originalFn = trimFn(originalFn);
+    if (mode === 'dev') {
+      console.log(
+        '\n\x1b[31mQwik Speak Inline error\x1b[0m\n%s',
+        `InlineTranslate ${originalFn} contains a dynamic key or param\nFile: ${id}\nSee https://robisim74.gitbook.io/qwik-speak/library/translate#inlinetranslate`
+      );
+    } else {
+      console.log(
+        '\n\x1b[31mQwik Speak Inline error\x1b[0m\n%s',
+        `${originalFn} contains a dynamic key or param\nSee https://robisim74.gitbook.io/qwik-speak/library/translate#inlinetranslate`
+      );
+    }
+    process.exit(1);
+  }
 }
 
 export function inlineAll(
@@ -511,7 +548,7 @@ export function inline(
     const args = expr.arguments;
 
     if (args?.length > 0) {
-      const resolvedLang = withLang(lang, placeholder === inlinePlaceholder ? args[2] : args[3], opts);
+      const resolvedLang = withLang(lang, args[2], opts);
 
       let resolvedValue: string | Translation = quoteValue('');
 
@@ -523,7 +560,7 @@ export function inline(
           const value = getValue(
             key,
             translation[resolvedLang],
-            placeholder === inlinePlaceholder ? args[1] : args[2],
+            args[1],
             opts.keySeparator,
             opts.keyValueSeparator,
             resolvedLang
@@ -537,7 +574,7 @@ export function inline(
         const value = getValue(
           key,
           translation[resolvedLang],
-          placeholder === inlinePlaceholder ? args[1] : args[2],
+          args[1],
           opts.keySeparator,
           opts.keyValueSeparator,
           resolvedLang
@@ -669,30 +706,6 @@ export function checkDynamic(args: Argument[], originalFn: string): boolean {
     // Dynamic argument (params, lang)
     if (args[1]?.type === 'Identifier' || args[1]?.type === 'CallExpression' ||
       args[2]?.type === 'Identifier' || args[2]?.type === 'CallExpression') {
-      logDynamic(originalFn, 'params');
-      return true;
-    }
-  }
-  return false;
-}
-
-export function checkDynamicInline(args: Argument[], originalFn: string): boolean {
-  if (args?.[0]?.value) {
-    // Dynamic key
-    if (args[0].type === 'Identifier') {
-      logDynamic(originalFn, 'key');
-      return true;
-    }
-    if (args[0].type === 'Literal') {
-      if (/\${.*}/.test(args[0].value)) {
-        logDynamic(originalFn, 'key');
-        return true;
-      }
-    }
-
-    // Dynamic argument (params, lang)
-    if (args[2]?.type === 'Identifier' || args[2]?.type === 'CallExpression' ||
-      args[3]?.type === 'Identifier' || args[3]?.type === 'CallExpression') {
       logDynamic(originalFn, 'params');
       return true;
     }

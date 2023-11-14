@@ -3,16 +3,15 @@ export const mockSource = `import { component$, useSignal } from '@builder.io/qw
 import type { DocumentHead } from '@builder.io/qwik-city';
 import {
   Speak,
-  inlineTranslate,
+  inlineTranslate as _,
   useFormatDate,
   useFormatNumber,
   usePlural,
   useRelativeTime,
-  useSpeakContext,
   useSpeakLocale,
   useTranslate
 } from 'qwik-speak';
-import type { SpeakState, Translation } from 'qwik-speak';
+import type { Translation } from 'qwik-speak';
 
 interface TitleProps {
   name: string;
@@ -22,8 +21,8 @@ export const Title = component$((props: TitleProps) => {
   return (<h1>{props.name}</h1>)
 });
 
-export const SubTitle = (props: { ctx: SpeakState }) => {
-  return <h2>{inlineTranslate('app.subtitle', props.ctx)}</h2>;
+export const SubTitle = () => {
+  return <h2>{_('app.subtitle')}</h2>;
 };
 
 export const Home = component$(() => {
@@ -33,7 +32,6 @@ export const Home = component$(() => {
   const rt = useRelativeTime();
   const fn = useFormatNumber();
 
-  const ctx = useSpeakContext();
   const locale = useSpeakLocale();
   const units = locale.units!;
 
@@ -50,19 +48,17 @@ export const Home = component$(() => {
   Object.values(tObject).map((x) => console.log(x));
   tArrayObjects.map((x) => console.log(x['num']));
 
-  const [title, text] = t(['app.title', 'home.text']);
-
   return (
     <div class="content">
-      <Title name={title} />
+      <Title name={_('app.title')} />
 
-      <SubTitle ctx={ctx} />
+      <SubTitle />
 
       <h3>{t('home.params')}</h3>
       <p>{t('home.greeting', { name: 'Qwik Speak' })}</p>
 
       <h3>{t('home.tags')}</h3>
-      <p dangerouslySetInnerHTML={text}></p>
+      <p dangerouslySetInnerHTML={_('home.text')}></p>
 
       <h3>{t('home.plural')}</h3>
       <p class="counter">{p(count.value, 'home.devs')}</p>
@@ -98,6 +94,7 @@ export const head: DocumentHead = {
 
 export const mockCode = `import { SubTitle } from "./routes/[...lang]/index.tsx";
 import { Title } from "./routes/[...lang]/index.tsx";
+import { inlineTranslate as _ } from "qwik-speak";
 import { _IMMUTABLE } from "@builder.io/qwik";
 import { _fnSignal } from "@builder.io/qwik";
 import { _jsxC } from "@builder.io/qwik";
@@ -108,7 +105,6 @@ import { useFormatNumber } from "qwik-speak";
 import { usePlural } from "qwik-speak";
 import { useRelativeTime } from "qwik-speak";
 import { useSignal } from "@builder.io/qwik";
-import { useSpeakContext } from "qwik-speak";
 import { useSpeakLocale } from "qwik-speak";
 import { useTranslate } from "qwik-speak";
 export const s_dYGb4b0cyCA = ()=>{
@@ -117,7 +113,6 @@ export const s_dYGb4b0cyCA = ()=>{
     const fd = useFormatDate();
     const rt = useRelativeTime();
     const fn = useFormatNumber();
-    const ctx = useSpeakContext();
     const locale = useSpeakLocale();
     const count = useSignal(0);
     const tParam = t('home.greeting', {
@@ -132,30 +127,26 @@ export const s_dYGb4b0cyCA = ()=>{
     console.log(item);
     Object.values(tObject).map((x)=>console.log(x));
     tArrayObjects.map((x)=>console.log(x['num']));
-    const [title, text] = t([
-      'app.title',
-      'home.text'
-    ]);
     return /*#__PURE__*/ _jsxQ("div", null, {
         class: "content"
     }, [
         /*#__PURE__*/ _jsxC(Title, {
-          name: title
-        }, 3, "1L_2"),
-        /*#__PURE__*/ _jsxC(SubTitle, {
-            ctx: ctx,
+            get name () {
+                return _('app.title');
+            },
             [_IMMUTABLE]: {
-                ctx: _IMMUTABLE
+                name: _IMMUTABLE
             }
-        }, 3, "1L_3"),
+        }, 3, "1L_2"),
+        /*#__PURE__*/ _jsxC(SubTitle, null, 3, "1L_3"),
         /*#__PURE__*/ _jsxQ("h3", null, null, t('home.params'), 1, null),
         /*#__PURE__*/ _jsxQ("p", null, null, t('home.greeting', {
             name: 'Qwik Speak'
         }), 1, null),
         /*#__PURE__*/ _jsxQ("h3", null, null, t('home.tags'), 1, null),
-        /*#__PURE__*/ _jsxQ("p", {
-            dangerouslySetInnerHTML: text
-        }, null, null, 3, null),
+        /*#__PURE__*/ _jsxQ("p", null, {
+            dangerouslySetInnerHTML: _('home.text')
+        }, null, 3, null),
         /*#__PURE__*/ _jsxQ("h3", null, null, t('home.plural'), 1, null),
         /*#__PURE__*/ _jsxQ("p", null, {
             class: "counter"
@@ -186,6 +177,7 @@ export const s_dYGb4b0cyCA = ()=>{
 
 export const mockTransformedCode = `import { SubTitle } from "./routes/[...lang]/index.tsx";
 import { Title } from "./routes/[...lang]/index.tsx";
+import { inlineTranslate as _ } from "qwik-speak";
 import { _IMMUTABLE } from "@builder.io/qwik";
 import { _fnSignal } from "@builder.io/qwik";
 import { _jsxC } from "@builder.io/qwik";
@@ -196,7 +188,6 @@ import { useFormatNumber } from "qwik-speak";
 import { usePlural } from "qwik-speak";
 import { useRelativeTime } from "qwik-speak";
 import { useSignal } from "@builder.io/qwik";
-import { useSpeakContext } from "qwik-speak";
 import { useSpeakLocale } from "qwik-speak";
 import { useTranslate } from "qwik-speak";
 export const s_dYGb4b0cyCA = ()=>{
@@ -205,7 +196,6 @@ export const s_dYGb4b0cyCA = ()=>{
     const fd = useFormatDate();
     const rt = useRelativeTime();
     const fn = useFormatNumber();
-    const ctx = useSpeakContext();
     const locale = useSpeakLocale();
     const count = useSignal(0);
     const tParam = __qsInline('home.greeting', {
@@ -220,30 +210,26 @@ export const s_dYGb4b0cyCA = ()=>{
     console.log(item);
     Object.values(tObject).map((x)=>console.log(x));
     tArrayObjects.map((x)=>console.log(x['num']));
-    const [title, text] = __qsInline([
-      'app.title',
-      'home.text'
-    ]);
     return /*#__PURE__*/ _jsxQ("div", null, {
         class: "content"
     }, [
         /*#__PURE__*/ _jsxC(Title, {
-          name: title
-        }, 3, "1L_2"),
-        /*#__PURE__*/ _jsxC(SubTitle, {
-            ctx: ctx,
+            get name () {
+                return __qsInlineTranslate('app.title');
+            },
             [_IMMUTABLE]: {
-                ctx: _IMMUTABLE
+                name: _IMMUTABLE
             }
-        }, 3, "1L_3"),
+        }, 3, "1L_2"),
+        /*#__PURE__*/ _jsxC(SubTitle, null, 3, "1L_3"),
         /*#__PURE__*/ _jsxQ("h3", null, null, __qsInline('home.params'), 1, null),
         /*#__PURE__*/ _jsxQ("p", null, null, __qsInline('home.greeting', {
             name: 'Qwik Speak'
         }), 1, null),
         /*#__PURE__*/ _jsxQ("h3", null, null, __qsInline('home.tags'), 1, null),
-        /*#__PURE__*/ _jsxQ("p", {
-            dangerouslySetInnerHTML: text
-        }, null, null, 3, null),
+        /*#__PURE__*/ _jsxQ("p", null, {
+            dangerouslySetInnerHTML: __qsInlineTranslate('home.text')
+        }, null, 3, null),
         /*#__PURE__*/ _jsxQ("h3", null, null, __qsInline('home.plural'), 1, null),
         /*#__PURE__*/ _jsxQ("p", null, {
             class: "counter"
@@ -278,7 +264,6 @@ export const mockChunkCode = `const s_dYGb4b0cyCA = () => {
   const fd = useFormatDate();
   const rt = useRelativeTime();
   const fn = useFormatNumber();
-  const ctx = useSpeakContext();
   const locale = useSpeakLocale();
   const count = Wc(0);
   const tParam = __qsInline("home.greeting", {
@@ -293,30 +278,26 @@ export const mockChunkCode = `const s_dYGb4b0cyCA = () => {
   console.log(item);
   Object.values(tObject).map((x) => console.log(x));
   tArrayObjects.map((x) => console.log(x["num"]));
-  const [title, text] = __qsInline([
-    'app.title',
-    'home.text'
-  ]);
   return /* @__PURE__ */ Sr("div", null, {
     class: "content"
   }, [
     /* @__PURE__ */ jr(Title, {
-      name: title
-    }, 3, "1L_2"),
-    /* @__PURE__ */ jr(SubTitle, {
-      ctx,
+      get name() {
+        return __qsInlineTranslate("app.title");
+      },
       [Y]: {
-        ctx: Y
+        name: Y
       }
-    }, 3, "1L_3"),
+    }, 3, "1L_2"),
+    /* @__PURE__ */ jr(SubTitle, null, 3, "1L_3"),
     /* @__PURE__ */ Sr("h3", null, null, __qsInline("home.params"), 1, null),
     /* @__PURE__ */ Sr("p", null, null, __qsInline("home.greeting", {
       name: "Qwik Speak"
     }), 1, null),
     /* @__PURE__ */ Sr("h3", null, null, __qsInline("home.tags"), 1, null),
-    /* @__PURE__ */ Sr("p", {
-      dangerouslySetInnerHTML: text
-    }, null, null, 3, null),
+    /* @__PURE__ */ Sr("p", null, {
+      dangerouslySetInnerHTML: __qsInlineTranslate("home.text")
+    }, null, 3, null),
     /* @__PURE__ */ Sr("h3", null, null, __qsInline("home.plural"), 1, null),
     /* @__PURE__ */ Sr("p", null, {
       class: "counter"
@@ -351,7 +332,6 @@ export const mockInlinedCode = `const s_dYGb4b0cyCA = () => {
   const fd = useFormatDate();
   const rt = useRelativeTime();
   const fn = useFormatNumber();
-  const ctx = useSpeakContext();
   const locale = useSpeakLocale();
   const count = Wc(0);
   const tParam = \`Hi! I am \${\`\`}\`;
@@ -364,25 +344,24 @@ export const mockInlinedCode = `const s_dYGb4b0cyCA = () => {
   console.log(item);
   Object.values(tObject).map((x) => console.log(x));
   tArrayObjects.map((x) => console.log(x["num"]));
-  const [title, text] = [\`\`,\`<em>Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps</em>\`];
   return /* @__PURE__ */ Sr("div", null, {
     class: "content"
   }, [
     /* @__PURE__ */ jr(Title, {
-      name: title
-    }, 3, "1L_2"),
-    /* @__PURE__ */ jr(SubTitle, {
-      ctx,
+      get name() {
+        return \`\`;
+      },
       [Y]: {
-        ctx: Y
+        name: Y
       }
-    }, 3, "1L_3"),
+    }, 3, "1L_2"),
+    /* @__PURE__ */ jr(SubTitle, null, 3, "1L_3"),
     /* @__PURE__ */ Sr("h3", null, null, \`Parameters\`, 1, null),
     /* @__PURE__ */ Sr("p", null, null, \`Hi! I am Qwik Speak\`, 1, null),
     /* @__PURE__ */ Sr("h3", null, null, \`Html tags\`, 1, null),
-    /* @__PURE__ */ Sr("p", {
-      dangerouslySetInnerHTML: text
-    }, null, null, 3, null),
+    /* @__PURE__ */ Sr("p", null, {
+      dangerouslySetInnerHTML: \`<em>Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps</em>\`
+    }, null, 3, null),
     /* @__PURE__ */ Sr("h3", null, null, \`Plural\`, 1, null),
     /* @__PURE__ */ Sr("p", null, {
       class: "counter"
@@ -417,7 +396,6 @@ export const mockInlinedCodeByLang = `const s_dYGb4b0cyCA = () => {
   const fd = useFormatDate();
   const rt = useRelativeTime();
   const fn = useFormatNumber();
-  const ctx = useSpeakContext();
   const locale = useSpeakLocale();
   const count = Wc(0);
   const tParam = \`Ciao! Sono \${\`\`}\`;
@@ -430,25 +408,24 @@ export const mockInlinedCodeByLang = `const s_dYGb4b0cyCA = () => {
   console.log(item);
   Object.values(tObject).map((x) => console.log(x));
   tArrayObjects.map((x) => console.log(x["num"]));
-  const [title, text] = [\`\`,\`<em>Libreria di internazionalizzazione (i18n) per tradurre testi, date e numeri nelle app Qwik</em>\`];
   return /* @__PURE__ */ Sr("div", null, {
     class: "content"
   }, [
     /* @__PURE__ */ jr(Title, {
-      name: title
-    }, 3, "1L_2"),
-    /* @__PURE__ */ jr(SubTitle, {
-      ctx,
+      get name() {
+        return \`\`;
+      },
       [Y]: {
-        ctx: Y
+        name: Y
       }
-    }, 3, "1L_3"),
+    }, 3, "1L_2"),
+    /* @__PURE__ */ jr(SubTitle, null, 3, "1L_3"),
     /* @__PURE__ */ Sr("h3", null, null, \`Parametri\`, 1, null),
     /* @__PURE__ */ Sr("p", null, null, \`Ciao! Sono Qwik Speak\`, 1, null),
     /* @__PURE__ */ Sr("h3", null, null, \`Tag Html\`, 1, null),
-    /* @__PURE__ */ Sr("p", {
-      dangerouslySetInnerHTML: text
-    }, null, null, 3, null),
+    /* @__PURE__ */ Sr("p", null, {
+      dangerouslySetInnerHTML: \`<em>Libreria di internazionalizzazione (i18n) per tradurre testi, date e numeri nelle app Qwik</em>\`
+    }, null, 3, null),
     /* @__PURE__ */ Sr("h3", null, null, \`Plurale\`, 1, null),
     /* @__PURE__ */ Sr("p", null, {
       class: "counter"
