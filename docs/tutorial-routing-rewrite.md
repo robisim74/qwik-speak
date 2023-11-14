@@ -177,7 +177,7 @@ export const Home = component$(() => {
   const fd = useFormatDate();
   const fn = useFormatNumber();
 
-  // Prefer translating inside components rather than on props
+  // Translate inside components rather than on props
   const title = t('app.title@@{{name}} demo', { name: 'Qwik Speak' });
 
   return (

@@ -1,4 +1,3 @@
-import { noSerialize } from '@builder.io/qwik';
 import { useSpeakLocale } from './use-speak';
 
 export type FormatDateFn = {
@@ -33,5 +32,5 @@ export const useFormatDate = (): FormatDateFn => {
     return new Intl.DateTimeFormat(lang, options).format(value);
   };
 
-  return noSerialize(formateDate) as FormatDateFn;
+  return formateDate as FormatDateFn;
 };

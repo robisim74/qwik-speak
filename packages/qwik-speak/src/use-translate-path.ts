@@ -1,4 +1,3 @@
-import { noSerialize } from '@builder.io/qwik';
 import { isDev } from '@builder.io/qwik/build';
 import { useSpeakContext } from './use-speak';
 import { logWarn } from './log';
@@ -111,5 +110,5 @@ export const useTranslatePath = (): TranslatePathFn => {
     return translateOne(pathname, lang);
   };
 
-  return noSerialize(translate) as TranslatePathFn;
+  return translate as TranslatePathFn;
 };

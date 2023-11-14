@@ -20,16 +20,13 @@ const signalAlias = '\\b_fnSignal';
 // Logs
 const missingValues: string[] = [];
 const dynamics: string[] = [];
-const missingValueText = (lang: string, key: string) => `${lang} - missing value for key: ${key}`;
-const dynamicText = (originalFn: string, text: string) => `dynamic ${text}: ${originalFn.replace(/\s+/g, ' ')} - Make sure the keys are in 'runtimeAssets'`;
+const missingValueText = (lang: string, key: string) => `${lang} - ${key}`;
+const dynamicText = (originalFn: string, text: string) => `dynamic ${text}: ${originalFn}`;
 
 // Config
 let target: 'ssr' | 'lib' | 'test' | 'client';
 let mode: 'dev' | 'prod';
 let input: string | undefined;
-
-// Inlined modules
-const moduleIds = new Set<string>();
 
 /**
  * Qwik Speak Inline Vite plugin
@@ -50,6 +47,9 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
 
   // Current lang
   let devLang: string;
+
+  // Inlined modules
+  const moduleIds = new Set<string>();
 
   const plugin: Plugin = {
     name: 'vite-plugin-qwik-speak-inline',
@@ -137,11 +137,11 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
         if (/\/src\//.test(id) && /\.(js|cjs|mjs|jsx|ts|tsx)$/.test(id)) {
           // Filter code: usePlural
           if (/usePlural/.test(code)) {
-            code = transformPlural(code);
+            code = transformPlural(code, id);
           }
           // Filter code: useTranslate
           if (/useTranslate/.test(code)) {
-            code = transform(code);
+            code = transform(code, id);
           }
           // Filter code: inlineTranslate
           if (/inlineTranslate/.test(code)) {
@@ -163,6 +163,21 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
         }
       }
 
+      // Validate server code
+      if (target === 'ssr' && mode === 'dev') {
+        if (/\/src\//.test(id) && /\.(js|cjs|mjs|jsx|ts|tsx)$/.test(id)) {
+          if (/usePlural/.test(code)) {
+            transformPlural(code, id);
+          }
+          if (/useTranslate/.test(code)) {
+            transform(code, id);
+          }
+          if (/inlineTranslate/.test(code)) {
+            transformInline(code);
+          }
+        }
+      }
+
       // Add useInline in dev mode
       if (target === 'ssr' && mode === 'dev') {
         if (id.endsWith('router-head.tsx') || id.endsWith('router-head.jsx')) {
@@ -181,7 +196,7 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
               '\n\x1b[31mQwik Speak Inline error\x1b[0m\n%s',
               "Missing 'base' option in 'entry.ssr.tsx' file: see https://robisim74.gitbook.io/qwik-speak/tools/inline#usage"
             );
-            process.exit(1)
+            process.exit(1);
           }
         }
       }
@@ -207,10 +222,13 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
 
         log.write(`${target}: ` + (input ?? '-') + '\n');
 
+        log.write('\nMissing value for keys:\n');
         missingValues.forEach(x => log.write(x + '\n'));
+
+        log.write("\nMake sure the keys are in 'runtimeAssets':\n");
         dynamics.forEach(x => log.write(x + '\n'));
 
-        log.write((`Qwik Speak Inline: build ends at ${new Date().toLocaleString()}\n`));
+        log.write((`\nQwik Speak Inline: build ends at ${new Date().toLocaleString()}\n`));
 
         if (missingValues.length > 0 || dynamics.length > 0) {
           console.log(
@@ -302,7 +320,7 @@ export async function writeChunks(
 /**
  * Transform useTranslate to placeholder
  */
-export function transform(code: string): string {
+export function transform(code: string, id: string): string {
   const alias = getUseTranslateAlias(code);
 
   if (alias) {
@@ -326,49 +344,9 @@ export function transform(code: string): string {
         code = code.replace(originalFn, transpiled);
       }
     }
-  }
 
-  // Props
-  const sequence = parseSequenceExpressions(code, signalAlias);
-
-  if (sequence.length === 0) return code;
-
-  for (const expr of sequence) {
-    // Arguments
-    const args = expr.arguments;
-
-    // Check identifier
-    if (args?.length > 2) {
-      if (args[args.length - 1].type === 'ArrayExpression') {
-        const elements = args[args.length - 1].elements;
-        if (elements && elements.find(element => new RegExp(`^${alias}$`).test(element.value))) {
-          const index = elements.findIndex(element => new RegExp(`^${alias}$`).test(element.value));
-          if (args[index].type === 'Identifier' && args[args.length - 2].type === 'CallExpression') {
-            // Transformed function
-            const transformedFn = args[args.length - 2].value;
-            if (transformedFn && args[index].value) {
-              const transformedAlias = `\\b${args[index].value}`;
-              const tokens = tokenize(transformedFn);
-              const transformedExpr = parse(tokens, transformedFn, transformedAlias);
-
-              if (transformedExpr) {
-                // Arguments
-                const transformedArgs = transformedExpr.arguments;
-
-                if (transformedArgs?.length > 0) {
-                  if (checkDynamic(transformedArgs, transformedFn)) continue;
-
-                  // Transpile with placeholder
-                  const transpiled = transformedFn.replace(new RegExp(`${transformedAlias}\\(`), `${inlinePlaceholder}(`);
-                  // Replace
-                  code = code.replace(transformedFn, transpiled);
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+    // Props
+    code = validateProps(id, code, alias);
   }
 
   return code;
@@ -407,7 +385,7 @@ export function transformInline(code: string): string {
 /**
  * Transform usePlural to placeholder
  */
-export function transformPlural(code: string): string {
+export function transformPlural(code: string, id: string): string {
   const alias = getUsePluralAlias(code);
 
   if (alias) {
@@ -429,6 +407,66 @@ export function transformPlural(code: string): string {
         const transpiled = originalFn.replace(new RegExp(`${alias}\\(`), `${inlinePluralPlaceholder}(`);
         // Replace
         code = code.replace(originalFn, transpiled);
+      }
+    }
+
+    // Props
+    code = validateProps(id, code, alias);
+  }
+
+  return code;
+}
+
+export function validateProps(id: string, code: string, alias: string) {
+  const sequence = parseSequenceExpressions(code, signalAlias);
+
+  if (sequence.length === 0) return code;
+
+  for (const expr of sequence) {
+    // Arguments
+    const args = expr.arguments;
+
+    // Check identifier
+    if (args?.length > 2) {
+      const arrayIndex = args.findIndex(arg => arg.type === 'ArrayExpression');
+      const callIndex = args.findIndex(arg => arg.type === 'CallExpression')
+      if (arrayIndex !== -1 && callIndex !== -1) {
+        const elements = args[arrayIndex].elements;
+        if (elements) {
+          const index = elements.findIndex(element => new RegExp(`^${alias}$`).test(element.value));
+          if (index !== -1 && args[index].type === 'Identifier') {
+            // Transformed function
+            let transformedFn = args[callIndex].value;
+            if (transformedFn && args[index].value) {
+              const transformedAlias = `\\b${args[index].value}`;
+              const tokens = tokenize(transformedFn);
+              const transformedExpr = parse(tokens, transformedFn, transformedAlias);
+
+              if (transformedExpr) {
+                // Arguments
+                const transformedArgs = transformedExpr.arguments;
+
+                if (transformedArgs?.length > 0) {
+                  // Invalid props or attributes
+                  transformedFn = trimFn(transformedFn);
+                  transformedFn = transformedFn.replace(new RegExp(`^${args[index].value}`), elements[index].value);
+                  if (mode === 'dev') {
+                    console.log(
+                      '\n\x1b[31mQwik Speak Inline error\x1b[0m\n%s',
+                      `${transformedFn} is used as a prop or attribute in the following file:\n${id}\nSee https://robisim74.gitbook.io/qwik-speak/library/translate#component-props-and-jsx-attributes`
+                    );
+                  } else {
+                    console.log(
+                      '\n\x1b[31mQwik Speak Inline error\x1b[0m\n%s',
+                      `${transformedFn} is used as a prop or attribute\nSee https://robisim74.gitbook.io/qwik-speak/library/translate#component-props-and-jsx-attributes`
+                    );
+                  }
+                  process.exit(1);
+                }
+              }
+            }
+          }
+        }
       }
     }
   }
@@ -800,10 +838,14 @@ export function logMissingValue(lang: string, key: string) {
 }
 
 export function logDynamic(originalFn: string, type: 'key' | 'params') {
-  const text = dynamicText(originalFn, type);
+  const text = dynamicText(trimFn(originalFn), type);
   if (!dynamics.includes(text)) {
     dynamics.push(text);
   }
+}
+
+export function trimFn(fn: string): string {
+  return fn.replace(/\s+/g, ' ').trim();
 }
 
 /**
@@ -813,5 +855,3 @@ function replacer(key: string, value: string | Translation): string | Translatio
   if (typeof value === 'string' && /^`.*`$/.test(value)) return value.replace(/^`/, '__qsOpenBt').replace(/`$/, '__qsCloseBt');
   return value;
 }
-
-

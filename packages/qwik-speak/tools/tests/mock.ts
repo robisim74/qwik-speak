@@ -50,9 +50,11 @@ export const Home = component$(() => {
   Object.values(tObject).map((x) => console.log(x));
   tArrayObjects.map((x) => console.log(x['num']));
 
+  const [title, text] = t(['app.title', 'home.text']);
+
   return (
     <div class="content">
-      <Title name={t('app.title')} />
+      <Title name={title} />
 
       <SubTitle ctx={ctx} />
 
@@ -60,7 +62,7 @@ export const Home = component$(() => {
       <p>{t('home.greeting', { name: 'Qwik Speak' })}</p>
 
       <h3>{t('home.tags')}</h3>
-      <p dangerouslySetInnerHTML={t('home.text')}></p>
+      <p dangerouslySetInnerHTML={text}></p>
 
       <h3>{t('home.plural')}</h3>
       <p class="counter">{p(count.value, 'home.devs')}</p>
@@ -130,18 +132,15 @@ export const s_dYGb4b0cyCA = ()=>{
     console.log(item);
     Object.values(tObject).map((x)=>console.log(x));
     tArrayObjects.map((x)=>console.log(x['num']));
+    const [title, text] = t([
+      'app.title',
+      'home.text'
+    ]);
     return /*#__PURE__*/ _jsxQ("div", null, {
         class: "content"
     }, [
         /*#__PURE__*/ _jsxC(Title, {
-            get name () {
-                return t('app.title');
-            },
-            [_IMMUTABLE]: {
-                name: _fnSignal((p0)=>p0('app.title'), [
-                    t
-                ])
-            }
+          name: title
         }, 3, "1L_2"),
         /*#__PURE__*/ _jsxC(SubTitle, {
             ctx: ctx,
@@ -154,11 +153,9 @@ export const s_dYGb4b0cyCA = ()=>{
             name: 'Qwik Speak'
         }), 1, null),
         /*#__PURE__*/ _jsxQ("h3", null, null, t('home.tags'), 1, null),
-        /*#__PURE__*/ _jsxQ("p", null, {
-            dangerouslySetInnerHTML: _fnSignal((p0)=>p0('home.text'), [
-                t
-            ])
-        }, null, 3, null),
+        /*#__PURE__*/ _jsxQ("p", {
+            dangerouslySetInnerHTML: text
+        }, null, null, 3, null),
         /*#__PURE__*/ _jsxQ("h3", null, null, t('home.plural'), 1, null),
         /*#__PURE__*/ _jsxQ("p", null, {
             class: "counter"
@@ -223,18 +220,15 @@ export const s_dYGb4b0cyCA = ()=>{
     console.log(item);
     Object.values(tObject).map((x)=>console.log(x));
     tArrayObjects.map((x)=>console.log(x['num']));
+    const [title, text] = __qsInline([
+      'app.title',
+      'home.text'
+    ]);
     return /*#__PURE__*/ _jsxQ("div", null, {
         class: "content"
     }, [
         /*#__PURE__*/ _jsxC(Title, {
-            get name () {
-                return __qsInline('app.title');
-            },
-            [_IMMUTABLE]: {
-                name: _fnSignal((p0)=>__qsInline('app.title'), [
-                    t
-                ])
-            }
+          name: title
         }, 3, "1L_2"),
         /*#__PURE__*/ _jsxC(SubTitle, {
             ctx: ctx,
@@ -247,11 +241,9 @@ export const s_dYGb4b0cyCA = ()=>{
             name: 'Qwik Speak'
         }), 1, null),
         /*#__PURE__*/ _jsxQ("h3", null, null, __qsInline('home.tags'), 1, null),
-        /*#__PURE__*/ _jsxQ("p", null, {
-            dangerouslySetInnerHTML: _fnSignal((p0)=>__qsInline('home.text'), [
-                t
-            ])
-        }, null, 3, null),
+        /*#__PURE__*/ _jsxQ("p", {
+            dangerouslySetInnerHTML: text
+        }, null, null, 3, null),
         /*#__PURE__*/ _jsxQ("h3", null, null, __qsInline('home.plural'), 1, null),
         /*#__PURE__*/ _jsxQ("p", null, {
             class: "counter"
@@ -281,14 +273,14 @@ export const s_dYGb4b0cyCA = ()=>{
 };`;
 
 export const mockChunkCode = `const s_dYGb4b0cyCA = () => {
-  const t = useTranslate();
+  useTranslate();
   usePlural();
   const fd = useFormatDate();
   const rt = useRelativeTime();
   const fn = useFormatNumber();
   const ctx = useSpeakContext();
   const locale = useSpeakLocale();
-  const count = Sc(0);
+  const count = Wc(0);
   const tParam = __qsInline("home.greeting", {
     name: __qsInline("app.title")
   });
@@ -301,57 +293,52 @@ export const mockChunkCode = `const s_dYGb4b0cyCA = () => {
   console.log(item);
   Object.values(tObject).map((x) => console.log(x));
   tArrayObjects.map((x) => console.log(x["num"]));
-  return /* @__PURE__ */ Nr("div", null, {
+  const [title, text] = __qsInline([
+    'app.title',
+    'home.text'
+  ]);
+  return /* @__PURE__ */ Sr("div", null, {
     class: "content"
   }, [
-    /* @__PURE__ */ Ur(Title, {
-      get name() {
-        return __qsInline("app.title");
-      },
-      [Pt]: {
-        name: Ot((p0) => __qsInline("app.title"), [
-          t
-        ])
-      }
+    /* @__PURE__ */ jr(Title, {
+      name: title
     }, 3, "1L_2"),
-    /* @__PURE__ */ Ur(SubTitle, {
+    /* @__PURE__ */ jr(SubTitle, {
       ctx,
-      [Pt]: {
-        ctx: Pt
+      [Y]: {
+        ctx: Y
       }
     }, 3, "1L_3"),
-    /* @__PURE__ */ Nr("h3", null, null, __qsInline("home.params"), 1, null),
-    /* @__PURE__ */ Nr("p", null, null, __qsInline("home.greeting", {
+    /* @__PURE__ */ Sr("h3", null, null, __qsInline("home.params"), 1, null),
+    /* @__PURE__ */ Sr("p", null, null, __qsInline("home.greeting", {
       name: "Qwik Speak"
     }), 1, null),
-    /* @__PURE__ */ Nr("h3", null, null, __qsInline("home.tags"), 1, null),
-    /* @__PURE__ */ Nr("p", null, {
-      dangerouslySetInnerHTML: Ot((p0) => __qsInline("home.text"), [
-        t
-      ])
-    }, null, 3, null),
-    /* @__PURE__ */ Nr("h3", null, null, __qsInline("home.plural"), 1, null),
-    /* @__PURE__ */ Nr("p", null, {
+    /* @__PURE__ */ Sr("h3", null, null, __qsInline("home.tags"), 1, null),
+    /* @__PURE__ */ Sr("p", {
+      dangerouslySetInnerHTML: text
+    }, null, null, 3, null),
+    /* @__PURE__ */ Sr("h3", null, null, __qsInline("home.plural"), 1, null),
+    /* @__PURE__ */ Sr("p", null, {
       class: "counter"
     }, __qsInlinePlural(count.value, "home.devs"), 1, null),
-    /* @__PURE__ */ Nr("button", null, {
+    /* @__PURE__ */ Sr("button", null, {
       class: "btn-counter",
-      onClick$: /* @__PURE__ */ z(() => __vitePreload(() => Promise.resolve().then(() => entry_Home), true ? void 0 : void 0), "s_UVYDAmatcag", [
+      onClick$: /* @__PURE__ */ hs(() => __vitePreload(() => Promise.resolve().then(() => entry_Home), true ? void 0 : void 0), "s_UVYDAmatcag", [
         count
       ])
     }, __qsInline("home.increment"), 1, null),
-    /* @__PURE__ */ Nr("h3", null, null, __qsInline("home.dates"), 1, null),
-    /* @__PURE__ */ Nr("p", null, null, fd(Date.now(), {
+    /* @__PURE__ */ Sr("h3", null, null, __qsInline("home.dates"), 1, null),
+    /* @__PURE__ */ Sr("p", null, null, fd(Date.now(), {
       dateStyle: "full",
       timeStyle: "short"
     }), 1, null),
-    /* @__PURE__ */ Nr("p", null, null, rt(-1, "second"), 1, null),
-    /* @__PURE__ */ Nr("h3", null, null, __qsInline("home.numbers"), 1, null),
-    /* @__PURE__ */ Nr("p", null, null, fn(1e6), 1, null),
-    /* @__PURE__ */ Nr("p", null, null, fn(1e6, {
+    /* @__PURE__ */ Sr("p", null, null, rt(-1, "second"), 1, null),
+    /* @__PURE__ */ Sr("h3", null, null, __qsInline("home.numbers"), 1, null),
+    /* @__PURE__ */ Sr("p", null, null, fn(1e6), 1, null),
+    /* @__PURE__ */ Sr("p", null, null, fn(1e6, {
       style: "currency"
     }), 1, null),
-    /* @__PURE__ */ Nr("p", null, null, fn(1, {
+    /* @__PURE__ */ Sr("p", null, null, fn(1, {
       style: "unit",
       unit: locale.units["length"]
     }), 1, null)
@@ -359,14 +346,14 @@ export const mockChunkCode = `const s_dYGb4b0cyCA = () => {
 };`;
 
 export const mockInlinedCode = `const s_dYGb4b0cyCA = () => {
-  const t = useTranslate();
+  useTranslate();
   usePlural();
   const fd = useFormatDate();
   const rt = useRelativeTime();
   const fn = useFormatNumber();
   const ctx = useSpeakContext();
   const locale = useSpeakLocale();
-  const count = Sc(0);
+  const count = Wc(0);
   const tParam = \`Hi! I am \${\`\`}\`;
   const tArray = [\`n. one\`,\`n. two\`,\`n. three\`];
   const item = \`n. three\`;
@@ -377,55 +364,47 @@ export const mockInlinedCode = `const s_dYGb4b0cyCA = () => {
   console.log(item);
   Object.values(tObject).map((x) => console.log(x));
   tArrayObjects.map((x) => console.log(x["num"]));
-  return /* @__PURE__ */ Nr("div", null, {
+  const [title, text] = [\`\`,\`<em>Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps</em>\`];
+  return /* @__PURE__ */ Sr("div", null, {
     class: "content"
   }, [
-    /* @__PURE__ */ Ur(Title, {
-      get name() {
-        return \`\`;
-      },
-      [Pt]: {
-        name: Ot((p0) => \`\`, [
-          t
-        ])
-      }
+    /* @__PURE__ */ jr(Title, {
+      name: title
     }, 3, "1L_2"),
-    /* @__PURE__ */ Ur(SubTitle, {
+    /* @__PURE__ */ jr(SubTitle, {
       ctx,
-      [Pt]: {
-        ctx: Pt
+      [Y]: {
+        ctx: Y
       }
     }, 3, "1L_3"),
-    /* @__PURE__ */ Nr("h3", null, null, \`Parameters\`, 1, null),
-    /* @__PURE__ */ Nr("p", null, null, \`Hi! I am Qwik Speak\`, 1, null),
-    /* @__PURE__ */ Nr("h3", null, null, \`Html tags\`, 1, null),
-    /* @__PURE__ */ Nr("p", null, {
-      dangerouslySetInnerHTML: Ot((p0) => \`<em>Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps</em>\`, [
-        t
-      ])
-    }, null, 3, null),
-    /* @__PURE__ */ Nr("h3", null, null, \`Plural\`, 1, null),
-    /* @__PURE__ */ Nr("p", null, {
+    /* @__PURE__ */ Sr("h3", null, null, \`Parameters\`, 1, null),
+    /* @__PURE__ */ Sr("p", null, null, \`Hi! I am Qwik Speak\`, 1, null),
+    /* @__PURE__ */ Sr("h3", null, null, \`Html tags\`, 1, null),
+    /* @__PURE__ */ Sr("p", {
+      dangerouslySetInnerHTML: text
+    }, null, null, 3, null),
+    /* @__PURE__ */ Sr("h3", null, null, \`Plural\`, 1, null),
+    /* @__PURE__ */ Sr("p", null, {
       class: "counter"
     }, (new Intl.PluralRules(\`en-US\`).select(+count.value) === \`other\` && \`\${count.value} software developers\` || \`\${count.value} software developer\`), 1, null),
-    /* @__PURE__ */ Nr("button", null, {
+    /* @__PURE__ */ Sr("button", null, {
       class: "btn-counter",
-      onClick$: /* @__PURE__ */ z(() => __vitePreload(() => Promise.resolve().then(() => entry_Home), true ? void 0 : void 0), "s_UVYDAmatcag", [
+      onClick$: /* @__PURE__ */ hs(() => __vitePreload(() => Promise.resolve().then(() => entry_Home), true ? void 0 : void 0), "s_UVYDAmatcag", [
         count
       ])
     }, \`Increment\`, 1, null),
-    /* @__PURE__ */ Nr("h3", null, null, \`Dates & relative time\`, 1, null),
-    /* @__PURE__ */ Nr("p", null, null, fd(Date.now(), {
+    /* @__PURE__ */ Sr("h3", null, null, \`Dates & relative time\`, 1, null),
+    /* @__PURE__ */ Sr("p", null, null, fd(Date.now(), {
       dateStyle: "full",
       timeStyle: "short"
     }), 1, null),
-    /* @__PURE__ */ Nr("p", null, null, rt(-1, "second"), 1, null),
-    /* @__PURE__ */ Nr("h3", null, null, \`Numbers & currencies\`, 1, null),
-    /* @__PURE__ */ Nr("p", null, null, fn(1e6), 1, null),
-    /* @__PURE__ */ Nr("p", null, null, fn(1e6, {
+    /* @__PURE__ */ Sr("p", null, null, rt(-1, "second"), 1, null),
+    /* @__PURE__ */ Sr("h3", null, null, \`Numbers & currencies\`, 1, null),
+    /* @__PURE__ */ Sr("p", null, null, fn(1e6), 1, null),
+    /* @__PURE__ */ Sr("p", null, null, fn(1e6, {
       style: "currency"
     }), 1, null),
-    /* @__PURE__ */ Nr("p", null, null, fn(1, {
+    /* @__PURE__ */ Sr("p", null, null, fn(1, {
       style: "unit",
       unit: locale.units["length"]
     }), 1, null)
@@ -433,14 +412,14 @@ export const mockInlinedCode = `const s_dYGb4b0cyCA = () => {
 };`;
 
 export const mockInlinedCodeByLang = `const s_dYGb4b0cyCA = () => {
-  const t = useTranslate();
+  useTranslate();
   usePlural();
   const fd = useFormatDate();
   const rt = useRelativeTime();
   const fn = useFormatNumber();
   const ctx = useSpeakContext();
   const locale = useSpeakLocale();
-  const count = Sc(0);
+  const count = Wc(0);
   const tParam = \`Ciao! Sono \${\`\`}\`;
   const tArray = [\`n. uno\`,\`n. due\`,\`n. tre\`];
   const item = \`n. tre\`;
@@ -451,55 +430,47 @@ export const mockInlinedCodeByLang = `const s_dYGb4b0cyCA = () => {
   console.log(item);
   Object.values(tObject).map((x) => console.log(x));
   tArrayObjects.map((x) => console.log(x["num"]));
-  return /* @__PURE__ */ Nr("div", null, {
+  const [title, text] = [\`\`,\`<em>Libreria di internazionalizzazione (i18n) per tradurre testi, date e numeri nelle app Qwik</em>\`];
+  return /* @__PURE__ */ Sr("div", null, {
     class: "content"
   }, [
-    /* @__PURE__ */ Ur(Title, {
-      get name() {
-        return \`\`;
-      },
-      [Pt]: {
-        name: Ot((p0) => \`\`, [
-          t
-        ])
-      }
+    /* @__PURE__ */ jr(Title, {
+      name: title
     }, 3, "1L_2"),
-    /* @__PURE__ */ Ur(SubTitle, {
+    /* @__PURE__ */ jr(SubTitle, {
       ctx,
-      [Pt]: {
-        ctx: Pt
+      [Y]: {
+        ctx: Y
       }
     }, 3, "1L_3"),
-    /* @__PURE__ */ Nr("h3", null, null, \`Parametri\`, 1, null),
-    /* @__PURE__ */ Nr("p", null, null, \`Ciao! Sono Qwik Speak\`, 1, null),
-    /* @__PURE__ */ Nr("h3", null, null, \`Tag Html\`, 1, null),
-    /* @__PURE__ */ Nr("p", null, {
-      dangerouslySetInnerHTML: Ot((p0) => \`<em>Libreria di internazionalizzazione (i18n) per tradurre testi, date e numeri nelle app Qwik</em>\`, [
-        t
-      ])
-    }, null, 3, null),
-    /* @__PURE__ */ Nr("h3", null, null, \`Plurale\`, 1, null),
-    /* @__PURE__ */ Nr("p", null, {
+    /* @__PURE__ */ Sr("h3", null, null, \`Parametri\`, 1, null),
+    /* @__PURE__ */ Sr("p", null, null, \`Ciao! Sono Qwik Speak\`, 1, null),
+    /* @__PURE__ */ Sr("h3", null, null, \`Tag Html\`, 1, null),
+    /* @__PURE__ */ Sr("p", {
+      dangerouslySetInnerHTML: text
+    }, null, null, 3, null),
+    /* @__PURE__ */ Sr("h3", null, null, \`Plurale\`, 1, null),
+    /* @__PURE__ */ Sr("p", null, {
       class: "counter"
     }, (new Intl.PluralRules(\`it-IT\`).select(+count.value) === \`other\` && \`\${count.value} sviluppatori software\` || \`\${count.value} sviluppatore software\`), 1, null),
-    /* @__PURE__ */ Nr("button", null, {
+    /* @__PURE__ */ Sr("button", null, {
       class: "btn-counter",
-      onClick$: /* @__PURE__ */ z(() => __vitePreload(() => Promise.resolve().then(() => entry_Home), true ? void 0 : void 0), "s_UVYDAmatcag", [
+      onClick$: /* @__PURE__ */ hs(() => __vitePreload(() => Promise.resolve().then(() => entry_Home), true ? void 0 : void 0), "s_UVYDAmatcag", [
         count
       ])
     }, \`Incrementa\`, 1, null),
-    /* @__PURE__ */ Nr("h3", null, null, \`Date e tempo relativo\`, 1, null),
-    /* @__PURE__ */ Nr("p", null, null, fd(Date.now(), {
+    /* @__PURE__ */ Sr("h3", null, null, \`Date e tempo relativo\`, 1, null),
+    /* @__PURE__ */ Sr("p", null, null, fd(Date.now(), {
       dateStyle: "full",
       timeStyle: "short"
     }), 1, null),
-    /* @__PURE__ */ Nr("p", null, null, rt(-1, "second"), 1, null),
-    /* @__PURE__ */ Nr("h3", null, null, \`Numeri e valute\`, 1, null),
-    /* @__PURE__ */ Nr("p", null, null, fn(1e6), 1, null),
-    /* @__PURE__ */ Nr("p", null, null, fn(1e6, {
+    /* @__PURE__ */ Sr("p", null, null, rt(-1, "second"), 1, null),
+    /* @__PURE__ */ Sr("h3", null, null, \`Numeri e valute\`, 1, null),
+    /* @__PURE__ */ Sr("p", null, null, fn(1e6), 1, null),
+    /* @__PURE__ */ Sr("p", null, null, fn(1e6, {
       style: "currency"
     }), 1, null),
-    /* @__PURE__ */ Nr("p", null, null, fn(1, {
+    /* @__PURE__ */ Sr("p", null, null, fn(1, {
       style: "unit",
       unit: locale.units["length"]
     }), 1, null)

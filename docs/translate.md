@@ -78,14 +78,19 @@ You can have Html in translations, like:
 ```
 but you have to use `dangerouslySetInnerHTML`:
 ```tsx
-<p dangerouslySetInnerHTML={t('home.text')}></p>
+export const Home = component$(() => {
+  const t = useTranslate();
+
+  const text = t('home.text');
+  return (
+    <p dangerouslySetInnerHTML={text}></p>
+  );
+});
 ```
 > On the client the text is _inlined_ during build, so there are no XSS risks
 
-## component$ props
-> A component can wake up independently from the parent component. If the component wakes up, it needs to be able to know its props
-
-Prefer translating inside components rather than on props:
+## Component props and jsx attributes
+Translate inside components rather than on props:
 
 ```tsx
 export const Title = component$<TitleProps>((props) => {
@@ -116,6 +121,19 @@ export const Home = component$(() => {
 });
 ```
 In the latter case, `app.title` will have to be placed in the `runtimeAssets`, as a dynamic key is passed to the `t` function.
+
+Translate the attributes into the components as well:
+
+```tsx
+export const Home = component$(() => {
+  const t = useTranslate();
+
+  const text = t('home.text');
+  return (
+    <p dangerouslySetInnerHTML={text}></p>
+  );
+});
+```
 
 ## inlineTranslate
 `inlineTranslate` function has the same behavior as the function returned by `useTranslate`, but can be used outside the `component$`, for example in _Inline components_, passing the Speak context as second argument:

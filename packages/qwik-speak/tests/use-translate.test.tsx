@@ -22,6 +22,8 @@ const ChildComponent = component$((props: ChildComponentProps) => {
 const TestComponent = component$(() => {
   const t = useTranslate();
 
+  const value = t('test');
+
   return (
     <div>
       <div id="A">{t('test')}</div>
@@ -48,8 +50,8 @@ const TestComponent = component$(() => {
         }
       </div>
       <div id="A13">{true && t('test')}</div>
-      <div id="A14" title={t('test')}></div>
-      <ChildComponent value={t('test')} />
+      <div id="A14" title={value}></div>
+      <ChildComponent value={value} />
     </div>
   );
 });
@@ -108,10 +110,10 @@ describe('useTranslate function', async () => {
   test('inline conditional rendering', () => {
     expect((screen.querySelector('#A13') as HTMLDivElement).innerHTML).toContain('Test');
   });
-  test('html attributes', () => {
+  test('jsx attributes', () => {
     expect((screen.querySelector('#A14') as HTMLDivElement).getAttribute('title')).toContain('Test');
   });
-  test('no reactive component props', () => {
+  test('component props', () => {
     expect((screen.querySelector('#B') as HTMLDivElement).innerHTML).toContain('Test');
   })
 });

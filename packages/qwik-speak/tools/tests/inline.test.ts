@@ -177,7 +177,7 @@ describe('inline', () => {
   });
   test('transform & inline multilingual', async () => {
     const code = `import { useTranslate } from "qwik-speak";const t = useTranslate();const value = t('app.subtitle', undefined, 'it-IT')`;
-    const transformed = transform(code);
+    const transformed = transform(code, '');
     const inlined = inline(transformed,
       {
         'en-US': {

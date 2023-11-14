@@ -394,7 +394,7 @@ export function parseSequenceExpressions(code: string, alias: string): CallExpre
       } catch (ex: any) {
         // Report Call expression
         console.error(ex);
-        console.error('\x1b[31m\nQwik Speak Inline error parsing \x1b[0m %s',
+        console.error('\n\x1b[31mQwik Speak Parser error\x1b[0m\n%s',
           code.substring(i, tokens[tokens.length - 1].position.end) +
           '\n');
       }

@@ -1,4 +1,3 @@
-import { noSerialize } from '@builder.io/qwik';
 import { useSpeakContext } from './use-speak';
 import { getValue } from './core';
 
@@ -40,5 +39,5 @@ export const useTranslate = (): TranslateFn => {
     return getValue(keys, translation[lang], params, config.keySeparator, config.keyValueSeparator);
   };
 
-  return noSerialize(translate) as TranslateFn;
+  return translate as TranslateFn;
 };

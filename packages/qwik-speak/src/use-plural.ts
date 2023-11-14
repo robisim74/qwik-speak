@@ -1,4 +1,3 @@
-import { noSerialize } from '@builder.io/qwik';
 import { useSpeakContext } from './use-speak';
 import { getValue } from './core';
 
@@ -43,5 +42,5 @@ export const usePlural = (): PluralFn => {
     return getValue(key, translation[lang], { value, ...params }, config.keySeparator, config.keyValueSeparator);
   };
 
-  return noSerialize(plural) as PluralFn;
+  return plural as PluralFn;
 };

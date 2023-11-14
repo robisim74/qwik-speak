@@ -38,8 +38,8 @@ export const Home = component$(() => {
 
   const count = useSignal(0);
 
-  // Prefer translating inside components rather than on props
-  const title = t('app.title');
+  // Translate inside components rather than on props
+  const [title, text] = t(['app.title', 'home.text']);
 
   return (
     <div class="content">
@@ -51,7 +51,7 @@ export const Home = component$(() => {
       <p>{t('home.greeting', { name: 'Qwik Speak' })}</p>
 
       <h3>{t('home.tags')}</h3>
-      <p dangerouslySetInnerHTML={t('home.text')}></p>
+      <p dangerouslySetInnerHTML={text}></p>
 
       <h3>{t('home.plural')}</h3>
       <p class="counter">{p(count.value, 'home.devs')}</p>

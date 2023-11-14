@@ -1,4 +1,3 @@
-import { noSerialize } from '@builder.io/qwik';
 import { useSpeakLocale } from './use-speak';
 
 export type DisplayNameFn = {
@@ -21,5 +20,5 @@ export const useDisplayName = (): DisplayNameFn => {
     return new Intl.DisplayNames(lang, options).of(code) || code;
   };
 
-  return noSerialize(displayName) as DisplayNameFn;
+  return displayName as DisplayNameFn;
 };
