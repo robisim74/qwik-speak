@@ -1,8 +1,9 @@
 import { component$, Slot, useTask$ } from '@builder.io/qwik';
-import { isDev } from '@builder.io/qwik/build';
+import { isBrowser, isDev } from '@builder.io/qwik/build';
 
-import { useSpeakContext } from './use-speak';
+import { useSpeakContext } from './use-functions';
 import { loadTranslations } from './core';
+import { _speakContext } from './context';
 import { logWarn } from './log';
 
 export interface SpeakProps {
@@ -25,16 +26,6 @@ export interface SpeakProps {
  * Translations will only be available in child components
  */
 export const Speak = component$((props: SpeakProps) => {
-  useSpeak(props);
-
-  return <Slot />;
-});
-
-/**
- * Add scoped translation data to the context.
- * Translations will only be available in child components
- */
-export const useSpeak = (props: SpeakProps) => {
   const ctx = useSpeakContext();
 
   const { config } = ctx;
@@ -54,5 +45,16 @@ export const useSpeak = (props: SpeakProps) => {
     }
 
     await loadTranslations(ctx, props.assets, props.runtimeAssets, props.langs);
+
+    if (isDev && isBrowser) {
+      console.debug(
+        '%cQwik Speak Inline',
+        'background: #0c75d2; color: white; padding: 2px 3px; border-radius: 2px; font-size: 0.8em;',
+        'Client context',
+        _speakContext
+      );
+    }
   });
-};
+
+  return <Slot />;
+});

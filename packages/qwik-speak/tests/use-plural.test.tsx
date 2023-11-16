@@ -2,12 +2,12 @@ import { createDOM } from '@builder.io/qwik/testing';
 import { component$ } from '@builder.io/qwik';
 import { test, describe, expect } from 'vitest';
 
-import { usePlural } from '../src/use-plural';
+import { inlinePlural } from '../src/inline-plural';
 import { QwikSpeakProvider } from '../src/qwik-speak-component';
 import { config, translationFnStub } from './config';
 
 const TestComponent = component$(() => {
-  const p = usePlural();
+  const p = inlinePlural();
 
   return (
     <div>

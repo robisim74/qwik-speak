@@ -1,4 +1,4 @@
-import { useSpeakContext } from './use-speak';
+import { useSpeakContext } from './use-functions';
 import { getValue } from './core';
 
 export type TranslateFn = {

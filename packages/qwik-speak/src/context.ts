@@ -2,6 +2,6 @@ import { createContextId } from '@builder.io/qwik';
 
 import type { SpeakState } from './types';
 
-export const SpeakContext = createContextId<SpeakState>('qwikspeak');
+export const SpeakContext = createContextId<SpeakState>('qwik-speak');
 
-export const serverSpeakContext: Partial<SpeakState> = {};
+export const _speakContext: Partial<SpeakState> = {};

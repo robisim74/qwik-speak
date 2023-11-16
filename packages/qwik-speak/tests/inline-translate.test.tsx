@@ -2,19 +2,19 @@ import { createDOM } from '@builder.io/qwik/testing';
 import { component$, useSignal, useTask$, $ } from '@builder.io/qwik';
 import { test, describe, expect } from 'vitest';
 
-import { inlineTranslate as _ } from '../src/inline-translate';
+import { t } from '../src/inline-translate';
 import { QwikSpeakProvider } from '../src/qwik-speak-component';
 import { config, translationFnStub } from './config';
 
 const MyComponent = () => {
-  return <div id="B">{_('test')}</div>;
+  return <div id="B">{t('test')}</div>;
 };
 
 const TestComponent = component$(() => {
   const s = useSignal('');
 
   const test$ = $(() => {
-    return _('test');
+    return t('test');
   });
 
   useTask$(async () => {

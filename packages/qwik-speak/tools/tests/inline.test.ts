@@ -4,7 +4,7 @@ import { writeFile } from 'fs/promises';
 import { normalize } from 'path';
 
 import { getRules } from '../core/intl-parser';
-import { getValue, inline, qwikSpeakInline, transform, transformInline, transpileFn, transpilePluralFn } from '../inline/plugin';
+import { getValue, inlineTranslate, qwikSpeakInline, transform, transformTranslate, transpileTranslateFn, transpilePluralFn } from '../inline/plugin';
 import { mockChunkCode, mockCode, mockInlinedCode, mockInlinedCodeByLang, mockTransformedCode, mockTranslatedAsset, mockTranslatedAssetByLang } from './mock';
 
 // Mock part of 'fs' module
@@ -100,20 +100,20 @@ describe('inline', () => {
   });
   test('transpileFn', () => {
     const value = '`Value`';
-    const line = transpileFn(value);
+    const line = transpileTranslateFn(value);
     expect(line).toBe('`Value`');
   });
   test('transpileFn with array', () => {
     let value = ['`Value1`', '`Value2`'];
-    let line = transpileFn(value);
+    let line = transpileTranslateFn(value);
     expect(line).toBe('[`Value1`,`Value2`]');
     value = ['Value1', 'Value2'];
-    line = transpileFn(value);
+    line = transpileTranslateFn(value);
     expect(line).toBe('["Value1","Value2"]');
   });
   test('transpileFn with objects', () => {
     const value = { value1: 'Value1' };
-    const line = transpileFn(value);
+    const line = transpileTranslateFn(value);
     expect(line).toBe('{"value1":"Value1"}');
   });
   test('transpilePluralFn', () => {
@@ -153,7 +153,7 @@ describe('inline', () => {
     expect(line).toBe('(new Intl.PluralRules(`en-US`, {type: `cardinal`}).select(+count.value) === `other` && __qsInline(`home.devs.other`, {value: count.value, role: `software`}, `en-US`) || __qsInline(`home.devs.one`, {value: count.value, role: `software`}, `en-US`))');
   });
   test('inline arrays', async () => {
-    const inlined = inline(`const values = __qsInline(['app.title', 'app.subtitle'])`,
+    const inlined = inlineTranslate(`const values = __qsInline(['app.title', 'app.subtitle'])`,
       {
         'en-US': {
           'app': {
@@ -178,7 +178,7 @@ describe('inline', () => {
   test('transform & inline multilingual', async () => {
     const code = `import { useTranslate } from "qwik-speak";const t = useTranslate();const value = t('app.subtitle', undefined, 'it-IT')`;
     const transformed = transform(code, '');
-    const inlined = inline(transformed,
+    const inlined = inlineTranslate(transformed,
       {
         'en-US': {
           'app': {
@@ -206,8 +206,8 @@ describe('inline', () => {
   });
   test('transform & inlineTranslate', async () => {
     const code = `import { inlineTranslate as _ } from "qwik-speak";const value = _('app.subtitle')`;
-    const transformed = transformInline(code, '');
-    const inlined = inline(transformed,
+    const transformed = transformTranslate(code, '');
+    const inlined = inlineTranslate(transformed,
       {
         'en-US': {
           'app': {

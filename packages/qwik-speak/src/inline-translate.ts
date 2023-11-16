@@ -1,6 +1,6 @@
 import type { SpeakState } from './types';
 import { getValue } from './core';
-import { serverSpeakContext } from './context';
+import { _speakContext } from './context';
 
 export type InlineTranslateFn = {
   /**
@@ -11,7 +11,8 @@ export type InlineTranslateFn = {
    * @param lang Optional language if different from the current one
    * @returns The translation or the key if not found
    */
-  <T = string>(key: string, params?: Record<string, any>, lang?: string): T;
+  (key: string, params?: Record<string, any>, lang?: string): string;
+  <T>(key: string, params?: Record<string, any>, lang?: string): T;
   /**
    * Translate an array of keys.
    * The syntax of the strings is 'key@@[default value]'
@@ -20,15 +21,16 @@ export type InlineTranslateFn = {
    * @param lang Optional language if different from the current one
    * @returns The translations or the keys if not found
    */
-  <T = string>(keys: string[], params?: Record<string, any>, lang?: string): T[];
+  (keys: string[], params?: Record<string, any>, lang?: string): string[];
+  <T>(keys: string[], params?: Record<string, any>, lang?: string): T[];
 };
 
-export const inlineTranslate: InlineTranslateFn = (
+const inlineTranslate: InlineTranslateFn = (
   keys: string | string[],
   params?: Record<string, any>,
   lang?: string
 ) => {
-  const ctx = serverSpeakContext as SpeakState;
+  const ctx = _speakContext as SpeakState;
 
   const { locale, translation, config } = ctx;
 
@@ -40,3 +42,5 @@ export const inlineTranslate: InlineTranslateFn = (
 
   return getValue(keys, translation[lang], params, config.keySeparator, config.keyValueSeparator);
 };
+
+export { inlineTranslate as t };

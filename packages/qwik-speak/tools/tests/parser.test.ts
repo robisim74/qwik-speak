@@ -1,6 +1,6 @@
 import { test, describe, expect } from 'vitest';
 
-import { getInlineTranslateAlias, getUsePluralAlias, getUseTranslateAlias, parse, parseSequenceExpressions, tokenize } from '../core/parser';
+import { getInlineTranslateAlias, getInlinePluralAlias, getUseTranslateAlias, parse, parseSequenceExpressions, tokenize } from '../core/parser';
 
 describe('parser: tokenize', () => {
   test('tokenize', () => {
@@ -648,7 +648,7 @@ describe('aliases', () => {
     expect(alias).toBe('\\binlineTranslate');
   });
   test('getUsePluralAlias', () => {
-    const alias = getUsePluralAlias('const p = usePlural();');
+    const alias = getInlinePluralAlias('const p = usePlural();');
     expect(alias).toBe('\\bp');
   });
 });

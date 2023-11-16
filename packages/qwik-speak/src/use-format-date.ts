@@ -1,4 +1,4 @@
-import { useSpeakLocale } from './use-speak';
+import { useSpeakLocale } from './use-functions';
 
 export type FormatDateFn = {
   /**

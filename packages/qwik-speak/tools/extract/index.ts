@@ -4,7 +4,14 @@ import { extname, join, normalize } from 'path';
 
 import type { QwikSpeakExtractOptions, Translation } from '../core/types';
 import type { Argument, CallExpression, Element } from '../core/parser';
-import { getUseTranslateAlias, getInlineTranslateAlias, getUsePluralAlias, parseJson, parseSequenceExpressions } from '../core/parser';
+import {
+  getInlineTranslateAlias,
+  getInlinePluralAlias,
+  parseJson,
+  parseSequenceExpressions,
+  matchInlineTranslate,
+  matchInlinePlural
+} from '../core/parser';
 import { deepClone, deepMerge, deepSet, merge } from '../core/merge';
 import { minDepth, sortTarget, toJsonString } from '../core/format';
 import { getOptions, getRules } from '../core/intl-parser';
@@ -109,20 +116,8 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
       }
     }
 
-    // useTranslate
-    if (/useTranslate/.test(code)) {
-      const alias = getUseTranslateAlias(code);
-      if (alias) {
-        // Clear types
-        clearTypes(alias);
-        // Parse sequence
-        const sequence = parseSequenceExpressions(code, alias);
-        parseSequence(sequence);
-      }
-    }
-
     // inlineTranslate
-    if (/inlineTranslate/.test(code)) {
+    if (matchInlineTranslate(code)) {
       const alias = getInlineTranslateAlias(code);
       // Clear types
       clearTypes(alias);
@@ -132,8 +127,8 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
     }
 
     // usePlural
-    if (/usePlural/.test(code)) {
-      const alias = getUsePluralAlias(code);
+    if (matchInlinePlural(code)) {
+      const alias = getInlinePluralAlias(code);
 
       if (alias) {
         // Parse sequence

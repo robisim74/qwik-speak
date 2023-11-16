@@ -1,8 +1,8 @@
 import { $, component$, Slot, useContextProvider, useServerData, useTask$ } from '@builder.io/qwik';
-import { isDev, isServer } from '@builder.io/qwik/build';
+import { isDev } from '@builder.io/qwik/build';
 
 import type { SpeakConfig, SpeakLocale, SpeakState, TranslationFn } from './types';
-import { serverSpeakContext, SpeakContext } from './context';
+import { _speakContext, SpeakContext } from './context';
 import { loadTranslations } from './core';
 import { logDebug, logWarn } from './log';
 
@@ -66,11 +66,9 @@ export const QwikSpeakProvider = component$((props: QwikSpeakProps) => {
   const { locale, translation, config } = state;
 
   // Create server context
-  if (isServer) {
-    serverSpeakContext.locale = locale;
-    serverSpeakContext.translation = translation;
-    serverSpeakContext.config = config;
-  }
+  _speakContext.locale = locale;
+  _speakContext.translation = translation;
+  _speakContext.config = config;
 
   // Create context
   useContextProvider(SpeakContext, state);

@@ -5,7 +5,7 @@ import { test, describe, expect } from 'vitest';
 import { useFormatNumber } from '../src/use-format-number';
 import { QwikSpeakProvider } from '../src/qwik-speak-component';
 import { config } from './config';
-import { useSpeakLocale } from '../src/use-speak';
+import { useSpeakLocale } from '../src/use-functions';
 
 const TestComponent = component$(() => {
   const fn = useFormatNumber();

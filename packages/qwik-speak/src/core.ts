@@ -1,5 +1,5 @@
 import { noSerialize } from '@builder.io/qwik';
-import { isDev, isServer } from '@builder.io/qwik/build';
+import { isBrowser, isDev, isServer } from '@builder.io/qwik/build';
 
 import type { Translation, SpeakState, LoadTranslationFn } from './types';
 import { logWarn } from './log';
@@ -57,8 +57,8 @@ export const loadTranslations = async (
 
     for (const lang of resolvedLangs) {
       let tasks: Promise<any>[];
-      // Cache requests in prod mode
-      if (!isDev) {
+      // Cache requests on client in prod mode
+      if (!isDev && isBrowser) {
         const memoized = memoize(translationFn.loadTranslation$);
         tasks = resolvedAssets.map(asset => memoized(lang, asset));
       } else {

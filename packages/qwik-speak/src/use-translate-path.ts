@@ -1,5 +1,5 @@
 import { isDev } from '@builder.io/qwik/build';
-import { useSpeakContext } from './use-speak';
+import { useSpeakContext } from './use-functions';
 import { logWarn } from './log';
 
 export type TranslatePathFn = {
