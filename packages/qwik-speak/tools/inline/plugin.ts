@@ -134,11 +134,11 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
         if (/\/src\//.test(id) && /\.(js|cjs|mjs|jsx|ts|tsx)$/.test(id)) {
           // Filter code: inlinePlural
           if (matchInlinePlural(code)) {
-            code = transformPlural(code, id);
+            code = transformPlural(code);
           }
           // Filter code: inlineTranslate
           if (matchInlineTranslate(code)) {
-            code = transformTranslate(code, id);
+            code = transformTranslate(code);
           }
 
           // Inline in dev mode
@@ -298,8 +298,10 @@ export async function writeChunks(
 /**
  * Transform inlineTranslate to placeholder
  */
-export function transformTranslate(code: string, id: string): string {
+export function transformTranslate(code: string): string {
   const alias = getInlineTranslateAlias(code);
+
+  if (!alias) return code;
 
   // Parse sequence
   const sequence = parseSequenceExpressions(code, alias);
@@ -329,29 +331,29 @@ export function transformTranslate(code: string, id: string): string {
 /**
  * Transform inlinePlural to placeholder
  */
-export function transformPlural(code: string, id: string): string {
+export function transformPlural(code: string): string {
   const alias = getInlinePluralAlias(code);
 
-  if (alias) {
-    // Parse sequence
-    const sequence = parseSequenceExpressions(code, alias);
+  if (!alias) return code;
 
-    if (sequence.length === 0) return code;
+  // Parse sequence
+  const sequence = parseSequenceExpressions(code, alias);
 
-    for (const expr of sequence) {
-      // Original function
-      const originalFn = expr.value;
-      // Arguments
-      const args = expr.arguments;
+  if (sequence.length === 0) return code;
 
-      if (args?.length > 0) {
-        if (checkDynamicPlural(args, originalFn)) continue;
+  for (const expr of sequence) {
+    // Original function
+    const originalFn = expr.value;
+    // Arguments
+    const args = expr.arguments;
 
-        // Transpile with placeholder
-        const transpiled = originalFn.replace(new RegExp(`${alias}\\(`), `${inlinePluralPlaceholder}(`);
-        // Replace
-        code = code.replace(originalFn, transpiled);
-      }
+    if (args?.length > 0) {
+      if (checkDynamicPlural(args, originalFn)) continue;
+
+      // Transpile with placeholder
+      const transpiled = originalFn.replace(new RegExp(`${alias}\\(`), `${inlinePluralPlaceholder}(`);
+      // Replace
+      code = code.replace(originalFn, transpiled);
     }
   }
 

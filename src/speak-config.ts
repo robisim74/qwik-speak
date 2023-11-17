@@ -15,7 +15,7 @@ export const config: SpeakConfig = {
     { lang: 'de-DE', currency: 'EUR', timeZone: 'Europe/Rome', units: { 'length': 'kilometer' }, dir: 'ltr' }
   ],
   assets: [
-    'app' // Translations shared by the pages
+    'app'
   ],
   runtimeAssets: [
     'runtime' // Translations with dynamic keys or parameters

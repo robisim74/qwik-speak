@@ -1,13 +1,15 @@
 import { $, component$, useStyles$ } from '@builder.io/qwik';
 import { useLocation } from '@builder.io/qwik-city';
 import type { SpeakLocale } from 'qwik-speak';
-import { useSpeakLocale, useSpeakConfig, useDisplayName, t } from 'qwik-speak';
+import { useSpeakLocale, useSpeakConfig, useDisplayName, inlineTranslate } from 'qwik-speak';
 // import { useTranslatePath } from 'qwik-speak';
 
 import styles from './change-locale.css?inline';
 
 export const ChangeLocale = component$(() => {
   useStyles$(styles);
+
+  const t = inlineTranslate();
 
   const dn = useDisplayName();
 

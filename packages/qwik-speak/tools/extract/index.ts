@@ -119,11 +119,14 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
     // inlineTranslate
     if (matchInlineTranslate(code)) {
       const alias = getInlineTranslateAlias(code);
-      // Clear types
-      clearTypes(alias);
-      // Parse sequence
-      const sequence = parseSequenceExpressions(code, alias);
-      parseSequence(sequence);
+
+      if (alias) {
+        // Clear types
+        clearTypes(alias);
+        // Parse sequence
+        const sequence = parseSequenceExpressions(code, alias);
+        parseSequence(sequence);
+      }
     }
 
     // usePlural

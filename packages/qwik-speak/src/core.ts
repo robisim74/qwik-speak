@@ -1,7 +1,7 @@
-import { noSerialize } from '@builder.io/qwik';
 import { isBrowser, isDev, isServer } from '@builder.io/qwik/build';
 
 import type { Translation, SpeakState, LoadTranslationFn } from './types';
+import { _speakContext } from './context';
 import { logWarn } from './log';
 
 const cache: Record<string, Promise<any>> = {};
@@ -33,6 +33,8 @@ export const loadTranslations = async (
 ): Promise<void> => {
   if (isServer || runtimeAssets) {
     const { locale, translation, translationFn, config } = ctx;
+    // Shared server/client context
+    const { translation: _translation } = _speakContext as SpeakState;
 
     if (isDev) {
       const conflictingAsset = assets?.find(asset => runtimeAssets?.includes(asset)) ||
@@ -73,18 +75,21 @@ export const loadTranslations = async (
 
       for (const data of assetSources) {
         if (data?.source) {
-          if (isServer && assets?.includes(data.asset)) {
-            // Assets are not serialized
-            for (let [key, value] of Object.entries<Translation>(data.source)) {
-              // Depth 0: convert string to String object
-              if (typeof value === 'string') {
-                value = new String(value);
-              }
-              translation[lang][key] = noSerialize(value);
+          if (isServer) {
+            // On server: 
+            // - assets & runtimeAssets in shared context
+            // - runtimeAssets in context (must be serialized to be passed to the client)
+            if (assets?.includes(data.asset)) {
+              Object.assign(_translation[lang], data.source);
+            } else {
+              Object.assign(_translation[lang], data.source);
+              // Serialize whether runtimeAssets
+              Object.assign(translation[lang], data.source);
             }
           } else {
-            // Serialize whether runtime assets
-            Object.assign(translation[lang], data.source);
+            // On client: 
+            // - assets & runtimeAssets in shared context
+            Object.assign(_translation[lang], data.source);
           }
         }
       }
@@ -112,8 +117,8 @@ export const getValue = (
       undefined, data);
 
   if (value) {
-    if (typeof value === 'string' || value instanceof String)
-      return params ? transpileParams(value.toString(), params) : value.toString();
+    if (typeof value === 'string')
+      return params ? transpileParams(value, params) : value;
     if (typeof value === 'object')
       return params ? JSON.parse(transpileParams(JSON.stringify(value), params)) : value;
   }

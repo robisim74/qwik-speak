@@ -1,6 +1,6 @@
 import type { SpeakState } from './types';
 import { getValue } from './core';
-import { _speakContext } from './context';
+import { _speakContext, getLang } from './context';
 
 export type InlineTranslateFn = {
   /**
@@ -25,22 +25,24 @@ export type InlineTranslateFn = {
   <T>(keys: string[], params?: Record<string, any>, lang?: string): T[];
 };
 
-const inlineTranslate: InlineTranslateFn = (
-  keys: string | string[],
-  params?: Record<string, any>,
-  lang?: string
-) => {
-  const ctx = _speakContext as SpeakState;
+export const inlineTranslate = (): InlineTranslateFn => {
+  const currentLang = getLang();
 
-  const { locale, translation, config } = ctx;
+  const translate: InlineTranslateFn = (
+    keys: string | string[],
+    params?: Record<string, any>,
+    lang?: string
+  ) => {
+    const { translation, config } = _speakContext as SpeakState;
 
-  lang ??= locale.lang;
+    lang ??= currentLang;
 
-  if (Array.isArray(keys)) {
-    return keys.map(k => getValue(k, translation[lang!], params, config.keySeparator, config.keyValueSeparator));
-  }
+    if (Array.isArray(keys)) {
+      return keys.map(k => getValue(k, translation[lang!], params, config.keySeparator, config.keyValueSeparator));
+    }
 
-  return getValue(keys, translation[lang], params, config.keySeparator, config.keyValueSeparator);
+    return getValue(keys, translation[lang], params, config.keySeparator, config.keyValueSeparator);
+  };
+
+  return translate as InlineTranslateFn;
 };
-
-export { inlineTranslate as t };

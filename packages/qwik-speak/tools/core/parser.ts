@@ -405,18 +405,19 @@ export function parseSequenceExpressions(code: string, alias: string): CallExpre
 }
 
 export function matchInlineTranslate(code: string): boolean {
-  return /{.*\bt\b.*}\s+from\s+.qwik-speak.;?/s.test(code);
+  return /inlineTranslate/.test(code);
 }
 
 export function matchInlinePlural(code: string): boolean {
-  return /{.*\bp\b.*}\s+from\s+.qwik-speak.;?/s.test(code);
+  return /inlinePlural/.test(code);
 }
 
 /**
  * Get inlineTranslate alias
  */
-export function getInlineTranslateAlias(code: string): string {
-  let translateAlias = code.match(/(?<=\bt\s+as).*?(?=,|\})/s)?.[0]?.trim() || 't';
+export function getInlineTranslateAlias(code: string): string | null {
+  let translateAlias = code.match(/(?<=\bconst\s).*?(?=\s?=\s?inlineTranslate\(\);?)/)?.[0]?.trim();
+  if (!translateAlias) return null;
   // Assert position at a word boundary
   if (!translateAlias.startsWith('$')) translateAlias = `\\b${translateAlias}`;
   // Escape special characters 
@@ -428,7 +429,7 @@ export function getInlineTranslateAlias(code: string): string {
  * Get inlinePlural alias
  */
 export function getInlinePluralAlias(code: string): string | null {
-  let pluralAlias = code.match(/(?<=\bp\s+as).*?(?=,|\})/s)?.[0]?.trim() || 'p';
+  let pluralAlias = code.match(/(?<=\bconst\s).*?(?=\s?=\s?inlinePlural\(\);?)/)?.[0]?.trim();
   if (!pluralAlias) return null;
   // Assert position at a word boundary
   if (!pluralAlias.startsWith('$')) pluralAlias = `\\b${pluralAlias}`;

@@ -2,8 +2,8 @@ import { component$, useSignal } from '@builder.io/qwik';
 import { type DocumentHead } from '@builder.io/qwik-city';
 import {
   Speak,
-  t,
-  p,
+  inlineTranslate,
+  inlinePlural,
   useFormatDate,
   useFormatNumber,
   useRelativeTime,
@@ -19,10 +19,14 @@ export const Title = component$<TitleProps>(props => {
 });
 
 export const SubTitle = () => {
+  const t = inlineTranslate();
   return <h2>{t('app.subtitle')}</h2>;
 };
 
 export const Home = component$(() => {
+  const t = inlineTranslate()
+  const p = inlinePlural();
+
   const fd = useFormatDate();
   const rt = useRelativeTime();
   const fn = useFormatNumber();

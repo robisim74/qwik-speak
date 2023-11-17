@@ -2,7 +2,7 @@ import { component$, Slot, useVisibleTask$ } from '@builder.io/qwik';
 import { isDev } from '@builder.io/qwik/build';
 
 import { useSpeakContext } from './use-functions';
-import { _speakContext, } from './context';
+import { _speakContext, setGetLangFn, } from './context';
 
 export const QwikSpeakInline = component$(() => {
   const ctx = useSpeakContext();
@@ -23,9 +23,10 @@ export const QwikSpeakInline = component$(() => {
     }
 
     // Create client context
-    _speakContext.locale = locale;
     _speakContext.translation = translation;
     _speakContext.config = config;
+    // Set the getLang function to use the current lang
+    setGetLangFn(() => locale.lang);
 
     if (isDev) {
       console.debug(

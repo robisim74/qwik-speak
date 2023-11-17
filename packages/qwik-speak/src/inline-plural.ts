@@ -1,6 +1,6 @@
 import type { SpeakState } from './types';
 import { getValue } from './core';
-import { _speakContext } from './context';
+import { _speakContext, getLang } from './context';
 
 export type InlinePluralFn = {
   /**
@@ -22,25 +22,27 @@ export type InlinePluralFn = {
   ): string;
 };
 
-const inlinePlural: InlinePluralFn = (
-  value: number | string,
-  key?: string,
-  params?: Record<string, any>,
-  options?: Intl.PluralRulesOptions,
-  lang?: string
-) => {
-  const ctx = _speakContext as SpeakState;
+export const inlinePlural = (): InlinePluralFn => {
+  const currentLang = getLang();
 
-  const { locale, translation, config } = ctx;
+  const plural = (
+    value: number | string,
+    key?: string,
+    params?: Record<string, any>,
+    options?: Intl.PluralRulesOptions,
+    lang?: string
+  ) => {
+    const { translation, config } = _speakContext as SpeakState;
 
-  lang ??= locale.lang;
+    lang ??= currentLang;
 
-  value = +value;
+    value = +value;
 
-  const rule = new Intl.PluralRules(lang, options).select(value);
-  key = key ? `${key}${config.keySeparator}${rule}` : rule;
+    const rule = new Intl.PluralRules(lang, options).select(value);
+    key = key ? `${key}${config.keySeparator}${rule}` : rule;
 
-  return getValue(key, translation[lang], { value, ...params }, config.keySeparator, config.keyValueSeparator);
+    return getValue(key, translation[lang], { value, ...params }, config.keySeparator, config.keyValueSeparator);
+  };
+
+  return plural as InlinePluralFn;
 };
-
-export { inlinePlural as p };
