@@ -3,7 +3,7 @@ import { component$, useSignal, useTask$, $ } from '@builder.io/qwik';
 import { test, describe, expect } from 'vitest';
 
 import { t } from '../src/inline-translate';
-import { QwikSpeakProvider } from '../src/qwik-speak-component';
+import { QwikSpeakMockProvider } from '../src/use-qwik-speak';
 import { config, translationFnStub } from './config';
 
 const MyComponent = () => {
@@ -33,9 +33,9 @@ describe('inlineTranslate function', async () => {
   const { screen, render } = await createDOM();
 
   await render(
-    <QwikSpeakProvider config={config} translationFn={translationFnStub} locale={config.defaultLocale}>
+    <QwikSpeakMockProvider config={config} translationFn={translationFnStub} locale={config.defaultLocale}>
       <TestComponent />
-    </QwikSpeakProvider>
+    </QwikSpeakMockProvider>
   );
 
   test('translate', () => {

@@ -1,4 +1,4 @@
-import { isBrowser, isDev, isServer } from '@builder.io/qwik/build';
+import { isDev, isServer } from '@builder.io/qwik/build';
 
 import type { Translation, SpeakState, LoadTranslationFn } from './types';
 import { _speakContext } from './context';
@@ -7,7 +7,7 @@ import { logWarn } from './log';
 const cache: Record<string, Promise<any>> = {};
 
 /**
- * In SPA mode, cache the results
+ * Cache the requests on server and on client in SPA mode
  */
 export const memoize = (fn: LoadTranslationFn) => {
   return (...args: [string, string]) => {
@@ -23,7 +23,7 @@ export const memoize = (fn: LoadTranslationFn) => {
  * Load translations when: 
  * - on server
  * - or runtime assets
- * Assets are not serialized
+ * runtimeAssets are serialized
  */
 export const loadTranslations = async (
   ctx: SpeakState,
@@ -59,8 +59,8 @@ export const loadTranslations = async (
 
     for (const lang of resolvedLangs) {
       let tasks: Promise<any>[];
-      // Cache requests on client in prod mode
-      if (!isDev && isBrowser) {
+      // Cache requests prod mode
+      if (!isDev) {
         const memoized = memoize(translationFn.loadTranslation$);
         tasks = resolvedAssets.map(asset => memoized(lang, asset));
       } else {
@@ -78,12 +78,12 @@ export const loadTranslations = async (
           if (isServer) {
             // On server: 
             // - assets & runtimeAssets in shared context
-            // - runtimeAssets in context (must be serialized to be passed to the client)
+            // - runtimeAssets in context as well (must be serialized to be passed to the client)
             if (assets?.includes(data.asset)) {
               Object.assign(_translation[lang], data.source);
             } else {
               Object.assign(_translation[lang], data.source);
-              // Serialize whether runtimeAssets
+              // Serialize runtimeAssets
               Object.assign(translation[lang], data.source);
             }
           } else {

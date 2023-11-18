@@ -2,7 +2,7 @@
   "runtime": {
     "head": {
       "home": {
-        "description": "Internationalisierungsbibliothek (i18n) zum Übersetzen von Texten, Datumsangaben und Zahlen in Qwik-Apps",
+        "description": "Internationalisierung (i18n) Bibliothek zur Übersetzung von Texten, Daten und Zahlen in Qwik Apps",
         "title": "{{name}}"
       },
       "page": {

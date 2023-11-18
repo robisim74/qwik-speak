@@ -1,7 +1,7 @@
 import { component$, useStyles$ } from '@builder.io/qwik';
 import { Link, useLocation } from '@builder.io/qwik-city';
 import { useSpeakConfig, useSpeakLocale, inlineTranslate } from 'qwik-speak';
-// import { useTranslatePath } from 'qwik-speak';
+// import { translatePath } from 'qwik-speak';
 
 import { ChangeLocale } from '../change-locale/change-locale';
 import { SpeakLogo } from '../icons/speak';
@@ -22,7 +22,7 @@ export const Header = component$(() => {
   };
 
   /** Uncomment this lines to use url rewriting to translate paths */
-  // const tp = useTranslatePath();
+  // const tp = translatePath();
   // const { url } = useLocation();
   // const [homePath, pagePath] = tp(['/', '/page/'])
 
@@ -55,6 +55,7 @@ export const Header = component$(() => {
           </li>
         </ul>
       </header>
+
       <ChangeLocale />
     </>
   );

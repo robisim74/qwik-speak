@@ -43,6 +43,8 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
   const sourceFiles: string[] = [];
   // Translation data
   const translation: Translation = Object.fromEntries(resolvedOptions.supportedLangs.map(value => [value, {}]));
+  // Plurals
+  const pluralKeys: string[] = [];
 
   /**
    * Read source files recursively
@@ -160,7 +162,12 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
 
             for (const rule of rules) {
               let key = args?.[1]?.value;
-              key = key ? `${key}${resolvedOptions.keySeparator}${rule}` : rule;
+              if (key) {
+                pluralKeys.push(key);
+                key = `${key}${resolvedOptions.keySeparator}${rule}`;
+              } else {
+                key = rule;
+              }
               keys.push(key);
             }
           }
@@ -228,8 +235,14 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
         mkdirSync(baseAssets, { recursive: true });
       }
 
-      const topLevelKeys = Object.keys(translation[lang]).filter(key => minDepth(translation[lang][key]) > 0);
-      const bottomLevelKeys = Object.keys(translation[lang]).filter(key => minDepth(translation[lang][key]) === 0);
+      const topLevelKeys = Object.keys(translation[lang])
+        .filter(key => pluralKeys.includes(key) ?
+          minDepth(translation[lang][key]) > 1 :
+          minDepth(translation[lang][key]) > 0);
+      const bottomLevelKeys = Object.keys(translation[lang])
+        .filter(key => pluralKeys.includes(key) ?
+          minDepth(translation[lang][key]) === 1 :
+          minDepth(translation[lang][key]) === 0);
 
       const bottomTranslation: Translation = {};
       if (translation[lang][resolvedOptions.filename]) {

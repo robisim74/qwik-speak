@@ -1,5 +1,7 @@
 import { isDev } from '@builder.io/qwik/build';
-import { useSpeakContext } from './use-functions';
+
+import { _speakContext, getLang } from './context';
+import { type SpeakState } from './types';
 import { logWarn } from './log';
 
 export type TranslatePathFn = {
@@ -19,11 +21,11 @@ export type TranslatePathFn = {
   (pathname: string[], lang?: string): string[];
 };
 
-export const useTranslatePath = (): TranslatePathFn => {
-  const ctx = useSpeakContext();
+export const translatePath = (): TranslatePathFn => {
+  const currentLang = getLang();
 
   const normalizePath = (pathname: string) => {
-    const { config } = ctx;
+    const { config } = _speakContext as SpeakState;
 
     const source = config.rewriteRoutes?.find(rewrite => (
       pathname === `/${rewrite.prefix}` ||
@@ -50,7 +52,7 @@ export const useTranslatePath = (): TranslatePathFn => {
   }
 
   const rewritePath = (pathname: string, prefix?: string) => {
-    const { config } = ctx;
+    const { config } = _speakContext as SpeakState;
     let splitted = pathname.split('/');
 
     const destination = config.rewriteRoutes?.find(
@@ -84,9 +86,7 @@ export const useTranslatePath = (): TranslatePathFn => {
   }
 
   const translateOne = (pathname: string, lang?: string) => {
-    const { locale } = ctx;
-
-    lang ??= locale.lang;
+    lang ??= currentLang;
 
     const normalized = normalizePath(pathname);
     const rewrote = rewritePath(normalized, lang);
@@ -94,14 +94,14 @@ export const useTranslatePath = (): TranslatePathFn => {
   };
 
   const translate = (pathname: string | string[], lang?: string) => {
-    const { locale, config } = ctx;
+    const { config } = _speakContext as SpeakState;
 
     if (!config.rewriteRoutes) {
-      if (isDev) logWarn(`SpeakConfig: rewriteRoutes not found`);
+      if (isDev) logWarn(`translatePath: rewriteRoutes not found`);
       return pathname;
     }
 
-    lang ??= locale.lang;
+    lang ??= currentLang;
 
     if (Array.isArray(pathname)) {
       return pathname.map(path => translateOne(path, lang));

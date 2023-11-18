@@ -1,5 +1,5 @@
-import { $, component$, getLocale, Slot, useContextProvider, useServerData, useTask$ } from '@builder.io/qwik';
-import { isDev } from '@builder.io/qwik/build';
+import { $, component$, getLocale, Slot, useContextProvider, useOnDocument, useServerData, useTask$ } from '@builder.io/qwik';
+import { isDev, isServer } from '@builder.io/qwik/build';
 
 import type { SpeakConfig, SpeakLocale, SpeakState, TranslationFn } from './types';
 import { _speakContext, setGetLangFn, SpeakContext } from './context';
@@ -26,9 +26,10 @@ export interface QwikSpeakProps {
 }
 
 /**
- * Create and provide the Speak context
+ * Create and provide the Speak context.
+ * Translations will be available in the whole app
  */
-export const QwikSpeakProvider = component$((props: QwikSpeakProps) => {
+export const useQwikSpeak = (props: QwikSpeakProps) => {
   // Get Qwik locale
   const lang = useServerData<string>('locale');
 
@@ -74,10 +75,55 @@ export const QwikSpeakProvider = component$((props: QwikSpeakProps) => {
   // Create context
   useContextProvider(SpeakContext, state);
 
-  // Called the first time when the component mounts
+  // Load shared translations
   useTask$(async () => {
-    await loadTranslations(state, config.assets, config.runtimeAssets, props.langs);
+    // Drop code on client
+    if (isServer) {
+      await loadTranslations(state, config.assets, config.runtimeAssets, props.langs);
+    }
   });
+
+  // Resume shared context on client
+  const resumeContext$ = $(() => {
+    const { locale, translation, config } = state;
+
+    // Create client context
+    _speakContext.translation = translation;
+    _speakContext.config = config;
+    _speakContext.locale = locale;
+    // Set the getLang function to use the current lang
+    setGetLangFn(() => locale.lang);
+
+    if (isDev) {
+      console.debug(
+        '%cQwik Speak Inline',
+        'background: #0c75d2; color: white; padding: 2px 3px; border-radius: 2px; font-size: 0.8em;',
+        'Client context',
+        _speakContext
+      );
+    }
+
+    // In dev mode, send lang from client to the server
+    if (isDev) {
+      console.debug(
+        '%cQwik Speak Inline',
+        'background: #0c75d2; color: white; padding: 2px 3px; border-radius: 2px; font-size: 0.8em;',
+        'Ready'
+      );
+      if (import.meta.hot) {
+        import.meta.hot.send('qwik-speak:lang', { msg: locale.lang });
+      }
+    }
+  });
+
+  useOnDocument('qinit', resumeContext$);
+};
+
+/**
+ * Create and provide the Speak context to test enviroments
+ */
+export const QwikSpeakMockProvider = component$<QwikSpeakProps>(props => {
+  useQwikSpeak(props);
 
   return <Slot />;
 });

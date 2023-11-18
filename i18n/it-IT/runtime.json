@@ -6,7 +6,7 @@
         "title": "{{name}}"
       },
       "page": {
-        "description": "Io sono un'altra pagina",
+        "description": "Sono un'altra pagina",
         "title": "Pagina - {{name}}"
       }
     }

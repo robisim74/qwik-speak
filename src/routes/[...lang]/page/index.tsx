@@ -1,6 +1,6 @@
 import { component$ } from '@builder.io/qwik';
 import type { DocumentHead } from '@builder.io/qwik-city';
-import { Speak, inlineTranslate } from 'qwik-speak';
+import { inlineTranslate, useSpeak } from 'qwik-speak';
 
 export const Page = component$(() => {
   const t = inlineTranslate();
@@ -12,22 +12,20 @@ export const Page = component$(() => {
       <h1>{t('app.title')}</h1>
       <h2>{t('app.subtitle')}</h2>
 
-      <p>{t('page.text')}</p>
-      <p>{t('page.default@@I\'m a default value')}</p>
+      <p>{t('anotherPage')}</p>
+      <p>{t('defaultValue@@I\'m a default value')}</p>
       <p>{t(`runtimePage.${key}`)}</p>
     </div>
   );
 });
 
 export default component$(() => {
-  return (
-    /**
-     * Add Page translations (only available in child components)
-     */
-    <Speak assets={['page']} runtimeAssets={['runtimePage']}>
-      <Page />
-    </Speak>
-  );
+  /**
+   * Add scoped translations (only available in child components)
+   */
+  useSpeak({ runtimeAssets: ['runtimePage'] });
+
+  return <Page />
 });
 
 export const head: DocumentHead = {

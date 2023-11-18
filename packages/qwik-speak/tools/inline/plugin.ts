@@ -6,7 +6,13 @@ import { extname, normalize } from 'path';
 
 import type { QwikSpeakInlineOptions, Translation } from '../core/types';
 import type { Argument, Property } from '../core/parser';
-import { getInlineTranslateAlias, getInlinePluralAlias, parseJson, matchInlinePlural, matchInlineTranslate } from '../core/parser';
+import {
+  getInlineTranslateAlias,
+  getInlinePluralAlias,
+  parseJson,
+  matchInlinePlural,
+  matchInlineTranslate
+} from '../core/parser';
 import { parseSequenceExpressions } from '../core/parser';
 import { getOptions, getRules } from '../core/intl-parser';
 import { merge } from '../core/merge';
@@ -155,19 +161,8 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
         }
       }
 
-      // Check QwikSpeakInline component
+      // Check base url
       if (target === 'ssr') {
-        if (id.endsWith('root.tsx' || id.endsWith('root.jsx'))) {
-          if (!/QwikSpeakInline/.test(code)) {
-            console.log(
-              '\n\x1b[31mQwik Speak Inline error\x1b[0m\n%s',
-              "Missing 'QwikSpeakInline' component in 'root.tsx' file: see https://robisim74.gitbook.io/qwik-speak/tools/setup"
-            );
-            process.exit(1)
-          }
-        }
-
-        // Check base url
         if (id.endsWith('entry.ssr.tsx') || id.endsWith('entry.ssr.jsx')) {
           if (!/(?<!\/\/\s*)base:\s*extractBase/.test(code)) {
             console.log(

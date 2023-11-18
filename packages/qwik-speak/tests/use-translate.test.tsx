@@ -4,7 +4,7 @@ import { test, describe, expect } from 'vitest';
 
 import type { Translation } from '../src/types';
 import { useTranslate } from '../src/use-translate';
-import { QwikSpeakProvider } from '../src/qwik-speak-component';
+import { QwikSpeakMockProvider } from '../src/use-qwik-speak';
 import { config, translationFnStub } from './config';
 
 interface ChildComponentProps {
@@ -60,9 +60,9 @@ describe('useTranslate function', async () => {
   const { screen, render } = await createDOM();
 
   await render(
-    <QwikSpeakProvider config={config} translationFn={translationFnStub} locale={config.defaultLocale}>
+    <QwikSpeakMockProvider config={config} translationFn={translationFnStub} locale={config.defaultLocale}>
       <TestComponent />
-    </QwikSpeakProvider>
+    </QwikSpeakMockProvider>
   );
 
   test('translate', () => {

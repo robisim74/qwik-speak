@@ -3,7 +3,7 @@ import { component$ } from '@builder.io/qwik';
 import { test, describe, expect } from 'vitest';
 
 import { useFormatNumber } from '../src/use-format-number';
-import { QwikSpeakProvider } from '../src/qwik-speak-component';
+import { QwikSpeakMockProvider } from '../src/use-qwik-speak';
 import { config } from './config';
 import { useSpeakLocale } from '../src/use-functions';
 
@@ -27,9 +27,9 @@ describe('useFormatNumber function', async () => {
   const { screen, render } = await createDOM();
 
   await render(
-    <QwikSpeakProvider config={config} locale={config.defaultLocale}>
+    <QwikSpeakMockProvider config={config} locale={config.defaultLocale}>
       <TestComponent />
-    </QwikSpeakProvider>
+    </QwikSpeakMockProvider>
   );
 
   test('format', () => {

@@ -1,7 +1,6 @@
 import { component$, useSignal } from '@builder.io/qwik';
 import { type DocumentHead } from '@builder.io/qwik-city';
 import {
-  Speak,
   inlineTranslate,
   inlinePlural,
   useFormatDate,
@@ -23,7 +22,7 @@ export const SubTitle = () => {
   return <h2>{t('app.subtitle')}</h2>;
 };
 
-export const Home = component$(() => {
+export default component$(() => {
   const t = inlineTranslate()
   const p = inlinePlural();
 
@@ -42,36 +41,25 @@ export const Home = component$(() => {
 
       <SubTitle />
 
-      <h3>{t('home.params')}</h3>
-      <p>{t('home.greeting', { name: 'Qwik Speak' })}</p>
+      <h3>{t('params')}</h3>
+      <p>{t('greeting', { name: 'Qwik Speak' })}</p>
 
-      <h3>{t('home.tags')}</h3>
-      <p dangerouslySetInnerHTML={t('home.text')}></p>
+      <h3>{t('tags')}</h3>
+      <p dangerouslySetInnerHTML={t('description')}></p>
 
-      <h3>{t('home.plural')}</h3>
-      <p class="counter">{p(count.value, 'home.devs')}</p>
-      <button class="btn-counter" onClick$={() => count.value++}>{t('home.increment')}</button>
+      <h3>{t('plural')}</h3>
+      <p class="counter">{p(count.value, 'devs')}</p>
+      <button class="btn-counter" onClick$={() => count.value++}>{t('increment')}</button>
 
-      <h3>{t('home.dates')}</h3>
+      <h3>{t('dates')}</h3>
       <p>{fd(Date.now(), { dateStyle: 'full', timeStyle: 'short' })}</p>
       <p>{rt(-1, 'second')}</p>
 
-      <h3>{t('home.numbers')}</h3>
+      <h3>{t('numbers')}</h3>
       <p>{fn(1000000)}</p>
       <p>{fn(1000000, { style: 'currency' })}</p>
       <p>{fn(1, { style: 'unit', unit: units['length'] })}</p>
     </div>
-  );
-});
-
-export default component$(() => {
-  return (
-    /**
-     * Add Home translations (only available in child components)
-     */
-    <Speak assets={['home']}>
-      <Home />
-    </Speak>
   );
 });
 

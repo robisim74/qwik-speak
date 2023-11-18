@@ -1,4 +1,4 @@
-import { component$, Slot, useTask$ } from '@builder.io/qwik';
+import { useTask$ } from '@builder.io/qwik';
 import { isBrowser, isDev } from '@builder.io/qwik/build';
 
 import { useSpeakContext } from './use-functions';
@@ -25,22 +25,22 @@ export interface SpeakProps {
  * Add scoped translation data to the context.
  * Translations will only be available in child components
  */
-export const Speak = component$((props: SpeakProps) => {
+export const useSpeak = (props: SpeakProps) => {
   const ctx = useSpeakContext();
 
   const { config } = ctx;
 
-  // Called the first time when the component mounts
+  // Load scoped translations
   useTask$(async () => {
     if (isDev) {
-      if (!props.assets && !props.runtimeAssets) logWarn('Speak component: no assets provided');
+      if (!props.assets && !props.runtimeAssets) logWarn('useSpeak: no assets provided');
       const duplicateAsset = config.assets?.find(asset => props.assets?.includes(asset));
       if (duplicateAsset) {
-        logWarn(`Speak component: duplicate assets '${duplicateAsset}'`);
+        logWarn(`useSpeak: duplicate assets '${duplicateAsset}'`);
       }
       const duplicateRuntimeAsset = config.runtimeAssets?.find(asset => props.runtimeAssets?.includes(asset));
       if (duplicateRuntimeAsset) {
-        logWarn(`Speak component: duplicate runtimeAssets '${duplicateRuntimeAsset}'`);
+        logWarn(`useSpeak: duplicate runtimeAssets '${duplicateRuntimeAsset}'`);
       }
     }
 
@@ -55,6 +55,4 @@ export const Speak = component$((props: SpeakProps) => {
       );
     }
   });
-
-  return <Slot />;
-});
+};
