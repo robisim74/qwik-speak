@@ -1,6 +1,16 @@
 {
   "app": {
     "changeLocale": "Change locale",
+    "head": {
+      "home": {
+        "description": "Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps",
+        "title": "{{name}}"
+      },
+      "page": {
+        "description": "I'm another page",
+        "title": "Page - {{name}}"
+      }
+    },
     "nav": {
       "home": "Home",
       "page": "Page"

@@ -298,6 +298,7 @@ export function transformTranslate(code: string): string {
 
   if (!alias) return code;
 
+  let dynamic = false;
   // Parse sequence
   const sequence = parseSequenceExpressions(code, alias);
 
@@ -311,13 +312,21 @@ export function transformTranslate(code: string): string {
 
     if (args?.length > 0) {
       // Dynamic
-      if (checkDynamicTranslate(args, originalFn)) continue;
+      if (checkDynamicTranslate(args, originalFn)) {
+        dynamic = true;
+        continue;
+      }
 
       // Transpile with placeholder
       const transpiled = originalFn.replace(new RegExp(`${alias}\\(`), `${inlineTranslatePlaceholder}(`);
       // Replace
       code = code.replace(originalFn, transpiled);
     }
+  }
+
+  // Remove invocation
+  if (!dynamic) {
+    code = removeInlineTranslate(code, alias);
   }
 
   return code;
@@ -331,6 +340,7 @@ export function transformPlural(code: string): string {
 
   if (!alias) return code;
 
+  let dynamic = false;
   // Parse sequence
   const sequence = parseSequenceExpressions(code, alias);
 
@@ -343,13 +353,21 @@ export function transformPlural(code: string): string {
     const args = expr.arguments;
 
     if (args?.length > 0) {
-      if (checkDynamicPlural(args, originalFn)) continue;
+      if (checkDynamicPlural(args, originalFn)) {
+        dynamic = true;
+        continue;
+      }
 
       // Transpile with placeholder
       const transpiled = originalFn.replace(new RegExp(`${alias}\\(`), `${inlinePluralPlaceholder}(`);
       // Replace
       code = code.replace(originalFn, transpiled);
     }
+  }
+
+  // Remove invocation
+  if (!dynamic) {
+    code = removeInlinePlural(code, alias);
   }
 
   return code;
@@ -700,6 +718,14 @@ export function logDynamic(originalFn: string, type: 'key' | 'params') {
 
 export function trimFn(fn: string): string {
   return fn.replace(/\s+/g, ' ').trim();
+}
+
+export function removeInlineTranslate(code: string, alias: string): string {
+  return code.replace(new RegExp(`\\bconst\\s${alias}\\s=\\sinlineTranslate\\(\\);?`, 'g'), '');
+}
+
+export function removeInlinePlural(code: string, alias: string): string {
+  return code.replace(new RegExp(`\\bconst\\s${alias}\\s=\\sinlinePlural\\(\\);?`, 'g'), '');
 }
 
 /**

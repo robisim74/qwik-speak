@@ -1,26 +1,23 @@
 import { component$ } from '@builder.io/qwik';
 import { useDocumentHead, useLocation } from '@builder.io/qwik-city';
-import { inlineTranslate } from 'qwik-speak';
 
 /**
  * The RouterHead component is placed inside of the document `<head>` element.
  */
 export const RouterHead = component$(() => {
-  const t = inlineTranslate();
-
   const head = useDocumentHead();
   const loc = useLocation();
 
   return (
     <>
-      <title>{t(head.title, { name: 'Qwik Speak' })}</title>
+      <title>{head.title}</title>
 
       <link rel="canonical" href={loc.url.toString()} />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
       {head.meta.map((m) => (
-        <meta key={m.key} name={m.name} content={m.name === 'description' ? t(m.content!) : m.content} />
+        <meta key={m.key} name={m.name} content={m.content} />
       ))}
 
       {head.links.map((l) => (

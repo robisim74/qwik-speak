@@ -77,7 +77,6 @@ export const useQwikSpeak = (props: QwikSpeakProps) => {
 
   // Load shared translations
   useTask$(async () => {
-    // Drop code on client
     if (isServer) {
       await loadTranslations(state, config.assets, config.runtimeAssets, props.langs);
     }
@@ -116,7 +115,7 @@ export const useQwikSpeak = (props: QwikSpeakProps) => {
     }
   });
 
-  useOnDocument('qinit', resumeContext$);
+  useOnDocument('DOMContentLoaded', resumeContext$);
 };
 
 /**

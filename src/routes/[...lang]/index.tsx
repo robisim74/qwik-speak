@@ -23,7 +23,7 @@ export const SubTitle = () => {
 };
 
 export default component$(() => {
-  const t = inlineTranslate()
+  const t = inlineTranslate();
   const p = inlinePlural();
 
   const fd = useFormatDate();
@@ -63,7 +63,16 @@ export default component$(() => {
   );
 });
 
-export const head: DocumentHead = {
-  title: 'runtime.head.home.title',
-  meta: [{ name: 'description', content: 'runtime.head.home.description' }]
+export const head: DocumentHead = () => {
+  const t = inlineTranslate();
+
+  return {
+    title: t('app.head.home.title', { name: 'Qwik Speak' }),
+    meta: [
+      {
+        name: 'description',
+        content: t('app.head.home.description')
+      }
+    ],
+  };
 };

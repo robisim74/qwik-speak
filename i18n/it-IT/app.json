@@ -1,6 +1,16 @@
 {
   "app": {
     "changeLocale": "Cambia località",
+    "head": {
+      "home": {
+        "description": "Libreria di internazionalizzazione (i18n) per tradurre testi, date e numeri nelle app Qwik",
+        "title": "{{name}}"
+      },
+      "page": {
+        "description": "Sono un'altra pagina",
+        "title": "Pagina - {{name}}"
+      }
+    },
     "nav": {
       "home": "Home",
       "page": "Pagina"

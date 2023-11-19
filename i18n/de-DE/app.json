@@ -1,6 +1,16 @@
 {
   "app": {
     "changeLocale": "Ändern Sie die Gebietsschema",
+    "head": {
+      "home": {
+        "description": "Internationalisierung (i18n) Bibliothek zur Übersetzung von Texten, Daten und Zahlen in Qwik Apps",
+        "title": "{{name}}"
+      },
+      "page": {
+        "description": "Ich bin eine andere Seite",
+        "title": "Seite - {{name}}"
+      }
+    },
     "nav": {
       "home": "Startseite",
       "page": "Seite"
