@@ -8,7 +8,7 @@ export type {
   LoadTranslationFn,
   RewriteRouteOption
 } from './types';
-export type { QwikSpeakProps } from './use-qwik-speak';
+export type { QwikSpeakProps, QwikSpeakMockProps } from './use-qwik-speak';
 export type { SpeakProps } from './use-speak';
 export type { TranslatePathFn } from './translate-path';
 export type { InlinePluralFn } from './inline-plural';

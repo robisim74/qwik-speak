@@ -91,7 +91,7 @@ const TestComponent = component$(() => {
   );
 });
 
-describe('useTranslatePath function', async () => {
+describe('translatePath function', async () => {
   const { screen, render } = await createDOM();
 
   await render(

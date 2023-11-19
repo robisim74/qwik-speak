@@ -17,7 +17,7 @@ const TestComponent = component$(() => {
   );
 });
 
-describe('usePlural function', async () => {
+describe('inlinePlural function', async () => {
   const { screen, render } = await createDOM();
 
   await render(
