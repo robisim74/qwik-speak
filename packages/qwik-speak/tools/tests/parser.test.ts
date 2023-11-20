@@ -639,7 +639,7 @@ describe('aliases', () => {
     expect(alias).toBe('\\bt');
   });
   test('getInlinePluralAlias', () => {
-    const alias = getInlinePluralAlias('const p = usePlural();');
+    const alias = getInlinePluralAlias('const p = inlinePlural();');
     expect(alias).toBe('\\bp');
   });
 });

@@ -4,7 +4,7 @@ import { writeFile } from 'fs/promises';
 import { normalize } from 'path';
 
 import { getRules } from '../core/intl-parser';
-import { getValue, inlineTranslate, qwikSpeakInline, transform, transformTranslate, transpileTranslateFn, transpilePluralFn } from '../inline/plugin';
+import { getValue, inlineTranslate, qwikSpeakInline, transformTranslate, transpileTranslateFn, transpilePluralFn } from '../inline/plugin';
 import { mockChunkCode, mockCode, mockInlinedCode, mockInlinedCodeByLang, mockTransformedCode, mockTranslatedAsset, mockTranslatedAssetByLang } from './mock';
 
 // Mock part of 'fs' module
@@ -118,18 +118,18 @@ describe('inline', () => {
   });
   test('transpilePluralFn', () => {
     const rules = getRules('en-US');
-    const line = transpilePluralFn(rules, 'en-US', '__qsInline',
+    const line = transpilePluralFn(rules, 'en-US', '__qsInlineTranslate',
       [
         { type: 'Identifier', value: 'count.value' },
         { type: 'Literal', value: 'home.devs' }
       ],
       { keySeparator: '.' } as any
     );
-    expect(line).toBe('(new Intl.PluralRules(`en-US`).select(+count.value) === `other` && __qsInline(`home.devs.other`, {value: count.value}, `en-US`) || __qsInline(`home.devs.one`, {value: count.value}, `en-US`))');
+    expect(line).toBe('(new Intl.PluralRules(`en-US`).select(+count.value) === `other` && __qsInlineTranslate(`home.devs.other`, {value: count.value}, `en-US`) || __qsInlineTranslate(`home.devs.one`, {value: count.value}, `en-US`))');
   });
   test('transpilePluralFn with params and options', () => {
     const rules = getRules('en-US');
-    const line = transpilePluralFn(rules, 'en-US', '__qsInline',
+    const line = transpilePluralFn(rules, 'en-US', '__qsInlineTranslate',
       [
         { type: 'Identifier', value: 'count.value' },
         { type: 'Literal', value: 'home.devs' },
@@ -150,68 +150,15 @@ describe('inline', () => {
       ],
       { keySeparator: '.' } as any
     );
-    expect(line).toBe('(new Intl.PluralRules(`en-US`, {type: `cardinal`}).select(+count.value) === `other` && __qsInline(`home.devs.other`, {value: count.value, role: `software`}, `en-US`) || __qsInline(`home.devs.one`, {value: count.value, role: `software`}, `en-US`))');
+    expect(line).toBe('(new Intl.PluralRules(`en-US`, {type: `cardinal`}).select(+count.value) === `other` && __qsInlineTranslate(`home.devs.other`, {value: count.value, role: `software`}, `en-US`) || __qsInlineTranslate(`home.devs.one`, {value: count.value, role: `software`}, `en-US`))');
   });
   test('inline arrays', async () => {
-    const inlined = inlineTranslate(`const values = __qsInline(['app.title', 'app.subtitle'])`,
+    const inlined = inlineTranslate(`const values = __qsInlineTranslate(['app.title', 'app.subtitle'])`,
       {
         'en-US': {
           'app': {
             'subtitle': 'Translate your Qwik apps into any language',
             'title': 'Qwik Speak'
-          }
-        }
-      },
-      '__qsInline',
-      'en-US',
-      {
-        supportedLangs: ['en-US', 'it-IT'],
-        defaultLang: 'en-US',
-        keySeparator: '.',
-        keyValueSeparator: '@@',
-        basePath: './',
-        assetsPath: 'i18n',
-        outDir: 'dist'
-      });
-    expect(inlined).toBe('const values = [`Qwik Speak`,`Translate your Qwik apps into any language`]');
-  });
-  test('transform & inline multilingual', async () => {
-    const code = `import { useTranslate } from "qwik-speak";const t = useTranslate();const value = t('app.subtitle', undefined, 'it-IT')`;
-    const transformed = transform(code, '');
-    const inlined = inlineTranslate(transformed,
-      {
-        'en-US': {
-          'app': {
-            'subtitle': 'Translate your Qwik apps into any language',
-          }
-        },
-        'it-IT': {
-          'app': {
-            'subtitle': 'Traduci le tue app Qwik in qualsiasi lingua',
-          }
-        }
-      },
-      '__qsInline',
-      'en-US',
-      {
-        supportedLangs: ['en-US', 'it-IT'],
-        defaultLang: 'en-US',
-        keySeparator: '.',
-        keyValueSeparator: '@@',
-        basePath: './',
-        assetsPath: 'i18n',
-        outDir: 'dist'
-      });
-    expect(inlined).toBe('import { useTranslate } from "qwik-speak";const t = useTranslate();const value = `Traduci le tue app Qwik in qualsiasi lingua`');
-  });
-  test('transform & inlineTranslate', async () => {
-    const code = `import { inlineTranslate as _ } from "qwik-speak";const value = _('app.subtitle')`;
-    const transformed = transformTranslate(code, '');
-    const inlined = inlineTranslate(transformed,
-      {
-        'en-US': {
-          'app': {
-            'subtitle': 'Translate your Qwik apps into any language',
           }
         }
       },
@@ -226,7 +173,36 @@ describe('inline', () => {
         assetsPath: 'i18n',
         outDir: 'dist'
       });
-    expect(inlined).toBe('import { inlineTranslate as _ } from "qwik-speak";const value = `Translate your Qwik apps into any language`');
+    expect(inlined).toBe('const values = [`Qwik Speak`,`Translate your Qwik apps into any language`]');
+  });
+  test('transform & inline multilingual', async () => {
+    const code = `import { inlineTranslate } from "qwik-speak";const t = inlineTranslate();const value = t('app.subtitle', undefined, 'it-IT')`;
+    const transformed = transformTranslate(code);
+    const inlined = inlineTranslate(transformed,
+      {
+        'en-US': {
+          'app': {
+            'subtitle': 'Translate your Qwik apps into any language',
+          }
+        },
+        'it-IT': {
+          'app': {
+            'subtitle': 'Traduci le tue app Qwik in qualsiasi lingua',
+          }
+        }
+      },
+      '__qsInlineTranslate',
+      'en-US',
+      {
+        supportedLangs: ['en-US', 'it-IT'],
+        defaultLang: 'en-US',
+        keySeparator: '.',
+        keyValueSeparator: '@@',
+        basePath: './',
+        assetsPath: 'i18n',
+        outDir: 'dist'
+      });
+    expect(inlined).toBe('import { inlineTranslate } from "qwik-speak";const value = `Traduci le tue app Qwik in qualsiasi lingua`');
   });
   test('writeChunks', async () => {
     const plugin = qwikSpeakInline({

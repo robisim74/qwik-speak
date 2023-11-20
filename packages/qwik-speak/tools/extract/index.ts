@@ -13,7 +13,7 @@ import {
   matchInlinePlural
 } from '../core/parser';
 import { deepClone, deepMerge, deepSet, merge } from '../core/merge';
-import { minDepth, sortTarget, toJsonString } from '../core/format';
+import { sortTarget, toJsonString } from '../core/format';
 import { getOptions, getRules } from '../core/intl-parser';
 
 /**
@@ -43,8 +43,6 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
   const sourceFiles: string[] = [];
   // Translation data
   const translation: Translation = Object.fromEntries(resolvedOptions.supportedLangs.map(value => [value, {}]));
-  // Plurals
-  const pluralKeys: string[] = [];
 
   /**
    * Read source files recursively
@@ -160,15 +158,17 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
               }
             }
 
-            for (const rule of rules) {
-              let key = args?.[1]?.value;
-              if (key) {
-                pluralKeys.push(key);
-                key = `${key}${resolvedOptions.keySeparator}${rule}`;
-              } else {
-                key = rule;
+            const key = args?.[1]?.value;
+            if (key) {
+              const valueObj: any = {};
+              for (const rule of rules) {
+                valueObj[rule] = '';
               }
-              keys.push(key);
+              keys.push(`${key}${resolvedOptions.keyValueSeparator}${JSON.stringify(valueObj)}`);
+            } else {
+              for (const rule of rules) {
+                keys.push(rule);
+              }
             }
           }
         }
@@ -227,7 +227,7 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
    * min depth > 0: filenames = each top-level property name
    * min depth = 0: filename = 'app'
    */
-  const writeAssets = async () => {
+  const writeAssets = async (prefixes: string[]) => {
     for (const lang of resolvedOptions.supportedLangs) {
       const baseAssets = normalize(`${resolvedOptions.basePath}/${resolvedOptions.assetsPath}/${lang}`);
 
@@ -236,13 +236,9 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
       }
 
       const topLevelKeys = Object.keys(translation[lang])
-        .filter(key => pluralKeys.includes(key) ?
-          minDepth(translation[lang][key]) > 1 :
-          minDepth(translation[lang][key]) > 0);
+        .filter(key => !prefixes.includes(key));
       const bottomLevelKeys = Object.keys(translation[lang])
-        .filter(key => pluralKeys.includes(key) ?
-          minDepth(translation[lang][key]) === 1 :
-          minDepth(translation[lang][key]) === 0);
+        .filter(key => prefixes.includes(key));
 
       const bottomTranslation: Translation = {};
       if (translation[lang][resolvedOptions.filename]) {
@@ -296,6 +292,7 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
   keys = [...new Set<string>(keys)];
   stats.set('unique keys', (stats.get('unique keys') ?? 0) + keys.length);
 
+  const prefixes: string[] = [];
   /* Deep set in translation data */
   for (let key of keys) {
     let defaultValue: string | Translation | undefined = undefined;
@@ -310,6 +307,8 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
     for (const lang of resolvedOptions.supportedLangs) {
       deepSet(translation[lang], key.split(resolvedOptions.keySeparator), deepClone(defaultValue || ''));
     }
+
+    prefixes.push(key);
   }
 
   /* Read assets */
@@ -328,7 +327,7 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
   }
 
   /* Write translation data */
-  await writeAssets();
+  await writeAssets(prefixes);
 
   /* Log */
   for (const [key, value] of stats) {

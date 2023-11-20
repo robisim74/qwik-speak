@@ -4,12 +4,6 @@ export function toJsonString(target: Translation): string {
   return JSON.stringify(target, replacer, 2);
 }
 
-export function minDepth(target: Translation): number {
-  return typeof target === 'object' && Object.keys(target).length > 0 ?
-    1 + Math.min(1, ...Object.values(target).map(o => minDepth(o)))
-    : 0
-}
-
 export function sortTarget(target: Translation) {
   return Object.keys(target).sort().reduce(
     (out: any, key: string) => {
