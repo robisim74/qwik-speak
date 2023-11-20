@@ -7,8 +7,35 @@ import { inlineTranslate } from '../src/inline-translate';
 import { QwikSpeakMockProvider } from '../src/use-qwik-speak';
 import { config, translationFnStub } from './config';
 
+const ChildComponent = component$((props: { value: string, value1: string }) => {
+  return (
+    <div>
+      <div id="B">{props.value}</div>
+      <div id="B1">{props.value1}</div>
+    </div>
+  );
+});
+
+const InlineComponent = () => {
+  const t = inlineTranslate();
+  return <div id="C">{t('test')}</div>;
+};
+
+const test$ = $(() => {
+  const t = inlineTranslate();
+  return t('test');
+});
+
 const TestComponent = component$(() => {
   const t = inlineTranslate();
+
+  const s = useSignal('');
+  const s1 = useSignal(false);
+
+  useTask$(async () => {
+    s.value = await test$();
+    s1.value = true;
+  });
 
   return (
     <div>
@@ -28,6 +55,18 @@ const TestComponent = component$(() => {
       <div id="A11">{t<Translation[]>('arrayObjects', { param: 'params' }).map((o, i) =>
         (<div key={i}>{o['num']}</div>))}
       </div>
+      <div id="A12">
+        {s1.value &&
+          <h2>
+            {t('test')}
+          </h2>
+        }
+      </div>
+      <div id="A13">{s1.value && t('test')}</div>
+      <div id="A14" title={t('test')}></div>
+      <div id="A15">{s.value}</div>
+      <ChildComponent value={s.value} value1={t('test')} />
+      <InlineComponent />
     </div>
   );
 });
@@ -79,6 +118,25 @@ describe('inlineTranslate function', async () => {
   test('array of objects', () => {
     expect((screen.querySelector('#A11') as HTMLDivElement).innerHTML).toContain('One params');
     expect((screen.querySelector('#A11') as HTMLDivElement).innerHTML).toContain('Two params');
+  });
+  test('conditional rendering', () => {
+    expect((screen.querySelector('#A12') as HTMLDivElement).innerHTML).toContain('Test');
+  });
+  test('inline conditional rendering', () => {
+    expect((screen.querySelector('#A13') as HTMLDivElement).innerHTML).toContain('Test');
+  });
+  test('jsx attributes', () => {
+    expect((screen.querySelector('#A14') as HTMLDivElement).getAttribute('title')).toContain('Test');
+  });
+  test('signal', () => {
+    expect((screen.querySelector('#A15') as HTMLDivElement).innerHTML).toContain('Test');
+  });
+  test('component props', () => {
+    expect((screen.querySelector('#B') as HTMLDivElement).innerHTML).toContain('Test');
+    expect((screen.querySelector('#B1') as HTMLDivElement).innerHTML).toContain('Test');
+  });
+  test('inline component', () => {
+    expect((screen.querySelector('#C') as HTMLDivElement).innerHTML).toContain('Test');
   });
 });
 

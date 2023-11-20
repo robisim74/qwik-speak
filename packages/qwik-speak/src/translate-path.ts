@@ -1,24 +1,31 @@
 import { isDev } from '@builder.io/qwik/build';
 
-import { _speakContext, getLang } from './context';
 import { type SpeakState } from './types';
+import { _speakContext, getLang } from './context';
 import { logWarn } from './log';
 
 export type TranslatePathFn = {
   /**
-   * Translate a path.
+   * Translate a path
    * @param pathname The path to translate
    * @param lang Optional language if different from the default one
    * @returns The translation or the path if not found
    */
   (pathname: string, lang?: string): string;
   /**
-   * Translate an array of paths.
+   * Translate a url
+   * @param url The url to translate
+   * @param lang Optional language if different from the default one
+   * @returns The translation or the url if not found
+   */
+  (url: URL, lang?: string): string;
+  /**
+   * Translate an array of paths
    * @param pathname The array of paths to translate
    * @param lang Optional language if different from the default one
    * @returns The translations or the paths if not found
    */
-  (pathname: string[], lang?: string): string[];
+  (pathnames: string[], lang?: string): string[];
 };
 
 export const translatePath = (): TranslatePathFn => {
@@ -93,21 +100,25 @@ export const translatePath = (): TranslatePathFn => {
     return slashPath(pathname, rewrote);
   };
 
-  const translate = (pathname: string | string[], lang?: string) => {
+  const translate = (route: (string | URL) | string[], lang?: string) => {
     const { config } = _speakContext as SpeakState;
 
     if (!config.rewriteRoutes) {
       if (isDev) logWarn(`translatePath: rewriteRoutes not found`);
-      return pathname;
+      return route;
     }
 
-    lang ??= currentLang;
-
-    if (Array.isArray(pathname)) {
-      return pathname.map(path => translateOne(path, lang));
+    if (Array.isArray(route)) {
+      return route.map(path => translateOne(path, lang));
     }
 
-    return translateOne(pathname, lang);
+    if (typeof route === 'string') {
+      return translateOne(route, lang);
+    }
+
+    route.pathname = translateOne(route.pathname, lang);
+
+    return route.toString();
   };
 
   return translate as TranslatePathFn;

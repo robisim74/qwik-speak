@@ -28,11 +28,7 @@ export type InlineTranslateFn = {
 export const inlineTranslate = (): InlineTranslateFn => {
   const currentLang = getLang();
 
-  const translate: InlineTranslateFn = (
-    keys: string | string[],
-    params?: Record<string, any>,
-    lang?: string
-  ) => {
+  const translate = (keys: string | string[], params?: Record<string, any>, lang?: string) => {
     const { translation, config } = _speakContext as SpeakState;
 
     lang ??= currentLang;
