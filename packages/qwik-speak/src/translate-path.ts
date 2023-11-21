@@ -13,7 +13,7 @@ export type TranslatePathFn = {
    */
   (pathname: string, lang?: string): string;
   /**
-   * Translate a url
+   * Translate an url
    * @param url The url to translate
    * @param lang Optional language if different from the default one
    * @returns The translation or the url if not found

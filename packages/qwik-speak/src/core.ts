@@ -59,7 +59,7 @@ export const loadTranslations = async (
 
     for (const lang of resolvedLangs) {
       let tasks: Promise<any>[];
-      // Cache requests prod mode
+      // Cache requests in prod mode
       if (!isDev) {
         const memoized = memoize(translationFn.loadTranslation$);
         tasks = resolvedAssets.map(asset => memoized(lang, asset));

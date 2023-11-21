@@ -18,8 +18,6 @@ export type { FormatDateFn } from './use-format-date';
 export type { FormatNumberFn } from './use-format-number';
 export type { RelativeTimeFn } from './use-relative-time';
 export type { DisplayNameFn } from './use-display-name';
-// Components
-export { QwikSpeakMockProvider } from './use-qwik-speak';
 // Inline functions
 export { inlineTranslate } from './inline-translate';
 export { inlinePlural } from './inline-plural';
@@ -38,3 +36,5 @@ export {
   useSpeakLocale,
   useSpeakConfig,
 } from './use-functions';
+// Testing
+export { QwikSpeakMockProvider } from './use-qwik-speak';

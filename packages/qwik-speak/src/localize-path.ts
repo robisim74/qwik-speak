@@ -10,7 +10,7 @@ export type LocalizePathFn = {
    */
   (pathname: string, lang?: string): string;
   /**
-   * Localize a url with the language
+   * Localize an url with the language
    * @param url The url to localize
    * @param lang Optional language if different from the default one
    * @returns The localized url

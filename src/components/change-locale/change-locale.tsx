@@ -12,14 +12,13 @@ export const ChangeLocale = component$(() => {
 
   const url = useLocation().url;
 
+  const locale = useSpeakLocale();
+  const config = useSpeakConfig();
   const dn = useDisplayName();
 
   /** Uncomment this line to use url rewriting to translate paths */
   // const getPath = translatePath();
   const getPath = localizePath();
-
-  const locale = useSpeakLocale();
-  const config = useSpeakConfig();
 
   return (
     <div class="change-locale">
