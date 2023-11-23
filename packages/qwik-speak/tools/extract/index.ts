@@ -288,9 +288,6 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
     keys = keys.concat(source);
   }
 
-  /* Sort keys (keys with the default value will overwrite the empty ones) */
-  keys.sort();
-
   /* Unique keys */
   keys = [...new Set<string>(keys)];
   stats.set('unique keys', (stats.get('unique keys') ?? 0) + keys.length);

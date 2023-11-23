@@ -1,7 +1,6 @@
 import { isDev } from '@builder.io/qwik/build';
 
-import { type SpeakState } from './types';
-import { _speakContext, getLang } from './context';
+import { getLang, getSpeakContext } from './context';
 import { logWarn } from './log';
 
 export type TranslatePathFn = {
@@ -32,7 +31,7 @@ export const translatePath = (): TranslatePathFn => {
   const currentLang = getLang();
 
   const normalizePath = (pathname: string) => {
-    const { config } = _speakContext as SpeakState;
+    const { config } = getSpeakContext();
 
     const source = config.rewriteRoutes?.find(rewrite => (
       pathname === `/${rewrite.prefix}` ||
@@ -59,7 +58,7 @@ export const translatePath = (): TranslatePathFn => {
   }
 
   const rewritePath = (pathname: string, prefix?: string) => {
-    const { config } = _speakContext as SpeakState;
+    const { config } = getSpeakContext();
     let splitted = pathname.split('/');
 
     const destination = config.rewriteRoutes?.find(
@@ -101,7 +100,7 @@ export const translatePath = (): TranslatePathFn => {
   };
 
   const translate = (route: (string | URL) | string[], lang?: string) => {
-    const { config } = _speakContext as SpeakState;
+    const { config } = getSpeakContext();
 
     if (!config.rewriteRoutes) {
       if (isDev) logWarn(`translatePath: rewriteRoutes not found`);

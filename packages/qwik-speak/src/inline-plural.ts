@@ -1,6 +1,5 @@
-import type { SpeakState } from './types';
 import { getValue } from './core';
-import { _speakContext, getLang } from './context';
+import { getLang, getSpeakContext } from './context';
 
 export type InlinePluralFn = {
   /**
@@ -32,7 +31,7 @@ export const inlinePlural = (): InlinePluralFn => {
     options?: Intl.PluralRulesOptions,
     lang?: string
   ) => {
-    const { translation, config } = _speakContext as SpeakState;
+    const { translation, config } = getSpeakContext();
 
     lang ??= currentLang;
 

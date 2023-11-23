@@ -1,5 +1,4 @@
-import { type SpeakState } from './types';
-import { _speakContext, getLang } from './context';
+import { getLang, getSpeakContext } from './context';
 
 export type LocalizePathFn = {
   /**
@@ -31,7 +30,7 @@ export const localizePath = (): LocalizePathFn => {
   const getRegEpx = (lang: string) => new RegExp(`(/${lang}/)|(/${lang}$)|(/(${lang})(?=\\?))`);
 
   const replace = (pathname: string, lang?: string) => {
-    const { config } = _speakContext as SpeakState;
+    const { config } = getSpeakContext();
 
     lang ??= currentLang;
 

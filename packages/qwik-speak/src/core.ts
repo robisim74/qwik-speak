@@ -1,7 +1,7 @@
 import { isDev, isServer } from '@builder.io/qwik/build';
 
 import type { Translation, SpeakState, LoadTranslationFn } from './types';
-import { _speakContext } from './context';
+import { getSpeakContext } from './context';
 import { logWarn } from './log';
 
 const cache: Record<string, Promise<any>> = {};
@@ -33,8 +33,8 @@ export const loadTranslations = async (
 ): Promise<void> => {
   if (isServer || runtimeAssets) {
     const { locale, translation, translationFn, config } = ctx;
-    // Shared server/client context
-    const { translation: _translation } = _speakContext as SpeakState;
+    // Qwik Speak server/client context
+    const { translation: _translation } = getSpeakContext();
 
     if (isDev) {
       const conflictingAsset = assets?.find(asset => runtimeAssets?.includes(asset)) ||
@@ -73,12 +73,17 @@ export const loadTranslations = async (
         source: source
       }));
 
+      // Set Qwik Speak server/client context
+      if (!(lang in _translation)) {
+        Object.assign(_translation, { [lang]: {} });
+      }
+
       for (const data of assetSources) {
         if (data?.source) {
           if (isServer) {
             // On server: 
-            // - assets & runtimeAssets in shared context
-            // - runtimeAssets in context as well (must be serialized to be passed to the client)
+            // - assets & runtimeAssets in Qwik Speak server context
+            // - runtimeAssets in Qwik context (must be serialized to be passed to the client)
             if (assets?.includes(data.asset)) {
               Object.assign(_translation[lang], data.source);
             } else {
@@ -88,7 +93,7 @@ export const loadTranslations = async (
             }
           } else {
             // On client: 
-            // - assets & runtimeAssets in shared context
+            // - assets & runtimeAssets in Qwik Speak client context
             Object.assign(_translation[lang], data.source);
           }
         }
