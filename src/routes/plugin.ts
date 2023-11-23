@@ -1,4 +1,5 @@
 import type { RequestHandler } from "@builder.io/qwik-city";
+import { validateLocale } from 'qwik-speak';
 
 import { config } from '../speak-config';
 // import { rewriteRoutes } from '../speak-routes';
@@ -6,7 +7,7 @@ import { config } from '../speak-config';
 export const onRequest: RequestHandler = ({ params, locale, error }) => {
   let lang: string | undefined = undefined;
 
-  if (params.lang) {
+  if (params.lang && validateLocale(params.lang)) {
     // Check supported locales
     lang = config.supportedLocales.find(value => value.lang === params.lang)?.lang;
     // 404 error page

@@ -24,6 +24,7 @@ export { inlinePlural } from './inline-plural';
 // Functions
 export { localizePath } from './localize-path';
 export { translatePath } from './translate-path';
+export { validateLocale } from './validate-locale';
 // Use functions
 export { useQwikSpeak } from './use-qwik-speak';
 export { useSpeak } from './use-speak';
