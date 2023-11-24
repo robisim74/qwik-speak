@@ -22,7 +22,7 @@ export interface SpeakProps {
 }
 
 /**
- * Add scoped translation data to the context.
+ * Add translation data to the context.
  * Translations will only be available in child components
  */
 export const useSpeak = (props: SpeakProps) => {
@@ -30,7 +30,7 @@ export const useSpeak = (props: SpeakProps) => {
 
   const { config } = ctx;
 
-  // Load scoped translations
+  // Load translations
   useTask$(async () => {
     if (isDev) {
       if (!props.assets && !props.runtimeAssets) logWarn('useSpeak: no assets provided');

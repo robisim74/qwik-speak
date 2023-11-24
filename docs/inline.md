@@ -1,18 +1,19 @@
 # Qwik Speak Inline Vite plugin
 
-> Inline Qwik Speak `useTranslate`, `inlineTranslate` and `usePlural` functions at compile time
+> Inline Qwik Speak `inlineTranslate` and `inlinePlural` functions at compile time
 
 ## How it works
-In development mode, translation happens _at runtime_: `assets` are loaded during SSR or on client, and the lookup also happens at runtime.
+O the server, translation happens _at runtime_: `assets` are loaded during SSR and the lookup also happens at runtime.
 
-In production mode, `assets` are loaded only during SSR, and to get the translations on the client as well you have to use _Qwik Speak Inline_ Vite plugin.
+On the client, translation happens _at compile-time_: `assets` are loaded and inlined in chunks sent to the browser during the build, reducing resource usage at runtime.
 
-Using the _Qwik Speak Inline_, translation happens _at compile-time_: `assets` are loaded and inlined in chunks sent to the browser during the build, reducing resource usage at runtime:
+`runtimeAssets` are always loaded at runtime, both on the server or on the client, allowing dynamic translations.
 
 ```mermaid
 sequenceDiagram
     participant Server
     participant assets
+    participant runtimeAssets
     participant Client
     Server->>assets: loadTranslation$
     activate assets
@@ -20,6 +21,12 @@ sequenceDiagram
     deactivate assets
     Server->>Client: SSR: no serialize data
     Note over Client: inlined data
+    Server->>runtimeAssets: loadTranslation$
+    activate runtimeAssets
+    runtimeAssets-->>Server: data
+    deactivate runtimeAssets
+    Server->>Client: SSR: serialize data
+    Note over Client: runtime data
 ```
 
 ## Usage
@@ -104,32 +111,4 @@ _dist/build/it-IT/q-*.js_
 
 At the end of the build, in root folder a `qwik-speak-inline.log` file is generated which contains:
 - Missing values
-- Translations with dynamic keys
-- Translations with dynamic params
-
-## Qwik Speak Inline Vite plugin & runtime
-When there are translations with dynamic keys or params, you have to use separate files, and add them to `runtimeAssets`:
-  
-```typescript
-export const config: SpeakConfig = {
-  /* ... */
-  assets: [
-    'app' // Translations shared by the pages
-  ],
-  runtimeAssets: [
-    'runtime' // Translations with dynamic keys or parameters
-  ]
-};
-```
-Likewise, you can also create scoped runtime files for different pages and pass them to `Speak` components:
-```tsx
-export default component$(() => {
-  return (
-    <Speak assets={['home']} runtimeAssets={['runtimeHome']}>
-      <Page />
-    </Speak>
-  );
-});
-```
-> `runtimeAssets` are serialized and sent to the client, and loaded when required
-
+- Translations with dynamic keys or params

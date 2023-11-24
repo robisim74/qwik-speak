@@ -7,7 +7,7 @@ If your production environment doesn't support _dynamic import_, you can import 
 /**
  * Translation files are imported directly as string
  */
-const translationData = import.meta.glob('/i18n/**/*.json', { as: 'raw', eager: true });
+const translationData = import.meta.glob<Translation>('/i18n/**/*.json', { as: 'raw', eager: true });
 
 const loadTranslation$: LoadTranslationFn = server$((lang: string, asset: string) =>
   JSON.parse(translationData[`/i18n/${lang}/${asset}.json`])
