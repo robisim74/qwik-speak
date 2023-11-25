@@ -1,7 +1,6 @@
 import { component$, useStyles$ } from '@builder.io/qwik';
 import { useLocation } from '@builder.io/qwik-city';
-import { useSpeakLocale, useSpeakConfig, useDisplayName, inlineTranslate, localizePath } from 'qwik-speak';
-// import { translatePath } from 'qwik-speak';
+import { useSpeakLocale, useSpeakConfig, useDisplayName, inlineTranslate, translatePath } from 'qwik-speak';
 
 import styles from './change-locale.css?inline';
 
@@ -16,9 +15,7 @@ export const ChangeLocale = component$(() => {
   const config = useSpeakConfig();
   const dn = useDisplayName();
 
-  /** Uncomment this line to use url rewriting to translate paths */
-  // const getPath = translatePath();
-  const getPath = localizePath();
+  const getPath = translatePath();
 
   return (
     <div class="change-locale">
