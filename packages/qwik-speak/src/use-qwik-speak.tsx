@@ -1,4 +1,4 @@
-import { $, component$, getLocale, Slot, useContextProvider, useOnDocument, useTask$ } from '@builder.io/qwik';
+import { $, component$, getLocale, Slot, useContextProvider, useOnWindow, useTask$ } from '@builder.io/qwik';
 import { isDev, isServer } from '@builder.io/qwik/build';
 
 import type { SpeakConfig, SpeakLocale, SpeakState, TranslationFn } from './types';
@@ -89,7 +89,7 @@ export const useQwikSpeak = (props: QwikSpeakProps) => {
     }
   });
 
-  // Resume shared context on client
+  // Resume Qwik Speak context on client
   const resumeContext$ = $(() => {
     const { locale, translation, config } = state;
     // Set Qwik Speak client context
@@ -124,7 +124,8 @@ export const useQwikSpeak = (props: QwikSpeakProps) => {
     }
   });
 
-  useOnDocument('DOMContentLoaded', resumeContext$);
+  // The load event is fired when the whole page has loaded
+  useOnWindow('load', resumeContext$);
 };
 
 /**
