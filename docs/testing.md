@@ -2,42 +2,21 @@
 
 > Unit test a Qwik component using Qwik Speak
 
-To unit test a component which uses `qwik-speak`, you need to wrap it with `QwikSpeakProvider` component, so that it can pass the `SpeakContext` to the test component and its children.
+To unit test a component which uses `qwik-speak`, you need to wrap it with `QwikSpeakMockProvider` component, so that it can pass the `SpeakContext` to the test component and its children.
 
-Given the `config` object and a component to test like in [Quick Start](./quick-start.md):
+Given the `config` object and a component to test like:
 
 _src/routes/index.tsx_
 ```tsx
-import {
-  useTranslate,
-  useFormatDate,
-  useFormatNumber,
-  Speak,
-} from 'qwik-speak';
+import { inlineTranslate, useFormatDate, useFormatNumber } from 'qwik-speak';
 
-export const Home = component$(() => {
-  const t = useTranslate();
-  const fd = useFormatDate();
-  const fn = useFormatNumber();
+export default component$(() => {
+  const t = inlineTranslate();
 
   return (
     <>
       <h1>{t('app.title@@{{name}} demo', { name: 'Qwik Speak' })}</h1>
-
-      <h3>{t('home.dates@@Dates')}</h3>
-      <p>{fd(Date.now(), { dateStyle: 'full', timeStyle: 'short' })}</p>
-
-      <h3>{t('home.numbers@@Numbers')}</h3>
-      <p>{fn(1000000, { style: 'currency' })}</p>
     </>
-  );
-});
-
-export default component$(() => {
-  return (
-    <Speak assets={['home']}>
-      <Home />
-    </Speak>
   );
 });
 ```
@@ -52,9 +31,9 @@ test(`[Home Component]: Should render the component`, async () => {
   const { screen, render } = await createDOM();
 
   await render(
-    <QwikSpeakProvider config={config}>
+    <QwikSpeakMockProvider config={config}>
       <Home />
-    </QwikSpeakProvider>
+    </QwikSpeakMockProvider>
   );
 
   expect(screen.outerHTML).toContain('Qwik Speak demo');

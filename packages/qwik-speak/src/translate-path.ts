@@ -1,30 +1,37 @@
-import { noSerialize } from '@builder.io/qwik';
 import { isDev } from '@builder.io/qwik/build';
-import { useSpeakContext } from './use-speak';
+
+import { getLang, getSpeakContext } from './context';
 import { logWarn } from './log';
 
 export type TranslatePathFn = {
   /**
-   * Translate a path.
+   * Translate a path
    * @param pathname The path to translate
    * @param lang Optional language if different from the default one
    * @returns The translation or the path if not found
    */
   (pathname: string, lang?: string): string;
   /**
-   * Translate an array of paths.
+   * Translate an url
+   * @param url The url to translate
+   * @param lang Optional language if different from the default one
+   * @returns The translation or the url if not found
+   */
+  (url: URL, lang?: string): string;
+  /**
+   * Translate an array of paths
    * @param pathname The array of paths to translate
    * @param lang Optional language if different from the default one
    * @returns The translations or the paths if not found
    */
-  (pathname: string[], lang?: string): string[];
+  (pathnames: string[], lang?: string): string[];
 };
 
-export const useTranslatePath = (): TranslatePathFn => {
-  const ctx = useSpeakContext();
+export const translatePath = (): TranslatePathFn => {
+  const currentLang = getLang();
 
   const normalizePath = (pathname: string) => {
-    const { config } = ctx;
+    const { config } = getSpeakContext();
 
     const source = config.rewriteRoutes?.find(rewrite => (
       pathname === `/${rewrite.prefix}` ||
@@ -51,7 +58,7 @@ export const useTranslatePath = (): TranslatePathFn => {
   }
 
   const rewritePath = (pathname: string, prefix?: string) => {
-    const { config } = ctx;
+    const { config } = getSpeakContext();
     let splitted = pathname.split('/');
 
     const destination = config.rewriteRoutes?.find(
@@ -85,31 +92,33 @@ export const useTranslatePath = (): TranslatePathFn => {
   }
 
   const translateOne = (pathname: string, lang?: string) => {
-    const { locale } = ctx;
-
-    lang ??= locale.lang;
+    lang ??= currentLang;
 
     const normalized = normalizePath(pathname);
     const rewrote = rewritePath(normalized, lang);
     return slashPath(pathname, rewrote);
   };
 
-  const translate = (pathname: string | string[], lang?: string) => {
-    const { locale, config } = ctx;
+  const translate = (route: (string | URL) | string[], lang?: string) => {
+    const { config } = getSpeakContext();
 
     if (!config.rewriteRoutes) {
-      if (isDev) logWarn(`SpeakConfig: rewriteRoutes not found`);
-      return pathname;
+      if (isDev) logWarn(`translatePath: rewriteRoutes not found`);
+      return route;
     }
 
-    lang ??= locale.lang;
-
-    if (Array.isArray(pathname)) {
-      return pathname.map(path => translateOne(path, lang));
+    if (Array.isArray(route)) {
+      return route.map(path => translateOne(path, lang));
     }
 
-    return translateOne(pathname, lang);
+    if (typeof route === 'string') {
+      return translateOne(route, lang);
+    }
+
+    route.pathname = translateOne(route.pathname, lang);
+
+    return route.toString();
   };
 
-  return noSerialize(translate) as TranslatePathFn;
+  return translate as TranslatePathFn;
 };

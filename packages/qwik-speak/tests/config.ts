@@ -1,6 +1,19 @@
 import { $ } from '@builder.io/qwik';
-import type { SpeakConfig, LoadTranslationFn, TranslationFn } from '../src/types';
-import { rewriteRoutes } from '../../../src/speak-routes';
+import type { SpeakConfig, LoadTranslationFn, TranslationFn, RewriteRouteOption } from '../src/types';
+
+const rewriteRoutes: RewriteRouteOption[] = [
+  {
+    prefix: 'it-IT',
+    paths: {
+      'page': 'pagina'
+    }
+  }, {
+    prefix: 'de-DE',
+    paths: {
+      'page': 'seite'
+    }
+  }
+];
 
 export const config: SpeakConfig = {
   rewriteRoutes,
@@ -16,22 +29,38 @@ export const config: SpeakConfig = {
 };
 
 export const mockJson = {
-  test: 'Test',
-  testParams: 'Test {{param}}',
-  nested: {
+  'en-US': {
     test: 'Test',
-    array: ['Test1 {{ param }}', 'Test2 {{ param }}']
+    testParams: 'Test {{param}}',
+    nested: {
+      test: 'Test',
+      array: ['Test1 {{ param }}', 'Test2 {{ param }}']
+    },
+    one: 'One {{ role }} developer',
+    other: '{{value}} {{ role }} developers',
+    arrayObjects: [
+      { num: 'One {{ param }}' },
+      { num: 'Two {{ param }}' }
+    ]
   },
-  one: 'One {{ role }} developer',
-  other: '{{value}} {{ role }} developers',
-  arrayObjects: [
-    { num: 'One {{ param }}' },
-    { num: 'Two {{ param }}' }
-  ]
+  'it-IT': {
+    test: 'Prova',
+    testParams: 'Prova {{param}}',
+    nested: {
+      test: 'Prova',
+      array: ['Prova1 {{ param }}', 'Prova2 {{ param }}']
+    },
+    one: 'Un {{ role }} developer',
+    other: '{{value}} {{ role }} developers',
+    arrayObjects: [
+      { num: 'Uno {{ param }}' },
+      { num: 'Due {{ param }}' }
+    ]
+  },
 };
 
-export const loadTranslationStub$: LoadTranslationFn = $(() => {
-  return mockJson;
+export const loadTranslationStub$: LoadTranslationFn = $((lang: string) => {
+  return (mockJson as any)[lang];
 });
 
 export const translationFnStub: TranslationFn = {

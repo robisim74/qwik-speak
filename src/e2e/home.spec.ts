@@ -34,7 +34,7 @@ test.describe('Home', () => {
 
     await page.locator('text=Pagina').click();
 
-    await expect(page.locator('main')).toContainText("Io sono un'altra pagina");
-    await expect(page.locator('main')).toContainText("Io sono un valore dinamico");
+    await expect(page.locator('main')).toContainText("Sono un'altra pagina");
+    await expect(page.locator('main')).toContainText("Sono un valore dinamico");
   });
 });

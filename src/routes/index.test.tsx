@@ -1,6 +1,6 @@
 import { createDOM } from '@builder.io/qwik/testing';
 import { test, expect } from 'vitest';
-import { QwikSpeakProvider } from 'qwik-speak';
+import { QwikSpeakMockProvider } from 'qwik-speak';
 
 import Home from './index';
 import { config } from '../speak-config';
@@ -10,9 +10,9 @@ test(`[Home Component]: Should render translated texts`, async () => {
   const { screen, render, userEvent } = await createDOM();
 
   await render(
-    <QwikSpeakProvider config={config} translationFn={translationFn} locale={config.defaultLocale}>
+    <QwikSpeakMockProvider config={config} translationFn={translationFn} locale={config.defaultLocale}>
       <Home />
-    </QwikSpeakProvider>
+    </QwikSpeakMockProvider>
   );
 
   expect(screen.outerHTML).toContain('Translate your Qwik apps into any language');

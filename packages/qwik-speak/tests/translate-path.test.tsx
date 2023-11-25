@@ -2,12 +2,12 @@ import { createDOM } from '@builder.io/qwik/testing';
 import { component$ } from '@builder.io/qwik';
 import { test, describe, expect } from 'vitest';
 
-import { useTranslatePath } from '../src/use-translate-path';
-import { QwikSpeakProvider } from '../src/qwik-speak-component';
+import { translatePath } from '../src/translate-path';
+import { QwikSpeakMockProvider } from '../src/use-qwik-speak';
 import { config, translationFnStub } from './config';
 
 const TestComponent = component$(() => {
-  const tp = useTranslatePath();
+  const tp = translatePath();
 
   return (
     <div>
@@ -91,13 +91,13 @@ const TestComponent = component$(() => {
   );
 });
 
-describe('useTranslatePath function', async () => {
+describe('translatePath function', async () => {
   const { screen, render } = await createDOM();
 
   await render(
-    <QwikSpeakProvider config={config} translationFn={translationFnStub} locale={config.defaultLocale}>
+    <QwikSpeakMockProvider config={config} translationFn={translationFnStub} locale={config.defaultLocale}>
       <TestComponent />
-    </QwikSpeakProvider>
+    </QwikSpeakMockProvider>
   );
 
   test('translate without prefix', () => {

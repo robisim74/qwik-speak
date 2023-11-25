@@ -1,38 +1,35 @@
 import { component$, useSignal } from '@builder.io/qwik';
-import type { DocumentHead } from '@builder.io/qwik-city';
+import { type DocumentHead } from '@builder.io/qwik-city';
 import {
-  Speak,
   inlineTranslate,
+  inlinePlural,
   useFormatDate,
   useFormatNumber,
-  usePlural,
   useRelativeTime,
-  useSpeakContext,
-  useSpeakLocale,
-  useTranslate
+  useSpeakLocale
 } from 'qwik-speak';
-import type { SpeakState } from 'qwik-speak';
 
 interface TitleProps {
   name: string;
 }
 
-export const Title = component$((props: TitleProps) => {
+export const Title = component$<TitleProps>(props => {
   return (<h1>{props.name}</h1>)
 });
 
-export const SubTitle = (props: { ctx: SpeakState }) => {
-  return <h2>{inlineTranslate('app.subtitle', props.ctx)}</h2>;
+export const SubTitle = () => {
+  const t = inlineTranslate();
+  return <h2>{t('app.subtitle')}</h2>;
 };
 
-export const Home = component$(() => {
-  const t = useTranslate();
-  const p = usePlural();
+export default component$(() => {
+  const t = inlineTranslate();
+  const p = inlinePlural();
+
   const fd = useFormatDate();
   const rt = useRelativeTime();
   const fn = useFormatNumber();
 
-  const ctx = useSpeakContext();
   const locale = useSpeakLocale();
   const units = locale.units!;
 
@@ -42,23 +39,23 @@ export const Home = component$(() => {
     <div class="content">
       <Title name={t('app.title')} />
 
-      <SubTitle ctx={ctx} />
+      <SubTitle />
 
-      <h3>{t('home.params')}</h3>
-      <p>{t('home.greeting', { name: 'Qwik Speak' })}</p>
+      <h3>{t('params')}</h3>
+      <p>{t('greeting', { name: 'Qwik Speak' })}</p>
 
-      <h3>{t('home.tags')}</h3>
-      <p dangerouslySetInnerHTML={t('home.text')}></p>
+      <h3>{t('tags')}</h3>
+      <p dangerouslySetInnerHTML={t('description')}></p>
 
-      <h3>{t('home.plural')}</h3>
-      <p class="counter">{p(count.value, 'home.devs')}</p>
-      <button class="btn-counter" onClick$={() => count.value++}>{t('home.increment')}</button>
+      <h3>{t('plural')}</h3>
+      <p class="counter">{p(count.value, 'devs')}</p>
+      <button class="btn-counter" onClick$={() => count.value++}>{t('increment')}</button>
 
-      <h3>{t('home.dates')}</h3>
+      <h3>{t('dates')}</h3>
       <p>{fd(Date.now(), { dateStyle: 'full', timeStyle: 'short' })}</p>
       <p>{rt(-1, 'second')}</p>
 
-      <h3>{t('home.numbers')}</h3>
+      <h3>{t('numbers')}</h3>
       <p>{fn(1000000)}</p>
       <p>{fn(1000000, { style: 'currency' })}</p>
       <p>{fn(1, { style: 'unit', unit: units['length'] })}</p>
@@ -66,18 +63,16 @@ export const Home = component$(() => {
   );
 });
 
-export default component$(() => {
-  return (
-    /**
-     * Add Home translations (only available in child components)
-     */
-    <Speak assets={['home']}>
-      <Home />
-    </Speak>
-  );
-});
+export const head: DocumentHead = () => {
+  const t = inlineTranslate();
 
-export const head: DocumentHead = {
-  title: 'runtime.head.home.title',
-  meta: [{ name: 'description', content: 'runtime.head.home.description' }]
+  return {
+    title: t('app.head.home.title', { name: 'Qwik Speak' }),
+    meta: [
+      {
+        name: 'description',
+        content: t('app.head.home.description')
+      }
+    ],
+  };
 };

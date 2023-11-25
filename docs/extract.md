@@ -7,13 +7,13 @@
 #### Get the code ready
 Optionally, you can use a default value for the keys. The syntax is `key@@[default value]`:
 ```html
-<p>{t('app.title@@Qwik Speak'}</p>
-<p>{t('home.greeting@@Hi! I am {{name}}', { name: 'Qwik Speak' })}</p>
+<p>{t('title@@Qwik Speak'}</p>
+<p>{t('greeting@@Hi! I am {{name}}', { name: 'Qwik Speak' })}</p>
 
 ```
 When you use a default value, it will be used as initial value for the key in every translation.
 
-> Note. A key will not be extracted when it is an identifier or contains an indentifier (dynamic)
+> Note that it is not necessary to provide the default value of a key every time: it is sufficient and not mandatory to provide it once in the app
 
 #### Naming conventions
 If you use scoped translations, the first property will be used as filename:

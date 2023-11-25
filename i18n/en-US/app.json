@@ -1,11 +1,35 @@
 {
   "app": {
     "changeLocale": "Change locale",
+    "head": {
+      "home": {
+        "description": "Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps",
+        "title": "{{name}}"
+      },
+      "page": {
+        "description": "I'm another page",
+        "title": "Page - {{name}}"
+      }
+    },
     "nav": {
       "home": "Home",
       "page": "Page"
     },
     "subtitle": "Translate your Qwik apps into any language",
     "title": "Qwik Speak"
-  }
+  },
+  "anotherPage": "I'm another page",
+  "dates": "Dates & relative time",
+  "defaultValue": "I'm a default value",
+  "description": "<em>Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps</em>",
+  "devs": {
+    "one": "{{ value }} software developer",
+    "other": "{{ value }} software developers"
+  },
+  "greeting": "Hi! I am {{name}}",
+  "increment": "Increment",
+  "numbers": "Numbers & currencies",
+  "params": "Parameters",
+  "plural": "Plural",
+  "tags": "Html tags"
 }
