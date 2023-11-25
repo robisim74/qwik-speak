@@ -14,10 +14,12 @@ export const config: SpeakConfig = {
     { lang: 'it-IT', currency: 'EUR', timeZone: 'Europe/Rome', units: { 'length': 'kilometer' }, dir: 'ltr' },
     { lang: 'de-DE', currency: 'EUR', timeZone: 'Europe/Rome', units: { 'length': 'kilometer' }, dir: 'ltr' }
   ],
+  // Translations available in the whole app
   assets: [
-    'app' // Translations shared by the pages
+    'app'
   ],
+  // Translations with dynamic keys available in the whole app
   runtimeAssets: [
-    'runtime' // Translations with dynamic keys or parameters
+    'runtime'
   ]
 };

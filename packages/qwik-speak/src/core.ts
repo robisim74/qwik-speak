@@ -1,13 +1,13 @@
-import { noSerialize } from '@builder.io/qwik';
 import { isDev, isServer } from '@builder.io/qwik/build';
 
 import type { Translation, SpeakState, LoadTranslationFn } from './types';
+import { getSpeakContext } from './context';
 import { logWarn } from './log';
 
 const cache: Record<string, Promise<any>> = {};
 
 /**
- * In SPA mode, cache the results
+ * Cache the requests on server and on client in SPA mode
  */
 export const memoize = (fn: LoadTranslationFn) => {
   return (...args: [string, string]) => {
@@ -21,10 +21,9 @@ export const memoize = (fn: LoadTranslationFn) => {
 
 /**
  * Load translations when: 
- * - dev mode
  * - on server
  * - or runtime assets
- * In prod mode, assets are not serialized
+ * runtimeAssets are serialized
  */
 export const loadTranslations = async (
   ctx: SpeakState,
@@ -32,8 +31,10 @@ export const loadTranslations = async (
   runtimeAssets?: string[],
   langs?: string[]
 ): Promise<void> => {
-  if (isDev || isServer || runtimeAssets) {
+  if (isServer || runtimeAssets) {
     const { locale, translation, translationFn, config } = ctx;
+    // Qwik Speak server/client context
+    const { translation: _translation } = getSpeakContext();
 
     if (isDev) {
       const conflictingAsset = assets?.find(asset => runtimeAssets?.includes(asset)) ||
@@ -45,7 +46,7 @@ export const loadTranslations = async (
     }
 
     let resolvedAssets: string[];
-    if (isDev || isServer) {
+    if (isServer) {
       resolvedAssets = [...assets ?? [], ...runtimeAssets ?? []];
     } else {
       resolvedAssets = [...runtimeAssets ?? []];
@@ -57,28 +58,43 @@ export const loadTranslations = async (
     resolvedLangs.add(locale.lang);
 
     for (const lang of resolvedLangs) {
-      const memoized = memoize(translationFn.loadTranslation$);
-      const tasks = resolvedAssets.map(asset => memoized(lang, asset));
+      let tasks: Promise<any>[];
+      // Cache requests in prod mode
+      if (!isDev) {
+        const memoized = memoize(translationFn.loadTranslation$);
+        tasks = resolvedAssets.map(asset => memoized(lang, asset));
+      } else {
+        tasks = resolvedAssets.map(asset => translationFn.loadTranslation$(lang, asset));
+      }
+
       const sources = await Promise.all(tasks);
       const assetSources = sources.map((source, i) => ({
         asset: resolvedAssets[i],
         source: source
       }));
 
+      // Set Qwik Speak server/client context
+      if (!(lang in _translation)) {
+        Object.assign(_translation, { [lang]: {} });
+      }
+
       for (const data of assetSources) {
         if (data?.source) {
-          if (!isDev && isServer && assets?.includes(data.asset)) {
-            // In prod mode, assets are not serialized
-            for (let [key, value] of Object.entries<Translation>(data.source)) {
-              // Depth 0: convert string to String object
-              if (typeof value === 'string') {
-                value = new String(value);
-              }
-              translation[lang][key] = noSerialize(value);
+          if (isServer) {
+            // On server: 
+            // - assets & runtimeAssets in Qwik Speak server context
+            // - runtimeAssets in Qwik context (must be serialized to be passed to the client)
+            if (assets?.includes(data.asset)) {
+              Object.assign(_translation[lang], data.source);
+            } else {
+              Object.assign(_translation[lang], data.source);
+              // Serialize runtimeAssets
+              Object.assign(translation[lang], data.source);
             }
           } else {
-            // Serialize whether dev mode, or runtime assets
-            Object.assign(translation[lang], data.source);
+            // On client: 
+            // - assets & runtimeAssets in Qwik Speak client context
+            Object.assign(_translation[lang], data.source);
           }
         }
       }
@@ -106,8 +122,8 @@ export const getValue = (
       undefined, data);
 
   if (value) {
-    if (typeof value === 'string' || value instanceof String)
-      return params ? transpileParams(value.toString(), params) : value.toString();
+    if (typeof value === 'string')
+      return params ? transpileParams(value, params) : value;
     if (typeof value === 'object')
       return params ? JSON.parse(transpileParams(JSON.stringify(value), params)) : value;
   }

@@ -1,11 +1,35 @@
 {
   "app": {
     "changeLocale": "Cambia località",
+    "head": {
+      "home": {
+        "description": "Libreria di internazionalizzazione (i18n) per tradurre testi, date e numeri nelle app Qwik",
+        "title": "{{name}}"
+      },
+      "page": {
+        "description": "Sono un'altra pagina",
+        "title": "Pagina - {{name}}"
+      }
+    },
     "nav": {
       "home": "Home",
       "page": "Pagina"
     },
     "subtitle": "Traduci le tue app Qwik in qualsiasi lingua",
     "title": "Qwik Speak"
-  }
+  },
+  "anotherPage": "Sono un'altra pagina",
+  "dates": "Date e tempo relativo",
+  "defaultValue": "Sono un valore predefinito",
+  "description": "<em>Libreria di internazionalizzazione (i18n) per tradurre testi, date e numeri nelle app Qwik</em>",
+  "devs": {
+    "one": "{{ value }} sviluppatore di software",
+    "other": "{{ value }} sviluppatori di software"
+  },
+  "greeting": "Ciao! Sono {{name}}",
+  "increment": "Incremento",
+  "numbers": "Numeri e valute",
+  "params": "Parametri",
+  "plural": "Plurale",
+  "tags": "Tag Html"
 }

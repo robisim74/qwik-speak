@@ -5,7 +5,10 @@ export function deepSet(target: Translation, keys: string[], val: string | Trans
   const len = keys.length;
   while (i < len) {
     const key = keys[i++];
-    target[key] = (i === len) ? val : typeof target[key] === 'object' ? target[key] : {};
+    target[key] = target[key] && !val ?
+      target[key] : (i === len) ?
+        val : typeof target[key] === 'object' ?
+          target[key] : {};
     target = target[key];
   }
 }

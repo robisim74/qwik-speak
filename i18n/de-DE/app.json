@@ -1,11 +1,35 @@
 {
   "app": {
-    "changeLocale": "Den Ort wechseln",
+    "changeLocale": "Ändern Sie die Gebietsschema",
+    "head": {
+      "home": {
+        "description": "Internationalisierung (i18n) Bibliothek zur Übersetzung von Texten, Daten und Zahlen in Qwik Apps",
+        "title": "{{name}}"
+      },
+      "page": {
+        "description": "Ich bin eine andere Seite",
+        "title": "Seite - {{name}}"
+      }
+    },
     "nav": {
-      "home": "Heim",
+      "home": "Startseite",
       "page": "Seite"
     },
-    "subtitle": "Übersetzen Sie Ihre Qwik-Apps in eine beliebige Sprache",
+    "subtitle": "Übersetzen Sie Ihre Qwik-Apps in jede Sprache",
     "title": "Qwik Speak"
-  }
+  },
+  "anotherPage": "Ich bin eine andere Seite",
+  "dates": "Daten & relative Zeit",
+  "defaultValue": "Ich bin ein Standardwert",
+  "description": "<em>Internationalisierung (i18n) Bibliothek zum Übersetzen von Texten, Daten und Zahlen in Qwik-Apps</em>",
+  "devs": {
+    "one": "{{ value }} Softwareentwickler",
+    "other": "{{ value }} Softwareentwickler"
+  },
+  "greeting": "Hallo! Ich bin {{name}}",
+  "increment": "Erhöhen",
+  "numbers": "Zahlen & Währungen",
+  "params": "Parameter",
+  "plural": "Mehrzahl",
+  "tags": "Html-Tags"
 }

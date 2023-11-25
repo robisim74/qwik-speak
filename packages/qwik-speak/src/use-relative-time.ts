@@ -1,5 +1,4 @@
-import { noSerialize } from '@builder.io/qwik';
-import { useSpeakLocale } from './use-speak';
+import { useSpeakLocale } from './use-functions';
 
 export type RelativeTimeFn = {
   /**
@@ -33,5 +32,5 @@ export const useRelativeTime = (): RelativeTimeFn => {
     return new Intl.RelativeTimeFormat(lang, options).format(value, unit);
   };
 
-  return noSerialize(relativeTime) as RelativeTimeFn;
+  return relativeTime as RelativeTimeFn;
 };

@@ -8,25 +8,26 @@ export type {
   LoadTranslationFn,
   RewriteRouteOption
 } from './types';
-export type { QwikSpeakProps } from './qwik-speak-component';
-export type { SpeakProps } from './speak-component';
-export type { TranslateFn } from './use-translate';
-export type { TranslatePathFn } from './use-translate-path';
-export type { PluralFn } from './use-plural';
+export type { QwikSpeakProps, QwikSpeakMockProps } from './use-qwik-speak';
+export type { SpeakProps } from './use-speak';
+export type { LocalizePathFn } from './localize-path';
+export type { TranslatePathFn } from './translate-path';
+export type { InlinePluralFn } from './inline-plural';
 export type { InlineTranslateFn } from './inline-translate';
 export type { FormatDateFn } from './use-format-date';
 export type { FormatNumberFn } from './use-format-number';
 export type { RelativeTimeFn } from './use-relative-time';
 export type { DisplayNameFn } from './use-display-name';
-// Components
-export { QwikSpeakProvider } from './qwik-speak-component';
-export { Speak, useSpeak } from './speak-component';
-// Functions
+// Inline functions
 export { inlineTranslate } from './inline-translate';
+export { inlinePlural } from './inline-plural';
+// Functions
+export { localizePath } from './localize-path';
+export { translatePath } from './translate-path';
+export { validateLocale } from './validate-locale';
 // Use functions
-export { useTranslate } from './use-translate';
-export { useTranslatePath } from './use-translate-path';
-export { usePlural } from './use-plural';
+export { useQwikSpeak } from './use-qwik-speak';
+export { useSpeak } from './use-speak';
 export { useFormatNumber } from './use-format-number';
 export { useFormatDate } from './use-format-date';
 export { useRelativeTime } from './use-relative-time';
@@ -35,4 +36,6 @@ export {
   useSpeakContext,
   useSpeakLocale,
   useSpeakConfig,
-} from './use-speak';
+} from './use-functions';
+// Testing
+export { QwikSpeakMockProvider } from './use-qwik-speak';

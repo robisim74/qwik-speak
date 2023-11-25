@@ -1,8 +1,7 @@
-import { noSerialize } from '@builder.io/qwik';
-import { useSpeakContext } from './use-speak';
 import { getValue } from './core';
+import { getLang, getSpeakContext } from './context';
 
-export type PluralFn = {
+export type InlinePluralFn = {
   /**
    * Get the plural by a number. 
    * The value is passed as a parameter to the translate function
@@ -22,8 +21,8 @@ export type PluralFn = {
   ): string;
 };
 
-export const usePlural = (): PluralFn => {
-  const ctx = useSpeakContext();
+export const inlinePlural = (): InlinePluralFn => {
+  const currentLang = getLang();
 
   const plural = (
     value: number | string,
@@ -32,8 +31,9 @@ export const usePlural = (): PluralFn => {
     options?: Intl.PluralRulesOptions,
     lang?: string
   ) => {
-    const { locale, translation, config } = ctx;
-    lang ??= locale.lang;
+    const { translation, config } = getSpeakContext();
+
+    lang ??= currentLang;
 
     value = +value;
 
@@ -43,5 +43,5 @@ export const usePlural = (): PluralFn => {
     return getValue(key, translation[lang], { value, ...params }, config.keySeparator, config.keyValueSeparator);
   };
 
-  return noSerialize(plural) as PluralFn;
+  return plural as InlinePluralFn;
 };

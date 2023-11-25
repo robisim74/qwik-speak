@@ -3,7 +3,7 @@ import { component$ } from '@builder.io/qwik';
 import { test, describe, expect } from 'vitest';
 
 import { useRelativeTime } from '../src/use-relative-time';
-import { QwikSpeakProvider } from '../src/qwik-speak-component';
+import { QwikSpeakMockProvider } from '../src/use-qwik-speak';
 import { config } from './config';
 
 const TestComponent = component$(() => {
@@ -21,9 +21,9 @@ describe('useRelativeTime function', async () => {
   const { screen, render } = await createDOM();
 
   await render(
-    <QwikSpeakProvider config={config} locale={config.defaultLocale}>
+    <QwikSpeakMockProvider config={config} locale={config.defaultLocale}>
       <TestComponent />
-    </QwikSpeakProvider>
+    </QwikSpeakMockProvider>
   );
 
   test('format', () => {

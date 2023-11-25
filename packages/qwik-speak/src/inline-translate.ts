@@ -1,44 +1,43 @@
-import type { SpeakState } from './types';
 import { getValue } from './core';
+import { getLang, getSpeakContext } from './context';
 
 export type InlineTranslateFn = {
   /**
-   * Translate a key outside the component$.
+   * Translate a key.
    * The syntax of the string is 'key@@[default value]'
    * @param key The key to translate
-   * @param ctx The Speak context
    * @param params Optional parameters contained in the value
    * @param lang Optional language if different from the current one
    * @returns The translation or the key if not found
    */
-  (key: string, ctx: SpeakState, params?: Record<string, any>, lang?: string): string;
-  <T>(key: string, ctx: SpeakState, params?: Record<string, any>, lang?: string): T;
+  (key: string, params?: Record<string, any>, lang?: string): string;
+  <T>(key: string, params?: Record<string, any>, lang?: string): T;
   /**
-   * Translate an array of keys outside the component$.
+   * Translate an array of keys.
    * The syntax of the strings is 'key@@[default value]'
    * @param keys The array of keys to translate
-   * @param ctx The Speak context
    * @param params Optional parameters contained in the values
    * @param lang Optional language if different from the current one
    * @returns The translations or the keys if not found
    */
-  (keys: string[], ctx: SpeakState, params?: Record<string, any>, lang?: string): string[];
-  <T>(keys: string[], ctx: SpeakState, params?: Record<string, any>, lang?: string): T[];
+  (keys: string[], params?: Record<string, any>, lang?: string): string[];
+  <T>(keys: string[], params?: Record<string, any>, lang?: string): T[];
 };
 
-export const inlineTranslate: InlineTranslateFn = (
-  keys: string | string[],
-  ctx: SpeakState,
-  params?: Record<string, any>,
-  lang?: string
-) => {
-  const { locale, translation, config } = ctx;
+export const inlineTranslate = (): InlineTranslateFn => {
+  const currentLang = getLang();
 
-  lang ??= locale.lang;
+  const translate = (keys: string | string[], params?: Record<string, any>, lang?: string) => {
+    const { translation, config } = getSpeakContext();
 
-  if (Array.isArray(keys)) {
-    return keys.map(k => getValue(k, translation[lang!], params, config.keySeparator, config.keyValueSeparator));
-  }
+    lang ??= currentLang;
 
-  return getValue(keys, translation[lang], params, config.keySeparator, config.keyValueSeparator);
+    if (Array.isArray(keys)) {
+      return keys.map(k => getValue(k, translation[lang!], params, config.keySeparator, config.keyValueSeparator));
+    }
+
+    return getValue(keys, translation[lang], params, config.keySeparator, config.keyValueSeparator);
+  };
+
+  return translate as InlineTranslateFn;
 };

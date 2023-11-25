@@ -13,10 +13,6 @@ describe('core', () => {
     value = getValue('SUBKEY1.BB', { KEY1: 'key1', SUBKEY1: { AA: 'aa' } });
     expect(value).toBe('SUBKEY1.BB');
   });
-  test('getValue when String', () => {
-    const value = getValue('KEY1', { KEY1: new String('key1') });
-    expect(value).toBe('key1');
-  });
   test('transpileParams', () => {
     let value = transpileParams('Test {{param}}', { param: 'params' });
     expect(value).toBe('Test params');

@@ -1,49 +1,47 @@
 /* eslint-disable */
 export const mockSource = `import { component$, useSignal } from '@builder.io/qwik';
-import type { DocumentHead } from '@builder.io/qwik-city';
+import { type DocumentHead } from '@builder.io/qwik-city';
 import {
-  Speak,
   inlineTranslate,
+  inlinePlural,
   useFormatDate,
   useFormatNumber,
-  usePlural,
   useRelativeTime,
-  useSpeakContext,
   useSpeakLocale,
-  useTranslate
+  type Translation
 } from 'qwik-speak';
-import type { SpeakState, Translation } from 'qwik-speak';
 
 interface TitleProps {
   name: string;
 }
 
-export const Title = component$((props: TitleProps) => {
+export const Title = component$<TitleProps>(props => {
   return (<h1>{props.name}</h1>)
 });
 
-export const SubTitle = (props: { ctx: SpeakState }) => {
-  return <h2>{inlineTranslate('app.subtitle', props.ctx)}</h2>;
+export const SubTitle = () => {
+  const t = inlineTranslate();
+  return <h2>{t('app.subtitle')}</h2>;
 };
 
-export const Home = component$(() => {
-  const t = useTranslate();
-  const p = usePlural();
+export default component$(() => {
+  const t = inlineTranslate();
+  const p = inlinePlural();
+
   const fd = useFormatDate();
   const rt = useRelativeTime();
   const fn = useFormatNumber();
 
-  const ctx = useSpeakContext();
   const locale = useSpeakLocale();
   const units = locale.units!;
 
   const count = useSignal(0);
 
-  const tParam = t('home.greeting', { name: t('app.title') });
-  const tArray = t<string[]>('home.array@@["{{ name }} one", "{{ name }} two"]', { name: 'n.' });
-  const item = t('home.array.2@@{{ name }} three', { name: 'n.' });
-  const tObject = t<Translation>('home.obj@@{"one": "{{ name }} one", "two": "{{ name }} two"}', { name: 'n.' });
-  const tArrayObjects = t<Translation[]>('home.arrayObjects@@[{"num": "one"}, {"num": "two"}]');
+  const tParam = t('greeting', { name: t('app.title') });
+  const tArray = t<string[]>('array@@["{{ name }} one", "{{ name }} two"]', { name: 'n.' });
+  const item = t('array.2@@{{ name }} three', { name: 'n.' });
+  const tObject = t<Translation>('obj@@{"one": "{{ name }} one", "two": "{{ name }} two"}', { name: 'n.' });
+  const tArrayObjects = t<Translation[]>('arrayObjects@@[{"num": "one"}, {"num": "two"}]');
   console.log(tParam);
   tArray.map((x) => console.log(x));
   console.log(item);
@@ -54,23 +52,23 @@ export const Home = component$(() => {
     <div class="content">
       <Title name={t('app.title')} />
 
-      <SubTitle ctx={ctx} />
+      <SubTitle />
 
-      <h3>{t('home.params')}</h3>
-      <p>{t('home.greeting', { name: 'Qwik Speak' })}</p>
+      <h3>{t('params')}</h3>
+      <p>{t('greeting', { name: 'Qwik Speak' })}</p>
 
-      <h3>{t('home.tags')}</h3>
-      <p dangerouslySetInnerHTML={t('home.text')}></p>
+      <h3>{t('tags')}</h3>
+      <p dangerouslySetInnerHTML={t('description')}></p>
 
-      <h3>{t('home.plural')}</h3>
-      <p class="counter">{p(count.value, 'home.devs')}</p>
-      <button class="btn-counter" onClick$={() => count.value++}>{t('home.increment')}</button>
+      <h3>{t('plural')}</h3>
+      <p class="counter">{p(count.value, 'devs')}</p>
+      <button class="btn-counter" onClick$={() => count.value++}>{t('increment')}</button>
 
-      <h3>{t('home.dates')}</h3>
+      <h3>{t('dates')}</h3>
       <p>{fd(Date.now(), { dateStyle: 'full', timeStyle: 'short' })}</p>
       <p>{rt(-1, 'second')}</p>
 
-      <h3>{t('home.numbers')}</h3>
+      <h3>{t('numbers')}</h3>
       <p>{fn(1000000)}</p>
       <p>{fn(1000000, { style: 'currency' })}</p>
       <p>{fn(1, { style: 'unit', unit: units['length'] })}</p>
@@ -78,53 +76,53 @@ export const Home = component$(() => {
   );
 });
 
-export default component$(() => {
-  return (
-    /**
-     * Add Home translations (only available in child components)
-     */
-    <Speak assets={['home']}>
-      <Home />
-    </Speak>
-  );
-});
+export const head: DocumentHead = () => {
+  const t = inlineTranslate();
 
-export const head: DocumentHead = {
-  title: 'runtime.head.home.title',
-  meta: [{ name: 'description', content: 'runtime.head.home.description' }]
+  return {
+    title: t('app.head.home.title', { name: 'Qwik Speak' }),
+    meta: [
+      {
+        name: 'description',
+        content: t('app.head.home.description')
+      }
+    ],
+  };
 };`;
 
 export const mockCode = `import { SubTitle } from "./routes/[...lang]/index.tsx";
 import { Title } from "./routes/[...lang]/index.tsx";
-import { _IMMUTABLE } from "@builder.io/qwik";
-import { _fnSignal } from "@builder.io/qwik";
 import { _jsxC } from "@builder.io/qwik";
 import { _jsxQ } from "@builder.io/qwik";
-import { qrl } from "@builder.io/qwik";
+import { inlinePlural } from "qwik-speak";
+import { inlineTranslate } from "qwik-speak";
+import { qrlDEV } from "@builder.io/qwik";
 import { useFormatDate } from "qwik-speak";
 import { useFormatNumber } from "qwik-speak";
-import { usePlural } from "qwik-speak";
 import { useRelativeTime } from "qwik-speak";
 import { useSignal } from "@builder.io/qwik";
-import { useSpeakContext } from "qwik-speak";
 import { useSpeakLocale } from "qwik-speak";
-import { useTranslate } from "qwik-speak";
-export const s_dYGb4b0cyCA = ()=>{
-    const t = useTranslate();
-    const p = usePlural();
+export const ____lang__component_eTU0cN78ZUc = ()=>{
+    const t = inlineTranslate();
+    const p = inlinePlural();
     const fd = useFormatDate();
     const rt = useRelativeTime();
     const fn = useFormatNumber();
-    const ctx = useSpeakContext();
     const locale = useSpeakLocale();
     const count = useSignal(0);
-    const tParam = t('home.greeting', {
+    const tParam = t('greeting', {
         name: t('app.title')
     });
-    const tArray = t('home.array@@["{{ name }} one", "{{ name }} two"]', { name: 'n.' });
-    const item = t('home.array.2@@{{ name }} three', { name: 'n.' });
-    const tObject = t('home.obj@@{"one": "{{ name }} one", "two": "{{ name }} two"}', { name: 'n.' });
-    const tArrayObjects = t('home.arrayObjects@@[{"num": "one"}, {"num": "two"}]');
+    const tArray = t('array@@["{{ name }} one", "{{ name }} two"]', {
+        name: 'n.'
+    });
+    const item = t('array.2@@{{ name }} three', {
+        name: 'n.'
+    });
+    const tObject = t('obj@@{"one": "{{ name }} one", "two": "{{ name }} two"}', {
+        name: 'n.'
+    });
+    const tArrayObjects = t('arrayObjects@@[{"num": "one"}, {"num": "two"}]');
     console.log(tParam);
     tArray.map((x)=>console.log(x));
     console.log(item);
@@ -134,90 +132,151 @@ export const s_dYGb4b0cyCA = ()=>{
         class: "content"
     }, [
         /*#__PURE__*/ _jsxC(Title, {
-            get name () {
-                return t('app.title');
-            },
-            [_IMMUTABLE]: {
-                name: _fnSignal((p0)=>p0('app.title'), [
-                    t
-                ])
-            }
-        }, 3, "1L_2"),
-        /*#__PURE__*/ _jsxC(SubTitle, {
-            ctx: ctx,
-            [_IMMUTABLE]: {
-                ctx: _IMMUTABLE
-            }
-        }, 3, "1L_3"),
-        /*#__PURE__*/ _jsxQ("h3", null, null, t('home.params'), 1, null),
-        /*#__PURE__*/ _jsxQ("p", null, null, t('home.greeting', {
+            name: t('app.title')
+        }, 3, "1L_2", {
+            fileName: "routes/[...lang]/index.tsx",
+            lineNumber: 52,
+            columnNumber: 7
+        }),
+        /*#__PURE__*/ _jsxC(SubTitle, null, 3, "1L_3", {
+            fileName: "routes/[...lang]/index.tsx",
+            lineNumber: 54,
+            columnNumber: 7
+        }),
+        /*#__PURE__*/ _jsxQ("h3", null, null, t('params'), 1, null, {
+            fileName: "routes/[...lang]/index.tsx",
+            lineNumber: 56,
+            columnNumber: 7
+        }),
+        /*#__PURE__*/ _jsxQ("p", null, null, t('greeting', {
             name: 'Qwik Speak'
-        }), 1, null),
-        /*#__PURE__*/ _jsxQ("h3", null, null, t('home.tags'), 1, null),
-        /*#__PURE__*/ _jsxQ("p", null, {
-            dangerouslySetInnerHTML: _fnSignal((p0)=>p0('home.text'), [
-                t
-            ])
-        }, null, 3, null),
-        /*#__PURE__*/ _jsxQ("h3", null, null, t('home.plural'), 1, null),
+        }), 1, null, {
+            fileName: "routes/[...lang]/index.tsx",
+            lineNumber: 57,
+            columnNumber: 7
+        }),
+        /*#__PURE__*/ _jsxQ("h3", null, null, t('tags'), 1, null, {
+            fileName: "routes/[...lang]/index.tsx",
+            lineNumber: 59,
+            columnNumber: 7
+        }),
+        /*#__PURE__*/ _jsxQ("p", {
+            dangerouslySetInnerHTML: t('description')
+        }, null, null, 3, null, {
+            fileName: "routes/[...lang]/index.tsx",
+            lineNumber: 60,
+            columnNumber: 7
+        }),
+        /*#__PURE__*/ _jsxQ("h3", null, null, t('plural'), 1, null, {
+            fileName: "routes/[...lang]/index.tsx",
+            lineNumber: 62,
+            columnNumber: 7
+        }),
         /*#__PURE__*/ _jsxQ("p", null, {
             class: "counter"
-        }, __qsInlinePlural(count.value, 'home.devs'), 1, null),
+        }, p(count.value, 'devs'), 1, null, {
+            fileName: "routes/[...lang]/index.tsx",
+            lineNumber: 63,
+            columnNumber: 7
+        }),
         /*#__PURE__*/ _jsxQ("button", null, {
             class: "btn-counter",
-            onClick$: /*#__PURE__*/ qrl(()=>import("./entry_Home.js"), "s_UVYDAmatcag", [
+            onClick$: /*#__PURE__*/ qrlDEV(()=>import("./____lang__component_div_button_onclick_xgivgs2jpeg.js"), "____lang__component_div_button_onClick_XGiVgs2jpeg", {
+                file: "/home/robisim74/documents/github/qwik-speak/src/routes/[...lang]/index.tsx",
+                lo: 1796,
+                hi: 1815,
+                displayName: "____lang__component_div_button_onClick"
+            }, [
                 count
             ])
-        }, t('home.increment'), 1, null),
-        /*#__PURE__*/ _jsxQ("h3", null, null, t('home.dates'), 1, null),
+        }, t('increment'), 1, null, {
+            fileName: "routes/[...lang]/index.tsx",
+            lineNumber: 64,
+            columnNumber: 7
+        }),
+        /*#__PURE__*/ _jsxQ("h3", null, null, t('dates'), 1, null, {
+            fileName: "routes/[...lang]/index.tsx",
+            lineNumber: 66,
+            columnNumber: 7
+        }),
         /*#__PURE__*/ _jsxQ("p", null, null, fd(Date.now(), {
             dateStyle: 'full',
             timeStyle: 'short'
-        }), 1, null),
-        /*#__PURE__*/ _jsxQ("p", null, null, rt(-1, 'second'), 1, null),
-        /*#__PURE__*/ _jsxQ("h3", null, null, t('home.numbers'), 1, null),
-        /*#__PURE__*/ _jsxQ("p", null, null, fn(1000000), 1, null),
+        }), 1, null, {
+            fileName: "routes/[...lang]/index.tsx",
+            lineNumber: 67,
+            columnNumber: 7
+        }),
+        /*#__PURE__*/ _jsxQ("p", null, null, rt(-1, 'second'), 1, null, {
+            fileName: "routes/[...lang]/index.tsx",
+            lineNumber: 68,
+            columnNumber: 7
+        }),
+        /*#__PURE__*/ _jsxQ("h3", null, null, t('numbers'), 1, null, {
+            fileName: "routes/[...lang]/index.tsx",
+            lineNumber: 70,
+            columnNumber: 7
+        }),
+        /*#__PURE__*/ _jsxQ("p", null, null, fn(1000000), 1, null, {
+            fileName: "routes/[...lang]/index.tsx",
+            lineNumber: 71,
+            columnNumber: 7
+        }),
         /*#__PURE__*/ _jsxQ("p", null, null, fn(1000000, {
             style: 'currency'
-        }), 1, null),
+        }), 1, null, {
+            fileName: "routes/[...lang]/index.tsx",
+            lineNumber: 72,
+            columnNumber: 7
+        }),
         /*#__PURE__*/ _jsxQ("p", null, null, fn(1, {
             style: 'unit',
             unit: locale.units['length']
-        }), 1, null)
-    ], 1, "1L_4");
+        }), 1, null, {
+            fileName: "routes/[...lang]/index.tsx",
+            lineNumber: 73,
+            columnNumber: 7
+        })
+    ], 1, "1L_4", {
+        fileName: "routes/[...lang]/index.tsx",
+        lineNumber: 51,
+        columnNumber: 5
+    });
 };`;
 
 export const mockTransformedCode = `import { SubTitle } from "./routes/[...lang]/index.tsx";
 import { Title } from "./routes/[...lang]/index.tsx";
-import { _IMMUTABLE } from "@builder.io/qwik";
-import { _fnSignal } from "@builder.io/qwik";
 import { _jsxC } from "@builder.io/qwik";
 import { _jsxQ } from "@builder.io/qwik";
-import { qrl } from "@builder.io/qwik";
+import { inlinePlural } from "qwik-speak";
+import { inlineTranslate } from "qwik-speak";
+import { qrlDEV } from "@builder.io/qwik";
 import { useFormatDate } from "qwik-speak";
 import { useFormatNumber } from "qwik-speak";
-import { usePlural } from "qwik-speak";
 import { useRelativeTime } from "qwik-speak";
 import { useSignal } from "@builder.io/qwik";
-import { useSpeakContext } from "qwik-speak";
 import { useSpeakLocale } from "qwik-speak";
-import { useTranslate } from "qwik-speak";
-export const s_dYGb4b0cyCA = ()=>{
-    const t = useTranslate();
-    const p = usePlural();
+export const ____lang__component_eTU0cN78ZUc = ()=>{
+    
+    
     const fd = useFormatDate();
     const rt = useRelativeTime();
     const fn = useFormatNumber();
-    const ctx = useSpeakContext();
     const locale = useSpeakLocale();
     const count = useSignal(0);
-    const tParam = __qsInline('home.greeting', {
-        name: __qsInline('app.title')
+    const tParam = __qsInlineTranslate('greeting', {
+        name: __qsInlineTranslate('app.title')
     });
-    const tArray = __qsInline('home.array@@["{{ name }} one", "{{ name }} two"]', { name: 'n.' });
-    const item = __qsInline('home.array.2@@{{ name }} three', { name: 'n.' });
-    const tObject = __qsInline('home.obj@@{"one": "{{ name }} one", "two": "{{ name }} two"}', { name: 'n.' });
-    const tArrayObjects = __qsInline('home.arrayObjects@@[{"num": "one"}, {"num": "two"}]');
+    const tArray = __qsInlineTranslate('array@@["{{ name }} one", "{{ name }} two"]', {
+        name: 'n.'
+    });
+    const item = __qsInlineTranslate('array.2@@{{ name }} three', {
+        name: 'n.'
+    });
+    const tObject = __qsInlineTranslate('obj@@{"one": "{{ name }} one", "two": "{{ name }} two"}', {
+        name: 'n.'
+    });
+    const tArrayObjects = __qsInlineTranslate('arrayObjects@@[{"num": "one"}, {"num": "two"}]');
     console.log(tParam);
     tArray.map((x)=>console.log(x));
     console.log(item);
@@ -227,147 +286,192 @@ export const s_dYGb4b0cyCA = ()=>{
         class: "content"
     }, [
         /*#__PURE__*/ _jsxC(Title, {
-            get name () {
-                return __qsInline('app.title');
-            },
-            [_IMMUTABLE]: {
-                name: _fnSignal((p0)=>__qsInline('app.title'), [
-                    t
-                ])
-            }
-        }, 3, "1L_2"),
-        /*#__PURE__*/ _jsxC(SubTitle, {
-            ctx: ctx,
-            [_IMMUTABLE]: {
-                ctx: _IMMUTABLE
-            }
-        }, 3, "1L_3"),
-        /*#__PURE__*/ _jsxQ("h3", null, null, __qsInline('home.params'), 1, null),
-        /*#__PURE__*/ _jsxQ("p", null, null, __qsInline('home.greeting', {
+            name: __qsInlineTranslate('app.title')
+        }, 3, "1L_2", {
+            fileName: "routes/[...lang]/index.tsx",
+            lineNumber: 52,
+            columnNumber: 7
+        }),
+        /*#__PURE__*/ _jsxC(SubTitle, null, 3, "1L_3", {
+            fileName: "routes/[...lang]/index.tsx",
+            lineNumber: 54,
+            columnNumber: 7
+        }),
+        /*#__PURE__*/ _jsxQ("h3", null, null, __qsInlineTranslate('params'), 1, null, {
+            fileName: "routes/[...lang]/index.tsx",
+            lineNumber: 56,
+            columnNumber: 7
+        }),
+        /*#__PURE__*/ _jsxQ("p", null, null, __qsInlineTranslate('greeting', {
             name: 'Qwik Speak'
-        }), 1, null),
-        /*#__PURE__*/ _jsxQ("h3", null, null, __qsInline('home.tags'), 1, null),
-        /*#__PURE__*/ _jsxQ("p", null, {
-            dangerouslySetInnerHTML: _fnSignal((p0)=>__qsInline('home.text'), [
-                t
-            ])
-        }, null, 3, null),
-        /*#__PURE__*/ _jsxQ("h3", null, null, __qsInline('home.plural'), 1, null),
+        }), 1, null, {
+            fileName: "routes/[...lang]/index.tsx",
+            lineNumber: 57,
+            columnNumber: 7
+        }),
+        /*#__PURE__*/ _jsxQ("h3", null, null, __qsInlineTranslate('tags'), 1, null, {
+            fileName: "routes/[...lang]/index.tsx",
+            lineNumber: 59,
+            columnNumber: 7
+        }),
+        /*#__PURE__*/ _jsxQ("p", {
+            dangerouslySetInnerHTML: __qsInlineTranslate('description')
+        }, null, null, 3, null, {
+            fileName: "routes/[...lang]/index.tsx",
+            lineNumber: 60,
+            columnNumber: 7
+        }),
+        /*#__PURE__*/ _jsxQ("h3", null, null, __qsInlineTranslate('plural'), 1, null, {
+            fileName: "routes/[...lang]/index.tsx",
+            lineNumber: 62,
+            columnNumber: 7
+        }),
         /*#__PURE__*/ _jsxQ("p", null, {
             class: "counter"
-        }, __qsInlinePlural(count.value, 'home.devs'), 1, null),
+        }, __qsInlinePlural(count.value, 'devs'), 1, null, {
+            fileName: "routes/[...lang]/index.tsx",
+            lineNumber: 63,
+            columnNumber: 7
+        }),
         /*#__PURE__*/ _jsxQ("button", null, {
             class: "btn-counter",
-            onClick$: /*#__PURE__*/ qrl(()=>import("./entry_Home.js"), "s_UVYDAmatcag", [
+            onClick$: /*#__PURE__*/ qrlDEV(()=>import("./____lang__component_div_button_onclick_xgivgs2jpeg.js"), "____lang__component_div_button_onClick_XGiVgs2jpeg", {
+                file: "/home/robisim74/documents/github/qwik-speak/src/routes/[...lang]/index.tsx",
+                lo: 1796,
+                hi: 1815,
+                displayName: "____lang__component_div_button_onClick"
+            }, [
                 count
             ])
-        }, __qsInline('home.increment'), 1, null),
-        /*#__PURE__*/ _jsxQ("h3", null, null, __qsInline('home.dates'), 1, null),
+        }, __qsInlineTranslate('increment'), 1, null, {
+            fileName: "routes/[...lang]/index.tsx",
+            lineNumber: 64,
+            columnNumber: 7
+        }),
+        /*#__PURE__*/ _jsxQ("h3", null, null, __qsInlineTranslate('dates'), 1, null, {
+            fileName: "routes/[...lang]/index.tsx",
+            lineNumber: 66,
+            columnNumber: 7
+        }),
         /*#__PURE__*/ _jsxQ("p", null, null, fd(Date.now(), {
             dateStyle: 'full',
             timeStyle: 'short'
-        }), 1, null),
-        /*#__PURE__*/ _jsxQ("p", null, null, rt(-1, 'second'), 1, null),
-        /*#__PURE__*/ _jsxQ("h3", null, null, __qsInline('home.numbers'), 1, null),
-        /*#__PURE__*/ _jsxQ("p", null, null, fn(1000000), 1, null),
+        }), 1, null, {
+            fileName: "routes/[...lang]/index.tsx",
+            lineNumber: 67,
+            columnNumber: 7
+        }),
+        /*#__PURE__*/ _jsxQ("p", null, null, rt(-1, 'second'), 1, null, {
+            fileName: "routes/[...lang]/index.tsx",
+            lineNumber: 68,
+            columnNumber: 7
+        }),
+        /*#__PURE__*/ _jsxQ("h3", null, null, __qsInlineTranslate('numbers'), 1, null, {
+            fileName: "routes/[...lang]/index.tsx",
+            lineNumber: 70,
+            columnNumber: 7
+        }),
+        /*#__PURE__*/ _jsxQ("p", null, null, fn(1000000), 1, null, {
+            fileName: "routes/[...lang]/index.tsx",
+            lineNumber: 71,
+            columnNumber: 7
+        }),
         /*#__PURE__*/ _jsxQ("p", null, null, fn(1000000, {
             style: 'currency'
-        }), 1, null),
+        }), 1, null, {
+            fileName: "routes/[...lang]/index.tsx",
+            lineNumber: 72,
+            columnNumber: 7
+        }),
         /*#__PURE__*/ _jsxQ("p", null, null, fn(1, {
             style: 'unit',
             unit: locale.units['length']
-        }), 1, null)
-    ], 1, "1L_4");
+        }), 1, null, {
+            fileName: "routes/[...lang]/index.tsx",
+            lineNumber: 73,
+            columnNumber: 7
+        })
+    ], 1, "1L_4", {
+        fileName: "routes/[...lang]/index.tsx",
+        lineNumber: 51,
+        columnNumber: 5
+    });
 };`;
 
-export const mockChunkCode = `const s_dYGb4b0cyCA = () => {
-  const t = useTranslate();
-  usePlural();
+export const mockChunkCode = `const s_eTU0cN78ZUc = () => {
   const fd = useFormatDate();
   const rt = useRelativeTime();
   const fn = useFormatNumber();
-  const ctx = useSpeakContext();
   const locale = useSpeakLocale();
-  const count = Sc(0);
-  const tParam = __qsInline("home.greeting", {
-    name: __qsInline("app.title")
+  const count = Qc(0);
+  const tParam = __qsInlineTranslate("greeting", {
+    name: __qsInlineTranslate("app.title")
   });
-  const tArray = __qsInline('home.array@@["{{ name }} one", "{{ name }} two"]', { name: 'n.' });
-  const item = __qsInline('home.array.2@@{{ name }} three', { name: 'n.' });
-  const tObject = __qsInline('home.obj@@{"one": "{{ name }} one", "two": "{{ name }} two"}', { name: 'n.' });
-  const tArrayObjects = __qsInline('home.arrayObjects@@[{"num": "one"}, {"num": "two"}]');
+  const tArray = __qsInlineTranslate('array@@["{{ name }} one", "{{ name }} two"]', {
+    name: "n."
+  });
+  const item = __qsInlineTranslate("array.2@@{{ name }} three", {
+    name: "n."
+  });
+  const tObject = __qsInlineTranslate('obj@@{"one": "{{ name }} one", "two": "{{ name }} two"}', {
+    name: "n."
+  });
+  const tArrayObjects = __qsInlineTranslate('arrayObjects@@[{"num": "one"}, {"num": "two"}]');
   console.log(tParam);
   tArray.map((x) => console.log(x));
   console.log(item);
   Object.values(tObject).map((x) => console.log(x));
   tArrayObjects.map((x) => console.log(x["num"]));
-  return /* @__PURE__ */ Nr("div", null, {
+  return /* @__PURE__ */ Cr("div", null, {
     class: "content"
   }, [
-    /* @__PURE__ */ Ur(Title, {
-      get name() {
-        return __qsInline("app.title");
-      },
-      [Pt]: {
-        name: Ot((p0) => __qsInline("app.title"), [
-          t
-        ])
-      }
+    /* @__PURE__ */ jr(Title, {
+      name: __qsInlineTranslate("app.title")
     }, 3, "1L_2"),
-    /* @__PURE__ */ Ur(SubTitle, {
-      ctx,
-      [Pt]: {
-        ctx: Pt
-      }
-    }, 3, "1L_3"),
-    /* @__PURE__ */ Nr("h3", null, null, __qsInline("home.params"), 1, null),
-    /* @__PURE__ */ Nr("p", null, null, __qsInline("home.greeting", {
+    /* @__PURE__ */ jr(SubTitle, null, 3, "1L_3"),
+    /* @__PURE__ */ Cr("h3", null, null, __qsInlineTranslate("params"), 1, null),
+    /* @__PURE__ */ Cr("p", null, null, __qsInlineTranslate("greeting", {
       name: "Qwik Speak"
     }), 1, null),
-    /* @__PURE__ */ Nr("h3", null, null, __qsInline("home.tags"), 1, null),
-    /* @__PURE__ */ Nr("p", null, {
-      dangerouslySetInnerHTML: Ot((p0) => __qsInline("home.text"), [
-        t
-      ])
-    }, null, 3, null),
-    /* @__PURE__ */ Nr("h3", null, null, __qsInline("home.plural"), 1, null),
-    /* @__PURE__ */ Nr("p", null, {
+    /* @__PURE__ */ Cr("h3", null, null, __qsInlineTranslate("tags"), 1, null),
+    /* @__PURE__ */ Cr("p", {
+      dangerouslySetInnerHTML: __qsInlineTranslate("description")
+    }, null, null, 3, null),
+    /* @__PURE__ */ Cr("h3", null, null, __qsInlineTranslate("plural"), 1, null),
+    /* @__PURE__ */ Cr("p", null, {
       class: "counter"
-    }, __qsInlinePlural(count.value, "home.devs"), 1, null),
-    /* @__PURE__ */ Nr("button", null, {
+    }, __qsInlinePlural(count.value, "devs"), 1, null),
+    /* @__PURE__ */ Cr("button", null, {
       class: "btn-counter",
-      onClick$: /* @__PURE__ */ z(() => __vitePreload(() => Promise.resolve().then(() => entry_Home), true ? void 0 : void 0), "s_UVYDAmatcag", [
+      onClick$: /* @__PURE__ */ vs(() => __vitePreload(() => Promise.resolve().then(() => entry_____lang_), true ? void 0 : void 0), "s_XGiVgs2jpeg", [
         count
       ])
-    }, __qsInline("home.increment"), 1, null),
-    /* @__PURE__ */ Nr("h3", null, null, __qsInline("home.dates"), 1, null),
-    /* @__PURE__ */ Nr("p", null, null, fd(Date.now(), {
+    }, __qsInlineTranslate("increment"), 1, null),
+    /* @__PURE__ */ Cr("h3", null, null, __qsInlineTranslate("dates"), 1, null),
+    /* @__PURE__ */ Cr("p", null, null, fd(Date.now(), {
       dateStyle: "full",
       timeStyle: "short"
     }), 1, null),
-    /* @__PURE__ */ Nr("p", null, null, rt(-1, "second"), 1, null),
-    /* @__PURE__ */ Nr("h3", null, null, __qsInline("home.numbers"), 1, null),
-    /* @__PURE__ */ Nr("p", null, null, fn(1e6), 1, null),
-    /* @__PURE__ */ Nr("p", null, null, fn(1e6, {
+    /* @__PURE__ */ Cr("p", null, null, rt(-1, "second"), 1, null),
+    /* @__PURE__ */ Cr("h3", null, null, __qsInlineTranslate("numbers"), 1, null),
+    /* @__PURE__ */ Cr("p", null, null, fn(1e6), 1, null),
+    /* @__PURE__ */ Cr("p", null, null, fn(1e6, {
       style: "currency"
     }), 1, null),
-    /* @__PURE__ */ Nr("p", null, null, fn(1, {
+    /* @__PURE__ */ Cr("p", null, null, fn(1, {
       style: "unit",
       unit: locale.units["length"]
     }), 1, null)
   ], 1, "1L_4");
 };`;
 
-export const mockInlinedCode = `const s_dYGb4b0cyCA = () => {
-  const t = useTranslate();
-  usePlural();
+export const mockInlinedCode = `const s_eTU0cN78ZUc = () => {
   const fd = useFormatDate();
   const rt = useRelativeTime();
   const fn = useFormatNumber();
-  const ctx = useSpeakContext();
   const locale = useSpeakLocale();
-  const count = Sc(0);
-  const tParam = \`Hi! I am \${\`\`}\`;
+  const count = Qc(0);
+  const tParam = \`Hi! I am \${\`Qwik Speak\`}\`;
   const tArray = [\`n. one\`,\`n. two\`,\`n. three\`];
   const item = \`n. three\`;
   const tObject = {"one":\`n. one\`,"two":\`n. two\`};
@@ -377,71 +481,54 @@ export const mockInlinedCode = `const s_dYGb4b0cyCA = () => {
   console.log(item);
   Object.values(tObject).map((x) => console.log(x));
   tArrayObjects.map((x) => console.log(x["num"]));
-  return /* @__PURE__ */ Nr("div", null, {
+  return /* @__PURE__ */ Cr("div", null, {
     class: "content"
   }, [
-    /* @__PURE__ */ Ur(Title, {
-      get name() {
-        return \`\`;
-      },
-      [Pt]: {
-        name: Ot((p0) => \`\`, [
-          t
-        ])
-      }
+    /* @__PURE__ */ jr(Title, {
+      name: \`Qwik Speak\`
     }, 3, "1L_2"),
-    /* @__PURE__ */ Ur(SubTitle, {
-      ctx,
-      [Pt]: {
-        ctx: Pt
-      }
-    }, 3, "1L_3"),
-    /* @__PURE__ */ Nr("h3", null, null, \`Parameters\`, 1, null),
-    /* @__PURE__ */ Nr("p", null, null, \`Hi! I am Qwik Speak\`, 1, null),
-    /* @__PURE__ */ Nr("h3", null, null, \`Html tags\`, 1, null),
-    /* @__PURE__ */ Nr("p", null, {
-      dangerouslySetInnerHTML: Ot((p0) => \`<em>Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps</em>\`, [
-        t
-      ])
-    }, null, 3, null),
-    /* @__PURE__ */ Nr("h3", null, null, \`Plural\`, 1, null),
-    /* @__PURE__ */ Nr("p", null, {
+    /* @__PURE__ */ jr(SubTitle, null, 3, "1L_3"),
+    /* @__PURE__ */ Cr("h3", null, null, \`Parameters\`, 1, null),
+    /* @__PURE__ */ Cr("p", null, null, \`Hi! I am Qwik Speak\`, 1, null),
+    /* @__PURE__ */ Cr("h3", null, null, \`Html tags\`, 1, null),
+    /* @__PURE__ */ Cr("p", {
+      dangerouslySetInnerHTML: \`<em>Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps</em>\`
+    }, null, null, 3, null),
+    /* @__PURE__ */ Cr("h3", null, null, \`Plural\`, 1, null),
+    /* @__PURE__ */ Cr("p", null, {
       class: "counter"
     }, (new Intl.PluralRules(\`en-US\`).select(+count.value) === \`other\` && \`\${count.value} software developers\` || \`\${count.value} software developer\`), 1, null),
-    /* @__PURE__ */ Nr("button", null, {
+    /* @__PURE__ */ Cr("button", null, {
       class: "btn-counter",
-      onClick$: /* @__PURE__ */ z(() => __vitePreload(() => Promise.resolve().then(() => entry_Home), true ? void 0 : void 0), "s_UVYDAmatcag", [
+      onClick$: /* @__PURE__ */ vs(() => __vitePreload(() => Promise.resolve().then(() => entry_____lang_), true ? void 0 : void 0), "s_XGiVgs2jpeg", [
         count
       ])
     }, \`Increment\`, 1, null),
-    /* @__PURE__ */ Nr("h3", null, null, \`Dates & relative time\`, 1, null),
-    /* @__PURE__ */ Nr("p", null, null, fd(Date.now(), {
+    /* @__PURE__ */ Cr("h3", null, null, \`Dates & relative time\`, 1, null),
+    /* @__PURE__ */ Cr("p", null, null, fd(Date.now(), {
       dateStyle: "full",
       timeStyle: "short"
     }), 1, null),
-    /* @__PURE__ */ Nr("p", null, null, rt(-1, "second"), 1, null),
-    /* @__PURE__ */ Nr("h3", null, null, \`Numbers & currencies\`, 1, null),
-    /* @__PURE__ */ Nr("p", null, null, fn(1e6), 1, null),
-    /* @__PURE__ */ Nr("p", null, null, fn(1e6, {
+    /* @__PURE__ */ Cr("p", null, null, rt(-1, "second"), 1, null),
+    /* @__PURE__ */ Cr("h3", null, null, \`Numbers & currencies\`, 1, null),
+    /* @__PURE__ */ Cr("p", null, null, fn(1e6), 1, null),
+    /* @__PURE__ */ Cr("p", null, null, fn(1e6, {
       style: "currency"
     }), 1, null),
-    /* @__PURE__ */ Nr("p", null, null, fn(1, {
+    /* @__PURE__ */ Cr("p", null, null, fn(1, {
       style: "unit",
       unit: locale.units["length"]
     }), 1, null)
   ], 1, "1L_4");
 };`;
 
-export const mockInlinedCodeByLang = `const s_dYGb4b0cyCA = () => {
-  const t = useTranslate();
-  usePlural();
+export const mockInlinedCodeByLang = `const s_eTU0cN78ZUc = () => {
   const fd = useFormatDate();
   const rt = useRelativeTime();
   const fn = useFormatNumber();
-  const ctx = useSpeakContext();
   const locale = useSpeakLocale();
-  const count = Sc(0);
-  const tParam = \`Ciao! Sono \${\`\`}\`;
+  const count = Qc(0);
+  const tParam = \`Ciao! Sono \${\`Qwik Speak\`}\`;
   const tArray = [\`n. uno\`,\`n. due\`,\`n. tre\`];
   const item = \`n. tre\`;
   const tObject = {"one":\`n. uno\`,"two":\`n. due\`};
@@ -451,55 +538,41 @@ export const mockInlinedCodeByLang = `const s_dYGb4b0cyCA = () => {
   console.log(item);
   Object.values(tObject).map((x) => console.log(x));
   tArrayObjects.map((x) => console.log(x["num"]));
-  return /* @__PURE__ */ Nr("div", null, {
+  return /* @__PURE__ */ Cr("div", null, {
     class: "content"
   }, [
-    /* @__PURE__ */ Ur(Title, {
-      get name() {
-        return \`\`;
-      },
-      [Pt]: {
-        name: Ot((p0) => \`\`, [
-          t
-        ])
-      }
+    /* @__PURE__ */ jr(Title, {
+      name: \`Qwik Speak\`
     }, 3, "1L_2"),
-    /* @__PURE__ */ Ur(SubTitle, {
-      ctx,
-      [Pt]: {
-        ctx: Pt
-      }
-    }, 3, "1L_3"),
-    /* @__PURE__ */ Nr("h3", null, null, \`Parametri\`, 1, null),
-    /* @__PURE__ */ Nr("p", null, null, \`Ciao! Sono Qwik Speak\`, 1, null),
-    /* @__PURE__ */ Nr("h3", null, null, \`Tag Html\`, 1, null),
-    /* @__PURE__ */ Nr("p", null, {
-      dangerouslySetInnerHTML: Ot((p0) => \`<em>Libreria di internazionalizzazione (i18n) per tradurre testi, date e numeri nelle app Qwik</em>\`, [
-        t
-      ])
-    }, null, 3, null),
-    /* @__PURE__ */ Nr("h3", null, null, \`Plurale\`, 1, null),
-    /* @__PURE__ */ Nr("p", null, {
+    /* @__PURE__ */ jr(SubTitle, null, 3, "1L_3"),
+    /* @__PURE__ */ Cr("h3", null, null, \`Parametri\`, 1, null),
+    /* @__PURE__ */ Cr("p", null, null, \`Ciao! Sono Qwik Speak\`, 1, null),
+    /* @__PURE__ */ Cr("h3", null, null, \`Tag Html\`, 1, null),
+    /* @__PURE__ */ Cr("p", {
+      dangerouslySetInnerHTML: \`<em>Libreria di internazionalizzazione (i18n) per tradurre testi, date e numeri nelle app Qwik</em>\`
+    }, null, null, 3, null),
+    /* @__PURE__ */ Cr("h3", null, null, \`Plurale\`, 1, null),
+    /* @__PURE__ */ Cr("p", null, {
       class: "counter"
-    }, (new Intl.PluralRules(\`it-IT\`).select(+count.value) === \`other\` && \`\${count.value} sviluppatori software\` || \`\${count.value} sviluppatore software\`), 1, null),
-    /* @__PURE__ */ Nr("button", null, {
+    }, (new Intl.PluralRules(\`it-IT\`).select(+count.value) === \`other\` && \`\${count.value} sviluppatori di software\` || \`\${count.value} sviluppatore di software\`), 1, null),
+    /* @__PURE__ */ Cr("button", null, {
       class: "btn-counter",
-      onClick$: /* @__PURE__ */ z(() => __vitePreload(() => Promise.resolve().then(() => entry_Home), true ? void 0 : void 0), "s_UVYDAmatcag", [
+      onClick$: /* @__PURE__ */ vs(() => __vitePreload(() => Promise.resolve().then(() => entry_____lang_), true ? void 0 : void 0), "s_XGiVgs2jpeg", [
         count
       ])
-    }, \`Incrementa\`, 1, null),
-    /* @__PURE__ */ Nr("h3", null, null, \`Date e tempo relativo\`, 1, null),
-    /* @__PURE__ */ Nr("p", null, null, fd(Date.now(), {
+    }, \`Incremento\`, 1, null),
+    /* @__PURE__ */ Cr("h3", null, null, \`Date e tempo relativo\`, 1, null),
+    /* @__PURE__ */ Cr("p", null, null, fd(Date.now(), {
       dateStyle: "full",
       timeStyle: "short"
     }), 1, null),
-    /* @__PURE__ */ Nr("p", null, null, rt(-1, "second"), 1, null),
-    /* @__PURE__ */ Nr("h3", null, null, \`Numeri e valute\`, 1, null),
-    /* @__PURE__ */ Nr("p", null, null, fn(1e6), 1, null),
-    /* @__PURE__ */ Nr("p", null, null, fn(1e6, {
+    /* @__PURE__ */ Cr("p", null, null, rt(-1, "second"), 1, null),
+    /* @__PURE__ */ Cr("h3", null, null, \`Numeri e valute\`, 1, null),
+    /* @__PURE__ */ Cr("p", null, null, fn(1e6), 1, null),
+    /* @__PURE__ */ Cr("p", null, null, fn(1e6, {
       style: "currency"
     }), 1, null),
-    /* @__PURE__ */ Nr("p", null, null, fn(1, {
+    /* @__PURE__ */ Cr("p", null, null, fn(1, {
       style: "unit",
       unit: locale.units["length"]
     }), 1, null)
@@ -507,115 +580,126 @@ export const mockInlinedCodeByLang = `const s_dYGb4b0cyCA = () => {
 };`;
 
 export const mockAsset = JSON.stringify({
-  "home": {
-    "dates": "Dates & relative time",
-    "greeting": "Hi! I am {{name}}",
-    "increment": "Increment",
-    "numbers": "Numbers & currencies",
-    "plural": "Plural",
-    "tags": "Html tags",
-    "text": "<em>Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps</em>"
-  }
+  "dates": "Dates & relative time",
+  "greeting": "Hi! I am {{name}}",
+  "increment": "Increment",
+  "numbers": "Numbers & currencies",
+  "params": "Parameters",
+  "plural": "Plural",
+  "tags": "Html tags",
+  "description": "<em>Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps</em>"
 }, null, 2);
 
 export const mockExtractedAsset = JSON.stringify({
-  "home": {
-    "array": [
-      "{{ name }} one",
-      "{{ name }} two",
-      "{{ name }} three"
-    ],
-    "arrayObjects": [
-      {
-        "num": "one"
-      },
-      {
-        "num": "two"
+  "app": {
+    "head": {
+      "home": {
+        "description": "",
+        "title": ""
       }
-    ],
-    "dates": "Dates & relative time",
-    "devs": {
-      "one": "",
-      "other": ""
     },
-    "greeting": "Hi! I am {{name}}",
-    "increment": "Increment",
-    "numbers": "Numbers & currencies",
-    "obj": {
-      "one": "{{ name }} one",
-      "two": "{{ name }} two"
+    "subtitle": "",
+    "title": ""
+  },
+  "array": [
+    "{{ name }} one",
+    "{{ name }} two",
+    "{{ name }} three"
+  ],
+  "arrayObjects": [
+    {
+      "num": "one"
     },
-    "params": "",
-    "plural": "Plural",
-    "tags": "Html tags",
-    "text": "<em>Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps</em>"
-  }
+    {
+      "num": "two"
+    }
+  ],
+  "dates": "Dates & relative time",
+  "description": "<em>Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps</em>",
+  "devs": {
+    "one": "",
+    "other": ""
+  },
+  "greeting": "Hi! I am {{name}}",
+  "increment": "Increment",
+  "numbers": "Numbers & currencies",
+  "obj": {
+    "one": "{{ name }} one",
+    "two": "{{ name }} two"
+  },
+  "params": "Parameters",
+  "plural": "Plural",
+  "tags": "Html tags"
 }, null, 2);
 
 export const mockTranslatedAsset = JSON.stringify({
-  "home": {
-    "array": [
-      "{{ name }} one",
-      "{{ name }} two",
-      "{{ name }} three"
-    ],
-    "arrayObjects": [
-      {
-        "num": "one"
-      },
-      {
-        "num": "two"
-      }
-    ],
-    "dates": "Dates & relative time",
-    "devs": {
-      "one": "{{ value }} software developer",
-      "other": "{{ value }} software developers"
+  "app": {
+    "subtitle": "Translate your Qwik apps into any language",
+    "title": "Qwik Speak"
+  },
+  "array": [
+    "{{ name }} one",
+    "{{ name }} two",
+    "{{ name }} three"
+  ],
+  "arrayObjects": [
+    {
+      "num": "one"
     },
-    "greeting": "Hi! I am {{name}}",
-    "increment": "Increment",
-    "numbers": "Numbers & currencies",
-    "obj": {
-      "one": "{{ name }} one",
-      "two": "{{ name }} two"
-    },
-    "params": "Parameters",
-    "plural": "Plural",
-    "tags": "Html tags",
-    "text": "<em>Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps</em>"
-  }
+    {
+      "num": "two"
+    }
+  ],
+  "dates": "Dates & relative time",
+  "description": "<em>Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps</em>",
+  "devs": {
+    "one": "{{ value }} software developer",
+    "other": "{{ value }} software developers"
+  },
+  "greeting": "Hi! I am {{name}}",
+  "increment": "Increment",
+  "numbers": "Numbers & currencies",
+  "obj": {
+    "one": "{{ name }} one",
+    "two": "{{ name }} two"
+  },
+  "params": "Parameters",
+  "plural": "Plural",
+  "tags": "Html tags"
 }, null, 2);
 
 export const mockTranslatedAssetByLang = JSON.stringify({
-  "home": {
-    "array": [
-      "{{ name }} uno",
-      "{{ name }} due",
-      "{{ name }} tre"
-    ],
-    "arrayObjects": [
-      {
-        "num": "uno"
-      },
-      {
-        "num": "due"
-      }
-    ],
-    "dates": "Date e tempo relativo",
-    "devs": {
-      "one": "{{ value }} sviluppatore software",
-      "other": "{{ value }} sviluppatori software"
+  "app": {
+    "subtitle": "Traduci le tue app Qwik in qualsiasi lingua",
+    "title": "Qwik Speak"
+  },
+  "array": [
+    "{{ name }} uno",
+    "{{ name }} due",
+    "{{ name }} tre"
+  ],
+  "arrayObjects": [
+    {
+      "num": "uno"
     },
-    "greeting": "Ciao! Sono {{name}}",
-    "increment": "Incrementa",
-    "numbers": "Numeri e valute",
-    "obj": {
-      "one": "{{ name }} uno",
-      "two": "{{ name }} due"
-    },
-    "params": "Parametri",
-    "plural": "Plurale",
-    "tags": "Tag Html",
-    "text": "<em>Libreria di internazionalizzazione (i18n) per tradurre testi, date e numeri nelle app Qwik</em>",
-  }
+    {
+      "num": "due"
+    }
+  ],
+  "dates": "Date e tempo relativo",
+  "description": "<em>Libreria di internazionalizzazione (i18n) per tradurre testi, date e numeri nelle app Qwik</em>",
+  "devs": {
+    "one": "{{ value }} sviluppatore di software",
+    "other": "{{ value }} sviluppatori di software"
+  },
+  "greeting": "Ciao! Sono {{name}}",
+  "increment": "Incremento",
+  "numbers": "Numeri e valute",
+  "obj": {
+    "one": "{{ name }} uno",
+    "two": "{{ name }} due"
+  },
+  "params": "Parametri",
+  "plural": "Plurale",
+  "tags": "Tag Html"
 }, null, 2);

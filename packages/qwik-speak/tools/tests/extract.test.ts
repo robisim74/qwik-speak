@@ -14,7 +14,7 @@ vi.mock('fs/promises', async () => {
     ...mod,
     readdir: vi.fn()
       .mockImplementationOnce(() => [{ name: 'home.tsx', isDirectory: () => false }])
-      .mockImplementationOnce(() => ['home.json']),
+      .mockImplementationOnce(() => ['app.json']),
     readFile: vi.fn()
       .mockImplementationOnce(() => mockSource)
       .mockImplementationOnce(() => mockAsset),
@@ -32,13 +32,7 @@ describe('extract', () => {
     expect(readdir).toHaveBeenCalledTimes(2);
     expect(readFile).toHaveBeenCalledTimes(2);
 
-    expect(writeFile).toHaveBeenCalledTimes(2);
-    expect(writeFile).toHaveBeenNthCalledWith(1, normalize('../../i18n/en-US/app.json'), `{
-  "app": {
-    "subtitle": "",
-    "title": ""
-  }
-}`);
-    expect(writeFile).toHaveBeenNthCalledWith(2, normalize('../../i18n/en-US/home.json'), mockExtractedAsset);
+    expect(writeFile).toHaveBeenCalledTimes(1);
+    expect(writeFile).toHaveBeenNthCalledWith(1, normalize('../../i18n/en-US/app.json'), mockExtractedAsset);
   });
 });

@@ -394,7 +394,7 @@ export function parseSequenceExpressions(code: string, alias: string): CallExpre
       } catch (ex: any) {
         // Report Call expression
         console.error(ex);
-        console.error('\x1b[31m\nQwik Speak Inline error parsing \x1b[0m %s',
+        console.error('\n\x1b[31mQwik Speak Parser error\x1b[0m\n%s',
           code.substring(i, tokens[tokens.length - 1].position.end) +
           '\n');
       }
@@ -404,11 +404,19 @@ export function parseSequenceExpressions(code: string, alias: string): CallExpre
   return sequenceExpressions;
 }
 
+export function matchInlineTranslate(code: string): boolean {
+  return /inlineTranslate/.test(code);
+}
+
+export function matchInlinePlural(code: string): boolean {
+  return /inlinePlural/.test(code);
+}
+
 /**
- * Get useTranslate alias
+ * Get inlineTranslate alias
  */
-export function getUseTranslateAlias(code: string): string | null {
-  let translateAlias = code.match(/(?<=\bconst\s).*?(?=\s?=\s?useTranslate\(\);?)/)?.[0]?.trim();
+export function getInlineTranslateAlias(code: string): string | null {
+  let translateAlias = code.match(/(?<=\bconst\s).*?(?=\s?=\s?inlineTranslate\(\);?)/)?.[0]?.trim();
   if (!translateAlias) return null;
   // Assert position at a word boundary
   if (!translateAlias.startsWith('$')) translateAlias = `\\b${translateAlias}`;
@@ -418,22 +426,10 @@ export function getUseTranslateAlias(code: string): string | null {
 }
 
 /**
- * Get inlineTranslate alias
+ * Get inlinePlural alias
  */
-export function getInlineTranslateAlias(code: string): string {
-  let translateAlias = code.match(/(?<=inlineTranslate\s+as).*?(?=,|\})/s)?.[0]?.trim() || 'inlineTranslate';
-  // Assert position at a word boundary
-  if (!translateAlias.startsWith('$')) translateAlias = `\\b${translateAlias}`;
-  // Escape special characters 
-  translateAlias = translateAlias.replace(/\$/g, '\\$');
-  return translateAlias;
-}
-
-/**
- * Get usePlural alias
- */
-export function getUsePluralAlias(code: string): string | null {
-  let pluralAlias = code.match(/(?<=\bconst\s).*?(?=\s?=\s?usePlural\(\);?)/)?.[0]?.trim();
+export function getInlinePluralAlias(code: string): string | null {
+  let pluralAlias = code.match(/(?<=\bconst\s).*?(?=\s?=\s?inlinePlural\(\);?)/)?.[0]?.trim();
   if (!pluralAlias) return null;
   // Assert position at a word boundary
   if (!pluralAlias.startsWith('$')) pluralAlias = `\\b${pluralAlias}`;

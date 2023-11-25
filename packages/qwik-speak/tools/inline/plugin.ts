@@ -6,21 +6,30 @@ import { extname, normalize } from 'path';
 
 import type { QwikSpeakInlineOptions, Translation } from '../core/types';
 import type { Argument, Property } from '../core/parser';
-import { getUseTranslateAlias, getInlineTranslateAlias, getUsePluralAlias, parseJson, parse, tokenize } from '../core/parser';
+import {
+  getInlineTranslateAlias,
+  getInlinePluralAlias,
+  parseJson,
+  matchInlinePlural,
+  matchInlineTranslate
+} from '../core/parser';
 import { parseSequenceExpressions } from '../core/parser';
 import { getOptions, getRules } from '../core/intl-parser';
 import { merge } from '../core/merge';
 
-const inlinePlaceholder = '__qsInline';
 const inlineTranslatePlaceholder = '__qsInlineTranslate';
 const inlinePluralPlaceholder = '__qsInlinePlural';
 
-const signalAlias = '\\b_fnSignal';
-
 // Logs
 const missingValues: string[] = [];
-const dynamicKeys: string[] = [];
-const dynamicParams: string[] = [];
+const dynamics: string[] = [];
+const missingValueText = (lang: string, key: string) => `${lang} - ${key}`;
+const dynamicText = (originalFn: string, text: string) => `dynamic ${text}: ${originalFn}`;
+
+// Config
+let target: 'ssr' | 'lib' | 'test' | 'client';
+let mode: 'dev' | 'prod';
+let input: string | undefined;
 
 /**
  * Qwik Speak Inline Vite plugin
@@ -39,18 +48,28 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
   // Translation data
   const translation: Translation = Object.fromEntries(resolvedOptions.supportedLangs.map(value => [value, {}]));
 
-  // Client or server files
-  let target: string;
-  let input: string | undefined;
+  // Current lang
+  let devLang: string;
+
+  // Inlined modules
+  const moduleIds = new Set<string>();
 
   const plugin: Plugin = {
     name: 'vite-plugin-qwik-speak-inline',
     enforce: 'post',
-    // Apply only on build
-    apply: 'build',
+    apply: undefined, // both
 
     configResolved(resolvedConfig) {
-      target = resolvedConfig.build?.ssr || resolvedConfig.mode === 'ssr' ? 'ssr' : 'client';
+      if (resolvedConfig.build?.ssr || resolvedConfig.mode === 'ssr') {
+        target = 'ssr';
+      } else if (resolvedConfig.mode === 'lib') {
+        target = 'lib';
+      } else if (resolvedConfig.mode === 'test') {
+        target = 'test';
+      } else {
+        target = 'client';
+      }
+      mode = resolvedConfig.isProduction || resolvedConfig.mode === 'production' ? 'prod' : 'dev';
 
       const inputOption = resolvedConfig.build?.rollupOptions?.input;
       if (inputOption) {
@@ -62,41 +81,52 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
       input = input?.split('/')?.pop();
     },
 
+    configureServer(server) {
+      // In dev mode, listen to lang from client 
+      if (mode === 'dev') {
+        server.ws.on('qwik-speak:lang', (data) => {
+          if (devLang && devLang !== data.msg) {
+            // Invalidate inlined modules
+            for (const id of moduleIds) {
+              const module = server.moduleGraph.getModuleById(id);
+              if (module) server.moduleGraph.invalidateModule(module);
+            }
+            moduleIds.clear();
+          }
+          // Update current lang
+          devLang = data.msg;
+        });
+      }
+    },
+
+    handleHotUpdate({ file, server }) {
+      // Filter json
+      if (new RegExp(resolvedOptions.assetsPath).test(file) && /\.(json)$/.test(file)) {
+        for (const lang of resolvedOptions.supportedLangs) {
+          if (new RegExp(lang).test(file)) {
+            loadTranslations(translation, [lang], resolvedOptions.basePath, resolvedOptions.assetsPath);
+          }
+        }
+        // Invalidate inlined modules
+        for (const id of moduleIds) {
+          const module = server.moduleGraph.getModuleById(id);
+          if (module) server.moduleGraph.invalidateModule(module);
+        }
+        moduleIds.clear();
+      }
+    },
+
     /**
      * Load translation files when build starts
      */
     async buildStart() {
-      if (target === 'client') {
-        // For all langs
-        await Promise.all(resolvedOptions.supportedLangs.map(async lang => {
-          const baseDir = normalize(`${resolvedOptions.basePath}/${resolvedOptions.assetsPath}/${lang}`);
-          // For all files
-          const files = await readdir(baseDir);
-
-          if (files.length > 0) {
-            const ext = extname(files[0]);
-            let data: Translation = {};
-
-            const tasks = files.map(filename => readFile(`${baseDir}/${filename}`, 'utf8'));
-            const sources = await Promise.all(tasks);
-
-            for (const source of sources) {
-              if (source) {
-                let parsed: Translation = {};
-
-                switch (ext) {
-                  case '.json':
-                    parsed = parseJson(source);
-                    break;
-                }
-
-                data = merge(data, parsed);
-              }
-            }
-
-            translation[lang] = { ...translation[lang], ...data }; // Shallow merge
-          }
-        }));
+      if (target === 'client' || mode === 'dev') {
+        await loadTranslations(
+          translation,
+          resolvedOptions.supportedLangs,
+          resolvedOptions.basePath,
+          resolvedOptions.assetsPath
+        );
       }
     },
 
@@ -104,35 +134,42 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
      * Transform functions
      * Prefer transform hook because unused imports will be removed, unlike renderChunk
      */
-    async transform(code: string, id: string) {
-      if (target === 'client') {
+    async transform(code: string, id: string, options) {
+      if (target === 'client' || (target === 'ssr' && options?.ssr === false)) {
         // Filter id
         if (/\/src\//.test(id) && /\.(js|cjs|mjs|jsx|ts|tsx)$/.test(id)) {
-          // Filter code: usePlural
-          if (/usePlural/.test(code)) {
+          // Filter code: inlinePlural
+          if (matchInlinePlural(code)) {
             code = transformPlural(code);
           }
-          // Filter code: useTranslate
-          if (/useTranslate/.test(code)) {
-            code = transform(code);
-          }
           // Filter code: inlineTranslate
-          if (/inlineTranslate/.test(code)) {
-            code = transformInline(code);
+          if (matchInlineTranslate(code)) {
+            code = transformTranslate(code);
           }
+
+          // Inline in dev mode
+          if (mode === 'dev') {
+            if (code.includes(inlineTranslatePlaceholder) ||
+              code.includes(inlinePluralPlaceholder)) {
+              code = inlineAll(code, devLang, resolvedOptions, translation);
+
+              moduleIds.add(id);
+            }
+          }
+
           return code;
         }
       }
 
       // Check base url
       if (target === 'ssr') {
-        if (id.endsWith('entry.ssr.tsx' || id.endsWith('entry.ssr.jsx'))) {
+        if (id.endsWith('entry.ssr.tsx') || id.endsWith('entry.ssr.jsx')) {
           if (!/(?<!\/\/\s*)base:\s*extractBase/.test(code)) {
             console.log(
               '\n\x1b[31mQwik Speak Inline error\x1b[0m\n%s',
-              "Missing 'base' option in 'entry.ssr.tsx' file: see https://robisim74.gitbook.io/qwik-speak/tools/inline#usage"
+              "Missing 'base' option in 'entry.ssr.tsx' file: see https://robisim74.gitbook.io/qwik-speak/tools/setup"
             );
-            process.exit(1)
+            process.exit(1);
           }
         }
       }
@@ -158,13 +195,15 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
 
         log.write(`${target}: ` + (input ?? '-') + '\n');
 
+        log.write('\nMissing value for keys:\n');
         missingValues.forEach(x => log.write(x + '\n'));
-        dynamicKeys.forEach(x => log.write(x + '\n'));
-        dynamicParams.forEach(x => log.write(x + '\n'));
 
-        log.write((`Qwik Speak Inline: build ends at ${new Date().toLocaleString()}\n`));
+        log.write("\nMake sure the keys are in 'runtimeAssets':\n");
+        dynamics.forEach(x => log.write(x + '\n'));
 
-        if (missingValues.length > 0 || dynamicKeys.length > 0 || dynamicParams.length > 0) {
+        log.write((`\nQwik Speak Inline: build ends at ${new Date().toLocaleString()}\n`));
+
+        if (missingValues.length > 0 || dynamics.length > 0) {
           console.log(
             '\n\x1b[33mQwik Speak Inline warn\x1b[0m\n%s',
             'There are missing values or dynamic keys: see ./qwik-speak-inline.log'
@@ -175,6 +214,46 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
   };
 
   return plugin;
+}
+
+export async function loadTranslations(
+  translation: Translation,
+  langs: string[],
+  basePath: string,
+  assetsPath: string
+) {
+  // For all langs
+  await Promise.all(langs.map(async lang => {
+    const baseDir = normalize(`${basePath}/${assetsPath}/${lang}`);
+    // For all files
+    if (existsSync(baseDir)) {
+      const files = await readdir(baseDir);
+
+      if (files.length > 0) {
+        const ext = extname(files[0]);
+        let data: Translation = {};
+
+        const tasks = files.map(filename => readFile(`${baseDir}/${filename}`, 'utf8'));
+        const sources = await Promise.all(tasks);
+
+        for (const source of sources) {
+          if (source) {
+            let parsed: Translation = {};
+
+            switch (ext) {
+              case '.json':
+                parsed = parseJson(source);
+                break;
+            }
+
+            data = merge(data, parsed);
+          }
+        }
+
+        translation[lang] = { ...translation[lang], ...data }; // Shallow merge
+      }
+    }
+  }));
 }
 
 export async function writeChunks(
@@ -197,15 +276,7 @@ export async function writeChunks(
 
       // Inline
       let code = chunk.code;
-      if (code.includes(inlinePluralPlaceholder)) {
-        code = inlinePlural(code, inlinePluralPlaceholder, inlinePlaceholder, lang, opts);
-      }
-      if (code.includes(inlinePlaceholder)) {
-        code = inline(code, translation, inlinePlaceholder, lang, opts);
-      }
-      if (code.includes(inlineTranslatePlaceholder)) {
-        code = inline(code, translation, inlineTranslatePlaceholder, lang, opts);
-      }
+      code = inlineAll(code, lang, opts, translation);
       tasks.push(writeFile(filename, code));
 
       // Original chunks to default lang
@@ -220,86 +291,14 @@ export async function writeChunks(
 }
 
 /**
- * Transform useTranslate to placeholder
- */
-export function transform(code: string): string {
-  const alias = getUseTranslateAlias(code);
-
-  if (alias) {
-    // Parse sequence
-    const sequence = parseSequenceExpressions(code, alias);
-
-    if (sequence.length === 0) return code;
-
-    for (const expr of sequence) {
-      // Original function
-      const originalFn = expr.value;
-      // Arguments
-      const args = expr.arguments;
-
-      if (args?.length > 0) {
-        if (checkDynamic(args, originalFn)) continue;
-
-        // Transpile with placeholder
-        const transpiled = originalFn.replace(new RegExp(`${alias}\\(`), `${inlinePlaceholder}(`);
-        // Replace
-        code = code.replace(originalFn, transpiled);
-      }
-    }
-  }
-
-  // Props
-  const sequence = parseSequenceExpressions(code, signalAlias);
-
-  if (sequence.length === 0) return code;
-
-  for (const expr of sequence) {
-    // Arguments
-    const args = expr.arguments;
-
-    // Check identifier
-    if (args?.length > 2) {
-      if (args[args.length - 1].type === 'ArrayExpression') {
-        const elements = args[args.length - 1].elements;
-        if (elements && elements.find(element => new RegExp(`^${alias}$`).test(element.value))) {
-          const index = elements.findIndex(element => new RegExp(`^${alias}$`).test(element.value));
-          if (args[index].type === 'Identifier' && args[args.length - 2].type === 'CallExpression') {
-            // Transformed function
-            const transformedFn = args[args.length - 2].value;
-            if (transformedFn && args[index].value) {
-              const transformedAlias = `\\b${args[index].value}`;
-              const tokens = tokenize(transformedFn);
-              const transformedExpr = parse(tokens, transformedFn, transformedAlias);
-
-              if (transformedExpr) {
-                // Arguments
-                const transformedArgs = transformedExpr.arguments;
-
-                if (transformedArgs?.length > 0) {
-                  if (checkDynamic(transformedArgs, transformedFn)) continue;
-
-                  // Transpile with placeholder
-                  const transpiled = transformedFn.replace(new RegExp(`${transformedAlias}\\(`), `${inlinePlaceholder}(`);
-                  // Replace
-                  code = code.replace(transformedFn, transpiled);
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-
-  return code;
-}
-
-/**
  * Transform inlineTranslate to placeholder
  */
-export function transformInline(code: string): string {
+export function transformTranslate(code: string): string {
   const alias = getInlineTranslateAlias(code);
 
+  if (!alias) return code;
+
+  let dynamic = false;
   // Parse sequence
   const sequence = parseSequenceExpressions(code, alias);
 
@@ -312,7 +311,11 @@ export function transformInline(code: string): string {
     const args = expr.arguments;
 
     if (args?.length > 0) {
-      if (checkDynamicInline(args, originalFn)) continue;
+      // Dynamic
+      if (checkDynamicTranslate(args, originalFn)) {
+        dynamic = true;
+        continue;
+      }
 
       // Transpile with placeholder
       const transpiled = originalFn.replace(new RegExp(`${alias}\\(`), `${inlineTranslatePlaceholder}(`);
@@ -321,42 +324,71 @@ export function transformInline(code: string): string {
     }
   }
 
-  return code;
-}
-
-/**
- * Transform usePlural to placeholder
- */
-export function transformPlural(code: string): string {
-  const alias = getUsePluralAlias(code);
-
-  if (alias) {
-    // Parse sequence
-    const sequence = parseSequenceExpressions(code, alias);
-
-    if (sequence.length === 0) return code;
-
-    for (const expr of sequence) {
-      // Original function
-      const originalFn = expr.value;
-      // Arguments
-      const args = expr.arguments;
-
-      if (args?.length > 0) {
-        if (checkDynamicPlural(args, originalFn)) continue;
-
-        // Transpile with placeholder
-        const transpiled = originalFn.replace(new RegExp(`${alias}\\(`), `${inlinePluralPlaceholder}(`);
-        // Replace
-        code = code.replace(originalFn, transpiled);
-      }
-    }
+  // Remove invocation
+  if (!dynamic) {
+    code = removeInlineTranslate(code, alias);
   }
 
   return code;
 }
 
-export function inline(
+/**
+ * Transform inlinePlural to placeholder
+ */
+export function transformPlural(code: string): string {
+  const alias = getInlinePluralAlias(code);
+
+  if (!alias) return code;
+
+  let dynamic = false;
+  // Parse sequence
+  const sequence = parseSequenceExpressions(code, alias);
+
+  if (sequence.length === 0) return code;
+
+  for (const expr of sequence) {
+    // Original function
+    const originalFn = expr.value;
+    // Arguments
+    const args = expr.arguments;
+
+    if (args?.length > 0) {
+      if (checkDynamicPlural(args, originalFn)) {
+        dynamic = true;
+        continue;
+      }
+
+      // Transpile with placeholder
+      const transpiled = originalFn.replace(new RegExp(`${alias}\\(`), `${inlinePluralPlaceholder}(`);
+      // Replace
+      code = code.replace(originalFn, transpiled);
+    }
+  }
+
+  // Remove invocation
+  if (!dynamic) {
+    code = removeInlinePlural(code, alias);
+  }
+
+  return code;
+}
+
+export function inlineAll(
+  code: string,
+  lang: string,
+  opts: Required<QwikSpeakInlineOptions>,
+  translation: Translation
+) {
+  if (code.includes(inlinePluralPlaceholder)) {
+    code = inlinePlural(code, inlinePluralPlaceholder, inlineTranslatePlaceholder, lang, opts);
+  }
+  if (code.includes(inlineTranslatePlaceholder)) {
+    code = inlineTranslate(code, translation, inlineTranslatePlaceholder, lang, opts);
+  }
+  return code;
+}
+
+export function inlineTranslate(
   code: string,
   translation: Translation,
   placeholder: string,
@@ -375,55 +407,43 @@ export function inline(
     const args = expr.arguments;
 
     if (args?.length > 0) {
-      const resolvedLang = withLang(lang, placeholder === inlinePlaceholder ? args[2] : args[3], opts);
+      const resolvedLang = withLang(lang, args[2], opts);
 
       let resolvedValue: string | Translation = quoteValue('');
 
-      // Get array of keys or key
       if (args[0].type === 'ArrayExpression') {
-        const keys = getKeys(args[0], opts.keyValueSeparator);
+        const keys = getKeys(args[0]);
 
         const keyValues: (string | Translation)[] = [];
-        for (const { key, defaultValue } of keys) {
+        for (const key of keys) {
           const value = getValue(
             key,
             translation[resolvedLang],
-            placeholder === inlinePlaceholder ? args[1] : args[2],
-            opts.keySeparator
+            args[1],
+            opts.keySeparator,
+            opts.keyValueSeparator,
+            resolvedLang
           );
-          if (!value) {
-            missingValues.push(`${resolvedLang} - missing value for key: ${key}`);
-            if (defaultValue) {
-              keyValues.push(quoteValue(defaultValue));
-            } else {
-              keyValues.push(quoteValue(''));
-            }
-          } else {
-            keyValues.push(value);
-          }
+          keyValues.push(value);
         }
         resolvedValue = keyValues;
       } else if (args?.[0]?.value) {
-        const { key, defaultValue } = getKey(args[0].value, opts.keyValueSeparator);
+        const key = getKey(args[0]);
 
         const value = getValue(
           key,
           translation[resolvedLang],
-          placeholder === inlinePlaceholder ? args[1] : args[2],
-          opts.keySeparator
+          args[1],
+          opts.keySeparator,
+          opts.keyValueSeparator,
+          resolvedLang
         );
-        if (!value) {
-          missingValues.push(`${resolvedLang} - missing value for key: ${key}`);
-          if (defaultValue) {
-            resolvedValue = quoteValue(defaultValue);
-          }
-        } else {
-          resolvedValue = value;
-        }
+
+        resolvedValue = value;
       }
 
       // Transpile
-      const transpiled = transpileFn(resolvedValue);
+      const transpiled = transpileTranslateFn(resolvedValue);
 
       // Replace
       code = code.replace(originalFn, transpiled);
@@ -470,9 +490,9 @@ export function inlinePlural(
 }
 
 /**
- * Transpile the function
+ * Transpile the translate function
  */
-export function transpileFn(value: string | Translation): string {
+export function transpileTranslateFn(value: string | Translation): string {
   if (typeof value === 'object') {
     return `${stringifyObject(value)}`;
   } else {
@@ -528,20 +548,16 @@ export function transpilePluralFn(
   return translation;
 }
 
-export function checkDynamic(args: Argument[], originalFn: string): boolean {
+export function checkDynamicTranslate(args: Argument[], originalFn: string): boolean {
   if (args?.[0]?.value) {
     // Dynamic key
     if (args[0].type === 'Identifier') {
-      dynamicKeys.push(
-        `dynamic key: ${originalFn.replace(/\s+/g, ' ')} - Make sure the keys are in 'runtimeAssets'`
-      )
+      logDynamic(originalFn, 'key');
       return true;
     }
     if (args[0].type === 'Literal') {
       if (/\${.*}/.test(args[0].value)) {
-        dynamicKeys.push(
-          `dynamic key: ${originalFn.replace(/\s+/g, ' ')} - Make sure the keys are in 'runtimeAssets'`
-        )
+        logDynamic(originalFn, 'key');
         return true;
       }
     }
@@ -549,39 +565,7 @@ export function checkDynamic(args: Argument[], originalFn: string): boolean {
     // Dynamic argument (params, lang)
     if (args[1]?.type === 'Identifier' || args[1]?.type === 'CallExpression' ||
       args[2]?.type === 'Identifier' || args[2]?.type === 'CallExpression') {
-      dynamicParams.push(
-        `dynamic params: ${originalFn.replace(/\s+/g, ' ')} - Make sure the keys are in 'runtimeAssets'`
-      );
-      return true;
-    }
-  }
-  return false;
-}
-
-export function checkDynamicInline(args: Argument[], originalFn: string): boolean {
-  if (args?.[0]?.value) {
-    // Dynamic key
-    if (args[0].type === 'Identifier') {
-      dynamicKeys.push(
-        `dynamic key: ${originalFn.replace(/\s+/g, ' ')} - Make sure the keys are in 'runtimeAssets'`
-      )
-      return true;
-    }
-    if (args[0].type === 'Literal') {
-      if (/\${.*}/.test(args[0].value)) {
-        dynamicKeys.push(
-          `dynamic key: ${originalFn.replace(/\s+/g, ' ')} - Make sure the keys are in 'runtimeAssets'`
-        )
-        return true;
-      }
-    }
-
-    // Dynamic argument (params, lang)
-    if (args[2]?.type === 'Identifier' || args[2]?.type === 'CallExpression' ||
-      args[3]?.type === 'Identifier' || args[3]?.type === 'CallExpression') {
-      dynamicParams.push(`
-      dynamic params: ${originalFn.replace(/\s+/g, ' ')} - Make sure the keys are in 'runtimeAssets'`
-      );
+      logDynamic(originalFn, 'params');
       return true;
     }
   }
@@ -595,9 +579,7 @@ export function checkDynamicPlural(args: Argument[], originalFn: string): boolea
       args[2]?.type === 'Identifier' || args[2]?.type === 'CallExpression' ||
       args[3]?.type === 'Identifier' || args[3]?.type === 'CallExpression' ||
       args[4]?.type === 'Identifier' || args[4]?.type === 'CallExpression') {
-      dynamicParams.push(
-        `dynamic plural: ${originalFn.replace(/\s+/g, ' ')} - Make sure the keys are in 'runtimeAssets'`
-      );
+      logDynamic(originalFn, 'params');
       return true;
     }
   }
@@ -615,21 +597,16 @@ export function withLang(lang: string, arg: Argument, opts: Required<QwikSpeakIn
   return optionalLang ?? lang;
 }
 
-export function getKey(key: string, keyValueSeparator: string) {
-  let defaultValue: string | undefined = undefined;
-  [key, defaultValue] = separateKeyValue(key, keyValueSeparator);
-  return { key, defaultValue };
+export function getKey(arg: Argument) {
+  return arg.value!;
 }
 
-export function getKeys(arg: Argument, keyValueSeparator: string) {
+export function getKeys(arg: Argument) {
   const keys = [];
   if (arg.elements) {
     for (const element of arg.elements) {
       if (element.type === 'Literal') {
-        let key: string;
-        let defaultValue: string | undefined = undefined;
-        [key, defaultValue] = separateKeyValue(element.value, keyValueSeparator);
-        keys.push({ key, defaultValue });
+        keys.push(element.value);
       }
     }
   }
@@ -644,8 +621,14 @@ export function getValue(
   key: string,
   data: Translation,
   params: Argument | undefined,
-  keySeparator: string
-): string | Translation | undefined {
+  keySeparator: string,
+  keyValueSeparator: string,
+  lang?: string
+): string | Translation {
+  let defaultValue: string | undefined = undefined;
+
+  [key, defaultValue] = separateKeyValue(key, keyValueSeparator);
+
   const value = key.split(keySeparator).reduce((acc, cur) =>
     (acc && acc[cur] !== undefined) ?
       acc[cur] :
@@ -654,9 +637,18 @@ export function getValue(
   if (value) {
     if (typeof value === 'string') return params ? transpileParams(value, params) : quoteValue(value);
     if (typeof value === 'object') return params ? transpileObjectParams(value, params) : value;
+  } else if (lang) {
+    logMissingValue(lang, key);
   }
 
-  return undefined;
+  if (defaultValue) {
+    if (!/^[[{].*[\]}]$/.test(defaultValue) || /^{{/.test(defaultValue))
+      return params ? transpileParams(defaultValue, params) : quoteValue(defaultValue);
+    // Default value is an array/object
+    return params ? transpileObjectParams(JSON.parse(defaultValue), params) : JSON.parse(defaultValue);
+  }
+
+  return mode === 'dev' ? quoteValue(key) : quoteValue('');
 }
 
 export function transpileObjectParams(value: Translation, params?: Argument): Translation {
@@ -710,6 +702,32 @@ export function stringifyObject(value: Translation): string {
   return strValue;
 }
 
+export function logMissingValue(lang: string, key: string) {
+  const text = missingValueText(lang, key);
+  if (!missingValues.includes(text)) {
+    missingValues.push(text);
+  }
+}
+
+export function logDynamic(originalFn: string, type: 'key' | 'params') {
+  const text = dynamicText(trimFn(originalFn), type);
+  if (!dynamics.includes(text)) {
+    dynamics.push(text);
+  }
+}
+
+export function trimFn(fn: string): string {
+  return fn.replace(/\s+/g, ' ').trim();
+}
+
+export function removeInlineTranslate(code: string, alias: string): string {
+  return code.replace(new RegExp(`\\bconst\\s${alias}\\s=\\sinlineTranslate\\(\\);?`, 'g'), '');
+}
+
+export function removeInlinePlural(code: string, alias: string): string {
+  return code.replace(new RegExp(`\\bconst\\s${alias}\\s=\\sinlinePlural\\(\\);?`, 'g'), '');
+}
+
 /**
  * Replace quoted values with a placeholder
  */
@@ -717,5 +735,3 @@ function replacer(key: string, value: string | Translation): string | Translatio
   if (typeof value === 'string' && /^`.*`$/.test(value)) return value.replace(/^`/, '__qsOpenBt').replace(/`$/, '__qsCloseBt');
   return value;
 }
-
-
