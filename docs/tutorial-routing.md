@@ -115,7 +115,7 @@ import { useSpeakLocale, useSpeakConfig, useDisplayName, inlineTranslate, locali
 export const ChangeLocale = component$(() => {
   const t = inlineTranslate();
 
-  const url = useLocation().url;
+  const pathname = useLocation().url.pathname;
 
   const locale = useSpeakLocale();
   const config = useSpeakConfig();
@@ -127,7 +127,7 @@ export const ChangeLocale = component$(() => {
     <>
       <h2>{t('app.changeLocale@@Change locale')}</h2>
       {config.supportedLocales.map(value => (
-        <a key={value.lang} class={{ active: value.lang == locale.lang }} href={getPath(url, value.lang)}>
+        <a key={value.lang} class={{ active: value.lang == locale.lang }} href={getPath(pathname, value.lang)}>
           {dn(value.lang, { type: 'language' })}
         </a>
       ))}

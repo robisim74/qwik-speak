@@ -172,6 +172,9 @@ Localize a path, an URL or an array of paths with the language
 - `translatePath: () => (route: (string | URL) | string[], lang?: string)`
 Translates a path, an URL or an array of paths. The translating string can be in any language. If not specified the target lang is the current one
 
+- `validateLocale(lang: string)`
+Validate `language[-script][-region]`
+
 ### Testing
 - `QwikSpeakMockProvider` component provides the Speak context to test enviroments
 
