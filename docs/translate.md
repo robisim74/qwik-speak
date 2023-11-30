@@ -127,6 +127,15 @@ _i18n/[lang]/runtime.json_
 ```
 and add the `runtime` file to `runtimeAssets` in configuration or `useSpeak` provider.
 
+## QRL functions and lifecycle hooks
+QRL functions `$` and lifecycle hooks like `useTask$` create js chunks that will be lazy loaded. So you need to re-invoke `inlineTranslate` inside them:
+```tsx
+const fn$ = $(() => {
+  const t = inlineTranslate();
+  console.log(t('title@@Qwik Speak'));
+});
+```
+
 ## Server translation
 `inlineTranslate` and `inlinePlural` work in `component$`, _Inline components_, QRL and functions if called by the components, but they might not work in functions invoked on the server, such as `routeLoader$` and _endpoints_.
 
