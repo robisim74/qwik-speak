@@ -19,9 +19,17 @@ export interface QwikSpeakProps {
    * Optional additional languages to preload data for (multilingual)
    */
   langs?: string[];
+  /**
+   * Optional currency if different from the current one
+   */
+  currency?: string;
+  /**
+   * Optional time zone if different from the current one
+   */
+  timeZone?: string;
 }
 
-export interface QwikSpeakMockProps extends QwikSpeakProps {
+export interface QwikSpeakMockProps extends Omit<QwikSpeakProps, 'currency' | 'timeZone'> {
   /**
    * Optional locale to use
    */
@@ -45,11 +53,8 @@ export const useQwikSpeak = (props: QwikSpeakProps) => {
   } else if (isDev) {
     logDebug(`Resolved locale: ${resolvedLocale.lang}`);
   }
-
-  // Resolve functions
-  const resolvedTranslationFn: TranslationFn = {
-    loadTranslation$: props.translationFn?.loadTranslation$ ?? $(() => null)
-  };
+  if (props.currency) resolvedLocale.currency = props.currency;
+  if (props.timeZone) resolvedLocale.timeZone = props.timeZone;
 
   // Resolve config
   const resolvedConfig: SpeakConfig = {
@@ -62,10 +67,15 @@ export const useQwikSpeak = (props: QwikSpeakProps) => {
     keyValueSeparator: props.config.keyValueSeparator || '@@'
   };
 
+  // Resolve functions
+  const resolvedTranslationFn: TranslationFn = {
+    loadTranslation$: props.translationFn?.loadTranslation$ ?? $(() => null)
+  };
+
   // Set initial state as object (no reactive)
   const state: SpeakState = {
     locale: Object.assign({}, resolvedLocale),
-    translation: Object.fromEntries(props.config.supportedLocales.map(value => [value.lang, {}])),
+    translation: Object.fromEntries(resolvedConfig.supportedLocales.map(value => [value.lang, {}])),
     config: Object.assign({}, resolvedConfig),
     translationFn: resolvedTranslationFn
   };
@@ -74,7 +84,7 @@ export const useQwikSpeak = (props: QwikSpeakProps) => {
 
   // Set Qwik Speak server context
   const { config: _config } = getSpeakContext();
-  Object.assign(_config, resolvedConfig);
+  Object.assign(_config, config);
 
   // Set the getLang function to use Qwik locale
   setGetLangFn(() => getLocale(config.defaultLocale.lang));
@@ -140,11 +150,6 @@ export const QwikSpeakMockProvider = component$<QwikSpeakMockProps>(props => {
     resolvedLocale = props.config.defaultLocale;
   }
 
-  // Resolve functions
-  const resolvedTranslationFn: TranslationFn = {
-    loadTranslation$: props.translationFn?.loadTranslation$ ?? $(() => null)
-  };
-
   // Resolve config
   const resolvedConfig: SpeakConfig = {
     rewriteRoutes: props.config.rewriteRoutes,
@@ -156,6 +161,11 @@ export const QwikSpeakMockProvider = component$<QwikSpeakMockProps>(props => {
     keyValueSeparator: props.config.keyValueSeparator || '@@'
   };
 
+  // Resolve functions
+  const resolvedTranslationFn: TranslationFn = {
+    loadTranslation$: props.translationFn?.loadTranslation$ ?? $(() => null)
+  };
+
   // Set initial state as object (no reactive)
   const state: SpeakState = {
     locale: Object.assign({}, resolvedLocale),
@@ -164,14 +174,14 @@ export const QwikSpeakMockProvider = component$<QwikSpeakMockProps>(props => {
     translationFn: resolvedTranslationFn
   };
 
-  const { config } = state;
+  const { locale, config } = state;
 
   // Set Qwik Speak server context
   const { config: _config } = getSpeakContext();
-  Object.assign(_config, resolvedConfig);
+  Object.assign(_config, config);
 
   // Set the getLang function to use the provided lang
-  setGetLangFn(() => resolvedLocale!.lang);
+  setGetLangFn(() => locale.lang);
 
   // Create context
   useContextProvider(SpeakContext, state);
