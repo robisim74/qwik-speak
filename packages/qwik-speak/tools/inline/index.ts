@@ -1,3 +1,3 @@
-export type { QwikSpeakInlineOptions } from '../core/types';
+export type { QwikSpeakInlineOptions, Translation } from '../core/types';
 
 export { qwikSpeakInline } from './plugin';

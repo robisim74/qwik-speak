@@ -53,6 +53,10 @@ export interface QwikSpeakInlineOptions {
    */
   assetsPath?: string;
   /**
+   * Optional function to load asset by lang
+   */
+  loadAssets?: (lang: string) => Promise<Translation>;
+  /**
    * The build output directory. Default to 'dist'
    */
   outDir?: string;

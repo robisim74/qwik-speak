@@ -35,15 +35,50 @@ let input: string | undefined;
  * Qwik Speak Inline Vite plugin
  */
 export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
+  let baseDir = '';
+
+  const loadAssets = async (lang: string): Promise<Translation> => {
+    const dir = normalize(`${baseDir}/${lang}`);
+
+    let translation: Translation = {};
+
+    // For all files
+    if (existsSync(dir)) {
+      const files = await readdir(dir);
+      if (files.length > 0) {
+        const ext = extname(files[0]);
+        const tasks = files.map(filename => readFile(`${dir}/${filename}`, 'utf8'));
+        const sources = await Promise.all(tasks);
+
+        for (const source of sources) {
+          if (source) {
+            let parsed: Translation = {};
+            switch (ext) {
+              case '.json':
+                parsed = parseJson(source);
+                break;
+            }
+            // Shallow merge
+            translation = merge(translation, parsed);
+          }
+        }
+      }
+    }
+    return translation;
+  };
+
   // Resolve options
   const resolvedOptions: Required<QwikSpeakInlineOptions> = {
     ...options,
     basePath: options.basePath ?? './',
     assetsPath: options.assetsPath ?? 'i18n',
+    loadAssets: options.loadAssets ?? loadAssets,
     outDir: options.outDir ?? 'dist',
     keySeparator: options.keySeparator ?? '.',
     keyValueSeparator: options.keyValueSeparator ?? '@@'
-  }
+  };
+
+  baseDir = `${resolvedOptions.basePath}/${resolvedOptions.assetsPath}`;
 
   // Translation data
   const translation: Translation = Object.fromEntries(resolvedOptions.supportedLangs.map(value => [value, {}]));
@@ -54,6 +89,7 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
   // Inlined modules
   const moduleIds = new Set<string>();
 
+  // PLUGIN HOOKS
   const plugin: Plugin = {
     name: 'vite-plugin-qwik-speak-inline',
     enforce: 'post',
@@ -104,7 +140,7 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
       if (new RegExp(resolvedOptions.assetsPath).test(file) && /\.(json)$/.test(file)) {
         for (const lang of resolvedOptions.supportedLangs) {
           if (new RegExp(lang).test(file)) {
-            loadTranslations(translation, [lang], resolvedOptions.basePath, resolvedOptions.assetsPath);
+            loadAssets(lang);
           }
         }
         // Invalidate inlined modules
@@ -121,12 +157,11 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
      */
     async buildStart() {
       if (target === 'client' || mode === 'dev') {
-        await loadTranslations(
-          translation,
-          resolvedOptions.supportedLangs,
-          resolvedOptions.basePath,
-          resolvedOptions.assetsPath
-        );
+        // For all langs
+        await Promise.all(resolvedOptions.supportedLangs.map(async lang => {
+          const data = await resolvedOptions.loadAssets(lang);
+          Object.assign(translation[lang], data)
+        }));
       }
     },
 
@@ -214,46 +249,6 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
   };
 
   return plugin;
-}
-
-export async function loadTranslations(
-  translation: Translation,
-  langs: string[],
-  basePath: string,
-  assetsPath: string
-) {
-  // For all langs
-  await Promise.all(langs.map(async lang => {
-    const baseDir = normalize(`${basePath}/${assetsPath}/${lang}`);
-    // For all files
-    if (existsSync(baseDir)) {
-      const files = await readdir(baseDir);
-
-      if (files.length > 0) {
-        const ext = extname(files[0]);
-        let data: Translation = {};
-
-        const tasks = files.map(filename => readFile(`${baseDir}/${filename}`, 'utf8'));
-        const sources = await Promise.all(tasks);
-
-        for (const source of sources) {
-          if (source) {
-            let parsed: Translation = {};
-
-            switch (ext) {
-              case '.json':
-                parsed = parseJson(source);
-                break;
-            }
-
-            data = merge(data, parsed);
-          }
-        }
-
-        translation[lang] = { ...translation[lang], ...data }; // Shallow merge
-      }
-    }
-  }));
 }
 
 export async function writeChunks(
