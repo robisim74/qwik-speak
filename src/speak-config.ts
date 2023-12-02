@@ -20,6 +20,5 @@ export const config: SpeakConfig = {
   ],
   // Translations with dynamic keys available in the whole app
   runtimeAssets: [
-    'runtime'
   ]
 };

@@ -12,7 +12,7 @@ import {
   matchInlineTranslate,
   matchInlinePlural
 } from '../core/parser';
-import { deepClone, deepMerge, deepSet, merge } from '../core/merge';
+import { deepClone, deepMerge, deepMergeMissing, deepSet, merge } from '../core/merge';
 import { sortTarget, toJsonString } from '../core/format';
 import { getOptions, getRules } from '../core/intl-parser';
 
@@ -29,6 +29,7 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
     assetsPath: options.assetsPath ?? 'i18n',
     format: options.format ?? 'json',
     filename: options.filename ?? 'app',
+    fallback: options.fallback ?? ((translation: Translation) => translation),
     keySeparator: options.keySeparator ?? '.',
     keyValueSeparator: options.keyValueSeparator ?? '@@',
   }
@@ -42,7 +43,7 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
   // Source files
   const sourceFiles: string[] = [];
   // Translation data
-  const translation: Translation = Object.fromEntries(resolvedOptions.supportedLangs.map(value => [value, {}]));
+  let translation: Translation = Object.fromEntries(resolvedOptions.supportedLangs.map(value => [value, {}]));
 
   /**
    * Read source files recursively
@@ -326,6 +327,9 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
     translation[lang] = sortTarget(translation[lang]);
   }
 
+  /* Fallback */
+  translation = resolvedOptions.fallback(translation);
+
   /* Write translation data */
   await writeAssets(prefixes);
 
@@ -345,4 +349,6 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
   }
 }
 
-export type { QwikSpeakExtractOptions };
+export { deepMergeMissing };
+
+export type { QwikSpeakExtractOptions, Translation };

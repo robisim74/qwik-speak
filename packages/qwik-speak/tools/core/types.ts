@@ -31,6 +31,10 @@ export interface QwikSpeakExtractOptions {
    */
   supportedLangs: string[];
   /**
+   * Optional function to implement a fallback strategy
+   */
+  fallback?: (translation: Translation) => Translation;
+  /**
    * Separator of nested keys. Default is '.'
    */
   keySeparator?: string;

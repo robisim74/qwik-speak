@@ -1,5 +1,5 @@
 import { component$, useSignal } from '@builder.io/qwik';
-import { type DocumentHead } from '@builder.io/qwik-city';
+import type { StaticGenerateHandler, DocumentHead } from '@builder.io/qwik-city';
 import {
   inlineTranslate,
   inlinePlural,
@@ -8,6 +8,8 @@ import {
   useRelativeTime,
   useSpeakLocale
 } from 'qwik-speak';
+
+import { config } from '../../speak-config';
 
 interface TitleProps {
   name: string;
@@ -74,5 +76,13 @@ export const head: DocumentHead = () => {
         content: t('app.head.home.description')
       }
     ],
+  };
+};
+
+export const onStaticGenerate: StaticGenerateHandler = () => {
+  return {
+    params: config.supportedLocales.map(locale => {
+      return { lang: locale.lang !== config.defaultLocale.lang ? locale.lang : '.' };
+    })
   };
 };

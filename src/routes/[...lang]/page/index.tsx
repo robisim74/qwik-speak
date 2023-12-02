@@ -1,8 +1,10 @@
 import { component$ } from '@builder.io/qwik';
-import type { DocumentHead } from '@builder.io/qwik-city';
-import { inlineTranslate } from 'qwik-speak';
+import type { DocumentHead, StaticGenerateHandler } from '@builder.io/qwik-city';
+import { inlineTranslate, useSpeak } from 'qwik-speak';
 
-export default component$(() => {
+import { config } from '../../../speak-config';
+
+export const Page = component$(() => {
   const t = inlineTranslate();
 
   const key = 'dynamic';
@@ -19,6 +21,12 @@ export default component$(() => {
   );
 });
 
+export default component$(() => {
+  useSpeak({ runtimeAssets: ['runtime'] });
+
+  return <Page />;
+});
+
 export const head: DocumentHead = () => {
   const t = inlineTranslate();
 
@@ -30,5 +38,13 @@ export const head: DocumentHead = () => {
         content: t('app.head.page.description')
       }
     ],
+  };
+};
+
+export const onStaticGenerate: StaticGenerateHandler = () => {
+  return {
+    params: config.supportedLocales.map(locale => {
+      return { lang: locale.lang !== config.defaultLocale.lang ? locale.lang : '.' };
+    })
   };
 };
