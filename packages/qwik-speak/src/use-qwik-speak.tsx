@@ -64,7 +64,8 @@ export const useQwikSpeak = (props: QwikSpeakProps) => {
     assets: props.config.assets,
     runtimeAssets: props.config.runtimeAssets,
     keySeparator: props.config.keySeparator || '.',
-    keyValueSeparator: props.config.keyValueSeparator || '@@'
+    keyValueSeparator: props.config.keyValueSeparator || '@@',
+    domainBasedRouting: props.config.domainBasedRouting
   };
 
   // Resolve functions
@@ -158,7 +159,8 @@ export const QwikSpeakMockProvider = component$<QwikSpeakMockProps>(props => {
     assets: props.config.assets,
     runtimeAssets: props.config.runtimeAssets,
     keySeparator: props.config.keySeparator || '.',
-    keyValueSeparator: props.config.keyValueSeparator || '@@'
+    keyValueSeparator: props.config.keyValueSeparator || '@@',
+    domainBasedRouting: props.config.domainBasedRouting
   };
 
   // Resolve functions
