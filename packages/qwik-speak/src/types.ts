@@ -59,7 +59,7 @@ export interface TranslationFn {
 
 export interface RewriteRouteOption {
   /**
-   * Optional language
+   * Optional prefix
    */
   prefix?: string;
   /**
@@ -67,6 +67,18 @@ export interface RewriteRouteOption {
    * Key value pairs: folder name - translated value
    */
   paths: Record<string, string>;
+  /**
+   * In domain-based routing, provides the language when there is no prefix
+   */
+  lang?: string;
+  /**
+   * In domain-based routing, set the default domain for the prefix
+   */
+  domain?: string;
+  /**
+   * In domain-based routing, set another domain for the prefix
+   */
+  withDomain?: string;
 }
 
 export interface DomainBasedRoutingOption {

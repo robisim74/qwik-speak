@@ -1,6 +1,6 @@
 import { isDev } from '@builder.io/qwik/build';
 
-import type { SpeakLocale } from './types';
+import type { RewriteRouteOption, SpeakLocale } from './types';
 import { getLang, getSpeakContext } from './context';
 import { logWarn } from './log';
 
@@ -94,14 +94,15 @@ export const localizePath = (): LocalizePathFn => {
     }
 
     // Is URL
+    let url = new URL(route);
     if (config.domainBasedRouting) {
-      route = localizeDomain(route, lang);
+      url = localizeDomain(url, lang);
     }
 
-    route.pathname = replace(route.pathname, lang);
+    url.pathname = replace(url.pathname, lang);
 
     // Return URL
-    return route.toString().replace(/\/\?/, '?');
+    return url.toString().replace(/\/\?/, '?');
   };
 
   return localize as LocalizePathFn;
@@ -111,8 +112,12 @@ export const translatePath = (): TranslatePathFn => {
   const { config } = getSpeakContext();
   const currentLang = getLang();
 
+  /**
+   * To file-based routing
+   */
   const normalizePath = (pathname: string) => {
-    const source = config.rewriteRoutes?.find(rewrite => (
+    // Source by prefix
+    let source = config.rewriteRoutes?.find(rewrite => (
       pathname === `/${rewrite.prefix}` ||
       pathname.startsWith(`/${rewrite.prefix}/`) ||
       pathname.startsWith(`${rewrite.prefix}/`)
@@ -124,7 +129,20 @@ export const translatePath = (): TranslatePathFn => {
         : pathname.startsWith('/')
           ? pathname.substring(`/${source.prefix}`.length)
           : pathname.substring(`${source.prefix}/`.length);
+    }
 
+    // In prod, source by current lang in domain-based routing
+    if (!isDev) {
+      if (config.domainBasedRouting?.prefix === 'as-needed') {
+        if (!source) {
+          source = config.rewriteRoutes?.find(
+            rewrite => !isEmpty(rewrite.paths) && rewrite.lang == currentLang
+          );
+        }
+      }
+    }
+
+    if (source) {
       const sourceEntries = Object.entries(source.paths).map(([from, to]) => [to, from]);
       const revertedPaths = Object.fromEntries(sourceEntries);
 
@@ -139,11 +157,12 @@ export const translatePath = (): TranslatePathFn => {
   const rewritePath = (pathname: string, prefix: string) => {
     let splitted = pathname.split('/');
 
-    const destination = config.rewriteRoutes?.find(
-      rewrite => (rewrite.prefix === prefix)
+    let destination = config.rewriteRoutes?.find(
+      rewrite => rewrite.prefix === prefix
     );
 
-    if (prefix && destination) { // the input prefix is present and not for the defaultLocale
+    // Destination by prefix
+    if (prefix && destination) {
       const keys = Object.keys(destination.paths);
       const translating = splitted.some(part => keys.includes(part));
 
@@ -151,6 +170,17 @@ export const translatePath = (): TranslatePathFn => {
         pathname = pathname.startsWith('/')
           ? `/${prefix}` + pathname
           : `${prefix}/` + pathname;
+      }
+    }
+
+    // In prod, destination by lang in domain-based routing
+    if (!isDev) {
+      if (config.domainBasedRouting?.prefix === 'as-needed') {
+        if (prefix && !destination) {
+          destination = config.rewriteRoutes?.find(
+            rewrite => !isEmpty(rewrite.paths) && rewrite.lang === prefix
+          );
+        }
       }
     }
 
@@ -191,40 +221,30 @@ export const translatePath = (): TranslatePathFn => {
       return translateOne(route, lang);
     }
 
-    route.pathname = translateOne(route.pathname, lang);
+    // Is URL
+    let url = new URL(route);
+    if (config.domainBasedRouting) {
+      url = translateDomain(url, lang);
+    }
 
-    return route.toString();
+    url.pathname = translateOne(url.pathname, lang);
+
+    return url.toString();
   };
 
   return translate as TranslatePathFn;
 };
 
-export const localizeDomain = (route: URL, lang: string): URL => {
-  const { config } = getSpeakContext();
-
-  let domain = config.supportedLocales.find(value => value.lang === lang)?.domain;
-  if (!domain) {
-    domain = config.supportedLocales.find(value => value.lang === lang)?.withDomain;
-  }
-  if (!domain) {
-    if (isDev) logWarn(`localizeDomain: domain not found`);
-  } else if (!isDev) {
-    route.hostname = domain;
-  }
-  return route;
-};
-
-export const isDefaultDomain = (lang: string): boolean => {
-  const { config } = getSpeakContext();
-  return config.supportedLocales.find(value => value.lang === lang)?.domain !== undefined;
-};
-
 /**
  * Extract lang from domain
  */
-export const extractFromDomain = (route: URL, supportedLocales: SpeakLocale[]): string | undefined => {
-  const hostname = route.hostname;
-  return supportedLocales.find(value => value.domain === hostname)?.lang;
+export const extractFromDomain = (route: URL, domains: SpeakLocale[] | RewriteRouteOption[]): string | undefined => {
+  const hostname = !route.hostname.startsWith('localhost') ? route.hostname : route.host; // with port
+  const domain = domains.find(value => value.domain === hostname);
+  return domain &&
+    (('lang' in domain) ? domain.lang :
+      ('prefix' in domain) ? domain.prefix :
+        undefined)
 };
 
 /**
@@ -244,3 +264,64 @@ export const extractFromUrl = (route: URL): string => {
 export const validateLocale = (lang: string): boolean => {
   return /^([a-z]{2,3})(-[A-Z][a-z]{3})?(-[A-Z]{2})?$/.test(lang);
 };
+
+/**
+ * In prod, handle the needed prefixes in domain-based routing
+ */
+export function toPrefixAsNeeded(rewriteRoutes: RewriteRouteOption[]): RewriteRouteOption[] {
+  if (isDev) return rewriteRoutes;
+
+  const routes = rewriteRoutes.map(rewrite =>
+  ({
+    prefix: rewrite.domain ? undefined : rewrite.prefix, paths: rewrite.paths,
+    lang: rewrite.prefix ? rewrite.prefix : rewrite.lang, domain: rewrite.domain, withDomain: rewrite.withDomain
+  }));
+
+  return routes;
+}
+
+const localizeDomain = (url: URL, lang: string): URL => {
+  const { config } = getSpeakContext();
+
+  const locale = config.supportedLocales.find(value => value.lang === lang);
+  const domain = locale?.domain || locale?.withDomain;
+
+  if (!domain) {
+    if (isDev) logWarn(`localizeDomain: domain not found`);
+  } else if (!isDev) {
+    if (!domain.startsWith('localhost')) {
+      url.hostname = domain;
+    } else {
+      url.host = domain; // with port
+    }
+  }
+  return url;
+};
+
+const translateDomain = (url: URL, lang: string): URL => {
+  const { config } = getSpeakContext();
+
+  const rewrite = config.rewriteRoutes?.find(value =>
+    value.lang === lang ||
+    value.prefix === lang);
+  const domain = rewrite?.domain || rewrite?.withDomain;
+
+  if (!domain) {
+    if (isDev) logWarn(`translateDomain: domain not found`);
+  } else if (!isDev) {
+    if (!domain.startsWith('localhost')) {
+      url.hostname = domain;
+    } else {
+      url.host = domain; // with port
+    }
+  }
+  return url;
+};
+
+const isDefaultDomain = (lang: string): boolean => {
+  const { config } = getSpeakContext();
+  return config.supportedLocales.find(value => value.lang === lang)?.domain !== undefined;
+};
+
+const isEmpty = (obj: unknown): obj is Record<never, never> =>
+  typeof obj === 'object' && obj !== null && Object.keys(obj).length === 0;

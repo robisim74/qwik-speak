@@ -39,7 +39,8 @@ export {
   translatePath,
   validateLocale,
   extractFromDomain,
-  extractFromUrl
+  extractFromUrl,
+  toPrefixAsNeeded,
 } from './routing';
 // Testing
 export { QwikSpeakMockProvider } from './use-qwik-speak';
