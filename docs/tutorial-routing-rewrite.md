@@ -318,7 +318,6 @@ import type { RewriteRouteOption } from 'qwik-speak';
 export const rewriteRoutes: RewriteRouteOption[] = [
   // No prefix/paths for default locale
   {
-    lang: 'en',
     domain: 'example.com',
     paths: {}
   },
