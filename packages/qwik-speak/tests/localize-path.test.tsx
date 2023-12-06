@@ -2,7 +2,7 @@ import { createDOM } from '@builder.io/qwik/testing';
 import { component$ } from '@builder.io/qwik';
 import { test, describe, expect } from 'vitest';
 
-import { localizePath } from '../src';
+import { localizePath } from '../src/routing';
 import { QwikSpeakMockProvider } from '../src/use-qwik-speak';
 import { config, translationFnStub } from './config';
 

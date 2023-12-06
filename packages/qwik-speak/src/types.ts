@@ -30,6 +30,14 @@ export interface SpeakLocale {
    * Text direction
    */
   dir?: 'ltr' | 'rtl' | 'auto';
+  /**
+   * In domain-based routing, set the default domain for the locale
+   */
+  domain?: string;
+  /**
+   * In domain-based routing, set another domain for the locale
+   */
+  withDomain?: string;
 }
 
 /**
@@ -51,7 +59,7 @@ export interface TranslationFn {
 
 export interface RewriteRouteOption {
   /**
-   * Optional language
+   * Optional prefix
    */
   prefix?: string;
   /**
@@ -59,6 +67,21 @@ export interface RewriteRouteOption {
    * Key value pairs: folder name - translated value
    */
   paths: Record<string, string>;
+  /**
+   * In domain-based routing, set the default domain for the prefix
+   */
+  domain?: string;
+  /**
+   * In domain-based routing, set another domain for the prefix
+   */
+  withDomain?: string;
+}
+
+export interface DomainBasedRoutingOption {
+  /**
+   * Always use the lang prefix in domain-based routing, or as needed
+   */
+  prefix: 'always' | 'as-needed'
 }
 
 export interface SpeakConfig {
@@ -91,6 +114,10 @@ export interface SpeakConfig {
    * Rewrite routes as specified in Vite config for qwikCity
    */
   rewriteRoutes?: RewriteRouteOption[];
+  /**
+   * Domain-based routing options
+   */
+  domainBasedRouting?: DomainBasedRoutingOption
 }
 
 export interface SpeakState {
