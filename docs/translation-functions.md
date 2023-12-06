@@ -5,31 +5,13 @@
 ## loadTranslation$
 `loadTranslation$` is the core function of the library. It is a customizable QRL function, with which you can load the translation files in the way you prefer.
 
-### Fetching files
-You can fetch files from the _public_ folder:
-
-```typescript
-const loadTranslation$ = server$(async function (lang: string, asset: string) {
-  // Absolute urls on server
-  const url = `${this.url.origin}/i18n/${lang}/${asset}.json`;
-  const response = await fetch(url);
-
-  if (response.ok) {
-    return response.json();
-  }
-  else {
-    console.error(`loadTranslation$: ${url}`, response);
-  }
-});
-```
-
 ### Bundling files
 #### Dynamic import
 To improve performance, it is recommended to bundle translation files instead of fetching them:
 ```typescript
 /**
  * Translation files are lazy-loaded via dynamic import and will be split into separate chunks during build.
- * Keys must be valid variable names
+ * Assets names and keys must be valid variable names
  */
 const translationData = import.meta.glob<Translation>('/i18n/**/*.json');
 
@@ -65,3 +47,23 @@ const loadTranslation$: LoadTranslationFn = server$((lang: string, asset: string
 );
 ```
 Refer to _Vite_ documentation for more information on [Glob import](https://vitejs.dev/guide/features.html#glob-import)
+
+
+### Fetching files
+You can fetch files from the _public_ folder:
+
+```typescript
+const loadTranslation$ = server$(async function (lang: string, asset: string) {
+  // Absolute urls on server
+  const url = `${this.url.origin}/i18n/${lang}/${asset}.json`;
+  const response = await fetch(url);
+
+  if (response.ok) {
+    return response.json();
+  }
+  else {
+    console.error(`loadTranslation$: ${url}`, response);
+  }
+});
+```
+or from a db: since the `server$` function is always executed on server, it is safe to use secrets as well.

@@ -49,6 +49,7 @@ Available options:
 - `assetsPath` Path to translation files: `[basePath]/[assetsPath]/[lang]/*.json`. Default to `'i18n'`
 - `format` The format of the translation files. Default to `'json'`
 - `filename` Filename for not scoped translations. Default is `'app'`
+- `fallback` Optional function to implement a fallback strategy
 - `keySeparator` Separator of nested keys. Default is `'.'`
 - `keyValueSeparator` Key-value separator. Default is `'@@'`
 
@@ -70,4 +71,40 @@ import { qwikSpeakExtract } from 'qwik-speak/extract';
 await qwikSpeakExtract({
   supportedLangs: ['en-US', 'it-IT']
 });
+```
+
+### Translations fallback
+By default, the extract command uses the default value of translations as the initial value when provided.
+You can extend this behavior, to complete the missing translations by taking them from another language, by implementing a custom function with this signature:
+
+```typescript
+(translation: Translation) => Translation
+```
+and pass the function to `fallback` option:
+
+```typescript
+await qwikSpeakExtract({
+  supportedLangs: supportedLangs,
+  fallback: fallback
+});
+```
+For example, if you want to use the default language translations for missing values in other languages:
+```typescript
+import { qwikSpeakExtract, deepMergeMissing } from 'qwik-speak/extract';
+
+const defaultLang = 'en-US';
+const supportedLangs = ['en-US', 'it-IT', 'de-DE'];
+
+/**
+ * Fallback missing values to default lang
+ */
+const fallback = (translation) => {
+  const defaultTranslation = translation[defaultLang];
+  for (const lang of supportedLangs) {
+    if (lang !== defaultLang) {
+      deepMergeMissing(translation[lang], defaultTranslation);
+    }
+  }
+  return translation;
+};
 ```

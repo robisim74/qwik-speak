@@ -80,6 +80,7 @@ Available options:
 - `basePath` The base path. Default to `'./'`
 - `assetsPath` Path to translation files: `[basePath]/[assetsPath]/[lang]/*.json`. Default to `'i18n'`
 - `outDir` The build output directory. Default to `'dist'`
+- `loadAssets` Optional function to load asset by lang
 - `keySeparator` Separator of nested keys. Default is `'.'`
 - `keyValueSeparator` Key-value separator. Default is `'@@'`
 
@@ -112,3 +113,27 @@ _dist/build/it-IT/q-*.js_
 At the end of the build, in root folder a `qwik-speak-inline.log` file is generated which contains:
 - Missing values
 - Translations with dynamic keys or params
+
+### Load assets
+If you need to load translation data from an external source, such as a db, you can implement a custom function with this signature:
+
+```typescript
+(lang: string) => Promise<Translation>
+```
+For example:
+```typescript
+export const loadAssets = async (lang: string) => {
+  const response = await fetch('https://...');
+  return response.json();
+};
+```
+and pass the function to `loadAssets` option:
+
+```typescript
+qwikSpeakInline({
+  supportedLangs: ['en-US', 'it-IT'],
+  defaultLang: 'en-US',
+  loadAssets: loadAssets
+}),
+```
+The function will be called during the build for each supported language, and must return all translations for that language.

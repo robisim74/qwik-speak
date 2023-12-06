@@ -89,6 +89,7 @@ stateDiagram-v2
         - timezone
         - unit
         - dir
+        - domain
     end note 
     note right of State4
         - loadTranslation$
@@ -107,6 +108,7 @@ stateDiagram-v2
 - `keySeparator` Separator of nested keys. Default is `.`
 - `keyValueSeparator` Key-value separator. Default is `@@`
 - `rewriteRoutes` Rewrite routes as specified in Vite config for `qwikCity` plugin
+- `domainBasedRouting` Domain-based routing options
 
 ### SpeakLocale
 The `SpeakLocale` object contains the `lang`, in the format `language[-script][-region]`, where:
@@ -120,6 +122,8 @@ and optionally contains:
 - `timeZone` From the IANA time zone database
 - `units` Key value pairs of unit identifiers
 - `dir` Text direction: `'ltr' | 'rtl' | 'auto'`
+- `domain` In domain-based routing, set the default domain for the locale
+- `withDomain` In domain-based routing, set another domain for the locale
 
 ### Translation functions
 `TranslationFn` interface can be implemented to change the behavior of the library:
@@ -134,6 +138,8 @@ and optionally contains:
   - `config` Speak config
   - `translationFn` Optional functions to use
   - `langs` Optional additional languages to preload data for (multilingual)
+  - `currency` Optional currency if different from the current one
+  - `timeZone` Optional time zone if different from the current one
 
 `useSpeak(props: SpeakProps) ` can be used for lazy loading translation. `SpeakProps`:
   - `assets` Assets to load
@@ -174,6 +180,12 @@ Translates a path, an URL or an array of paths. The translating string can be in
 
 - `validateLocale(lang: string)`
 Validate `language[-script][-region]`
+
+- `extractFromUrl(route: URL)`
+Extract lang from url
+
+- `extractFromDomain(route: URL, domains: SpeakLocale[] | RewriteRouteOption[])`
+Extract lang from domain
 
 ### Testing
 - `QwikSpeakMockProvider` component provides the Speak context to test enviroments

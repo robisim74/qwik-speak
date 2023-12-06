@@ -220,3 +220,95 @@ npm run preview
 ```
 
 and inspect the `qwik-speak-inline.log` file in root folder to see warnings for missing values or dynamic keys.
+
+### Domain-based routing
+#### Prefix always
+If you want to use different domains in production, update `speak-config.ts` with the domains supported by each locale, and set the `prefix` usage strategy:
+```typescript
+export const config: SpeakConfig = {
+  defaultLocale: { lang: 'en' },
+  supportedLocales: [
+    { domain: 'example.com', lang: 'en' },
+    { domain: 'example.it', lang: 'it' },
+    { withDomain: 'example.com', lang: 'de' }
+  ],
+  domainBasedRouting: {
+    prefix: 'always'
+  },
+};
+```
+While in dev mode the navigation will only use the prefix, in production it will use the domain and the prefix:
+```
+https://example.com/
+https://example.com/page
+https://example.it/it
+https://example.it/it/page
+https://example.com/de
+https://example.com/de/page
+```
+
+> In SSG mode, you can only use `always` as prefix strategy
+
+#### Prefix as needed
+If in production you don't want the prefix for the default domains, change the prefix strategy to `as-needed`:
+```typescript
+domainBasedRouting: {
+  prefix: 'as-needed'
+},
+```
+It will result in:
+```
+https://example.com/
+https://example.com/page
+https://example.it
+https://example.it/page
+https://example.com/de
+https://example.com/de/page
+```
+Since the `de` language does not have a default domain, but we have associated another domain, it will automatically keep the prefix.
+
+#### Usage
+Update `plugin.ts` to get the language from the domain:
+```typescript
+import type { RequestHandler } from '@builder.io/qwik-city';
+import { extractFromDomain, validateLocale } from 'qwik-speak';
+
+import { config } from '../speak-config';
+
+export const onRequest: RequestHandler = ({ params, locale, error, url }) => {
+  let lang: string | undefined = undefined;
+
+  if (params.lang && validateLocale(params.lang)) {
+    // Check supported locales
+    lang = config.supportedLocales.find(value => value.lang === params.lang)?.lang;
+    // 404 error page
+    if (!lang) throw error(404, 'Page not found');
+   } else {
+    // Extract from domain
+    lang = extractFromDomain(url, config.supportedLocales) || config.defaultLocale.lang;
+  }
+
+  // Set Qwik locale
+  locale(lang);
+};
+```
+and in `ChangeLocale` component pass the URL instead of the pathname to `getPath`:
+```tsx
+export const ChangeLocale = component$(() => {
+  const url = useLocation().url;
+
+  const config = useSpeakConfig();
+
+  const getPath = localizePath();
+
+  return (
+    <>
+      {config.supportedLocales.map(value => (
+        <a key={value.lang} href={getPath(url, value.lang)}>
+          {/*  */}
+        </a>
+      ))}
+    </>
+  );
+});
+```

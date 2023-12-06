@@ -27,12 +27,7 @@ import type { RewriteRouteOption } from 'qwik-speak';
  * Translation paths
  */
 export const rewriteRoutes: RewriteRouteOption[] = [
-  // No prefix for default locale
-  // {
-  //   paths: {
-  //     'page': 'page'
-  //   }
-  // },
+  // No prefix/paths for default locale
   {
     prefix: 'it-IT',
     paths: {
@@ -93,20 +88,26 @@ Update `plugin.ts` in the root of the `src/routes` directory:
 _src/routes/plugin.ts_
 ```typescript
 import type { RequestHandler } from "@builder.io/qwik-city";
+import { extractFromUrl, validateLocale } from 'qwik-speak';
 
 import { config } from '../speak-config';
-import { rewriteRoutes } from '../speak-routes';
 
-export const onRequest: RequestHandler = ({ url, locale }) => {
-  const parts = url.pathname.split('/')
-  const prefix = url.pathname.startsWith('/') ? parts[1] : parts[0]
+export const onRequest: RequestHandler = ({ locale, error, url }) => {
+  let lang: string | undefined = undefined;
 
-  const lang = rewriteRoutes.find(
-    rewrite => rewrite.prefix === prefix
-  )?.prefix
+  const prefix = extractFromUrl(url);
+
+  if (prefix && validateLocale(prefix)) {
+    // Check supported locales
+    lang = config.supportedLocales.find(value => value.lang === prefix)?.lang;
+    // 404 error page
+    if (!lang) throw error(404, 'Page not found');
+  } else {
+    lang = config.defaultLocale.lang;
+  }
 
   // Set Qwik locale
-  locale(lang || config.defaultLocale.lang);
+  locale(lang);
 };
 ```
 
@@ -285,3 +286,163 @@ npm run preview
 ```
 
 and inspect the `qwik-speak-inline.log` file in root folder to see warnings for missing values or dynamic keys.
+
+### Domain-based routing
+#### Prefix always
+If you want to use different domains in production, set the `prefix` usage strategy in `speak-config.ts`:
+```typescript
+import { rewriteRoutes } from './speak-routes';
+
+export const config: SpeakConfig = {
+  rewriteRoutes,
+  defaultLocale: { lang: 'en' },
+  supportedLocales: [
+    { lang: 'en' },
+    { lang: 'it' },
+    { lang: 'de' }
+  ],
+  domainBasedRouting: {
+    prefix: 'always'
+  },
+};
+```
+Update `speak-routes.ts` with the domains supported by each locale:
+
+_src/speak-routes.ts_
+```typescript
+import type { RewriteRouteOption } from 'qwik-speak';
+
+/**
+ * Translation paths
+ */
+export const rewriteRoutes: RewriteRouteOption[] = [
+  // No prefix/paths for default locale
+  {
+    lang: 'en',
+    domain: 'example.com',
+    paths: {}
+  },
+  {
+    prefix: 'it',
+    domain: 'example.it',
+    paths: {
+      'page': 'pagina'
+    }
+  },
+  {
+    prefix: 'de',
+    withDomain: 'example.com',
+    paths: {
+      'page': 'seite'
+    }
+  }
+];
+```
+
+While in dev mode the navigation will only use the prefix, in production it will use the domain and the prefix:
+```
+https://example.com/
+https://example.com/page
+https://example.it/it
+https://example.it/it/pagina
+https://example.com/de
+https://example.com/de/seite
+```
+
+> In SSG mode, you can only use `always` as prefix strategy
+
+#### Prefix as needed
+If in production you don't want the prefix for the default domains, change the prefix strategy to `as-needed` and invoke `toPrefixAsNeeded` for `rewriteRoutes`:
+```typescript
+import { toPrefixAsNeeded } from 'qwik-speak';
+import { rewriteRoutes } from './speak-routes';
+
+export const config: SpeakConfig = {
+  rewriteRoutes: toPrefixAsNeeded(rewriteRoutes),
+  defaultLocale: { lang: 'en' },
+  supportedLocales: [
+    { lang: 'en' },
+    { lang: 'it' },
+    { lang: 'de' }
+  ],
+  domainBasedRouting: {
+    prefix: 'as-needed'
+  },
+};
+```
+Also invoke `toPrefixAsNeeded` for `rewriteRoutes` of `qwikCity` Vite plugin in `vite.config.ts` in the following way:
+
+```typescript
+import { qwikSpeakInline, toPrefixAsNeeded } from 'qwik-speak/inline';
+
+import { rewriteRoutes } from './src/speak-routes';
+
+export default defineConfig(({ mode }) => {
+  return {
+    plugins: [
+      qwikCity({ rewriteRoutes: toPrefixAsNeeded(rewriteRoutes, mode) }), 
+      /*  */
+    ],
+  };
+});
+```
+It will result in:
+```
+https://example.com/
+https://example.com/page
+https://example.it
+https://example.it/pagina
+https://example.com/de
+https://example.com/de/seite
+```
+
+Since the `de` language does not have a default domain, but we have associated another domain, it will automatically keep the prefix.
+
+#### Usage
+Update `plugin.ts` to get the language from the domain:
+```typescript
+import type { RequestHandler } from '@builder.io/qwik-city';
+import { extractFromDomain, extractFromUrl, validateLocale } from 'qwik-speak';
+
+import { config } from '../speak-config';
+import { rewriteRoutes } from '../speak-routes';
+
+export const onRequest: RequestHandler = ({ locale, error, url }) => {
+  let lang: string | undefined = undefined;
+
+  const prefix = extractFromUrl(url);
+
+  if (prefix && validateLocale(prefix)) {
+    // Check supported locales
+    lang = config.supportedLocales.find(value => value.lang === prefix)?.lang;
+    // 404 error page
+    if (!lang) throw error(404, 'Page not found');
+  } else {
+    // Extract from domain
+    lang = extractFromDomain(url, rewriteRoutes) || config.defaultLocale.lang;
+  }
+
+  // Set Qwik locale
+  locale(lang);
+};
+```
+and in `ChangeLocale` component pass the URL instead of the pathname to `getPath`:
+```tsx
+export const ChangeLocale = component$(() => {
+  const url = useLocation().url;
+
+  const config = useSpeakConfig();
+
+  const getPath = translatePath();
+
+  return (
+    <>
+      {config.supportedLocales.map(value => (
+        <a key={value.lang} href={getPath(url, value.lang)}>
+          {/*  */}
+        </a>
+      ))}
+    </>
+  );
+});
+```
