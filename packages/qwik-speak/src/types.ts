@@ -68,10 +68,6 @@ export interface RewriteRouteOption {
    */
   paths: Record<string, string>;
   /**
-   * In domain-based routing, provides the language when there is no prefix
-   */
-  lang?: string;
-  /**
    * In domain-based routing, set the default domain for the prefix
    */
   domain?: string;

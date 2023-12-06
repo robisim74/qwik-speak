@@ -9,7 +9,7 @@ export function toPrefixAsNeeded(rewriteRoutes: RewriteRouteOption[], mode: stri
   const routes = rewriteRoutes.map(rewrite =>
   ({
     prefix: rewrite.domain ? undefined : rewrite.prefix, paths: rewrite.paths,
-    lang: rewrite.prefix ? rewrite.prefix : rewrite.lang, domain: rewrite.domain, withDomain: rewrite.withDomain
+    lang: rewrite.prefix, domain: rewrite.domain, withDomain: rewrite.withDomain
   }));
 
   return routes;

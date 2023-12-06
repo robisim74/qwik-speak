@@ -52,6 +52,13 @@ export type TranslatePathFn = {
   (pathnames: string[], lang?: string): string[];
 };
 
+interface InternalRewriteRouteOption extends RewriteRouteOption {
+  /**
+   * Set the language instead of the prefix
+   */
+  lang?: string;
+}
+
 export const localizePath = (): LocalizePathFn => {
   const { config } = getSpeakContext();
   const currentLang = getLang();
@@ -110,6 +117,7 @@ export const localizePath = (): LocalizePathFn => {
 
 export const translatePath = (): TranslatePathFn => {
   const { config } = getSpeakContext();
+  const rewriteRoutes = config.rewriteRoutes as InternalRewriteRouteOption[];
   const currentLang = getLang();
 
   /**
@@ -117,7 +125,7 @@ export const translatePath = (): TranslatePathFn => {
    */
   const normalizePath = (pathname: string) => {
     // Source by prefix
-    let source = config.rewriteRoutes?.find(rewrite => (
+    let source = rewriteRoutes?.find(rewrite => (
       pathname === `/${rewrite.prefix}` ||
       pathname.startsWith(`/${rewrite.prefix}/`) ||
       pathname.startsWith(`${rewrite.prefix}/`)
@@ -135,8 +143,8 @@ export const translatePath = (): TranslatePathFn => {
     if (!isDev) {
       if (config.domainBasedRouting?.prefix === 'as-needed') {
         if (!source) {
-          source = config.rewriteRoutes?.find(
-            rewrite => !isEmpty(rewrite.paths) && rewrite.lang == currentLang
+          source = rewriteRoutes?.find(
+            rewrite => rewrite.lang == currentLang
           );
         }
       }
@@ -157,7 +165,7 @@ export const translatePath = (): TranslatePathFn => {
   const rewritePath = (pathname: string, prefix: string) => {
     let splitted = pathname.split('/');
 
-    let destination = config.rewriteRoutes?.find(
+    let destination = rewriteRoutes?.find(
       rewrite => rewrite.prefix === prefix
     );
 
@@ -177,8 +185,8 @@ export const translatePath = (): TranslatePathFn => {
     if (!isDev) {
       if (config.domainBasedRouting?.prefix === 'as-needed') {
         if (prefix && !destination) {
-          destination = config.rewriteRoutes?.find(
-            rewrite => !isEmpty(rewrite.paths) && rewrite.lang === prefix
+          destination = rewriteRoutes?.find(
+            rewrite => rewrite.lang === prefix
           );
         }
       }
@@ -208,7 +216,7 @@ export const translatePath = (): TranslatePathFn => {
   const translate = (route: (string | URL) | string[], lang?: string) => {
     lang ??= currentLang;
 
-    if (!config.rewriteRoutes) {
+    if (!rewriteRoutes) {
       if (isDev) logWarn(`translatePath: rewriteRoutes not found`);
       return route;
     }
@@ -274,7 +282,7 @@ export function toPrefixAsNeeded(rewriteRoutes: RewriteRouteOption[]): RewriteRo
   const routes = rewriteRoutes.map(rewrite =>
   ({
     prefix: rewrite.domain ? undefined : rewrite.prefix, paths: rewrite.paths,
-    lang: rewrite.prefix ? rewrite.prefix : rewrite.lang, domain: rewrite.domain, withDomain: rewrite.withDomain
+    lang: rewrite.prefix, domain: rewrite.domain, withDomain: rewrite.withDomain
   }));
 
   return routes;
@@ -300,11 +308,15 @@ const localizeDomain = (url: URL, lang: string): URL => {
 
 const translateDomain = (url: URL, lang: string): URL => {
   const { config } = getSpeakContext();
+  const rewriteRoutes = config.rewriteRoutes as InternalRewriteRouteOption[];
 
-  const rewrite = config.rewriteRoutes?.find(value =>
+  const rewrite = rewriteRoutes?.find(value =>
     value.lang === lang ||
     value.prefix === lang);
-  const domain = rewrite?.domain || rewrite?.withDomain;
+  const domain = rewrite?.domain ||
+    rewrite?.withDomain ||
+    // Default locale
+    rewriteRoutes.find(rewrite => rewrite.domain && Object.keys(rewrite.paths).length === 0)?.domain;
 
   if (!domain) {
     if (isDev) logWarn(`translateDomain: domain not found`);
@@ -322,6 +334,3 @@ const isDefaultDomain = (lang: string): boolean => {
   const { config } = getSpeakContext();
   return config.supportedLocales.find(value => value.lang === lang)?.domain !== undefined;
 };
-
-const isEmpty = (obj: unknown): obj is Record<never, never> =>
-  typeof obj === 'object' && obj !== null && Object.keys(obj).length === 0;
