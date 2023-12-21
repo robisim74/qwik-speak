@@ -6,6 +6,7 @@ export type {
   SpeakConfig,
   SpeakState,
   LoadTranslationFn,
+  ServerQRL,
   RewriteRouteOption,
   DomainBasedRoutingOption
 } from './types';

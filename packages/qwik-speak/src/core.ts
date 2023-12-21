@@ -1,10 +1,11 @@
+import type { ValueOrPromise } from '@builder.io/qwik';
 import { isDev, isServer } from '@builder.io/qwik/build';
 
 import type { Translation, SpeakState, LoadTranslationFn } from './types';
 import { getSpeakContext } from './context';
 import { logWarn } from './log';
 
-const cache: Record<string, Promise<any>> = {};
+const cache: Record<string, ValueOrPromise<Translation | null>> = {};
 
 /**
  * Cache the requests on server and on client in SPA mode
@@ -58,7 +59,7 @@ export const loadTranslations = async (
     resolvedLangs.add(locale.lang);
 
     for (const lang of resolvedLangs) {
-      let tasks: Promise<any>[];
+      let tasks: ValueOrPromise<Translation | null>[];
       // Cache requests in prod mode
       if (!isDev) {
         const memoized = memoize(translationFn.loadTranslation$);

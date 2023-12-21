@@ -48,7 +48,11 @@ export type Translation = { [key: string]: any };
 /**
  * Must contain the logic to load translation data
  */
-export type LoadTranslationFn = QRL<(lang: string, asset: string) => ValueOrPromise<Translation | null>>;
+export type LoadTranslationFn = QRL<(lang: string, asset: string) => ValueOrPromise<Translation | null>> |
+  ServerQRL<(lang: string, asset: string) => ValueOrPromise<Translation | null>>;
+
+export type ServerQRL<T extends { (this: any, ...args: any[]): any; }> =
+  QRL<((abort: AbortSignal, ...args: Parameters<T>) => ReturnType<T>) | ((...args: Parameters<T>) => ReturnType<T>)>;
 
 export interface TranslationFn {
   /**
