@@ -439,8 +439,8 @@ export function getInlinePluralAlias(code: string): string | null {
 }
 
 /**
- * Parse source removing null and empty values
+ * Parse source removing null values
  */
 export function parseJson(source: string): Translation {
-  return JSON.parse(source, (key, value) => value === null || value === '' ? undefined : value);
+  return JSON.parse(source, (key, value) => value === null ? undefined : value);
 }

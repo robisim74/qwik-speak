@@ -21,18 +21,12 @@ export function deepSet(target: Translation, keys: string[], val: string | Trans
  */
 export function deepMerge(target: Translation, source: Translation) {
   if (typeof target === 'object' && typeof source === 'object') {
-    Object.keys(source).forEach((k) => {
-      if (typeof source[k] === 'object') {
-        if (!(k in target)) {
-          Object.assign(target, { [k]: source[k] });
-        } else {
-          deepMerge(target[k], source[k]);
-        }
-      } else if (source[k]) {
-        Object.assign(target, { [k]: source[k] });
-      }
+    Object.keys(source).map(k => {
+      target[k] = deepMerge(target[k], source[k]);
     });
+    return target;
   }
+  return source;
 }
 
 /**

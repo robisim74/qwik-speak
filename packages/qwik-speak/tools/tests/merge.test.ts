@@ -19,11 +19,14 @@ describe('merge', () => {
     const source1 = { key1: 'Key1' };
     deepMerge(target1, source1);
     expect(target1).toEqual({ key1: 'Key1' });
-    // Expect not updated value if source is empty
-    const target2 = { key1: { subkey1: 'Subkey1' } };
-    const source2 = { key1: { subkey1: '', subkey2: 'Subkey2' } };
+    const target2 = { key1: { key2: '' } };
+    const source2 = { key1: { key2: [{ subkey1: 'Subkey1', subkey2: 'Subkey2' }] } };
     deepMerge(target2, source2);
-    expect(target2).toEqual({ key1: { subkey1: 'Subkey1', subkey2: 'Subkey2' } });
+    expect(target2).toEqual({ key1: { key2: [{ subkey1: 'Subkey1', subkey2: 'Subkey2' }] } } );
+    const target3 = { key1: '' };
+    const source3 = { key1: { subkey1: 'Subkey1', subkey2: 'Subkey2' } };
+    deepMerge(target3, source3);
+    expect(target3).toEqual({ key1: { subkey1: 'Subkey1', subkey2: 'Subkey2' } });
   });
   test('deepMergeMissing', () => {
     // Expect add value
