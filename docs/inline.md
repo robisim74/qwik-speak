@@ -3,7 +3,7 @@
 > Inline Qwik Speak `inlineTranslate` and `inlinePlural` functions at compile time
 
 ## How it works
-O the server, translation happens _at runtime_: `assets` are loaded during SSR and the lookup also happens at runtime.
+On the server, translation happens _at runtime_: `assets` are loaded during SSR and the lookup also happens at runtime.
 
 On the client, translation happens _at compile-time_: `assets` are loaded and inlined in chunks sent to the browser during the build, reducing resource usage at runtime.
 
