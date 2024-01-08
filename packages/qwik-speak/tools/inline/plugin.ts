@@ -230,15 +230,15 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
 
         log.write(`${target}: ` + (input ?? '-') + '\n');
 
-        if(missingValues.length > 0) {
-          log.write("\nNo keys for 'runtimeAssets' necessary.\n");
-        } else { 
+        if (missingValues.length > 0) {
           log.write('\nMissing value for keys:\n');
           missingValues.forEach(x => log.write(x + '\n'));
         }
 
-        log.write("\nMake sure the keys are in 'runtimeAssets':\n");
-        dynamics.forEach(x => log.write(x + '\n'));
+        if (dynamics.length > 0) {
+          log.write("\nMake sure the keys are in 'runtimeAssets':\n");
+          dynamics.forEach(x => log.write(x + '\n'));
+        }
 
         log.write((`\nQwik Speak Inline: build ends at ${new Date().toLocaleString()}\n`));
 
