@@ -230,8 +230,12 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
 
         log.write(`${target}: ` + (input ?? '-') + '\n');
 
-        log.write('\nMissing value for keys:\n');
-        missingValues.forEach(x => log.write(x + '\n'));
+        if(missingValues.length > 0) {
+          log.write("\nNo keys for 'runtimeAssets' necessary.\n");
+        } else { 
+          log.write('\nMissing value for keys:\n');
+          missingValues.forEach(x => log.write(x + '\n'));
+        }
 
         log.write("\nMake sure the keys are in 'runtimeAssets':\n");
         dynamics.forEach(x => log.write(x + '\n'));
