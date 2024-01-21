@@ -1,7 +1,7 @@
 import type { ValueOrPromise } from '@builder.io/qwik';
 import { isDev, isServer } from '@builder.io/qwik/build';
 
-import type { Translation, SpeakState, LoadTranslationFn } from './types';
+import type { LoadTranslationFn, SpeakState, Translation } from './types';
 import { getSpeakContext } from './context';
 import { logWarn } from './log';
 
@@ -21,7 +21,7 @@ export const memoize = (fn: LoadTranslationFn) => {
 };
 
 /**
- * Load translations when: 
+ * Load translations when:
  * - on server
  * - or runtime assets
  * runtimeAssets are serialized
@@ -35,7 +35,7 @@ export const loadTranslations = async (
   if (isServer || runtimeAssets) {
     const { locale, translation, translationFn, config } = ctx;
     // Qwik Speak server/client context
-    const { translation: _translation } = getSpeakContext();
+    const { translation: translationContext } = getSpeakContext();
 
     if (isDev) {
       const conflictingAsset = assets?.find(asset => runtimeAssets?.includes(asset)) ||
@@ -75,27 +75,27 @@ export const loadTranslations = async (
       }));
 
       // Set Qwik Speak server/client context
-      if (!(lang in _translation)) {
-        Object.assign(_translation, { [lang]: {} });
+      if (!(lang in translationContext)) {
+        Object.assign(translationContext, { [lang]: {} });
       }
 
       for (const data of assetSources) {
         if (data?.source) {
           if (isServer) {
-            // On server: 
+            // On server:
             // - assets & runtimeAssets in Qwik Speak server context
             // - runtimeAssets in Qwik context (must be serialized to be passed to the client)
             if (assets?.includes(data.asset)) {
-              Object.assign(_translation[lang], data.source);
+              Object.assign(translationContext[lang], data.source);
             } else {
-              Object.assign(_translation[lang], data.source);
+              Object.assign(translationContext[lang], data.source);
               // Serialize runtimeAssets
               Object.assign(translation[lang], data.source);
             }
           } else {
-            // On client: 
+            // On client:
             // - assets & runtimeAssets in Qwik Speak client context
-            Object.assign(_translation[lang], data.source);
+            Object.assign(translationContext[lang], data.source);
           }
         }
       }

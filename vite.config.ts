@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import { qwikVite } from '@builder.io/qwik/optimizer';
 import { qwikCity } from '@builder.io/qwik-city/vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
+import Inspect from 'vite-plugin-inspect'
 
 import { fileURLToPath } from 'url';
 import { qwikSpeakInline } from './packages/qwik-speak/tools/inline';
@@ -27,9 +28,11 @@ export default defineConfig(() => {
       qwikSpeakInline({
         supportedLangs: ['en-US', 'it-IT', 'de-DE'],
         defaultLang: 'en-US',
-        assetsPath: 'i18n'
+        assetsPath: 'i18n',
+        autoKeys: true
       }),
-      tsconfigPaths()
+      tsconfigPaths(),
+      Inspect()
     ],
     preview: {
       headers: {

@@ -26,11 +26,12 @@ export type InlineTranslateFn = {
 
 export const inlineTranslate = (): InlineTranslateFn => {
   const currentLang = getLang();
-
   const translate = (keys: string | string[], params?: Record<string, any>, lang?: string) => {
     const { translation, config } = getSpeakContext();
 
     lang ??= currentLang;
+
+    // console.log(keys)
 
     if (Array.isArray(keys)) {
       return keys.map(k => getValue(k, translation[lang!], params, config.keySeparator, config.keyValueSeparator));

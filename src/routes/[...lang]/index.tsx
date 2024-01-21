@@ -1,8 +1,8 @@
 import { component$, useSignal } from '@builder.io/qwik';
-import type { StaticGenerateHandler, DocumentHead } from '@builder.io/qwik-city';
+import type { DocumentHead, StaticGenerateHandler } from '@builder.io/qwik-city';
 import {
-  inlineTranslate,
   inlinePlural,
+  inlineTranslate,
   useFormatDate,
   useFormatNumber,
   useRelativeTime,
@@ -36,12 +36,13 @@ export default component$(() => {
   const units = locale.units!;
 
   const count = useSignal(0);
+  const zebras = useSignal(0);
 
   return (
     <div class="content">
-      <Title name={t('app.title')} />
+      <Title name={t('app.title')}/>
 
-      <SubTitle />
+      <SubTitle/>
 
       <h3>{t('params')}</h3>
       <p>{t('greeting', { name: 'Qwik Speak' })}</p>
@@ -61,6 +62,23 @@ export default component$(() => {
       <p>{fn(1000000)}</p>
       <p>{fn(1000000, { style: 'currency' })}</p>
       <p>{fn(1, { style: 'unit', unit: units['length'] })}</p>
+
+      {/* The following is to test autokey functionality. The strings/hashed strings as keys are not supposed to exist in json files yet */}
+
+      <h3>{t('New strings without existing keys')}</h3>
+      <p>{t('If neither key nor separator are detected in a t() function call, the key will be a hash of the string. This also works with plurals:')}</p>
+      <p class="counter">{p(
+        zebras.value,
+        undefined,
+        {
+          "one": "{{ value }} {{ color }} zebra",
+          "other": "{{ value }} {{ color }} zebras"
+        },
+        {
+          color: 'black and white'
+        }
+      )}</p>
+      <button class="btn-counter" onClick$={() => zebras.value++}>{t('Add a zebra')}</button>
     </div>
   );
 });

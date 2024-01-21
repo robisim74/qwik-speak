@@ -3,10 +3,11 @@ import { getLang, getSpeakContext } from './context';
 
 export type InlinePluralFn = {
   /**
-   * Get the plural by a number. 
+   * Get the plural by a number.
    * The value is passed as a parameter to the translate function
    * @param value A number or a string
    * @param key Optional key
+   * @param defaultValues Optional default values
    * @param params Optional parameters contained in the values
    * @param options Intl PluralRulesOptions object
    * @param lang Optional language if different from the current one
@@ -15,6 +16,7 @@ export type InlinePluralFn = {
   (
     value: number | string,
     key?: string,
+    defaultValues?: Record<string, any>,
     params?: Record<string, any>,
     options?: Intl.PluralRulesOptions,
     lang?: string
@@ -27,6 +29,7 @@ export const inlinePlural = (): InlinePluralFn => {
   const plural = (
     value: number | string,
     key?: string,
+    defaultValues?: Record<string, any>,
     params?: Record<string, any>,
     options?: Intl.PluralRulesOptions,
     lang?: string
@@ -34,7 +37,6 @@ export const inlinePlural = (): InlinePluralFn => {
     const { translation, config } = getSpeakContext();
 
     lang ??= currentLang;
-
     value = +value;
 
     const rule = new Intl.PluralRules(lang, options).select(value);
@@ -45,3 +47,4 @@ export const inlinePlural = (): InlinePluralFn => {
 
   return plural as InlinePluralFn;
 };
+

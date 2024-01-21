@@ -19,6 +19,13 @@
     "title": "Qwik Speak"
   },
   "anotherPage": "Ich bin eine andere Seite",
+  "autoKey_340281dcaf3c85ded6753db069f63aaa55ae4765": "Neue Zeichenketten ohne vorhandene Schlüssel",
+  "autoKey_b2cb3b66407a5d68319b276d81728b214fdf6967": "Wenn weder Schlüssel noch Trennzeichen in einem t()-Funktionsaufruf erkannt werden, wird der Schlüssel ein Hash der Zeichenkette sein. Dies funktioniert auch mit Pluralen:",
+  "autoKey_b9ccda55abe2fa88777f3c58e39f0263af4bde4f": {
+    "one": "{{ value }} {{ color }} Zebra",
+    "other": "{{ value }} {{ color }} Zebras"
+  },
+  "autoKey_f648dec1f7f441010604256438bafe008204b795": "Ein Zebra hinzufügen",
   "dates": "Daten & relative Zeit",
   "defaultValue": "Ich bin ein Standardwert",
   "description": "<em>Internationalisierung (i18n) Bibliothek zum Übersetzen von Texten, Daten und Zahlen in Qwik-Apps</em>",

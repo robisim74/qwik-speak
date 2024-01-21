@@ -61,6 +61,10 @@ for (const arg of args) {
       if (assertType(value, 'string')) options.keyValueSeparator = value;
       else errors.push(wrongOption(key, value));
       break;
+    case 'autoKeys':
+      if (assertType(value, 'string') && (value === 'true' || value === 'false')) options.autoKeys = value === 'true'
+      else errors.push(wrongOption(key, value));
+      break;
     case 'error':
       errors.push(value);
       break;

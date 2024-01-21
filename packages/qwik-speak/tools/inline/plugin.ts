@@ -1,21 +1,22 @@
 import type { Plugin } from 'vite';
-import type { NormalizedOutputOptions, OutputBundle, OutputAsset, OutputChunk } from 'rollup';
-import { readFile, readdir, writeFile } from 'fs/promises';
+import type { NormalizedOutputOptions, OutputAsset, OutputBundle, OutputChunk } from 'rollup';
+import { readdir, readFile, writeFile } from 'fs/promises';
 import { createWriteStream, existsSync, mkdirSync } from 'fs';
 import { extname, normalize } from 'path';
 
 import type { QwikSpeakInlineOptions, Translation } from '../core/types';
 import type { Argument, Property } from '../core/parser';
 import {
-  getInlineTranslateAlias,
   getInlinePluralAlias,
-  parseJson,
+  getInlineTranslateAlias,
   matchInlinePlural,
-  matchInlineTranslate
+  matchInlineTranslate,
+  parseJson,
+  parseSequenceExpressions
 } from '../core/parser';
-import { parseSequenceExpressions } from '../core/parser';
 import { getOptions, getRules } from '../core/intl-parser';
 import { merge } from '../core/merge';
+import { generateAutoKey, isExistingKey } from '../core/autokeys';
 
 const inlineTranslatePlaceholder = '__qsInlineTranslate';
 const inlinePluralPlaceholder = '__qsInlinePlural';
@@ -75,7 +76,8 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
     loadAssets: options.loadAssets ?? loadAssets,
     outDir: options.outDir ?? 'dist',
     keySeparator: options.keySeparator ?? '.',
-    keyValueSeparator: options.keyValueSeparator ?? '@@'
+    keyValueSeparator: options.keyValueSeparator ?? '@@',
+    autoKeys: options.autoKeys ?? false
   };
 
   baseDir = `${resolvedOptions.basePath}/${resolvedOptions.assetsPath}`;
@@ -118,12 +120,13 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
     },
 
     configureServer(server) {
-      // In dev mode, listen to lang from client 
+      // In dev mode, listen to lang from client
       if (mode === 'dev') {
         server.ws.on('qwik-speak:lang', (data) => {
           if (devLang && devLang !== data.msg) {
             // Invalidate inlined modules
             for (const id of moduleIds) {
+              console.log(data.msg, id)
               const module = server.moduleGraph.getModuleById(id);
               if (module) server.moduleGraph.invalidateModule(module);
             }
@@ -135,12 +138,12 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
       }
     },
 
-    handleHotUpdate({ file, server }) {
+    async handleHotUpdate({ file, server }) {
       // Filter json
       if (new RegExp(resolvedOptions.assetsPath).test(file) && /\.(json)$/.test(file)) {
         for (const lang of resolvedOptions.supportedLangs) {
           if (new RegExp(lang).test(file)) {
-            loadAssets(lang);
+            await loadAssets(lang);
           }
         }
         // Invalidate inlined modules
@@ -156,13 +159,12 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
      * Load translation files when build starts
      */
     async buildStart() {
-      if (target === 'client' || mode === 'dev') {
-        // For all langs
-        await Promise.all(resolvedOptions.supportedLangs.map(async lang => {
-          const data = await resolvedOptions.loadAssets(lang);
-          Object.assign(translation[lang], data)
-        }));
-      }
+      // For all langs
+      await Promise.all(resolvedOptions.supportedLangs.map(async lang => {
+        const data = await resolvedOptions.loadAssets(lang);
+        Object.assign(translation[lang], data)
+        console.log('buildStart', { lang })
+      }));
     },
 
     /**
@@ -170,16 +172,30 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
      * Prefer transform hook because unused imports will be removed, unlike renderChunk
      */
     async transform(code: string, id: string, options) {
+      // Auto keys
+      if (resolvedOptions.autoKeys) {
+        if (/\/src\//.test(id) && /\.(js|cjs|mjs|jsx|ts|tsx)$/.test(id)) {
+          // Filter code: inlinePlural
+          if (matchInlinePlural(code)) {
+            code = transformPlural(code, resolvedOptions, translation);
+          }
+          // Filter code: inlineTranslate
+          if (matchInlineTranslate(code)) {
+            code = transformTranslate(code, resolvedOptions, translation);
+          }
+        }
+      }
+
       if (target === 'client' || (target === 'ssr' && options?.ssr === false)) {
         // Filter id
         if (/\/src\//.test(id) && /\.(js|cjs|mjs|jsx|ts|tsx)$/.test(id)) {
           // Filter code: inlinePlural
           if (matchInlinePlural(code)) {
-            code = transformPlural(code);
+            code = transformPlural(code, resolvedOptions, translation);
           }
           // Filter code: inlineTranslate
           if (matchInlineTranslate(code)) {
-            code = transformTranslate(code);
+            code = transformTranslate(code, resolvedOptions, translation);
           }
 
           // Inline in dev mode
@@ -187,7 +203,6 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
             if (code.includes(inlineTranslatePlaceholder) ||
               code.includes(inlinePluralPlaceholder)) {
               code = inlineAll(code, devLang, resolvedOptions, translation);
-
               moduleIds.add(id);
             }
           }
@@ -289,10 +304,40 @@ export async function writeChunks(
   }
 }
 
+function handleAutoKeys(keyOrDefaultValue: string, originalFn: string, lang: string, translation: Translation) {
+  if (!keyOrDefaultValue) {
+    throw new Error('handleAutoKeys(): keyOrDefaultValue is undefined which should not happen')
+  }
+  const autoKey = generateAutoKey(keyOrDefaultValue);
+  if (!isExistingKey(translation[lang], keyOrDefaultValue) && isExistingKey(translation[lang], autoKey)) {
+    console.log('replacing with auto key', {
+      keyOrDefaultValue,
+      autoKey,
+      lang,
+      expectedValue: translation[lang][autoKey]
+    })
+    return {
+      key: autoKey,
+      originalFnWithAutoKey: originalFn.replace(keyOrDefaultValue!, autoKey),
+      autoKeyUsed: true,
+    }
+  }
+  return {
+    key: keyOrDefaultValue,
+    originalFnWithAutoKey: originalFn,
+    autoKeyUsed: false,
+  }
+}
+
+
 /**
  * Transform inlineTranslate to placeholder
  */
-export function transformTranslate(code: string): string {
+export function transformTranslate(
+  code: string,
+  opts: Required<QwikSpeakInlineOptions>,
+  translation: Translation
+): string {
   const alias = getInlineTranslateAlias(code);
 
   if (!alias) return code;
@@ -306,10 +351,22 @@ export function transformTranslate(code: string): string {
   for (const expr of sequence) {
     // Original function
     const originalFn = expr.value;
+    // Auto keys
+    let originalFnWithAutoKey = '';
+    let autoKeyUsed = false;
     // Arguments
     const args = expr.arguments;
 
     if (args?.length > 0) {
+      // Auto keys: args[0].value is the key or default value or key[separator]value, depending on the context
+      if (opts.autoKeys && args[0].type === 'Literal' && args[0].value) {
+        ({
+          key: args[0].value,
+          originalFnWithAutoKey,
+          autoKeyUsed
+        } = handleAutoKeys(args[0].value, originalFn, opts.defaultLang, translation))
+      }
+
       // Dynamic
       if (checkDynamicTranslate(args, originalFn)) {
         dynamic = true;
@@ -317,7 +374,7 @@ export function transformTranslate(code: string): string {
       }
 
       // Transpile with placeholder
-      const transpiled = originalFn.replace(new RegExp(`${alias}\\(`), `${inlineTranslatePlaceholder}(`);
+      const transpiled = (autoKeyUsed ? originalFnWithAutoKey : originalFn).replace(new RegExp(`${alias}\\(`), `${inlineTranslatePlaceholder}(`);
       // Replace
       code = code.replace(originalFn, transpiled);
     }
@@ -334,10 +391,16 @@ export function transformTranslate(code: string): string {
 /**
  * Transform inlinePlural to placeholder
  */
-export function transformPlural(code: string): string {
+export function transformPlural(
+  code: string,
+  opts: Required<QwikSpeakInlineOptions>,
+  translation: Translation
+): string {
   const alias = getInlinePluralAlias(code);
 
   if (!alias) return code;
+
+  console.log(translation, opts)
 
   let dynamic = false;
   // Parse sequence
@@ -348,21 +411,34 @@ export function transformPlural(code: string): string {
   for (const expr of sequence) {
     // Original function
     const originalFn = expr.value;
+    // Auto keys
+    let originalFnWithAutoKey = '';
+    let autoKeyUsed = false;
     // Arguments
     const args = expr.arguments;
 
     if (args?.length > 0) {
+      // Auto keys
+      if (opts.autoKeys && args[0].type === 'Literal' && args[0].value) {
+        ({
+          key: args[0].value,
+          originalFnWithAutoKey,
+          autoKeyUsed
+        } = handleAutoKeys(args[0].value, originalFn, opts.defaultLang, translation))
+      }
+
       if (checkDynamicPlural(args, originalFn)) {
         dynamic = true;
         continue;
       }
 
       // Transpile with placeholder
-      const transpiled = originalFn.replace(new RegExp(`${alias}\\(`), `${inlinePluralPlaceholder}(`);
+      const transpiled = (autoKeyUsed ? originalFnWithAutoKey : originalFn).replace(new RegExp(`${alias}\\(`), `${inlinePluralPlaceholder}(`);
       // Replace
       code = code.replace(originalFn, transpiled);
     }
   }
+
 
   // Remove invocation
   if (!dynamic) {
@@ -378,6 +454,7 @@ export function inlineAll(
   opts: Required<QwikSpeakInlineOptions>,
   translation: Translation
 ) {
+  console.log('inlineAll')
   if (code.includes(inlinePluralPlaceholder)) {
     code = inlinePlural(code, inlinePluralPlaceholder, inlineTranslatePlaceholder, lang, opts);
   }
@@ -394,6 +471,7 @@ export function inlineTranslate(
   lang: string,
   opts: Required<QwikSpeakInlineOptions>
 ): string {
+  console.log('inlineTranslate')
   // Parse sequence
   const sequence = parseSequenceExpressions(code, placeholder);
 
@@ -405,16 +483,24 @@ export function inlineTranslate(
     // Arguments
     const args = expr.arguments;
 
+    let autoKeyUsed = false;
+
     if (args?.length > 0) {
       const resolvedLang = withLang(lang, args[2], opts);
 
       let resolvedValue: string | Translation = quoteValue('');
 
       if (args[0].type === 'ArrayExpression') {
-        const keys = getKeys(args[0]);
+
+        const keys = getKeys(args[0])
 
         const keyValues: (string | Translation)[] = [];
-        for (const key of keys) {
+        for (let key of keys) {
+
+          if (opts.autoKeys) {
+            ({ key } = handleAutoKeys(key, originalFn, resolvedLang, translation))
+          }
+
           const value = getValue(
             key,
             translation[resolvedLang],
@@ -427,9 +513,14 @@ export function inlineTranslate(
         }
         resolvedValue = keyValues;
       } else if (args?.[0]?.value) {
-        const key = getKey(args[0]);
 
-        const value = getValue(
+        let key = getKey(args[0]);
+
+        if (opts.autoKeys) {
+          ({ key, autoKeyUsed } = handleAutoKeys(key, originalFn, resolvedLang, translation))
+        }
+
+        resolvedValue = getValue(
           key,
           translation[resolvedLang],
           args[1],
@@ -438,14 +529,15 @@ export function inlineTranslate(
           resolvedLang
         );
 
-        resolvedValue = value;
+        console.log('inlineTranslateKey', { key, originalFn, resolvedValue })
       }
 
       // Transpile
       const transpiled = transpileTranslateFn(resolvedValue);
-
+      
       // Replace
       code = code.replace(originalFn, transpiled);
+
     }
   }
 
@@ -459,6 +551,7 @@ export function inlinePlural(
   lang: string,
   opts: Required<QwikSpeakInlineOptions>
 ): string {
+  console.log('inlinePlural')
   // Parse sequence
   const sequence = parseSequenceExpressions(code, pluralPlaceholder);
 
@@ -492,6 +585,7 @@ export function inlinePlural(
  * Transpile the translate function
  */
 export function transpileTranslateFn(value: string | Translation): string {
+  console.log('transpileTranslateFn')
   if (typeof value === 'object') {
     return `${stringifyObject(value)}`;
   } else {
@@ -509,6 +603,7 @@ export function transpilePluralFn(
   args: Argument[],
   opts: Required<QwikSpeakInlineOptions>
 ): string {
+  console.log('transpilePluralFn')
   let translation = '';
 
   const transpileRules = (lang: string): string => {
@@ -624,6 +719,7 @@ export function getValue(
   keyValueSeparator: string,
   lang?: string
 ): string | Translation {
+  console.log('getValue')
   let defaultValue: string | undefined = undefined;
 
   [key, defaultValue] = separateKeyValue(key, keyValueSeparator);
