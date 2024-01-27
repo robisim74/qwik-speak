@@ -32,7 +32,7 @@ export default defineConfig(() => {
         autoKeys: true
       }),
       tsconfigPaths(),
-      Inspect()
+      //Inspect()
     ],
     preview: {
       headers: {

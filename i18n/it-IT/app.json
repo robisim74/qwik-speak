@@ -19,13 +19,13 @@
     "title": "Qwik Speak"
   },
   "anotherPage": "Sono un'altra pagina",
-  "autoKey_340281dcaf3c85ded6753db069f63aaa55ae4765": "Nuove stringhe senza chiavi esistenti",
-  "autoKey_b2cb3b66407a5d68319b276d81728b214fdf6967": "Se in una chiamata alla funzione t() non vengono rilevati né chiave né separatore, la chiave sarà un hash della stringa. Questo funziona anche con i plurali:",
-  "autoKey_b9ccda55abe2fa88777f3c58e39f0263af4bde4f": {
-    "one": "{{ valore }}} {{ colore }} zebra",
-    "other": "{{ valore }} {{ colore }} zebre"
+  "autoKey_1a2e4ebeba1f8ffd38ee0bc52dde97f7": "Aggiungi una zebra",
+  "autoKey_3c909eb27a10640be9495cff142f601c": {
+    "one": "{{ value }} {{ color }} zebra",
+    "other": "{{ value }} {{ color }} zebre"
   },
-  "autoKey_f648dec1f7f441010604256438bafe008204b795": "Aggiungi una zebra",
+  "autoKey_41637e36ced97d2f01f48d56aaf32f32": "Se in una chiamata alla funzione t() non vengono rilevati né chiave né separatore, la chiave sarà un hash della stringa. Questo funziona anche con i plurali:",
+  "autoKey_8e4c0598319b3b04541df2fc36cb6fc5": "Nuove stringhe senza chiavi esistenti",
   "dates": "Date e tempo relativo",
   "defaultValue": "Sono un valore predefinito",
   "description": "<em>Libreria di internazionalizzazione (i18n) per tradurre testi, date e numeri nelle app Qwik</em>",

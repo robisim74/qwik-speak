@@ -444,3 +444,12 @@ export function getInlinePluralAlias(code: string): string | null {
 export function parseJson(source: string): Translation {
   return JSON.parse(source, (key, value) => value === null ? undefined : value);
 }
+
+export function parseDefaultValues(properties: Property[]): Record<string, any> {
+  return properties.reduce((acc: Record<string, any>, prop) => {
+    if (prop.value?.type === 'Literal') {
+      acc[prop.key.value.replace(/['"`]/g, '')] = prop.value.value;
+    }
+    return acc;
+  }, {});
+}

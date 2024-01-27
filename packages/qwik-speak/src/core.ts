@@ -35,7 +35,7 @@ export const loadTranslations = async (
   if (isServer || runtimeAssets) {
     const { locale, translation, translationFn, config } = ctx;
     // Qwik Speak server/client context
-    const { translation: translationContext } = getSpeakContext();
+    const { translation: _translation } = getSpeakContext();
 
     if (isDev) {
       const conflictingAsset = assets?.find(asset => runtimeAssets?.includes(asset)) ||
@@ -75,8 +75,8 @@ export const loadTranslations = async (
       }));
 
       // Set Qwik Speak server/client context
-      if (!(lang in translationContext)) {
-        Object.assign(translationContext, { [lang]: {} });
+      if (!(lang in _translation)) {
+        Object.assign(_translation, { [lang]: {} });
       }
 
       for (const data of assetSources) {
@@ -86,16 +86,16 @@ export const loadTranslations = async (
             // - assets & runtimeAssets in Qwik Speak server context
             // - runtimeAssets in Qwik context (must be serialized to be passed to the client)
             if (assets?.includes(data.asset)) {
-              Object.assign(translationContext[lang], data.source);
+              Object.assign(_translation[lang], data.source);
             } else {
-              Object.assign(translationContext[lang], data.source);
+              Object.assign(_translation[lang], data.source);
               // Serialize runtimeAssets
               Object.assign(translation[lang], data.source);
             }
           } else {
             // On client:
             // - assets & runtimeAssets in Qwik Speak client context
-            Object.assign(translationContext[lang], data.source);
+            Object.assign(_translation[lang], data.source);
           }
         }
       }

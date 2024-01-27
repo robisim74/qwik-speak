@@ -21,6 +21,7 @@ export default defineConfig(() => {
           'fs',
           'fs/promises',
           'path',
+          'crypto'
         ],
         plugins: [
           shebang({

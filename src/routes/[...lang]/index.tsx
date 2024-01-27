@@ -71,12 +71,12 @@ export default component$(() => {
         zebras.value,
         undefined,
         {
+          color: 'black and white'
+        },
+        {
           "one": "{{ value }} {{ color }} zebra",
           "other": "{{ value }} {{ color }} zebras"
         },
-        {
-          color: 'black and white'
-        }
       )}</p>
       <button class="btn-counter" onClick$={() => zebras.value++}>{t('Add a zebra')}</button>
     </div>

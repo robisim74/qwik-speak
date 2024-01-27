@@ -6,9 +6,9 @@ export type InlinePluralFn = {
    * Get the plural by a number.
    * The value is passed as a parameter to the translate function
    * @param value A number or a string
-   * @param key Optional key
-   * @param defaultValues Optional default values
+   * @param key Optional key   
    * @param params Optional parameters contained in the values
+   * @param defaultValues Optional default values
    * @param options Intl PluralRulesOptions object
    * @param lang Optional language if different from the current one
    * @returns The translation for the plural
@@ -16,8 +16,8 @@ export type InlinePluralFn = {
   (
     value: number | string,
     key?: string,
-    defaultValues?: Record<string, any>,
     params?: Record<string, any>,
+    defaultValues?: Record<string, any>,
     options?: Intl.PluralRulesOptions,
     lang?: string
   ): string;
@@ -29,8 +29,8 @@ export const inlinePlural = (): InlinePluralFn => {
   const plural = (
     value: number | string,
     key?: string,
-    defaultValues?: Record<string, any>,
     params?: Record<string, any>,
+    defaultValues?: Record<string, any>,
     options?: Intl.PluralRulesOptions,
     lang?: string
   ) => {
@@ -40,11 +40,14 @@ export const inlinePlural = (): InlinePluralFn => {
     value = +value;
 
     const rule = new Intl.PluralRules(lang, options).select(value);
+
     key = key ? `${key}${config.keySeparator}${rule}` : rule;
+
+    const defaultValue = defaultValues ? defaultValues[rule] : undefined;
+    if (defaultValue) key = `${key}${config.keyValueSeparator}${defaultValue}`;
 
     return getValue(key, translation[lang], { value, ...params }, config.keySeparator, config.keyValueSeparator);
   };
 
   return plural as InlinePluralFn;
 };
-
