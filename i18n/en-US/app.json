@@ -19,6 +19,14 @@
     "title": "Qwik Speak"
   },
   "anotherPage": "I'm another page",
+  "autoKey_1a2e4ebeba1f8ffd38ee0bc52dde97f7": "Add a zebra",
+  "autoKey_3c909eb27a10640be9495cff142f601c": {
+    "one": "{{ value }} {{ color }} zebra",
+    "other": "{{ value }} {{ color }} zebras"
+  },
+  "autoKey_41637e36ced97d2f01f48d56aaf32f32": "If neither key nor separator are detected in a t() function call, the key will be a hash of the string. This also works with plurals:",
+  "autoKey_8e4c0598319b3b04541df2fc36cb6fc5": "New strings without existing keys",
+  "autoKey_cbe370e60f10f92d4dd8b3e9c267b1fa": "black and white",
   "dates": "Dates & relative time",
   "defaultValue": "I'm a default value",
   "description": "<em>Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps</em>",

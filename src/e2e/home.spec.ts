@@ -9,6 +9,7 @@ test.describe('Home', () => {
     await expect(page.locator('main')).toContainText('Qwik Speak');
     await expect(page.locator('main')).toContainText('Translate your Qwik apps into any language');
     await expect(page.locator('main')).toContainText('Hi! I am Qwik Speak');
+    await expect(page.locator('main')).toContainText('New strings without existing keys');
 
     await expect(page).toHaveTitle('Qwik Speak');
     await expect(page.locator('meta[name="description"]'))
@@ -24,6 +25,7 @@ test.describe('Home', () => {
     await expect(page.locator('main')).toContainText('Qwik Speak');
     await expect(page.locator('main')).toContainText('Traduci le tue app Qwik in qualsiasi lingua');
     await expect(page.locator('main')).toContainText('Ciao! Sono Qwik Speak');
+    await expect(page.locator('main')).toContainText('Nuove stringhe senza chiavi esistenti');
 
     await expect(page).toHaveTitle('Qwik Speak');
     await expect(page.locator('meta[name="description"]'))

@@ -17,6 +17,7 @@
     "lint": "eslint \"src/**/*.ts*\"",
     "preview": "qwik build preview && vite preview --open",
     "qwik-speak-extract": "node ./packages/qwik-speak/extract/cli.js --supportedLangs=en-US,it-IT,de-DE --assetsPath=i18n",
+    "qwik-speak-extract-with-autokeys": "node ./packages/qwik-speak/extract/cli.js --supportedLangs=en-US,it-IT,de-DE --assetsPath=i18n --autoKeys=true",
     "qwik-speak-extract-fallback": "node fallback.js",
     "start": "vite --open --mode ssr",
     "test": "vitest test --run",
@@ -36,7 +37,8 @@
     "gpt-translate-json": "^0.1.0",
     "typescript": "5.3.2",
     "undici": "5.27.0",
-    "vite": "5.0.10",
+    "vite": "5.0.12",
+    "vite-plugin-inspect": "^0.8.3",
     "vite-tsconfig-paths": "4.2.1",
     "vitest": "^1.0.4"
   },

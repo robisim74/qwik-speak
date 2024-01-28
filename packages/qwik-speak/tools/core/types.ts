@@ -42,6 +42,11 @@ export interface QwikSpeakExtractOptions {
    * Key-value separator. Default is '@@'
    */
   keyValueSeparator?: string;
+  /**
+   * Automatically handle keys for each string. Default is false
+   * Make sure to set autoKeys: true in the vite plugin options for qwik inline
+   */
+  autoKeys?: boolean;
 }
 
 /**
@@ -80,6 +85,11 @@ export interface QwikSpeakInlineOptions {
    * Key-value separator. Default is '@@'
    */
   keyValueSeparator?: string;
+  /**
+   * Automatically handle keys for each string. Default is false
+   * Make sure to enable --autoKeys=true when running the extractor
+   */
+  autoKeys?: boolean;
 }
 
 /**

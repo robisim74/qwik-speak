@@ -5,16 +5,17 @@ import { extname, join, normalize } from 'path';
 import type { QwikSpeakExtractOptions, Translation } from '../core/types';
 import type { Argument, CallExpression, Element } from '../core/parser';
 import {
-  getInlineTranslateAlias,
   getInlinePluralAlias,
-  parseJson,
-  parseSequenceExpressions,
+  getInlineTranslateAlias,
+  matchInlinePlural,
   matchInlineTranslate,
-  matchInlinePlural
+  parseJson,
+  parseSequenceExpressions
 } from '../core/parser';
 import { deepClone, deepMerge, deepMergeMissing, deepSet, merge } from '../core/merge';
 import { sortTarget, toJsonString } from '../core/format';
 import { getOptions, getRules } from '../core/intl-parser';
+import { generateAutoKey, isExistingKey, isObjectPath } from '../core/autokeys';
 
 /**
  * Extract translations from source files
@@ -32,6 +33,7 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
     fallback: options.fallback ?? ((translation: Translation) => translation),
     keySeparator: options.keySeparator ?? '.',
     keyValueSeparator: options.keyValueSeparator ?? '@@',
+    autoKeys: options.autoKeys ?? false,
   }
 
   // Logs
@@ -130,7 +132,7 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
       }
     }
 
-    // usePlural
+    // inlinePlural
     if (matchInlinePlural(code)) {
       const alias = getInlinePluralAlias(code);
 
@@ -152,6 +154,7 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
             // Map of rules
             const rules = new Set<string>();
             const options = getOptions(args[3]?.properties);
+
             for (const lang of resolvedOptions.supportedLangs) {
               const rulesByLang = getRules(lang, options);
               for (const rule of rulesByLang) {
@@ -159,17 +162,55 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
               }
             }
 
-            const key = args?.[1]?.value;
+            const isUndefinedKey = (key?: string) => !key || key === 'undefined' || key === 'null';
+
+            const separateKeyValue = (key: string, keyValueSeparator: string): [string, string | undefined] => {
+              return <[string, string | undefined]>key.split(keyValueSeparator);
+            };
+
+            let key = args[1]?.value;
+
+            let defaultValue: string | undefined = undefined;
             if (key) {
+              [key, defaultValue] = separateKeyValue(key, resolvedOptions.keyValueSeparator);
+
+              if (!defaultValue && /^[[{].*[\]}]$/.test(key)) {
+                defaultValue = key;
+                key = undefined;
+              }
+            }
+
+            const defaultValues: Record<string, any> | undefined = defaultValue ? JSON.parse(defaultValue) : undefined;
+
+            if (!isUndefinedKey(key) && !defaultValues) {
               const valueObj: any = {};
               for (const rule of rules) {
                 valueObj[rule] = '';
               }
               keys.push(`${key}${resolvedOptions.keyValueSeparator}${JSON.stringify(valueObj)}`);
-            } else {
+            } else if (isUndefinedKey(key) && !defaultValues) {
               for (const rule of rules) {
                 keys.push(rule);
               }
+            } else if (!isUndefinedKey(key) && !!defaultValues) {
+              // Test if each rule has a corresponding defaultValues key.
+              // If not, add it as empty string
+              for (const rule of rules) {
+                if (!defaultValues[rule]) {
+                  defaultValues[rule] = '';
+                }
+              }
+              keys.push(`${key}${resolvedOptions.keyValueSeparator}${JSON.stringify(defaultValues)}`);
+            } else if (isUndefinedKey(key) && !!defaultValues) {
+              key = generateAutoKey(defaultValues);
+              // Test if each rule has a corresponding defaultValues key.
+              // If not, add it as empty string
+              for (const rule of rules) {
+                if (!defaultValues[rule]) {
+                  defaultValues[rule] = '';
+                }
+              }
+              keys.push(`${key}${resolvedOptions.keyValueSeparator}${JSON.stringify(defaultValues)}`);
             }
           }
         }
@@ -223,7 +264,7 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
 
   /**
    * Write translation data
-   * 
+   *
    * Naming convention of keys:
    * min depth > 0: filenames = each top-level property name
    * min depth = 0: filename = 'app'
@@ -294,6 +335,10 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
   stats.set('unique keys', (stats.get('unique keys') ?? 0) + keys.length);
 
   const prefixes: string[] = [];
+
+  /* Read assets */
+  const assetsData = await readAssets();
+
   /* Deep set in translation data */
   for (let key of keys) {
     let defaultValue: string | Translation | undefined = undefined;
@@ -305,15 +350,22 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
       defaultValue = JSON.parse(defaultValue);
     }
 
+    if (resolvedOptions.autoKeys) {
+      // Auto keys should be backward compatible with existing keys. We don't want to override them.
+      // Let's be conservative and only generate auto keys for keys that have no default value, don't resemble
+      // an object path and don't already exist in the assets.
+      if (key && !defaultValue && !isObjectPath(key) && !isExistingKey(assetsData, key, resolvedOptions.keySeparator)) {
+        defaultValue = `${key}`;
+        key = generateAutoKey(key);
+      }
+    }
+
     for (const lang of resolvedOptions.supportedLangs) {
       deepSet(translation[lang], key.split(resolvedOptions.keySeparator), deepClone(defaultValue || ''));
     }
 
     prefixes.push(key);
   }
-
-  /* Read assets */
-  const assetsData = await readAssets();
 
   /* Deep merge translation data */
   if (assetsData.size > 0) {

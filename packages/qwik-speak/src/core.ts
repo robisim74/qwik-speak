@@ -1,7 +1,7 @@
 import type { ValueOrPromise } from '@builder.io/qwik';
 import { isDev, isServer } from '@builder.io/qwik/build';
 
-import type { Translation, SpeakState, LoadTranslationFn } from './types';
+import type { LoadTranslationFn, SpeakState, Translation } from './types';
 import { getSpeakContext } from './context';
 import { logWarn } from './log';
 
@@ -21,7 +21,7 @@ export const memoize = (fn: LoadTranslationFn) => {
 };
 
 /**
- * Load translations when: 
+ * Load translations when:
  * - on server
  * - or runtime assets
  * runtimeAssets are serialized
@@ -82,7 +82,7 @@ export const loadTranslations = async (
       for (const data of assetSources) {
         if (data?.source) {
           if (isServer) {
-            // On server: 
+            // On server:
             // - assets & runtimeAssets in Qwik Speak server context
             // - runtimeAssets in Qwik context (must be serialized to be passed to the client)
             if (assets?.includes(data.asset)) {
@@ -93,7 +93,7 @@ export const loadTranslations = async (
               Object.assign(translation[lang], data.source);
             }
           } else {
-            // On client: 
+            // On client:
             // - assets & runtimeAssets in Qwik Speak client context
             Object.assign(_translation[lang], data.source);
           }
@@ -142,7 +142,7 @@ export const getValue = (
 /**
  * Separate key & default value
  */
-export const separateKeyValue = (key: string, keyValueSeparator: string): [string, string | undefined] => {
+export const separateKeyValue = (key: string, keyValueSeparator = '@@'): [string, string | undefined] => {
   return <[string, string | undefined]>key.split(keyValueSeparator);
 };
 

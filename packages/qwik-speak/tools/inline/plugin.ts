@@ -1,21 +1,22 @@
 import type { Plugin } from 'vite';
-import type { NormalizedOutputOptions, OutputBundle, OutputAsset, OutputChunk } from 'rollup';
-import { readFile, readdir, writeFile } from 'fs/promises';
+import type { NormalizedOutputOptions, OutputAsset, OutputBundle, OutputChunk } from 'rollup';
+import { readdir, readFile, writeFile } from 'fs/promises';
 import { createWriteStream, existsSync, mkdirSync } from 'fs';
 import { extname, normalize } from 'path';
 
 import type { QwikSpeakInlineOptions, Translation } from '../core/types';
 import type { Argument, Property } from '../core/parser';
 import {
-  getInlineTranslateAlias,
   getInlinePluralAlias,
-  parseJson,
+  getInlineTranslateAlias,
   matchInlinePlural,
-  matchInlineTranslate
+  matchInlineTranslate,
+  parseJson,
+  parseSequenceExpressions
 } from '../core/parser';
-import { parseSequenceExpressions } from '../core/parser';
 import { getOptions, getRules } from '../core/intl-parser';
 import { merge } from '../core/merge';
+import { generateAutoKey, isExistingKey } from '../core/autokeys';
 
 const inlineTranslatePlaceholder = '__qsInlineTranslate';
 const inlinePluralPlaceholder = '__qsInlinePlural';
@@ -75,7 +76,8 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
     loadAssets: options.loadAssets ?? loadAssets,
     outDir: options.outDir ?? 'dist',
     keySeparator: options.keySeparator ?? '.',
-    keyValueSeparator: options.keyValueSeparator ?? '@@'
+    keyValueSeparator: options.keyValueSeparator ?? '@@',
+    autoKeys: options.autoKeys ?? false
   };
 
   baseDir = `${resolvedOptions.basePath}/${resolvedOptions.assetsPath}`;
@@ -118,7 +120,7 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
     },
 
     configureServer(server) {
-      // In dev mode, listen to lang from client 
+      // In dev mode, listen to lang from client
       if (mode === 'dev') {
         server.ws.on('qwik-speak:lang', (data) => {
           if (devLang && devLang !== data.msg) {
@@ -135,12 +137,12 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
       }
     },
 
-    handleHotUpdate({ file, server }) {
+    async handleHotUpdate({ file, server }) {
       // Filter json
       if (new RegExp(resolvedOptions.assetsPath).test(file) && /\.(json)$/.test(file)) {
         for (const lang of resolvedOptions.supportedLangs) {
           if (new RegExp(lang).test(file)) {
-            loadAssets(lang);
+            await loadAssets(lang);
           }
         }
         // Invalidate inlined modules
@@ -156,13 +158,11 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
      * Load translation files when build starts
      */
     async buildStart() {
-      if (target === 'client' || mode === 'dev') {
-        // For all langs
-        await Promise.all(resolvedOptions.supportedLangs.map(async lang => {
-          const data = await resolvedOptions.loadAssets(lang);
-          Object.assign(translation[lang], data)
-        }));
-      }
+      // For all langs
+      await Promise.all(resolvedOptions.supportedLangs.map(async lang => {
+        const data = await resolvedOptions.loadAssets(lang);
+        Object.assign(translation[lang], data);
+      }));
     },
 
     /**
@@ -170,6 +170,20 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
      * Prefer transform hook because unused imports will be removed, unlike renderChunk
      */
     async transform(code: string, id: string, options) {
+      // Auto keys
+      if (resolvedOptions.autoKeys) {
+        if (/\/src\//.test(id) && /\.(js|cjs|mjs|jsx|ts|tsx)$/.test(id)) {
+          // Filter code: inlinePlural
+          if (matchInlinePlural(code)) {
+            code = addKeyToPlural(code, resolvedOptions, translation);
+          }
+          // Filter code: inlineTranslate
+          if (matchInlineTranslate(code)) {
+            code = addKeyToTranslate(code, resolvedOptions, translation);
+          }
+        }
+      }
+
       if (target === 'client' || (target === 'ssr' && options?.ssr === false)) {
         // Filter id
         if (/\/src\//.test(id) && /\.(js|cjs|mjs|jsx|ts|tsx)$/.test(id)) {
@@ -187,12 +201,9 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
             if (code.includes(inlineTranslatePlaceholder) ||
               code.includes(inlinePluralPlaceholder)) {
               code = inlineAll(code, devLang, resolvedOptions, translation);
-
               moduleIds.add(id);
             }
           }
-
-          return code;
         }
       }
 
@@ -208,6 +219,8 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
           }
         }
       }
+
+      return code;
     },
 
     /**
@@ -287,6 +300,112 @@ export async function writeChunks(
     }
     await Promise.all(tasks);
   }
+}
+
+export function addKeyToTranslate(
+  code: string,
+  opts: Required<QwikSpeakInlineOptions>,
+  translation: Translation
+): string {
+  const alias = getInlineTranslateAlias(code);
+
+  if (!alias) return code;
+
+  // Parse sequence
+  const sequence = parseSequenceExpressions(code, alias);
+
+  if (sequence.length === 0) return code;
+
+  for (const expr of sequence) {
+    // Original function
+    const originalFn = expr.value;
+    // Arguments
+    const args = expr.arguments;
+
+    if (args?.length > 0) {
+      // Dynamic
+      if (checkDynamicTranslate(args, originalFn)) {
+        continue;
+      }
+
+      if (args[0].value) {
+        const keyOrDefaultValue = args[0].value;
+        const [key,] = separateKeyValue(keyOrDefaultValue, opts.keyValueSeparator);
+
+        const autoKey = generateAutoKey(keyOrDefaultValue);
+
+        if (!isExistingKey(translation[opts.defaultLang], key, opts.keySeparator) &&
+          isExistingKey(translation[opts.defaultLang], autoKey, opts.keySeparator)) {
+          // Transpile with auto key
+          const transpiled = originalFn.replace(keyOrDefaultValue, `${autoKey}${opts.keyValueSeparator}${keyOrDefaultValue}`);
+          // Replace
+          code = code.replace(originalFn, transpiled);
+        }
+      }
+    }
+  }
+
+  return code;
+}
+
+export function addKeyToPlural(
+  code: string,
+  opts: Required<QwikSpeakInlineOptions>,
+  translation: Translation
+): string {
+  const alias = getInlinePluralAlias(code);
+
+  if (!alias) return code;
+
+  // Parse sequence
+  const sequence = parseSequenceExpressions(code, alias);
+
+  if (sequence.length === 0) return code;
+
+  for (const expr of sequence) {
+    // Original function
+    const originalFn = expr.value;
+    // Arguments
+    const args = expr.arguments;
+
+    if (args?.length > 0) {
+      if (checkDynamicPlural(args, originalFn)) {
+        continue;
+      }
+
+      if (args[1]?.value) {
+        const isUndefinedKey = (key?: string) => !key || key === 'undefined' || key === 'null';
+
+        const keyOrDefaultValue: string | undefined = args[1].value;
+
+        let key: string | undefined = undefined;
+        let defaultValue: string | undefined = undefined;
+        if (keyOrDefaultValue) {
+          [key, defaultValue] = separateKeyValue(keyOrDefaultValue, opts.keyValueSeparator);
+
+          if (!defaultValue && /^[[{].*[\]}]$/.test(key)) {
+            defaultValue = key;
+            key = undefined;
+          }
+        }
+
+        const defaultValues: Record<string, any> | undefined = defaultValue ? JSON.parse(defaultValue) : undefined;
+
+        if (isUndefinedKey(key) && !!defaultValues) {
+          const autoKey = generateAutoKey(defaultValues);
+
+          if (isExistingKey(translation[opts.defaultLang], autoKey, opts.keySeparator)) {
+            // Transpile with auto key
+            const transpiled = originalFn.replace(keyOrDefaultValue, `${autoKey}${opts.keyValueSeparator}${defaultValue}`);
+            // Replace
+            code = code.replace(originalFn, transpiled);
+          }
+        }
+      }
+    }
+  }
+
+  return code;
 }
 
 /**
@@ -411,7 +530,7 @@ export function inlineTranslate(
       let resolvedValue: string | Translation = quoteValue('');
 
       if (args[0].type === 'ArrayExpression') {
-        const keys = getKeys(args[0]);
+        const keys = getKeys(args[0])
 
         const keyValues: (string | Translation)[] = [];
         for (const key of keys) {
@@ -429,7 +548,7 @@ export function inlineTranslate(
       } else if (args?.[0]?.value) {
         const key = getKey(args[0]);
 
-        const value = getValue(
+        resolvedValue = getValue(
           key,
           translation[resolvedLang],
           args[1],
@@ -437,8 +556,6 @@ export function inlineTranslate(
           opts.keyValueSeparator,
           resolvedLang
         );
-
-        resolvedValue = value;
       }
 
       // Transpile
@@ -515,7 +632,21 @@ export function transpilePluralFn(
     let expr = '(';
     for (const rule of rules) {
       let key = args[1]?.value;
+
+      let defaultValues: string | undefined = undefined;
+      if (key) {
+        [key, defaultValues] = separateKeyValue(key, opts.keyValueSeparator);
+
+        if (!defaultValues && /^[[{].*[\]}]$/.test(key)) {
+          defaultValues = key;
+          key = undefined;
+        }
+      }
+
       key = key ? `${key}${opts.keySeparator}${rule}` : rule;
+
+      const defaultValue = defaultValues ? JSON.parse(defaultValues)[rule] : undefined;
+      if (defaultValue) key = `${key}${opts.keyValueSeparator}${defaultValue}`;
 
       // Params
       const params: Property[] = [{
