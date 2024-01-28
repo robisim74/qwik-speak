@@ -11,7 +11,6 @@ import {
   getInlineTranslateAlias,
   matchInlinePlural,
   matchInlineTranslate,
-  parseDefaultValues,
   parseJson,
   parseSequenceExpressions
 } from '../core/parser';
@@ -331,9 +330,11 @@ export function addKeyToTranslate(
 
       if (args[0].value) {
         const keyOrDefaultValue = args[0].value;
+        const [key,] = separateKeyValue(keyOrDefaultValue, opts.keyValueSeparator);
+
         const autoKey = generateAutoKey(keyOrDefaultValue);
 
-        if (!isExistingKey(translation[opts.defaultLang], keyOrDefaultValue, opts.keySeparator) &&
+        if (!isExistingKey(translation[opts.defaultLang], key, opts.keySeparator) &&
           isExistingKey(translation[opts.defaultLang], autoKey, opts.keySeparator)) {
           // Transpile with auto key
           const transpiled = originalFn.replace(keyOrDefaultValue, `${autoKey}${opts.keyValueSeparator}${keyOrDefaultValue}`);
@@ -375,16 +376,27 @@ export function addKeyToPlural(
       if (args[1]?.value) {
         const isUndefinedKey = (key?: string) => !key || key === 'undefined' || key === 'null';
 
-        const key = args[1].value;
-        const defaultValues = args[3]?.properties ? parseDefaultValues(args[3]?.properties) : undefined;
+        const keyOrDefaultValue: string | undefined = args[1].value;
+
+        let key: string | undefined = undefined;
+        let defaultValue: string | undefined = undefined;
+        if (keyOrDefaultValue) {
+          [key, defaultValue] = separateKeyValue(keyOrDefaultValue, opts.keyValueSeparator);
+
+          if (!defaultValue && /^[[{].*[\]}]$/.test(key)) {
+            defaultValue = key;
+            key = undefined;
+          }
+        }
+
+        const defaultValues: Record<string, any> | undefined = defaultValue ? JSON.parse(defaultValue) : undefined;
 
         if (isUndefinedKey(key) && !!defaultValues) {
           const autoKey = generateAutoKey(defaultValues);
 
-          if (!isExistingKey(translation[opts.defaultLang], key, opts.keySeparator) &&
-            isExistingKey(translation[opts.defaultLang], autoKey, opts.keySeparator)) {
+          if (isExistingKey(translation[opts.defaultLang], autoKey, opts.keySeparator)) {
             // Transpile with auto key
-            const transpiled = originalFn.replace(key, quoteValue(autoKey));
+            const transpiled = originalFn.replace(keyOrDefaultValue, `${autoKey}${opts.keyValueSeparator}${defaultValue}`);
             // Replace
             code = code.replace(originalFn, transpiled);
           }
@@ -620,7 +632,21 @@ export function transpilePluralFn(
     let expr = '(';
     for (const rule of rules) {
       let key = args[1]?.value;
+
+      let defaultValues: string | undefined = undefined;
+      if (key) {
+        [key, defaultValues] = separateKeyValue(key, opts.keyValueSeparator);
+
+        if (!defaultValues && /^[[{].*[\]}]$/.test(key)) {
+          defaultValues = key;
+          key = undefined;
+        }
+      }
+
       key = key ? `${key}${opts.keySeparator}${rule}` : rule;
+
+      const defaultValue = defaultValues ? JSON.parse(defaultValues)[rule] : undefined;
+      if (defaultValue) key = `${key}${opts.keyValueSeparator}${defaultValue}`;
 
       // Params
       const params: Property[] = [{
@@ -678,12 +704,11 @@ export function checkDynamicTranslate(args: Argument[], originalFn: string): boo
 
 export function checkDynamicPlural(args: Argument[], originalFn: string): boolean {
   if (args?.[0]?.value) {
-    // Dynamic argument (key, params, defaultValues, options, lang)
+    // Dynamic argument (key, params, options, lang)
     if (args[1]?.type === 'Identifier' || args[1]?.type === 'CallExpression' ||
       args[2]?.type === 'Identifier' || args[2]?.type === 'CallExpression' ||
       args[3]?.type === 'Identifier' || args[3]?.type === 'CallExpression' ||
-      args[4]?.type === 'Identifier' || args[4]?.type === 'CallExpression' ||
-      args[5]?.type === 'Identifier' || args[5]?.type === 'CallExpression') {
+      args[4]?.type === 'Identifier' || args[4]?.type === 'CallExpression') {
       logDynamic(originalFn, 'params');
       return true;
     }

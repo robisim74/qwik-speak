@@ -17,8 +17,12 @@ test(`[Home Component]: Should render translated texts`, async () => {
 
   expect(screen.outerHTML).toContain('Translate your Qwik apps into any language');
   expect(screen.outerHTML).toContain('0 software developers');
+  expect(screen.outerHTML).toContain('New strings without existing keys');
+  expect(screen.outerHTML).toContain('0 black and white zebras');
 
-  const counter = screen.querySelector('.counter') as HTMLDivElement;
-  await userEvent('.btn-counter', 'click');
-  expect(counter.innerHTML).toEqual('1 software developer');
+  const counters = screen.querySelectorAll('.counter') as NodeListOf<HTMLDivElement>;
+  await userEvent('#counter1', 'click');
+  expect(counters[0].innerHTML).toEqual('1 software developer');
+  await userEvent('#counter2', 'click');
+  expect(counters[1].innerHTML).toEqual('1 black and white zebra');
 });

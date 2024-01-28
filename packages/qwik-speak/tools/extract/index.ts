@@ -9,7 +9,6 @@ import {
   getInlineTranslateAlias,
   matchInlinePlural,
   matchInlineTranslate,
-  parseDefaultValues,
   parseJson,
   parseSequenceExpressions
 } from '../core/parser';
@@ -145,17 +144,16 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
           const args = expr.arguments;
 
           if (args?.length > 0) {
-            // Dynamic argument (key, defaultValues, options)
+            // Dynamic argument (key, options)
             if (args[1]?.type === 'Identifier' || args[1]?.type === 'CallExpression' ||
-              args[3]?.type === 'Identifier' || args[3]?.type === 'CallExpression' ||
-              args[4]?.type === 'Identifier' || args[4]?.type === 'CallExpression') {
+              args[3]?.type === 'Identifier' || args[3]?.type === 'CallExpression') {
               stats.set('dynamic plural', (stats.get('dynamic plural') ?? 0) + 1);
               continue;
             }
 
             // Map of rules
             const rules = new Set<string>();
-            const options = getOptions(args[4]?.properties);
+            const options = getOptions(args[3]?.properties);
 
             for (const lang of resolvedOptions.supportedLangs) {
               const rulesByLang = getRules(lang, options);
@@ -166,8 +164,23 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
 
             const isUndefinedKey = (key?: string) => !key || key === 'undefined' || key === 'null';
 
-            let key = args[1]?.value
-            const defaultValues = args[3]?.properties ? parseDefaultValues(args[3]?.properties) : undefined;
+            const separateKeyValue = (key: string, keyValueSeparator: string): [string, string | undefined] => {
+              return <[string, string | undefined]>key.split(keyValueSeparator);
+            };
+
+            let key = args[1]?.value;
+
+            let defaultValue: string | undefined = undefined;
+            if (key) {
+              [key, defaultValue] = separateKeyValue(key, resolvedOptions.keyValueSeparator);
+
+              if (!defaultValue && /^[[{].*[\]}]$/.test(key)) {
+                defaultValue = key;
+                key = undefined;
+              }
+            }
+
+            const defaultValues: Record<string, any> | undefined = defaultValue ? JSON.parse(defaultValue) : undefined;
 
             if (!isUndefinedKey(key) && !defaultValues) {
               const valueObj: any = {};
@@ -179,6 +192,15 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
               for (const rule of rules) {
                 keys.push(rule);
               }
+            } else if (!isUndefinedKey(key) && !!defaultValues) {
+              // Test if each rule has a corresponding defaultValues key.
+              // If not, add it as empty string
+              for (const rule of rules) {
+                if (!defaultValues[rule]) {
+                  defaultValues[rule] = '';
+                }
+              }
+              keys.push(`${key}${resolvedOptions.keyValueSeparator}${JSON.stringify(defaultValues)}`);
             } else if (isUndefinedKey(key) && !!defaultValues) {
               key = generateAutoKey(defaultValues);
               // Test if each rule has a corresponding defaultValues key.

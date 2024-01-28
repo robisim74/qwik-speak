@@ -40,9 +40,9 @@ export default component$(() => {
 
   return (
     <div class="content">
-      <Title name={t('app.title')}/>
+      <Title name={t('app.title')} />
 
-      <SubTitle/>
+      <SubTitle />
 
       <h3>{t('params')}</h3>
       <p>{t('greeting', { name: 'Qwik Speak' })}</p>
@@ -51,8 +51,8 @@ export default component$(() => {
       <p dangerouslySetInnerHTML={t('description')}></p>
 
       <h3>{t('plural')}</h3>
-      <p class="counter">{p(count.value, 'devs')}</p>
-      <button class="btn-counter" onClick$={() => count.value++}>{t('increment')}</button>
+      <p class="counter">{p(count.value, 'devs@@{"one": "{{ value }} software developer","other": "{{ value }} software developers"}')}</p>
+      <button class="btn-counter" id="counter1" onClick$={() => count.value++}>{t('increment')}</button>
 
       <h3>{t('dates')}</h3>
       <p>{fd(Date.now(), { dateStyle: 'full', timeStyle: 'short' })}</p>
@@ -69,16 +69,12 @@ export default component$(() => {
       <p>{t('If neither key nor separator are detected in a t() function call, the key will be a hash of the string. This also works with plurals:')}</p>
       <p class="counter">{p(
         zebras.value,
-        undefined,
+        '{"one": "{{ value }} {{ color }} zebra","other": "{{ value }} {{ color }} zebras"}',
         {
-          color: 'black and white'
-        },
-        {
-          "one": "{{ value }} {{ color }} zebra",
-          "other": "{{ value }} {{ color }} zebras"
-        },
+          color: t('black and white')
+        }
       )}</p>
-      <button class="btn-counter" onClick$={() => zebras.value++}>{t('Add a zebra')}</button>
+      <button class="btn-counter" id="counter2" onClick$={() => zebras.value++}>{t('Add a zebra')}</button>
     </div>
   );
 });

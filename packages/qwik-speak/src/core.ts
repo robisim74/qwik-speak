@@ -142,7 +142,7 @@ export const getValue = (
 /**
  * Separate key & default value
  */
-export const separateKeyValue = (key: string, keyValueSeparator: string): [string, string | undefined] => {
+export const separateKeyValue = (key: string, keyValueSeparator = '@@'): [string, string | undefined] => {
   return <[string, string | undefined]>key.split(keyValueSeparator);
 };
 
