@@ -174,7 +174,7 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
             if (key) {
               [key, defaultValue] = separateKeyValue(key, resolvedOptions.keyValueSeparator);
 
-              if (!defaultValue && /^[[{].*[\]}]$/.test(key)) {
+              if (!defaultValue && /^{.*}$/.test(key)) {
                 defaultValue = key;
                 key = undefined;
               }

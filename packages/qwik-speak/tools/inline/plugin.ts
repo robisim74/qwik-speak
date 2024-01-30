@@ -383,7 +383,7 @@ export function addKeyToPlural(
         if (keyOrDefaultValue) {
           [key, defaultValue] = separateKeyValue(keyOrDefaultValue, opts.keyValueSeparator);
 
-          if (!defaultValue && /^[[{].*[\]}]$/.test(key)) {
+          if (!defaultValue && /^{.*}$/.test(key)) {
             defaultValue = key;
             key = undefined;
           }
@@ -637,7 +637,7 @@ export function transpilePluralFn(
       if (key) {
         [key, defaultValues] = separateKeyValue(key, opts.keyValueSeparator);
 
-        if (!defaultValues && /^[[{].*[\]}]$/.test(key)) {
+        if (!defaultValues && /^{.*}$/.test(key)) {
           defaultValues = key;
           key = undefined;
         }

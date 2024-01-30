@@ -50,6 +50,7 @@ Available options:
 - `format` The format of the translation files. Default to `'json'`
 - `filename` Filename for not scoped translations. Default is `'app'`
 - `fallback` Optional function to implement a fallback strategy
+- `autoKeys` Automatically handle keys for each string. Default is false
 - `keySeparator` Separator of nested keys. Default is `'.'`
 - `keyValueSeparator` Key-value separator. Default is `'@@'`
 

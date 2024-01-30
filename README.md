@@ -35,6 +35,23 @@ export default component$(() => {
   );
 });
 ```
+You can also avoid handling the keys, and only pass the default values by enabling the automatic key generation option:
+```tsx
+import { inlineTranslate } from 'qwik-speak';
+
+export default component$(() => {
+  const t = inlineTranslate();
+
+  return (
+    <>
+      <h1>{t('Qwik Speak')}</h1> {/* Qwik Speak */}
+      <p>{t('Hi! I am {{name}}', { name: 'Qwik Speak' })}</p> {/* Hi! I am Qwik Speak */}
+    </>
+  );
+});
+```
+See [Translate](./docs/translate.md) and [Automatic key generation](./docs/translate.md#automatic-key-generation) for more details.
+
 ### Getting dates, relative time & numbers
 ```tsx
 import { useFormatDate, useRelativeTime, useFormatNumber } from 'qwik-speak';
@@ -53,6 +70,7 @@ export default component$(() => {
   );
 });
 ```
+See [Localize](./docs/translate.md#localize) for more details.
 
 ## Static translations
 Translation are loaded and inlined in chunks sent to the browser during the build.
@@ -65,9 +83,9 @@ To extract translations directly from the components, a command is available tha
 See [Qwik Speak Extract](./docs/extract.md) for more information on how to use it.
 
 ## Automatic translation
-To automatically translate files, an external command is available that uses OpenAI GPT Chat Completions API.
-
-See [GPT Translate JSON](./docs/gpt-translate-json.md) for more information on how to use it.
+To automatically translate files, the following external packages are available:
+- [GPT Translate JSON](https://github.com/robisim74/gpt-translate-json)
+- [Qwik Speak DeepL](https://www.npmjs.com/package/@tegonal/qwik-speak-deepl)
 
 ## Speak context
 ```mermaid

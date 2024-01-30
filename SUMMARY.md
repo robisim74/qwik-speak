@@ -15,6 +15,3 @@
 
 * [Qwik Speak Extract](docs/extract.md)
 * [Qwik Speak Inline Vite plugin](docs/inline.md)
-
-## External Tools​
-* [GPT Translate JSON](docs/gpt-translate-json.md)

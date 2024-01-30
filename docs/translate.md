@@ -94,7 +94,11 @@ When you run the extraction tool, it creates the Intl API plural rules for each 
   }
 }
 ```
-There is no default value for `inlinePlural` function, so you must add the translation in each language, keeping in mind that the counter is optionally interpolated with the `value` parameter:
+It is possible to set the default value passing a _valid stringified_ json, keeping in mind that the counter is optionally interpolated with the `value` parameter:
+```tsx
+p(1, 'devs@@{"one": "{{ value }} software developer","other": "{{ value }} software developers"}')
+```
+Will result in:
 ```json
 {
   "devs": {
@@ -164,6 +168,51 @@ export default component$(() => {
 });
 ```
 You can also extract the language directly into the function, through the request (cookies, params), instead of passing it as a parameter.
+
+## Automatic key generation
+If you don't want to handle the keys inside the translation functions, but only the default values, you can enable automatic key generation:
+- Extraction tool: add `--autoKeys=true` to the script
+- Inline Vite plugin: add `autoKeys: true` to the options
+
+> Note. You can enable this option, even if you use the syntax `key@@[default value]`.
+
+If you enable this option, you can only pass the default value to the translation functions:
+```tsx
+export default component$(() => {
+  const t = inlineTranslate();
+  const p = inlinePlural();
+
+  return (
+    <>
+      <h1>{t('app.title@@{{name}} demo', { name: 'Qwik Speak' })}</h1>
+
+      <h3>{t('New strings without existing keys')}</h3>
+      <p class="counter">{p(
+        1,
+        '{"one": "{{ value }} {{ color }} zebra","other": "{{ value }} {{ color }} zebras"}',
+        {
+          color: t('black and white')
+        }
+      )}</p>
+    </>
+  );
+});
+```
+If you run the extractor, you will get json files like this:
+```json
+{
+  "app": {
+    "title": "Qwik Speak demo"
+  },
+  "autoKey_3c909eb27a10640be9495cff142f601c": {
+    "one": "{{ value }} {{ color }} zebra",
+    "other": "{{ value }} {{ color }} zebras"
+  },
+  "autoKey_8e4c0598319b3b04541df2fc36cb6fc5": "New strings without existing keys",
+  "autoKey_cbe370e60f10f92d4dd8b3e9c267b1fa": "black and white"
+}
+```
+Then the Inline plugin will manage the self-assigned keys.
 
 # Localize
 ## useFormatDate

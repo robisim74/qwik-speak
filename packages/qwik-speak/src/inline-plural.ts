@@ -42,7 +42,7 @@ export const inlinePlural = (): InlinePluralFn => {
     if (key) {
       [key, defaultValues] = separateKeyValue(key, config.keyValueSeparator);
 
-      if (!defaultValues && /^[[{].*[\]}]$/.test(key)) {
+      if (!defaultValues && /^{.*}$/.test(key)) {
         defaultValues = key;
         key = undefined;
       }

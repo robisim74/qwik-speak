@@ -81,6 +81,7 @@ Available options:
 - `assetsPath` Path to translation files: `[basePath]/[assetsPath]/[lang]/*.json`. Default to `'i18n'`
 - `outDir` The build output directory. Default to `'dist'`
 - `loadAssets` Optional function to load asset by lang
+- `autoKeys` Automatically handle keys for each string. Default is false
 - `keySeparator` Separator of nested keys. Default is `'.'`
 - `keyValueSeparator` Key-value separator. Default is `'@@'`
 
