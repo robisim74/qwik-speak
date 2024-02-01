@@ -13,7 +13,7 @@ import {
   parseSequenceExpressions
 } from '../core/parser';
 import { deepClone, deepMerge, deepMergeMissing, deepSet, merge } from '../core/merge';
-import { sortTarget, toJsonString } from '../core/format';
+import { getJsonPaths, sortTarget, toJsonString } from '../core/format';
 import { getOptions, getRules } from '../core/intl-parser';
 import { generateAutoKey, isExistingKey, isObjectPath } from '../core/autokeys';
 
@@ -269,7 +269,7 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
    * min depth > 0: filenames = each top-level property name
    * min depth = 0: filename = 'app'
    */
-  const writeAssets = async (prefixes: string[]) => {
+  const writeAssets = async (paths: Set<string>) => {
     for (const lang of resolvedOptions.supportedLangs) {
       const baseAssets = normalize(`${resolvedOptions.basePath}/${resolvedOptions.assetsPath}/${lang}`);
 
@@ -278,9 +278,9 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
       }
 
       const topLevelKeys = Object.keys(translation[lang])
-        .filter(key => !prefixes.includes(key));
+        .filter(key => !paths.has(key));
       const bottomLevelKeys = Object.keys(translation[lang])
-        .filter(key => prefixes.includes(key));
+        .filter(key => paths.has(key));
 
       const bottomTranslation: Translation = {};
       if (translation[lang][resolvedOptions.filename]) {
@@ -334,7 +334,8 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
   keys = [...new Set<string>(keys)];
   stats.set('unique keys', (stats.get('unique keys') ?? 0) + keys.length);
 
-  const prefixes: string[] = [];
+  // Store paths
+  const paths = new Set<string>();
 
   /* Read assets */
   const assetsData = await readAssets();
@@ -364,7 +365,16 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
       deepSet(translation[lang], key.split(resolvedOptions.keySeparator), deepClone(defaultValue || ''));
     }
 
-    prefixes.push(key);
+    // Add to paths
+    paths.add(key);
+  }
+
+  // Other paths from existing assets
+  for (const [, data] of assetsData) {
+    const flattenAssetsData = getJsonPaths(data, resolvedOptions.keySeparator);
+    for (const [path,] of flattenAssetsData) {
+      paths.add(path);
+    }
   }
 
   /* Deep merge translation data */
@@ -383,7 +393,7 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
   translation = resolvedOptions.fallback(translation);
 
   /* Write translation data */
-  await writeAssets(prefixes);
+  await writeAssets(paths);
 
   /* Log */
   for (const [key, value] of stats) {
