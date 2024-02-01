@@ -385,8 +385,18 @@ export function parseSequenceExpressions(code: string, alias: string): CallExpre
 
   const indexes = findIndexes(code, alias);
 
+  let tokens: Token[] = [];
   for (const i of indexes) {
-    const tokens = tokenize(code, i);
+    try {
+      tokens = tokenize(code, i);
+    } catch (ex: any) {
+      // Report tokenizer
+      console.error(ex);
+      console.error('\n\x1b[31mQwik Speak Tokenizer error\x1b[0m\n%s',
+        code.substring(i, i + 100) + ' [...]' +
+        '\n');
+    }
+
     if (tokens.length > 0) {
       try {
         const callExpression = parse(tokens, code, alias);
