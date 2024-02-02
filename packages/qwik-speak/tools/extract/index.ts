@@ -1,6 +1,6 @@
 import { readdir, readFile, writeFile } from 'fs/promises';
 import { existsSync, mkdirSync } from 'fs';
-import { extname, join, normalize } from 'path';
+import { extname, join, normalize, parse } from 'path';
 
 import type { QwikSpeakExtractOptions, Translation } from '../core/types';
 import type { Argument, CallExpression, Element } from '../core/parser';
@@ -13,7 +13,7 @@ import {
   parseSequenceExpressions
 } from '../core/parser';
 import { deepClone, deepMerge, deepMergeMissing, deepSet, merge } from '../core/merge';
-import { getJsonPaths, sortTarget, toJsonString } from '../core/format';
+import { sortTarget, toJsonString } from '../core/format';
 import { getOptions, getRules } from '../core/intl-parser';
 import { generateAutoKey, isExistingKey, isObjectPath } from '../core/autokeys';
 
@@ -223,8 +223,9 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
   /**
    * Read assets
    */
-  const readAssets = async (): Promise<Map<string, Translation>> => {
+  const readAssets = async (): Promise<[Map<string, Translation>, Set<string>]> => {
     const assetsData = new Map<string, Translation>();
+    let assetsFilenames = new Set<string>();
 
     for (const lang of resolvedOptions.supportedLangs) {
       const baseAssets = normalize(`${resolvedOptions.basePath}/${resolvedOptions.assetsPath}/${lang}`);
@@ -235,6 +236,7 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
 
         if (files.length > 0) {
           const ext = extname(files[0]);
+
           let data: Translation = {};
 
           const tasks = files.map(filename => readFile(`${baseAssets}/${filename}`, 'utf8'));
@@ -255,11 +257,12 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
           }
 
           assetsData.set(lang, data);
+          assetsFilenames = new Set([...assetsFilenames, ...files.map(filename => parse(filename).name)]);
         }
       }
     }
 
-    return assetsData;
+    return [assetsData, assetsFilenames];
   };
 
   /**
@@ -269,7 +272,7 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
    * min depth > 0: filenames = each top-level property name
    * min depth = 0: filename = 'app'
    */
-  const writeAssets = async (paths: Set<string>) => {
+  const writeAssets = async (filenames: Set<string>) => {
     for (const lang of resolvedOptions.supportedLangs) {
       const baseAssets = normalize(`${resolvedOptions.basePath}/${resolvedOptions.assetsPath}/${lang}`);
 
@@ -278,9 +281,9 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
       }
 
       const topLevelKeys = Object.keys(translation[lang])
-        .filter(key => !paths.has(key));
+        .filter(key => filenames.has(key));
       const bottomLevelKeys = Object.keys(translation[lang])
-        .filter(key => paths.has(key));
+        .filter(key => !filenames.has(key));
 
       const bottomTranslation: Translation = {};
       if (translation[lang][resolvedOptions.filename]) {
@@ -334,13 +337,11 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
   keys = [...new Set<string>(keys)];
   stats.set('unique keys', (stats.get('unique keys') ?? 0) + keys.length);
 
-  // Store paths
-  const paths = new Set<string>();
-
   /* Read assets */
-  const assetsData = await readAssets();
+  const [assetsData, assetsFilenames] = await readAssets();
 
   /* Deep set in translation data */
+  const paths = new Set<string>();
   for (let key of keys) {
     let defaultValue: string | Translation | undefined = undefined;
 
@@ -352,7 +353,7 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
     }
 
     if (resolvedOptions.autoKeys) {
-      // Auto keys should be backward compatible with existing keys. We don't want to override them.
+      // Auto keys should be backward compatible with existing keys. We don't want to override them
       if (
         key
         && !defaultValue
@@ -372,11 +373,13 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
     paths.add(key);
   }
 
-  // Other paths from existing assets
-  for (const [, data] of assetsData) {
-    const flattenAssetsData = getJsonPaths(data, resolvedOptions.keySeparator);
-    for (const [path,] of flattenAssetsData) {
-      paths.add(path);
+  /* Find filenames */
+  const filenames = new Set<string>(assetsFilenames);
+  for (const path of paths) {
+    const segments = path.split(resolvedOptions.keySeparator);
+    /* Min depth > 0 with no array position */
+    if (segments.length > 1 && isNaN(+segments[1])) {
+      filenames.add(segments[0])
     }
   }
 
@@ -396,7 +399,7 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
   translation = resolvedOptions.fallback(translation);
 
   /* Write translation data */
-  await writeAssets(paths);
+  await writeAssets(filenames);
 
   /* Log */
   for (const [key, value] of stats) {

@@ -1,17 +1,7 @@
 import crypto from 'crypto';
 
 import type { Translation } from './types';
-
-function sortObject(obj: Record<string, any>) {
-  return Object.keys(obj).sort().reduce((result: Record<string, any>, key: string) => {
-    if (typeof obj[key] === 'object' && !Array.isArray(obj[key]) && obj[key] !== null) {
-      result[key] = sortObject(obj[key]);
-    } else {
-      result[key] = obj[key];
-    }
-    return result;
-  }, {});
-}
+import { sortTarget } from './format';
 
 /**
  * Generate a unique key for a given input
@@ -24,7 +14,7 @@ export function generateAutoKey(input: string | number | Record<string, any>) {
       break;
     case 'object':
       // Sort the object to get a consistent key: The order of the keys in an object is not guaranteed
-      key = JSON.stringify(sortObject(input));
+      key = JSON.stringify(sortTarget(input));
       break;
     case 'number':
       key = input.toString();
@@ -58,6 +48,8 @@ export function isObjectPath(key: string, separator: string): boolean {
  * It will return true if the path exists in all assets
  */
 export function isExistingKey(data: Map<string, Translation> | Translation, path: string, keySeparator: string) {
+  if (!data) return false;
+  
   const keys = path.split(keySeparator);
   let keyFound = false;
 
