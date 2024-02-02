@@ -353,9 +353,12 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
 
     if (resolvedOptions.autoKeys) {
       // Auto keys should be backward compatible with existing keys. We don't want to override them.
-      // Let's be conservative and only generate auto keys for keys that have no default value, don't resemble
-      // an object path and don't already exist in the assets.
-      if (key && !defaultValue && !isObjectPath(key) && !isExistingKey(assetsData, key, resolvedOptions.keySeparator)) {
+      if (
+        key
+        && !defaultValue
+        && !isExistingKey(assetsData, key, resolvedOptions.keySeparator)
+        && !isObjectPath(key, resolvedOptions.keySeparator)
+      ) {
         defaultValue = `${key}`;
         key = generateAutoKey(key);
       }
