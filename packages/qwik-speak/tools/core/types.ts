@@ -43,10 +43,19 @@ export interface QwikSpeakExtractOptions {
    */
   keyValueSeparator?: string;
   /**
-   * Automatically handle keys for each string. Default is false
+   * Automatically handle keys for each string. Default is false.
    * Make sure to set autoKeys: true in the vite plugin options for qwik inline
    */
   autoKeys?: boolean;
+  /**
+   * Automatically remove unused keys from assets,
+   * except in runtime assets
+   */
+  unusedKeys?: boolean;
+  /**
+   * Comma-separated list of runtime assets to preserve
+   */
+  runtimeAssets?: string[];
 }
 
 /**
@@ -86,7 +95,7 @@ export interface QwikSpeakInlineOptions {
    */
   keyValueSeparator?: string;
   /**
-   * Automatically handle keys for each string. Default is false
+   * Automatically handle keys for each string. Default is false.
    * Make sure to enable --autoKeys=true when running the extractor
    */
   autoKeys?: boolean;

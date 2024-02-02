@@ -5,7 +5,8 @@ import { qwikSpeakExtract } from './index';
 const assertType = (value: any, type: string): boolean => {
   if (type === value) return true;
   if (type === 'array' && Array.isArray(value)) return true;
-  if (type === 'string' && typeof (value) === 'string') return true;
+  if (type === 'string' && typeof value === 'string') return true;
+  if (type === 'boolean' && typeof value === 'boolean') return true;
   return false;
 };
 
@@ -62,7 +63,18 @@ for (const arg of args) {
       else errors.push(wrongOption(key, value));
       break;
     case 'autoKeys':
-      if (assertType(value, 'string') && (value === 'true' || value === 'false')) options.autoKeys = value === 'true'
+      if (assertType(value, 'boolean')) options.autoKeys = value;
+      else if (assertType(value, 'string') && (value === 'true' || value === 'false')) options.autoKeys = value === 'true';
+      else errors.push(wrongOption(key, value));
+      break;
+    case 'unusedKeys':
+      if (assertType(value, 'boolean')) options.unusedKeys = value;
+      else if (assertType(value, 'string') && (value === 'true' || value === 'false')) options.unusedKeys = value === 'true';
+      else errors.push(wrongOption(key, value));
+      break;
+    case 'runtimeAssets':
+      if (assertType(value, 'array')) options.runtimeAssets = value;
+      else if (assertType(value, 'string')) options.runtimeAssets = [value];
       else errors.push(wrongOption(key, value));
       break;
     case 'error':

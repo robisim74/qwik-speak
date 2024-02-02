@@ -1,6 +1,6 @@
 import { test, describe, expect } from 'vitest';
 
-import { deepMerge, deepMergeMissing, deepSet } from '../core/merge';
+import { deepMerge, deepMergeMissing, deepSet, deleteExtraProperties } from '../core/merge';
 
 describe('merge', () => {
   test('deepSet', () => {
@@ -22,7 +22,7 @@ describe('merge', () => {
     const target2 = { key1: { key2: '' } };
     const source2 = { key1: { key2: [{ subkey1: 'Subkey1', subkey2: 'Subkey2' }] } };
     deepMerge(target2, source2);
-    expect(target2).toEqual({ key1: { key2: [{ subkey1: 'Subkey1', subkey2: 'Subkey2' }] } } );
+    expect(target2).toEqual({ key1: { key2: [{ subkey1: 'Subkey1', subkey2: 'Subkey2' }] } });
     const target3 = { key1: '' };
     const source3 = { key1: { subkey1: 'Subkey1', subkey2: 'Subkey2' } };
     deepMerge(target3, source3);
@@ -44,5 +44,46 @@ describe('merge', () => {
     const source2 = { key1: { subkey1: '', subkey2: 'Subkey2' } };
     deepMergeMissing(target2, source2);
     expect(target2).toEqual({ key1: { subkey1: 'Subkey1', subkey2: 'Subkey2' } });
+  });
+  test('deleteExtraProperties', () => {
+    // Expect add value
+    const target = {
+      a: {
+        b: {
+          c: {
+            d: 'Test d'
+          }
+        },
+        f: 'Test f'
+      },
+      a1: 'Test a1',
+      b2: 'Test b2'
+    };
+    const source = {
+      a: {
+        b: {
+          c: {
+            d: 'Test d',
+            e: 'Test e'
+          }
+        },
+        f: 'Test f'
+      },
+      a1: 'Test a1',
+      a2: 'Test a2'
+    };
+    const deletedPaths = deleteExtraProperties(source, target);
+    expect(source).toEqual({
+      a: {
+        b: {
+          c: {
+            d: 'Test d'
+          }
+        },
+        f: 'Test f'
+      },
+      a1: 'Test a1'
+    });
+    expect(deletedPaths).toEqual(['a.b.c.e', 'a2']);
   });
 });

@@ -12,7 +12,7 @@ import {
   parseJson,
   parseSequenceExpressions
 } from '../core/parser';
-import { deepClone, deepMerge, deepMergeMissing, deepSet, merge } from '../core/merge';
+import { deepClone, deepMerge, deepMergeMissing, deepSet, deleteExtraProperties, merge } from '../core/merge';
 import { sortTarget, toJsonString } from '../core/format';
 import { getOptions, getRules } from '../core/intl-parser';
 import { generateAutoKey, isExistingKey, isObjectPath } from '../core/autokeys';
@@ -34,6 +34,8 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
     keySeparator: options.keySeparator ?? '.',
     keyValueSeparator: options.keyValueSeparator ?? '@@',
     autoKeys: options.autoKeys ?? false,
+    unusedKeys: options.unusedKeys ?? false,
+    runtimeAssets: options.runtimeAssets ?? []
   }
 
   // Logs
@@ -232,9 +234,15 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
 
       if (existsSync(baseAssets)) {
 
-        const files = await readdir(baseAssets);
+        let files = await readdir(baseAssets);
 
         if (files.length > 0) {
+          // Do not include runtime assets
+          if (resolvedOptions.runtimeAssets.length > 0) {
+            files = files.filter(filename => !resolvedOptions.runtimeAssets.includes(parse(filename).name));
+          }
+          if (files.length === 0) return [assetsData, assetsFilenames];
+
           const ext = extname(files[0]);
 
           let data: Translation = {};
@@ -383,6 +391,21 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
     }
   }
 
+  /* Drop unused keys */
+  if (resolvedOptions.unusedKeys) {
+    const deletedPaths = new Set<string>();
+    for (const lang of resolvedOptions.supportedLangs) {
+      const asset = assetsData.get(lang);
+      if (asset) {
+        const paths = deleteExtraProperties(asset, translation[lang], resolvedOptions.keySeparator);
+        for (const path of paths) {
+          deletedPaths.add(path);
+        }
+      }
+    }
+    stats.set('unused keys', (stats.get('unused keys') ?? 0) + deletedPaths.size);
+  }
+
   /* Deep merge translation data */
   if (assetsData.size > 0) {
     for (const [lang, data] of assetsData) {
@@ -412,6 +435,9 @@ export async function qwikSpeakExtract(options: QwikSpeakExtractOptions) {
         break;
       case 'dynamic plural':
         console.log('\x1b[32m%s\x1b[0m', `plurals skipped due to dynamic keys/options: ${value}`);
+        break;
+      case 'unused keys':
+        console.log('\x1b[32m%s\x1b[0m', `unused keys removed: ${value}`);
         break;
     }
   }

@@ -57,3 +57,26 @@ export function merge(target: Translation, source: Translation) {
   target = { ...target, ...source };
   return target;
 }
+
+export function deleteExtraProperties(
+  source: Translation,
+  target: Translation,
+  keySeparator: string = '.',
+  parentPath = ''
+): string[] {
+  const deletedPaths: string[] = [];
+
+  for (const key in source) {
+    const currentPath = parentPath ? `${parentPath}${keySeparator}${key}` : key;
+
+    if (typeof source[key] === 'object' && typeof target[key] === 'object') {
+      deletedPaths.push(...deleteExtraProperties(source[key], target[key], keySeparator, currentPath));
+      if (Object.keys(source[key]).length === 0) delete source[key];
+    } else if (!(key in target)) {
+      delete source[key];
+      deletedPaths.push(currentPath);
+    }
+  }
+
+  return deletedPaths;
+}
