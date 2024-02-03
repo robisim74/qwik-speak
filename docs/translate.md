@@ -176,7 +176,7 @@ If you don't want to handle the keys inside the translation functions, but only 
 
 > Note. You can enable this option, even if you use the syntax `key@@[default value]`.
 
-If you enable this option, you can only pass the default value to the translation functions:
+If you enable this option, you can pass only the default values to the translation functions:
 ```tsx
 export default component$(() => {
   const t = inlineTranslate();

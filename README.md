@@ -35,7 +35,7 @@ export default component$(() => {
   );
 });
 ```
-You can also avoid handling the keys, and only pass the default values by enabling the automatic key generation option:
+You can pass only the default values by enabling the automatic key generation option:
 ```tsx
 import { inlineTranslate } from 'qwik-speak';
 

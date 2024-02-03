@@ -51,6 +51,8 @@ Available options:
 - `filename` Filename for not scoped translations. Default is `'app'`
 - `fallback` Optional function to implement a fallback strategy
 - `autoKeys` Automatically handle keys for each string. Default is false
+- `unusedKeys` Automatically remove unused keys from assets, except in runtime assets
+- `runtimeAssets` Comma-separated list of runtime assets to preserve
 - `keySeparator` Separator of nested keys. Default is `'.'`
 - `keyValueSeparator` Key-value separator. Default is `'@@'`
 
@@ -108,4 +110,12 @@ const fallback = (translation) => {
   }
   return translation;
 };
+```
+
+### Automatic removal of unused keys
+To remove unused keys from json files, you need to enable the option and provide a comma-separated list of runtime file names:
+```json
+"scripts": {
+  "qwik-speak-extract": "qwik-speak-extract --supportedLangs=en-US,it-IT --unusedKeys=true --runtimeAssets=runtime"
+}
 ```
