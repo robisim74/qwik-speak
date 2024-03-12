@@ -125,7 +125,7 @@ export const onRequest: RequestHandler = ({ locale, error, redirect }) => {
 
   // E.g. Redirect
   // if (!locale()) {
-  //   const getPath = localizePath();
+  //   const getPath = translatePath();
   //   throw redirect(302, getPath('/page', 'en-US')); // Let the server know the language to use
   // }
 };
