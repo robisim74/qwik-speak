@@ -200,10 +200,10 @@ Translates a path, an URL or an array of paths. The translating string can be in
 Validate `language[-script][-region]`
 
 - `extractFromUrl(route: URL)`
-Extract lang from url
+Extract prefix from url
 
 - `extractFromDomain(route: URL, domains: SpeakLocale[] | RewriteRouteOption[])`
-Extract lang from domain
+Extract lang/prefix from domain
 
 ### Testing
 - `QwikSpeakMockProvider` component provides the Speak context to test enviroments

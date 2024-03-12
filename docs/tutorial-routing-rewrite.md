@@ -88,11 +88,16 @@ Update `plugin.ts` in the root of the `src/routes` directory:
 _src/routes/plugin.ts_
 ```typescript
 import type { RequestHandler } from "@builder.io/qwik-city";
-import { extractFromUrl, validateLocale } from 'qwik-speak';
+import { extractFromUrl, setSpeakContext, validateLocale } from 'qwik-speak';
 
 import { config } from '../speak-config';
 
-export const onRequest: RequestHandler = ({ locale, error, url }) => {
+/**
+ * This middleware function must only contain the logic to set the locale,
+ * because it is invoked on every request to the server.
+ * Avoid redirecting or throwing errors here, and prefer layouts or pages
+ */
+export const onRequest: RequestHandler = ({ locale, url }) => {
   let lang: string | undefined = undefined;
 
   const prefix = extractFromUrl(url);
@@ -100,14 +105,29 @@ export const onRequest: RequestHandler = ({ locale, error, url }) => {
   if (prefix && validateLocale(prefix)) {
     // Check supported locales
     lang = config.supportedLocales.find(value => value.lang === prefix)?.lang;
-    // 404 error page
-    if (!lang) throw error(404, 'Page not found');
   } else {
     lang = config.defaultLocale.lang;
   }
 
+  // Set Speak context (optional: set the configuration on the server)
+  setSpeakContext(config);
+
   // Set Qwik locale
   locale(lang);
+};
+```
+
+If you want to handle errors or redirects due to the locale, use layouts or pages. For example you could add in `src/routes/layout.ts`:
+```typescript
+export const onRequest: RequestHandler = ({ locale, error, redirect }) => {
+  // E.g. 404 error page
+  if (!locale()) throw error(404, 'Page not found for requested locale');
+
+  // E.g. Redirect
+  // if (!locale()) {
+  //   const getPath = localizePath();
+  //   throw redirect(302, getPath('/page', 'en-US')); // Let the server know the language to use
+  // }
 };
 ```
 
@@ -401,12 +421,12 @@ Since the `de` language does not have a default domain, but we have associated a
 Update `plugin.ts` to get the language from the domain:
 ```typescript
 import type { RequestHandler } from '@builder.io/qwik-city';
-import { extractFromDomain, extractFromUrl, validateLocale } from 'qwik-speak';
+import { extractFromDomain, extractFromUrl, setSpeakContext, validateLocale } from 'qwik-speak';
 
 import { config } from '../speak-config';
 import { rewriteRoutes } from '../speak-routes';
 
-export const onRequest: RequestHandler = ({ locale, error, url }) => {
+export const onRequest: RequestHandler = ({ locale, url }) => {
   let lang: string | undefined = undefined;
 
   const prefix = extractFromUrl(url);
@@ -414,12 +434,13 @@ export const onRequest: RequestHandler = ({ locale, error, url }) => {
   if (prefix && validateLocale(prefix)) {
     // Check supported locales
     lang = config.supportedLocales.find(value => value.lang === prefix)?.lang;
-    // 404 error page
-    if (!lang) throw error(404, 'Page not found');
   } else {
     // Extract from domain
     lang = extractFromDomain(url, rewriteRoutes) || config.defaultLocale.lang;
   }
+
+  // Set Speak context (optional: set the configuration on the server)
+  setSpeakContext(config);
 
   // Set Qwik locale
   locale(lang);

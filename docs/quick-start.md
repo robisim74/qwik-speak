@@ -107,6 +107,11 @@ _src/routes/plugin.ts_
 import type { RequestHandler } from '@builder.io/qwik-city';
 import { config } from '../speak-config';
 
+/**
+ * This middleware function must only contain the logic to set the locale,
+ * because it is invoked on every request to the server.
+ * Avoid redirecting or throwing errors here, and prefer layouts or pages
+ */
 export const onRequest: RequestHandler = ({ request, locale }) => {
   const acceptLanguage = request.headers?.get('accept-language');
 
