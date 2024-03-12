@@ -244,7 +244,7 @@ export const translatePath = (): TranslatePathFn => {
 };
 
 /**
- * Extract lang from domain
+ * Extract lang/prefix from domain
  */
 export const extractFromDomain = (route: URL, domains: SpeakLocale[] | RewriteRouteOption[]): string | undefined => {
   const hostname = !route.hostname.startsWith('localhost') ? route.hostname : route.host; // with port
@@ -256,7 +256,7 @@ export const extractFromDomain = (route: URL, domains: SpeakLocale[] | RewriteRo
 };
 
 /**
- * Extract lang from url
+ * Extract prefix from url
  */
 export const extractFromUrl = (route: URL): string => {
   const parts = route.pathname.split('/');

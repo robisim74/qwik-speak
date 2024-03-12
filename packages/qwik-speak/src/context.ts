@@ -1,7 +1,7 @@
 import { createContextId } from '@builder.io/qwik';
-import { isServer } from '@builder.io/qwik/build';
+import { isBrowser, isServer } from '@builder.io/qwik/build';
 
-import type { SpeakState } from './types';
+import type { SpeakConfig, SpeakLocale, SpeakState, Translation } from './types';
 
 type DeepPartial<T> = T extends object ? {
     [P in keyof T]?: DeepPartial<T[P]>;
@@ -41,6 +41,33 @@ export const getSpeakContext = (): SpeakState => {
 }
 
 /**
+ * Set Qwik Speak server context
+ * @param config Speak configuration 
+ */
+export const setSpeakServerContext = (config: SpeakConfig) => {
+    if (isServer) {
+        const { config: _config } = getSpeakContext();
+        Object.assign(_config, config);
+    }
+};
+
+/**
+ * Set Qwik Speak client context
+ * @param locale Current locale
+ * @param translation Translation data
+ * @param config Speak configuration 
+ */
+export const setSpeakClientContext = (locale: SpeakLocale, translation: Translation, config: SpeakConfig) => {
+    if (isBrowser) {
+        const _speakContext = getSpeakContext();
+        const { locale: _locale, translation: _translation, config: _config } = _speakContext;
+        Object.assign(_locale, locale);
+        Object.assign(_translation, translation);
+        Object.assign(_config, config);
+    }
+};
+
+/**
  * Qwik Speak function to get language
  */
 export let getLang = (): string => '';
@@ -52,3 +79,5 @@ export let getLang = (): string => '';
 export const setGetLangFn = (fn: () => string) => {
     getLang = () => fn();
 };
+
+export { setSpeakServerContext as setSpeakContext };

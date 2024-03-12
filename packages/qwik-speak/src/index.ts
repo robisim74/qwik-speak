@@ -34,6 +34,8 @@ export {
   useSpeakLocale,
   useSpeakConfig,
 } from './use-functions';
+// Context
+export { setSpeakContext } from './context';
 // Routing
 export {
   localizePath,

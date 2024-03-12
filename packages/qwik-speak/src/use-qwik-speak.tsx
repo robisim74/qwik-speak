@@ -2,7 +2,7 @@ import { $, component$, getLocale, Slot, useContextProvider, useOnWindow, useTas
 import { isDev, isServer } from '@builder.io/qwik/build';
 
 import type { SpeakConfig, SpeakLocale, SpeakState, TranslationFn } from './types';
-import { getSpeakContext, setGetLangFn, SpeakContext } from './context';
+import { getSpeakContext, setGetLangFn, setSpeakClientContext, setSpeakServerContext, SpeakContext } from './context';
 import { loadTranslations } from './core';
 import { logDebug, logWarn } from './log';
 
@@ -84,8 +84,7 @@ export const useQwikSpeak = (props: QwikSpeakProps) => {
   const { config } = state;
 
   // Set Qwik Speak server context
-  const { config: _config } = getSpeakContext();
-  Object.assign(_config, config);
+  setSpeakServerContext(config);
 
   // Set the getLang function to use Qwik locale
   setGetLangFn(() => getLocale(config.defaultLocale.lang));
@@ -104,16 +103,13 @@ export const useQwikSpeak = (props: QwikSpeakProps) => {
   const resumeContext$ = $(() => {
     const { locale, translation, config } = state;
     // Set Qwik Speak client context
-    const _speakContext = getSpeakContext();
-    const { locale: _locale, translation: _translation, config: _config } = _speakContext;
-    Object.assign(_locale, locale);
-    Object.assign(_translation, translation);
-    Object.assign(_config, config);
+    setSpeakClientContext(locale, translation, config);
 
     // Set the getLang function to use the current lang
     setGetLangFn(() => locale.lang);
 
     if (isDev) {
+      const _speakContext = getSpeakContext();
       console.debug(
         '%cQwik Speak Inline',
         'background: #0c75d2; color: white; padding: 2px 3px; border-radius: 2px; font-size: 0.8em;',
