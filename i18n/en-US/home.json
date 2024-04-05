@@ -1,0 +1,8 @@
+{
+  "home": {
+    "head": {
+      "description": "Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps",
+      "title": "{{name}} - EN"
+    }
+  }
+}

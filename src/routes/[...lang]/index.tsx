@@ -6,6 +6,7 @@ import {
   useFormatDate,
   useFormatNumber,
   useRelativeTime,
+  useSpeak,
   useSpeakLocale
 } from 'qwik-speak';
 
@@ -25,6 +26,7 @@ export const SubTitle = () => {
 };
 
 export default component$(() => {
+  useSpeak({ assets: ['home'] });
   const t = inlineTranslate();
   const p = inlinePlural();
 
@@ -83,11 +85,11 @@ export const head: DocumentHead = () => {
   const t = inlineTranslate();
 
   return {
-    title: t('app.head.home.title', { name: 'Qwik Speak' }),
+    title: t('home.head.title', { name: 'Qwik Speak' }),
     meta: [
       {
         name: 'description',
-        content: t('app.head.home.description')
+        content: t('home.head.description')
       }
     ],
   };

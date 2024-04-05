@@ -1,0 +1,8 @@
+{
+  "home": {
+    "head": {
+      "description": "Internationalisierung (i18n) Bibliothek zur Übersetzung von Texten, Daten und Zahlen in Qwik Apps",
+      "title": "{{name}} - DE"
+    }
+  }
+}

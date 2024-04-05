@@ -1,0 +1,8 @@
+{
+  "home": {
+    "head": {
+      "description": "Libreria di internazionalizzazione (i18n) per tradurre testi, date e numeri nelle app Qwik",
+      "title": "{{name}} - IT"
+    }
+  }
+}
