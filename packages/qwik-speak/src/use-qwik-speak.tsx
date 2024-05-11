@@ -44,18 +44,6 @@ export const useQwikSpeak = (props: QwikSpeakProps) => {
   // Get Qwik locale
   const lang = getLocale('');
 
-  // Resolve locale
-  let resolvedLocale = props.config.supportedLocales.find(value => value.lang === lang);
-  if (!resolvedLocale) {
-    resolvedLocale = props.config.defaultLocale;
-
-    if (isDev) logWarn(`Locale not resolved. Fallback to default locale: ${props.config.defaultLocale.lang}`);
-  } else if (isDev) {
-    logDebug(`Resolved locale: ${resolvedLocale.lang}`);
-  }
-  if (props.currency) resolvedLocale.currency = props.currency;
-  if (props.timeZone) resolvedLocale.timeZone = props.timeZone;
-
   // Resolve config
   const resolvedConfig: SpeakConfig = {
     rewriteRoutes: props.config.rewriteRoutes,
@@ -65,8 +53,21 @@ export const useQwikSpeak = (props: QwikSpeakProps) => {
     runtimeAssets: props.config.runtimeAssets,
     keySeparator: props.config.keySeparator || '.',
     keyValueSeparator: props.config.keyValueSeparator || '@@',
-    domainBasedRouting: props.config.domainBasedRouting
+    domainBasedRouting: props.config.domainBasedRouting,
+    showDebugMessagesLocally: props.config.showDebugMessagesLocally ?? true
   };
+
+  // Resolve locale
+  let resolvedLocale = props.config.supportedLocales.find(value => value.lang === lang);
+  if (!resolvedLocale) {
+    resolvedLocale = props.config.defaultLocale;
+
+    if (isDev) logWarn(`Locale not resolved. Fallback to default locale: ${props.config.defaultLocale.lang}`);
+  } else if (isDev && props.config.showDebugMessagesLocally) {
+    logDebug(`Resolved locale: ${resolvedLocale.lang}`);
+  }
+  if (props.currency) resolvedLocale.currency = props.currency;
+  if (props.timeZone) resolvedLocale.timeZone = props.timeZone;
 
   // Resolve functions
   const resolvedTranslationFn: TranslationFn = {
@@ -108,7 +109,7 @@ export const useQwikSpeak = (props: QwikSpeakProps) => {
     // Set the getLang function to use the current lang
     setGetLangFn(() => locale.lang);
 
-    if (isDev) {
+    if (isDev && props.config.showDebugMessagesLocally) {
       const _speakContext = getSpeakContext();
       console.debug(
         '%cQwik Speak Inline',
@@ -119,7 +120,7 @@ export const useQwikSpeak = (props: QwikSpeakProps) => {
     }
 
     // In dev mode, send lang from client to the server
-    if (isDev) {
+    if (isDev && props.config.showDebugMessagesLocally) {
       console.debug(
         '%cQwik Speak Inline',
         'background: #0c75d2; color: white; padding: 2px 3px; border-radius: 2px; font-size: 0.8em;',
