@@ -63,7 +63,7 @@ export const useQwikSpeak = (props: QwikSpeakProps) => {
     resolvedLocale = props.config.defaultLocale;
 
     if (isDev) logWarn(`Locale not resolved. Fallback to default locale: ${props.config.defaultLocale.lang}`);
-  } else if (isDev && props.config.showDebugMessagesLocally) {
+  } else if (isDev && resolvedConfig.showDebugMessagesLocally) {
     logDebug(`Resolved locale: ${resolvedLocale.lang}`);
   }
   if (props.currency) resolvedLocale.currency = props.currency;
@@ -109,7 +109,7 @@ export const useQwikSpeak = (props: QwikSpeakProps) => {
     // Set the getLang function to use the current lang
     setGetLangFn(() => locale.lang);
 
-    if (isDev && props.config.showDebugMessagesLocally) {
+    if (isDev && resolvedConfig.showDebugMessagesLocally) {
       const _speakContext = getSpeakContext();
       console.debug(
         '%cQwik Speak Inline',
@@ -120,7 +120,7 @@ export const useQwikSpeak = (props: QwikSpeakProps) => {
     }
 
     // In dev mode, send lang from client to the server
-    if (isDev && props.config.showDebugMessagesLocally) {
+    if (isDev && resolvedConfig.showDebugMessagesLocally) {
       console.debug(
         '%cQwik Speak Inline',
         'background: #0c75d2; color: white; padding: 2px 3px; border-radius: 2px; font-size: 0.8em;',
