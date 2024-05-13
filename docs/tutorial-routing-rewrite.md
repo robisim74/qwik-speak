@@ -117,7 +117,7 @@ export const onRequest: RequestHandler = ({ locale, url }) => {
 };
 ```
 
-If you want to handle errors or redirects due to the locale, use layouts or pages. For example you could add in `src/routes/layout.ts`:
+If you want to handle errors or redirects due to the locale, use layouts or pages. For example you could add in `src/routes/layout.tsx`:
 ```typescript
 export const onRequest: RequestHandler = ({ locale, error, redirect }) => {
   // E.g. 404 error page

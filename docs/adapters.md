@@ -20,7 +20,7 @@ If you want to use Static Site Generation, you need to generate for each support
 ### Get the code ready
 - Bundle the translation files (see [Translation functions](./translation-functions.md)) or provide a running server during the build if you are fetching the files
 - Configure a localized router with a `lang` parameter
-- Handle the dynamic `lang` parameter, adding the values it can take to each page included in SSG, i.e.:
+- Handle the dynamic `lang` parameter, adding the values it can take to each page included in SSG, e.g.:
 
 _src/routes/[...lang]/index.tsx_
 ```typescript
