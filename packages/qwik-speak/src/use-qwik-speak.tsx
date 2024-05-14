@@ -82,7 +82,7 @@ export const useQwikSpeak = (props: QwikSpeakProps) => {
     translationFn: resolvedTranslationFn
   };
 
-  const {config} = state;
+  const { config } = state;
 
   // Set Qwik Speak server context
   setSpeakServerContext(config);

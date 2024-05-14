@@ -8,12 +8,12 @@ export const logDebug = (enabled: boolean | undefined, message: string) => {
   }
 };
 
-export const logDebugInline = (enabled: boolean | undefined, ...message: any) => {
+export const logDebugInline = (enabled: boolean | undefined, ...data: any) => {
   if (enabled) {
     console.debug(
       '%cQwik Speak Inline',
       'background: #0c75d2; color: white; padding: 2px 3px; border-radius: 2px; font-size: 0.8em;',
-      ...message
+      ...data
     );
   }
 };
