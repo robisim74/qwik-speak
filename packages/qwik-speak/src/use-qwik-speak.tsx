@@ -4,7 +4,7 @@ import { isDev, isServer } from '@builder.io/qwik/build';
 import type { SpeakConfig, SpeakLocale, SpeakState, TranslationFn } from './types';
 import { getSpeakContext, setGetLangFn, setSpeakClientContext, setSpeakServerContext, SpeakContext } from './context';
 import { loadTranslations } from './core';
-import { logDebug, logWarn } from './log';
+import { logDebug, logDebugInline, logWarn } from './log';
 
 export interface QwikSpeakProps {
   /**
@@ -63,8 +63,8 @@ export const useQwikSpeak = (props: QwikSpeakProps) => {
     resolvedLocale = props.config.defaultLocale;
 
     if (isDev) logWarn(`Locale not resolved. Fallback to default locale: ${props.config.defaultLocale.lang}`);
-  } else if (isDev && resolvedConfig.showDebugMessagesLocally) {
-    logDebug(`Resolved locale: ${resolvedLocale.lang}`);
+  } else if (isDev) {
+    logDebug(resolvedConfig.showDebugMessagesLocally, `Resolved locale: ${resolvedLocale.lang}`);
   }
   if (props.currency) resolvedLocale.currency = props.currency;
   if (props.timeZone) resolvedLocale.timeZone = props.timeZone;
@@ -82,7 +82,7 @@ export const useQwikSpeak = (props: QwikSpeakProps) => {
     translationFn: resolvedTranslationFn
   };
 
-  const { config } = state;
+  const {config} = state;
 
   // Set Qwik Speak server context
   setSpeakServerContext(config);
@@ -109,23 +109,14 @@ export const useQwikSpeak = (props: QwikSpeakProps) => {
     // Set the getLang function to use the current lang
     setGetLangFn(() => locale.lang);
 
-    if (isDev && resolvedConfig.showDebugMessagesLocally) {
+    if (isDev) {
       const _speakContext = getSpeakContext();
-      console.debug(
-        '%cQwik Speak Inline',
-        'background: #0c75d2; color: white; padding: 2px 3px; border-radius: 2px; font-size: 0.8em;',
-        'Client context',
-        _speakContext
-      );
+      logDebugInline(resolvedConfig.showDebugMessagesLocally, 'Client context', _speakContext)
     }
 
     // In dev mode, send lang from client to the server
-    if (isDev && resolvedConfig.showDebugMessagesLocally) {
-      console.debug(
-        '%cQwik Speak Inline',
-        'background: #0c75d2; color: white; padding: 2px 3px; border-radius: 2px; font-size: 0.8em;',
-        'Ready'
-      );
+    if (isDev) {
+      logDebugInline(resolvedConfig.showDebugMessagesLocally, 'Ready')
       if (import.meta.hot) {
         import.meta.hot.send('qwik-speak:lang', { msg: locale.lang });
       }
