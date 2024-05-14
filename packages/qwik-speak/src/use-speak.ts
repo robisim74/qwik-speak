@@ -4,7 +4,7 @@ import { isBrowser, isDev } from '@builder.io/qwik/build';
 import { useSpeakContext } from './use-functions';
 import { loadTranslations } from './core';
 import { getSpeakContext } from './context';
-import { logWarn } from './log';
+import { logDebugInline, logWarn } from './log';
 
 export interface SpeakProps {
   /**
@@ -48,12 +48,7 @@ export const useSpeak = (props: SpeakProps) => {
 
     if (isDev && isBrowser) {
       const _speakContext = getSpeakContext();
-      console.debug(
-        '%cQwik Speak Inline',
-        'background: #0c75d2; color: white; padding: 2px 3px; border-radius: 2px; font-size: 0.8em;',
-        'Client context',
-        _speakContext
-      );
+      logDebugInline(config.showDebugMessagesLocally,  'Client context', _speakContext)
     }
   });
 };
