@@ -122,6 +122,10 @@ export interface SpeakConfig {
    * Domain-based routing options
    */
   domainBasedRouting?: DomainBasedRoutingOption
+  /**
+   * Whether to enable local debugging mode. Default is true
+   */
+  showDebugMessagesLocally?: boolean;
 }
 
 export interface SpeakState {
