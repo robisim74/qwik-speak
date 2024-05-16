@@ -58,11 +58,11 @@ export const useQwikSpeak = (props: QwikSpeakProps) => {
   };
 
   // Resolve locale
-  let resolvedLocale = props.config.supportedLocales.find(value => value.lang === lang);
+  let resolvedLocale = resolvedConfig.supportedLocales.find(value => value.lang === lang);
   if (!resolvedLocale) {
-    resolvedLocale = props.config.defaultLocale;
+    resolvedLocale = resolvedConfig.defaultLocale;
 
-    if (isDev) logWarn(`Locale not resolved. Fallback to default locale: ${props.config.defaultLocale.lang}`);
+    if (isDev) logWarn(`Locale not resolved. Fallback to default locale: ${resolvedConfig.defaultLocale.lang}`);
   } else if (isDev) {
     logDebug(resolvedConfig.showDebugMessagesLocally, `Resolved locale: ${resolvedLocale.lang}`);
   }
@@ -116,9 +116,10 @@ export const useQwikSpeak = (props: QwikSpeakProps) => {
 
     // In dev mode, send lang from client to the server
     if (isDev) {
-      logDebugInline(resolvedConfig.showDebugMessagesLocally, 'Ready')
       if (import.meta.hot) {
         import.meta.hot.send('qwik-speak:lang', { msg: locale.lang });
+
+        logDebugInline(resolvedConfig.showDebugMessagesLocally, 'Ready')
       }
     }
   });
@@ -133,12 +134,6 @@ export const useQwikSpeak = (props: QwikSpeakProps) => {
 export const QwikSpeakMockProvider = component$<QwikSpeakMockProps>(props => {
   const lang = props.locale?.lang;
 
-  // Resolve locale
-  let resolvedLocale = props.config.supportedLocales.find(value => value.lang === lang);
-  if (!resolvedLocale) {
-    resolvedLocale = props.config.defaultLocale;
-  }
-
   // Resolve config
   const resolvedConfig: SpeakConfig = {
     rewriteRoutes: props.config.rewriteRoutes,
@@ -148,8 +143,15 @@ export const QwikSpeakMockProvider = component$<QwikSpeakMockProps>(props => {
     runtimeAssets: props.config.runtimeAssets,
     keySeparator: props.config.keySeparator || '.',
     keyValueSeparator: props.config.keyValueSeparator || '@@',
-    domainBasedRouting: props.config.domainBasedRouting
+    domainBasedRouting: props.config.domainBasedRouting,
+    showDebugMessagesLocally: props.config.showDebugMessagesLocally ?? true
   };
+
+  // Resolve locale
+  let resolvedLocale = resolvedConfig.supportedLocales.find(value => value.lang === lang);
+  if (!resolvedLocale) {
+    resolvedLocale = resolvedConfig.defaultLocale;
+  }
 
   // Resolve functions
   const resolvedTranslationFn: TranslationFn = {
@@ -159,7 +161,7 @@ export const QwikSpeakMockProvider = component$<QwikSpeakMockProps>(props => {
   // Set initial state as object (no reactive)
   const state: SpeakState = {
     locale: Object.assign({}, resolvedLocale),
-    translation: Object.fromEntries(props.config.supportedLocales.map(value => [value.lang, {}])),
+    translation: Object.fromEntries(resolvedConfig.supportedLocales.map(value => [value.lang, {}])),
     config: Object.assign({}, resolvedConfig),
     translationFn: resolvedTranslationFn
   };

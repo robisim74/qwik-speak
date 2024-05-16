@@ -127,6 +127,7 @@ stateDiagram-v2
 - `keyValueSeparator` Key-value separator. Default is `@@`
 - `rewriteRoutes` Rewrite routes as specified in Vite config for `qwikCity` plugin
 - `domainBasedRouting` Domain-based routing options
+- `showDebugMessagesLocally` Whether to enable local debugging mode. Default is true
 
 ### SpeakLocale
 The `SpeakLocale` object contains the `lang`, in the format `language[-script][-region]`, where:
