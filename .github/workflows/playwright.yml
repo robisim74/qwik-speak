@@ -18,7 +18,7 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
     - name: Build lib
-      run: npm run --prefix packages/qwik-speak build
+      run: npm run ci
     - name: Run Playwright tests
       run: npm run test.e2e
     - uses: actions/upload-artifact@v3
