@@ -13,7 +13,7 @@
     "declaration": true,
     "declarationDir": "dts-out/lib",
     "resolveJsonModule": true,
-    "moduleResolution": "Bundler",
+    "moduleResolution": "bundler",
     "esModuleInterop": true,
     "skipLibCheck": true,
     "emitDeclarationOnly": true,

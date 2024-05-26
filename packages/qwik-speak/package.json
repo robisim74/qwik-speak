@@ -18,24 +18,24 @@
     "qwik-speak-extract": "./extract/cli.js"
   },
   "peerDependencies": {
-    "@builder.io/qwik": ">=1.4.3"
+    "@builder.io/qwik": ">=1.5.5"
   },
   "devDependencies": {
-    "@builder.io/qwik": "1.4.3",
+    "@builder.io/qwik": "1.5.5",
     "@microsoft/api-documenter": "^7.24.11",
     "@microsoft/api-extractor": "^7.44.1",
-    "@types/eslint": "8.56.2",
-    "@types/node": "^20.11.6",
-    "@typescript-eslint/eslint-plugin": "6.19.1",
-    "@typescript-eslint/parser": "6.19.1",
-    "eslint": "8.56.0",
-    "eslint-plugin-qwik": "1.4.3",
+    "@types/eslint": "8.56.10",
+    "@types/node": "^20.12.12",
+    "@typescript-eslint/eslint-plugin": "7.10.0",
+    "@typescript-eslint/parser": "7.10.0",
+    "eslint": "8.57.0",
+    "eslint-plugin-qwik": "1.5.5",
     "np": "^10.0.5",
     "rollup-plugin-add-shebang": "^0.3.1",
-    "typescript": "5.3.3",
-    "undici": "*",
-    "vite": "5.0.12",
-    "vitest": "^1.2.2"
+    "typescript": "5.4.5",
+    "undici": "6.18.1",
+    "vite": "5.2.11",
+    "vitest": "^1.6.0"
   },
   "main": "./lib/index.qwik.cjs",
   "module": "./lib/index.qwik.mjs",
