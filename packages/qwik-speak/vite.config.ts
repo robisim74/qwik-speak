@@ -7,12 +7,16 @@ export default defineConfig(() => {
     build: {
       target: 'es2020',
       lib: {
-        entry: './src/index.ts',
+        entry: {
+          'index': './src/index.ts'
+        },
         formats: ['es', 'cjs'],
-        fileName: (format) => `index.qwik.${format === 'es' ? 'mjs' : 'cjs'}`,
+        fileName: (format, entryName) => `${entryName}.qwik.${format === 'es' ? 'mjs' : 'cjs'}`,
       },
       rollupOptions: {
         output: {
+          preserveModules: true,
+          preserveModulesRoot: 'packages/qwik-speak/src',
           banner: () => readFile('./banner.txt', 'utf8')
         }
       }

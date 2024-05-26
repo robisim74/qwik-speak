@@ -236,6 +236,10 @@ npm run preview
 npm test
 npm run test.e2e
 ```
+### Watch mode
+```shell
+npm run dev
+```
 
 ## License
 MIT

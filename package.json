@@ -2,7 +2,7 @@
   "name": "qwik-speak",
   "description": "Internationalization (i18n) library to translate texts, dates and numbers in Qwik apps",
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=18.0.0"
   },
   "private": true,
   "scripts": {
@@ -11,7 +11,7 @@
     "build.preview": "vite build --ssr src/entry.preview.tsx",
     "build.server": "vite build -c adapters/static/vite.config.ts",
     "build.types": "tsc --incremental --noEmit",
-    "dev": "vite --mode ssr",
+    "dev": "npm run --prefix packages/qwik-speak build.lib.watch && vite --mode ssr",
     "dev.debug": "node --inspect-brk ./node_modules/vite/bin/vite.js --mode ssr --force",
     "gpt-translate-json": "gpt-translate-json --apiKey=openai_api_key --model=gpt-4 --maxTokens=3000 --langs=en-US,it-IT,de-DE --originalLang=en-US",
     "lint": "eslint \"src/**/*.ts*\"",
@@ -25,22 +25,22 @@
     "qwik": "qwik"
   },
   "devDependencies": {
-    "@builder.io/qwik": "1.4.3",
-    "@builder.io/qwik-city": "1.4.3",
-    "@playwright/test": "1.41.2",
-    "@types/eslint": "8.56.2",
-    "@types/node": "^20.11.6",
-    "@typescript-eslint/eslint-plugin": "6.19.1",
-    "@typescript-eslint/parser": "6.19.1",
-    "eslint": "8.56.0",
-    "eslint-plugin-qwik": "1.4.3",
-    "gpt-translate-json": "^0.1.0",
-    "typescript": "5.3.3",
-    "undici": "*",
+    "@builder.io/qwik": "1.5.5",
+    "@builder.io/qwik-city": "1.5.5",
+    "@playwright/test": "1.44.1",
+    "@types/eslint": "8.56.10",
+    "@types/node": "^20.12.12",
+    "@typescript-eslint/eslint-plugin": "7.10.0",
+    "@typescript-eslint/parser": "7.10.0",
+    "eslint": "^8.57.0",
+    "eslint-plugin-qwik": "1.5.5",
+    "gpt-translate-json": "^0.2.0",
+    "typescript": "5.4.5",
+    "undici": "6.18.1",
     "vite": "5.0.12",
-    "vite-plugin-inspect": "^0.8.3",
-    "vite-tsconfig-paths": "4.2.1",
-    "vitest": "^1.2.2"
+    "vite-plugin-inspect": "^0.8.4",
+    "vite-tsconfig-paths": "4.3.2",
+    "vitest": "^1.6.0"
   },
   "type": "module"
 }

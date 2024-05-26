@@ -2,7 +2,7 @@ import { useTask$ } from '@builder.io/qwik';
 import { isBrowser, isDev } from '@builder.io/qwik/build';
 
 import { useSpeakContext } from './use-functions';
-import { loadTranslations } from './core';
+import { loadTranslations } from './load';
 import { getSpeakContext } from './context';
 import { logDebugInline, logWarn } from './log';
 

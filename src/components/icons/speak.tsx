@@ -1,5 +1,5 @@
 export const SpeakLogo = () => (
-  <svg viewBox="0 0 370 90" xmlns="http://www.w3.org/2000/svg">
+  <svg viewBox="0 0 380 90" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <linearGradient y2="0%" x2="100%" y1="0%" x1="0%" id="gradient">
         <stop stop-color="#00AEEF" offset="0%" />

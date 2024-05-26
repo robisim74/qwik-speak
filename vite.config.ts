@@ -14,6 +14,12 @@ export default defineConfig(() => {
     build: {
       minify: false // To inspect production files
     },
+    // Handle packages
+    resolve: {
+      alias: [
+        { find: 'qwik-speak', replacement: fileURLToPath(new URL('./packages/qwik-speak/lib/index.qwik.mjs', import.meta.url)) },
+      ]
+    },
     plugins: [
       qwikCity(
         /** Uncomment this line to use url rewriting to translate paths */
@@ -22,7 +28,7 @@ export default defineConfig(() => {
       qwikVite({
         // Handle packages
         vendorRoots: [
-          fileURLToPath(new URL('./packages/qwik-speak/src', import.meta.url))
+          fileURLToPath(new URL('./packages/qwik-speak/lib', import.meta.url))
         ]
       }),
       qwikSpeakInline({
@@ -34,6 +40,10 @@ export default defineConfig(() => {
       tsconfigPaths(),
       //Inspect()
     ],
+    optimizeDeps: {
+      exclude: [],
+      include: [],
+    },
     preview: {
       headers: {
         'Cache-Control': 'public, max-age=600',

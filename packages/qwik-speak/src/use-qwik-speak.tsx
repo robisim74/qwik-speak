@@ -3,7 +3,7 @@ import { isDev, isServer } from '@builder.io/qwik/build';
 
 import type { SpeakConfig, SpeakLocale, SpeakState, TranslationFn } from './types';
 import { getSpeakContext, setGetLangFn, setSpeakClientContext, setSpeakServerContext, SpeakContext } from './context';
-import { loadTranslations } from './core';
+import { loadTranslations } from './load';
 import { logDebug, logDebugInline, logWarn } from './log';
 
 export interface QwikSpeakProps {
