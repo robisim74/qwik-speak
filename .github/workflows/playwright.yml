@@ -9,8 +9,8 @@ jobs:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
       with:
         node-version: '20.x'
     - name: Install dependencies
@@ -21,8 +21,8 @@ jobs:
       run: npm run ci
     - name: Run Playwright tests
       run: npm run test.e2e
-    - uses: actions/upload-artifact@v3
-      if: always()
+    - uses: actions/upload-artifact@v4
+      if: ${{ !cancelled() }}
       with:
         name: playwright-report
         path: playwright-report/
