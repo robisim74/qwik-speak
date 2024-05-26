@@ -97,7 +97,7 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
     enforce: 'post',
     apply: undefined, // both
 
-    configResolved(resolvedConfig) {
+    async configResolved(resolvedConfig) {
       if (resolvedConfig.build?.ssr || resolvedConfig.mode === 'ssr') {
         target = 'ssr';
       } else if (resolvedConfig.mode === 'lib') {
@@ -117,6 +117,12 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
           input = inputOption
       }
       input = input?.split('/')?.pop();
+
+      // Load translation files 
+      await Promise.all(resolvedOptions.supportedLangs.map(async lang => {
+        const data = await resolvedOptions.loadAssets(lang);
+        Object.assign(translation[lang], data);
+      }));
     },
 
     configureServer(server) {
@@ -152,17 +158,6 @@ export function qwikSpeakInline(options: QwikSpeakInlineOptions): Plugin {
         }
         moduleIds.clear();
       }
-    },
-
-    /**
-     * Load translation files when build starts
-     */
-    async buildStart() {
-      // For all langs
-      await Promise.all(resolvedOptions.supportedLangs.map(async lang => {
-        const data = await resolvedOptions.loadAssets(lang);
-        Object.assign(translation[lang], data);
-      }));
     },
 
     /**
