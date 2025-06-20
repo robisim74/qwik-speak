@@ -293,6 +293,15 @@ export async function writeChunks(
         tasks.push(writeFile(defaultFilename, code));
       }
     }
+    // Static files
+    else if (chunk.type === 'asset' && 'source' in chunk && /build\//.test(chunk.fileName)) {
+      if (chunk.fileName.includes('q-bundle-graph')) {
+        const filename = normalize(`${targetDir}/${chunk.fileName.split('/')[1]}`);
+
+        tasks.push(writeFile(filename, chunk.source));
+      }
+    }
+
     await Promise.all(tasks);
   }
 }
