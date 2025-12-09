@@ -59,13 +59,32 @@ interface InternalRewriteRouteOption extends RewriteRouteOption {
   lang?: string;
 }
 
+const stripBasePath = (pathname: string, basePath: string | undefined): string => {
+  if (!basePath) return pathname;
+  const base = basePath.replace(/\/$/, ''); // Remove trailing slash
+  if (pathname.startsWith(base + '/') || pathname === base) {
+    return pathname.slice(base.length) || '/';
+  }
+  return pathname;
+};
+
+const addBasePath = (pathname: string, basePath: string | undefined): string => {
+  if (!basePath) return pathname;
+  const base = basePath.replace(/\/$/, ''); // Remove trailing slash
+  return base + pathname;
+};
+
 export const localizePath = (): LocalizePathFn => {
   const { config } = getSpeakContext();
   const currentLang = getLang();
+  const basePath = config.basePath;
 
   const getRegEpx = (lang: string) => new RegExp(`(/${lang}/)|(/${lang}$)|(/(${lang})(?=\\?))`);
 
   const replace = (pathname: string, lang: string) => {
+    // Strip base path before processing
+    pathname = stripBasePath(pathname, basePath);
+
     const langParam = config.supportedLocales.find(locale => getRegEpx(locale.lang)?.test(pathname))?.lang;
 
     // Handle prefix
@@ -86,7 +105,8 @@ export const localizePath = (): LocalizePathFn => {
       }
     }
 
-    return pathname;
+    // Add base path back
+    return addBasePath(pathname, basePath);
   };
 
   const localize = (route: (string | URL) | string[], lang?: string) => {
@@ -119,6 +139,7 @@ export const translatePath = (): TranslatePathFn => {
   const { config } = getSpeakContext();
   const rewriteRoutes = config.rewriteRoutes as InternalRewriteRouteOption[];
   const currentLang = getLang();
+  const basePath = config.basePath;
 
   /**
    * To file-based routing
@@ -208,9 +229,12 @@ export const translatePath = (): TranslatePathFn => {
   }
 
   const translateOne = (pathname: string, lang: string) => {
-    const normalized = normalizePath(pathname);
+    // Strip base path before processing
+    const strippedPathname = stripBasePath(pathname, basePath);
+    const normalized = normalizePath(strippedPathname);
     const rewrote = rewritePath(normalized, lang);
-    return slashPath(pathname, rewrote);
+    // Add base path back
+    return addBasePath(slashPath(strippedPathname, rewrote), basePath);
   };
 
   const translate = (route: (string | URL) | string[], lang?: string) => {

@@ -121,7 +121,13 @@ export interface SpeakConfig {
   /**
    * Domain-based routing options
    */
-  domainBasedRouting?: DomainBasedRoutingOption
+  domainBasedRouting?: DomainBasedRoutingOption;
+  /**
+   * Base path of the application (e.g. '/reponame' for GitHub Pages).
+   * When set, localizePath and translatePath will strip this from input paths
+   * and add it back to output paths
+   */
+  basePath?: string
   /**
    * Whether to enable local debugging mode. Default is true
    */

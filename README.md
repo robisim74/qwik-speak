@@ -127,6 +127,7 @@ stateDiagram-v2
 - `keyValueSeparator` Key-value separator. Default is `@@`
 - `rewriteRoutes` Rewrite routes as specified in Vite config for `qwikCity` plugin
 - `domainBasedRouting` Domain-based routing options
+- `basePath` Base path of the application (e.g. '/reponame' for GitHub Pages)
 - `showDebugMessagesLocally` Whether to enable local debugging mode. Default is true
 
 ### SpeakLocale
